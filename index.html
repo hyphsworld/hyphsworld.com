@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HYPHSWORLD | HYPH LIFE</title>
+  <meta name="description" content="Welcome to HyphsWorld. Listen to music, purchase merch, and tap in with HYPH LIFE and AMS WEST." />
+  <style>
+    :root {
+      --bg:#050505;
+      --bg2:#0d0d0d;
+      --panel:#121212;
+      --line:rgba(255,255,255,.10);
+      --text:#ffffff;
+      --muted:#c3c3c3;
+      --radius:24px;
+      --shadow:0 20px 50px rgba(0,0,0,.35);
+    }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body {
+      margin:0;
+      font-family: Arial, Helvetica, sans-serif;
+      color:var(--text);
+      background:linear-gradient(180deg,var(--bg) 0%, var(--bg2) 100%);
+    }
+    a { color:inherit; text-decoration:none; }
+    img { display:block; width:100%; }
+    .container { width:min(1160px, 92vw); margin:0 auto; }
+    .nav {
+      position:sticky; top:0; z-index:100;
+      background:rgba(5,5,5,.82);
+      backdrop-filter: blur(10px);
+      border-bottom:1px solid var(--line);
+    }
+    .nav-inner {
+      display:flex; justify-content:space-between; align-items:center;
+      padding:16px 0;
+      gap:18px;
+    }
+    .brand {
+      font-weight:900; letter-spacing:.2em; text-transform:uppercase; font-size:14px;
+    }
+    .nav-links {
+      display:flex; flex-wrap:wrap; gap:14px;
+      color:var(--muted); font-size:14px;
+    }
+    .hero { padding:72px 0 36px; }
+    .hero-grid {
+      display:grid; grid-template-columns: 1.1fr .9fr; gap:28px; align-items:center;
+    }
+    .eyebrow {
+      text-transform:uppercase; letter-spacing:.22em; font-size:12px; color:var(--muted);
+    }
+    h1 {
+      margin:12px 0 14px;
+      font-size:clamp(48px, 10vw, 108px);
+      line-height:.92;
+      letter-spacing:.04em;
+    }
+    .hero p {
+      font-size:18px; line-height:1.65; color:var(--muted); max-width:700px;
+    }
+    .cta-row {
+      display:flex; flex-wrap:wrap; gap:14px; margin-top:26px;
+    }
+    .btn {
+      display:inline-block;
+      padding:14px 22px;
+      border-radius:999px;
+      font-weight:800;
+      border:1px solid #fff;
+      transition:all .2s ease;
+    }
+    .btn.primary { background:#fff; color:#000; }
+    .btn.secondary { background:transparent; color:#fff; }
+    .btn:hover { transform:translateY(-1px); opacity:.96; }
+    .hero-card {
+      overflow:hidden;
+      border-radius:32px;
+      border:1px solid var(--line);
+      background:var(--panel);
+      box-shadow:var(--shadow);
+    }
+    .hero-card img {
+      aspect-ratio: 4/5;
+      object-fit:cover;
+    }
+    .hero-meta {
+      padding:16px 18px;
+      display:flex; justify-content:space-between; align-items:center; gap:12px;
+      color:var(--muted); font-size:14px;
+    }
+    .section { padding:34px 0; }
+    .section-head {
+      display:flex; justify-content:space-between; align-items:end; gap:20px; margin-bottom:18px;
+    }
+    h2 { margin:0; font-size:32px; letter-spacing:.03em; }
+    .lead {
+      color:var(--muted);
+      max-width:760px;
+      line-height:1.7;
+      margin:10px 0 0;
+    }
+    .grid-2 {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:18px;
+    }
+    .card {
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      overflow:hidden;
+      box-shadow:var(--shadow);
+    }
+    .card-pad { padding:20px; }
+    .music-wrap {
+      padding:18px;
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+    .music-links {
+      display:flex; flex-wrap:wrap; gap:12px; margin-top:16px;
+    }
+    .merch-grid {
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:18px;
+    }
+    .merch-photo {
+      aspect-ratio: 4/4.2;
+      object-fit:cover;
+      border-bottom:1px solid var(--line);
+    }
+    .label {
+      text-transform:uppercase; letter-spacing:.15em; color:var(--muted); font-size:12px;
+    }
+    .price {
+      font-size:28px;
+      font-weight:900;
+      margin:8px 0 12px;
+    }
+    .gallery {
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:14px;
+    }
+    .gallery img {
+      aspect-ratio:1/1;
+      object-fit:cover;
+      border-radius:18px;
+      border:1px solid var(--line);
+      box-shadow:var(--shadow);
+    }
+    .social-grid {
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:14px;
+    }
+    .social-card, .contact-card {
+      padding:18px;
+      border-radius:20px;
+      border:1px solid var(--line);
+      background:var(--panel);
+      box-shadow:var(--shadow);
+    }
+    .social-card strong {
+      display:block;
+      font-size:18px;
+      margin-bottom:6px;
+    }
+    .social-card span, .small {
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.5;
+    }
+    .about-grid {
+      display:grid;
+      grid-template-columns:.95fr 1.05fr;
+      gap:18px;
+      align-items:stretch;
+    }
+    .about-photo {
+      height:100%;
+      min-height:440px;
+      object-fit:cover;
+    }
+    .footer {
+      border-top:1px solid var(--line);
+      color:var(--muted);
+      padding:28px 0 42px;
+      margin-top:20px;
+      font-size:14px;
+    }
+    @media (max-width: 900px) {
+      .hero-grid, .grid-2, .about-grid, .social-grid, .merch-grid {
+        grid-template-columns:1fr;
+      }
+      .gallery { grid-template-columns:repeat(2,1fr); }
+      .section-head { display:block; }
+      .hero { padding-top:52px; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="container nav-inner">
+      <div class="brand">HYPHSWORLD</div>
+      <div class="nav-links">
+        <a href="#music">Music</a>
+        <a href="#merch">Merch</a>
+        <a href="#gallery">Photos</a>
+        <a href="#socials">Socials</a>
+        <a href="#booking">Booking</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="container hero-grid">
+      <div>
+        <div class="eyebrow">HYPH LIFE • AMS WEST</div>
+        <h1>WELCOME TO<br>HYPHSWORLD</h1>
+        <p>Have a look around, listen to music, purchase merch. We’re just getting started. This is the official home for HYPH LIFE, new drops, visuals, links, and AMS WEST movement.</p>
+        <div class="cta-row">
+          <a class="btn primary" href="https://hyperurl.co/6agism?utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQPMTI0MDI0NTc0Mjg3NDE0AAGnRO8vqJZJhhRavgfZq2uErjIw7Mdpi97blXyc_OtkoFFxf5IMgbqxGfTk4mU_aem_px3S6UJlWvusuXFmw7Sgww#" target="_blank">LISTEN NOW</a>
+          <a class="btn secondary" href="#merch">SHOP MERCH</a>
+        </div>
+      </div>
+      <div class="hero-card">
+        <img src="images/img_1.jpeg" alt="HYPH LIFE feature image" />
+        <div class="hero-meta">
+          <span>Official artist site</span>
+          <span>Powered by AMS WEST</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="section" id="music">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2>Music</h2>
+          <p class="lead">Tap in with HYPH LIFE across streaming platforms. Hit the smart link or play directly from Spotify below.</p>
+        </div>
+      </div>
+      <div class="music-wrap">
+        <iframe style="border-radius:18px" src="https://open.spotify.com/embed/artist/26tF7cdoI34Se2TiAOcJVy?utm_source=generator" width="100%" height="380" frameborder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+        <div class="music-links">
+          <a class="btn primary" href="https://open.spotify.com/artist/26tF7cdoI34Se2TiAOcJVy?si=WrZKCJV5SG-k6j71KkdL6w" target="_blank">SPOTIFY</a>
+          <a class="btn secondary" href="https://hyperurl.co/6agism?utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQPMTI0MDI0NTc0Mjg3NDE0AAGnRO8vqJZJhhRavgfZq2uErjIw7Mdpi97blXyc_OtkoFFxf5IMgbqxGfTk4mU_aem_px3S6UJlWvusuXFmw7Sgww#" target="_blank">ALL MUSIC LINKS</a>
+          <a class="btn secondary" href="https://youtube.com/@amswesttv?si=c06g-hoCTUKzHBxk" target="_blank">WATCH ON YOUTUBE</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="merch">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2>AMS WEST Merch</h2>
+          <p class="lead">AMS WEST merch through Dreams Distribution. Prices are live below. Direct checkout can be added as soon as the store link is ready.</p>
+        </div>
+      </div>
+      <div class="merch-grid">
+        <article class="card">
+          <img class="merch-photo" src="images/img_7.jpeg" alt="AMS WEST T-shirt merch" />
+          <div class="card-pad">
+            <div class="label">AMS WEST Tee</div>
+            <div class="price">$14.99</div>
+            <div class="small">Clean everyday staple. Dreams Distribution merch lane.</div>
+          </div>
+        </article>
+        <article class="card">
+          <img class="merch-photo" src="images/img_8.jpeg" alt="AMS WEST hoodie merch" />
+          <div class="card-pad">
+            <div class="label">AMS WEST Hoodie</div>
+            <div class="price">$39.99</div>
+            <div class="small">Heavy look, easy feature piece, ready for direct store button.</div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="about">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2>About</h2>
+          <p class="lead">HYPHSWORLD is the home base for HYPH LIFE music, visuals, merch, and motion. This site brings the artist brand and AMS WEST presence together in one place.</p>
+        </div>
+      </div>
+      <div class="about-grid">
+        <div class="card" style="overflow:hidden;">
+          <img class="about-photo" src="images/img_3.jpeg" alt="HYPH LIFE artist portrait" />
+        </div>
+        <div class="card">
+          <div class="card-pad">
+            <div class="label">Official Bio</div>
+            <h2 style="margin-top:10px;">We’re just getting started.</h2>
+            <p class="lead" style="margin-top:0;">Welcome to HYPHSWORLD. Have a look around, listen to music, purchase merch, and stay tapped in for what’s next. This is the platform for new music, brand updates, social links, visuals, and AMS WEST movement all in one place.</p>
+            <div class="cta-row">
+              <a class="btn primary" href="#socials">FOLLOW NOW</a>
+              <a class="btn secondary" href="#booking">BOOKING</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="gallery">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2>Photos</h2>
+          <p class="lead">Artist visuals, merch shots, and brand images loaded into the site package.</p>
+        </div>
+      </div>
+      <div class="gallery">
+        <img src="images/img_1.jpeg" alt="HYPH LIFE gallery image" /><img src="images/img_2.jpeg" alt="HYPH LIFE gallery image" /><img src="images/img_3.jpeg" alt="HYPH LIFE gallery image" /><img src="images/img_4.jpeg" alt="HYPH LIFE gallery image" /><img src="images/img_5.jpeg" alt="HYPH LIFE gallery image" /><img src="images/img_6.jpeg" alt="HYPH LIFE gallery image" /><img src="images/img_7.jpeg" alt="HYPH LIFE gallery image" /><img src="images/img_8.jpeg" alt="HYPH LIFE gallery image" />
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="socials">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2>Socials</h2>
+          <p class="lead">Tap in everywhere HYPH LIFE and AMS WEST move online.</p>
+        </div>
+      </div>
+      <div class="social-grid">
+        <a class="social-card" href="https://www.instagram.com/hyphsworld?igsh=NTc4MTIwNjQ2YQ%3D%3D&utm_source=qr" target="_blank"><strong>Instagram</strong><span>@hyphsworld</span></a>
+        <a class="social-card" href="https://www.instagram.com/amswestenterprise?igsh=NTc4MTIwNjQ2YQ==" target="_blank"><strong>AMS WEST IG</strong><span>@amswestenterprise</span></a>
+        <a class="social-card" href="https://www.tiktok.com/@hyphsworld1?_r=1&_t=ZP-94yAKCOhkNi" target="_blank"><strong>TikTok</strong><span>@hyphsworld1</span></a>
+        <a class="social-card" href="https://x.com/hyphsworld?s=21" target="_blank"><strong>X / Twitter</strong><span>@hyphsworld</span></a>
+        <a class="social-card" href="https://youtube.com/@amswesttv?si=c06g-hoCTUKzHBxk" target="_blank"><strong>YouTube</strong><span>AMS WEST TV</span></a>
+        <a class="social-card" href="https://www.facebook.com/yunghyphlife?mibextid=wwXIfr&mibextid=wwXIfr" target="_blank"><strong>Facebook</strong><span>Hyph Life</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="booking">
+    <div class="container">
+      <div class="grid-2">
+        <div class="contact-card">
+          <div class="label">Booking</div>
+          <h2 style="margin-top:10px;">Get in touch</h2>
+          <p class="lead" style="margin-top:0;">For booking, appearances, and business inquiries, hit the email below.</p>
+          <a class="btn primary" href="mailto:Tone@amsenterprisecorp.com">Tone@amsenterprisecorp.com</a>
+        </div>
+        <div class="contact-card">
+          <div class="label">AMS WEST</div>
+          <h2 style="margin-top:10px;">Powered by AMS WEST</h2>
+          <p class="lead" style="margin-top:0;">Artist brand, merch lane, media presence, and rollout hub connected in one place. A direct AMS WEST website button can be added as soon as the final site link is ready.</p>
+          <a class="btn secondary" href="https://www.instagram.com/amswestenterprise?igsh=NTc4MTIwNjQ2YQ==" target="_blank">VISIT AMS WEST IG</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">© HYPHSWORLD • HYPH LIFE • AMS WEST</div>
+  </footer>
+</body>
+</html>
