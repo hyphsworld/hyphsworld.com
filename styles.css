@@ -1,0 +1,94 @@
+body {
+  margin:0;
+  font-family: Arial, sans-serif;
+  background:#000;
+  color:white;
+  overflow-x:hidden;
+}
+
+.bg {
+  position:fixed;
+  width:200%;
+  height:200%;
+  background: radial-gradient(circle, rgba(255,0,0,0.2), transparent 60%);
+  animation: moveBg 8s infinite linear;
+  z-index:-1;
+}
+
+@keyframes moveBg {
+  0% { transform: translate(0,0); }
+  50% { transform: translate(-5%, -5%); }
+  100% { transform: translate(0,0); }
+}
+
+.nav {
+  display:flex;
+  justify-content:space-between;
+  padding:20px;
+}
+
+.logo span {
+  font-size:24px;
+  font-weight:bold;
+}
+
+.links a {
+  margin-left:15px;
+  color:#ccc;
+  transition:0.3s;
+}
+
+.links a:hover {
+  color:red;
+  text-shadow:0 0 10px red;
+}
+
+.hero {
+  padding:40px 20px;
+  background: radial-gradient(circle at top, rgba(255,0,0,0.3), transparent 70%);
+}
+
+.tag {
+  color:#aaa;
+  font-size:12px;
+}
+
+h1 {
+  font-size:42px;
+  margin:10px 0;
+  text-shadow:0 0 20px rgba(255,0,0,0.6);
+}
+
+.desc {
+  color:#ccc;
+  margin-bottom:20px;
+}
+
+.buttons {
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.btn {
+  padding:15px;
+  border-radius:30px;
+  text-align:center;
+  font-weight:bold;
+  transition:0.3s;
+}
+
+.primary {
+  background:white;
+  color:black;
+  box-shadow:0 0 20px rgba(255,255,255,0.3);
+}
+
+.outline {
+  border:2px solid white;
+}
+
+.btn:hover {
+  transform:scale(1.05);
+  box-shadow:0 0 25px red;
+}
