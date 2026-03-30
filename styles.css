@@ -1,138 +1,27 @@
-:root{
-  --red:#ff2020;
-  --red2:#8a0000;
-  --black:#050505;
-  --panel:rgba(17,17,17,.86);
-  --white:#fff;
-  --muted:#c9c9c9;
-  --line:rgba(255,255,255,.10);
-  --radius:22px;
-  --shadow:0 20px 50px rgba(0,0,0,.40);
-}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
 body{
   margin:0;
-  color:var(--white);
-  font-family:Arial, Helvetica, sans-serif;
-  background:
-    radial-gradient(circle at top left, rgba(255,32,32,.12), transparent 25%),
-    radial-gradient(circle at bottom right, rgba(255,255,255,.06), transparent 20%),
-    linear-gradient(180deg,#010101 0%, #090909 48%, #040404 100%);
-  overflow-x:hidden;
+  background:black;
+  color:white;
+  font-family:sans-serif;
+  text-align:center;
 }
-a{text-decoration:none;color:inherit}
-img{display:block;width:100%}
-.wrap{width:min(1180px,92vw);margin:0 auto}
-.bg-glow{
-  position:fixed; z-index:0; pointer-events:none; filter:blur(70px); opacity:.2; border-radius:999px;
-  animation:pulseGlow 8s ease-in-out infinite;
+
+.merch{
+  padding:40px 20px;
 }
-.glow-1{width:320px;height:320px;background:#ff2020;top:2%;left:-8%}
-.glow-2{width:240px;height:240px;background:#ffffff;top:18%;right:-5%;animation-delay:2s}
-@keyframes pulseGlow{
-  0%,100%{transform:scale(1);opacity:.14}
-  50%{transform:scale(1.12);opacity:.24}
+
+.merch-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:20px;
 }
-.site-header{
-  position:sticky; top:0; z-index:20;
-  backdrop-filter:blur(14px);
-  background:rgba(0,0,0,.72);
-  border-bottom:1px solid var(--line);
+
+.merch-item img{
+  width:100%;
+  border-radius:12px;
 }
-.nav{
-  display:flex;align-items:center;justify-content:space-between;gap:18px;padding:16px 0
-}
-.brand-top{color:var(--muted);font-size:11px;letter-spacing:.22em;text-transform:uppercase}
-.brand-main{font-size:24px;font-weight:900;letter-spacing:.14em;text-transform:uppercase}
-.nav-links{display:flex;flex-wrap:wrap;gap:16px}
-.nav-links a{color:var(--muted);font-size:14px;transition:.2s ease}
-.nav-links a:hover{color:var(--white)}
-.hero{padding:64px 0 34px}
-.hero-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(280px,.9fr);gap:28px;align-items:center}
-.eyebrow{color:var(--muted);font-size:12px;letter-spacing:.22em;text-transform:uppercase}
-h1{
-  margin:14px 0 16px;
-  font-size:clamp(48px,7vw,94px);
-  line-height:.95;
-  letter-spacing:.02em;
-  text-transform:uppercase;
-  text-shadow:0 0 16px rgba(255,32,32,.18);
-  max-width:11ch;
-  overflow-wrap:anywhere;
-}
-h1 span{color:#ffffff}
-h2{margin:0;font-size:34px;letter-spacing:.03em}
-h3{margin:0 0 10px;font-size:26px}
-.hero-text,.section-copy,.small-copy{color:var(--muted);line-height:1.7}
-.hero-actions,.link-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
-.btn,.mini-btn{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;transition:.25s ease}
-.btn{
-  min-height:50px;padding:0 22px;border:1px solid var(--white);font-weight:800;letter-spacing:.04em
-}
-.btn-primary{
-  color:var(--black);background:linear-gradient(180deg,#fff 0%,#f4f4f4 100%);
-  box-shadow:0 0 22px rgba(255,255,255,.14), 0 0 18px rgba(255,32,32,.18)
-}
-.btn-secondary{background:rgba(255,255,255,.02);color:var(--white)}
-.btn:hover,.mini-btn:hover{transform:translateY(-1px) scale(1.03);box-shadow:0 0 18px rgba(255,32,32,.28)}
-.hero-media{display:flex;justify-content:flex-end}
-.cover-card,.panel,.merch-card,.social-card,.gallery-card,.quote-box{
-  border:1px solid var(--line);background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow)
-}
-.cover-card{overflow:hidden;max-width:520px;width:100%;position:relative}
-.cover-card img{aspect-ratio:1 / 1.15;object-fit:cover}
-.shine{
-  position:absolute;inset:-30% auto auto -40%;
-  width:50%;height:160%;
-  background:linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
-  transform:rotate(18deg);
-  animation:shineMove 7s linear infinite;
-}
-@keyframes shineMove{
-  0%{left:-60%}
-  100%{left:130%}
-}
-.section{padding:48px 0}
-.section-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:20px}
-.music-grid,.booking-grid,.visual-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,.8fr);gap:18px}
-.panel{padding:20px;overflow:hidden}
-.track-list{list-style:none;padding:0;margin:14px 0;display:grid;gap:12px}
-.track-list li{border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:10px;font-weight:700}
-.track-list span{display:inline-block;width:36px;color:var(--red)}
-.mini-btn{
-  color:var(--white);border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.02);min-height:42px;padding:0 16px;font-weight:700
-}
-.merch-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
-.merch-card{overflow:hidden;transition:.25s ease}
-.merch-card:hover,.gallery-card:hover,.social-card:hover{transform:translateY(-4px)}
-.merch-card img{aspect-ratio:4 / 3.2;object-fit:cover}
-.merch-body{padding:18px}
-.price{margin:6px 0 10px;font-size:28px;font-weight:900}
-.feature-panel{padding:0;overflow:hidden}
-.feature-panel img{min-height:540px;height:100%;object-fit:cover}
-.gallery-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-.gallery-card{overflow:hidden;transition:.25s ease}
-.gallery-card img{aspect-ratio:1 / 1;object-fit:cover}
-.quote-box{padding:28px 26px;background:linear-gradient(90deg, rgba(255,32,32,.12) 0%, rgba(255,255,255,.02) 100%)}
-.social-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
-.social-card{padding:18px;transition:.25s ease}
-.social-card strong{display:block;margin-bottom:6px;font-size:18px}
-.social-card span{color:var(--muted)}
-.site-footer{border-top:1px solid var(--line);margin-top:20px;padding:26px 0 44px}
-.footer-row{display:flex;justify-content:space-between;gap:16px;color:var(--muted);font-size:14px}
-@media (max-width:960px){
-  .hero-grid,.music-grid,.booking-grid,.visual-grid,.merch-grid,.social-grid{grid-template-columns:1fr}
-  .gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .section-head,.footer-row,.nav{flex-direction:column;align-items:flex-start}
-  .hero-media{justify-content:flex-start}
-}
-@media (max-width:640px){
-  h1{font-size:clamp(36px,12vw,58px);line-height:.98;max-width:100%}
-  .gallery-grid{grid-template-columns:1fr}
-  .hero{padding:42px 0 24px}
-  .btn{width:100%}
-  .hero-actions{display:grid;grid-template-columns:1fr;gap:12px}
-  .nav-links{gap:10px}
-  .brand-main{font-size:22px}
+
+.merch-item{
+  text-decoration:none;
+  color:white;
 }
