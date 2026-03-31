@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>HYPHSWORLD</title>
+</head>
+
+<body style="background:black; color:white; text-align:center; font-family:Arial;">
+
+  <h1>HYPHSWORLD</h1>
+  <p>Official Site</p>
+
+  <a href="https://yourmerchlink.com">
+    <button style="padding:15px 30px; margin:10px;">SHOP MERCH</button>
+  </a>
+
+  <a href="https://music.apple.com/us/album/hyphsworld/1713244373">
+    <button style="padding:15px 30px; margin:10px;">LISTEN NOW</button>
+  </a>
+
+</body>
+</html>
