@@ -1,4 +1,40 @@
 const tracks = [
+  "01-the-way.mp3",
+  "02-you-bad.mp3",
+  "03-bout-you.mp3"
+];
+
+let current = 0;
+const audio = document.getElementById("audio");
+
+function load(){
+  audio.src = tracks[current];
+  document.getElementById("title").innerText = tracks[current];
+}
+
+function play(){
+  audio.play();
+}
+
+function next(){
+  current = (current + 1) % tracks.length;
+  load();
+  play();
+}
+
+function prev(){
+  current = (current - 1 + tracks.length) % tracks.length;
+  load();
+  play();
+}
+
+function select(i){
+  current = i;
+  load();
+  play();
+}
+
+load();const tracks = [
   { title: "THE WAY ft DejBae", meta: "prod by K.M.T.", file: "01-the-way.mp3" },
   { title: "YOU BAD ft DejBae", meta: "prod by Cuz Zaid", file: "02-you-bad.mp3" },
   { title: "BOUT YOU", meta: "prod by unknown", file: "03-bout-you.mp3" }
