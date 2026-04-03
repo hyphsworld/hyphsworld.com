@@ -1,6 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HYPHSWORLD APP</title>
+<link rel="stylesheet" href="app-player.css">
+</head>
+
+<body>
+
+<h1>HYPHSWORLD PLAYER</h1>
+
+<img src="player-cover.jpg" class="cover">
+
+<h2 id="title">THE WAY</h2>
+
+<audio id="audio"></audio>
+
+<div class="controls">
+  <button onclick="prev()">⏮</button>
+  <button onclick="play()">▶</button>
+  <button onclick="next()">⏭</button>
+</div>
+
+<ul>
+  <li onclick="select(0)">THE WAY</li>
+  <li onclick="select(1)">YOU BAD</li>
+  <li onclick="select(2)">BOUT YOU</li>
+</ul>
+
+<script src="app-player.js"></script>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HYPHSWORLD App</title>
