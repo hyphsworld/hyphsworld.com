@@ -8,7 +8,33 @@
   --shadow:0 24px 60px rgba(0,0,0,.45);
 }
 *{box-sizing:border-box}
-body{
+body{ body{
+  background:black;
+  color:white;
+  text-align:center;
+  font-family:Arial;
+}
+
+.cover{
+  width:250px;
+  border-radius:20px;
+}
+
+.controls button{
+  margin:10px;
+  padding:15px;
+  font-size:20px;
+}
+
+ul{
+  list-style:none;
+  padding:0;
+}
+
+li{
+  padding:10px;
+  border-bottom:1px solid gray;
+}
   margin:0;
   min-height:100vh;
   color:var(--white);
