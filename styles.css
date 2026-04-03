@@ -142,5 +142,59 @@ h3{margin:0 0 10px;font-size:26px}
   .hero-actions{display:grid;grid-template-columns:1fr;gap:12px}
   .nav-links{gap:10px}
   .brand-main{font-size:22px}
-  .hero-tags{gap:8px}
+  .hero-tags{gap:8px} /* 🎬 HERO INTRO */
+.hero {
+  animation: fadeInHero 1.2s ease-out;
 }
+
+@keyframes fadeInHero {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 🔥 BACKGROUND GLOW PULSE */
+body::before {
+  content: "";
+  position: fixed;
+  width: 300px;
+  height: 300px;
+  background: rgba(255, 0, 0, 0.25);
+  filter: blur(120px);
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 0;
+  animation: glowMove 6s infinite ease-in-out;
+}
+
+@keyframes glowMove {
+  0%, 100% { transform: translateX(-50%) scale(1); }
+  50% { transform: translateX(-50%) scale(1.3); }
+}
+
+/* 🎮 BUTTON PRESS EFFECT */
+.btn {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 0 20px rgba(255,0,0,0.5);
+}
+
+/* 🔥 IMAGE BREATHING EFFECT */
+.cover-card img {
+  animation: breathe 5s infinite ease-in-out;
+}
+
+@keyframes breathe {
+  0%,100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+} 
