@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HYPHSWORLD Player</title>
+  <meta name="description" content="Stream HYPHSWORLD previews directly from the site.">
+  <link rel="stylesheet" href="player.css">
+</head>
+<body>
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+
+  <main class="player-page">
+    <section class="player-wrap">
+      <div class="player-art">
+        <img src="player-cover.jpg" alt="Hyphsworld 5 cover">
+      </div>
+
+      <div class="player-panel">
+        <p class="eyebrow">HYPHSWORLD PLAYER</p>
+        <h1>Stream Previews On Site</h1>
+        <p class="subtext">No middleman. Direct from Hyphsworld.</p>
+
+        <div class="now-playing">
+          <div class="now-label">Now Playing</div>
+          <div id="trackTitle" class="track-title">THE WAY ft DejBae</div>
+          <div id="trackMeta" class="track-meta">prod by K.M.T.</div>
+        </div>
+
+        <div class="progress-wrap">
+          <input id="progress" type="range" min="0" max="100" value="0" step="0.1">
+          <div class="time-row">
+            <span id="currentTime">0:00</span>
+            <span id="duration">0:00</span>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button id="prevBtn" class="control-btn" type="button">⏮</button>
+          <button id="playBtn" class="control-btn play-btn" type="button">▶</button>
+          <button id="nextBtn" class="control-btn" type="button">⏭</button>
+        </div>
+
+        <div class="playlist-head">
+          <span>Playlist</span>
+          <span>3 previews</span>
+        </div>
+
+        <div id="playlist" class="playlist">
+          <button class="track-item active" data-index="0" type="button">
+            <span class="track-num">01</span>
+            <span class="track-copy">
+              <strong>THE WAY ft DejBae</strong>
+              <small>prod by K.M.T.</small>
+            </span>
+          </button>
+
+          <button class="track-item" data-index="1" type="button">
+            <span class="track-num">02</span>
+            <span class="track-copy">
+              <strong>YOU BAD ft DejBae</strong>
+              <small>prod by Cuz Zaid</small>
+            </span>
+          </button>
+
+          <button class="track-item" data-index="2" type="button">
+            <span class="track-num">03</span>
+            <span class="track-copy">
+              <strong>BOUT YOU</strong>
+              <small>prod by unknown</small>
+            </span>
+          </button>
+        </div>
+
+        <a class="back-link" href="index.html">← Back to Hyphsworld</a>
+      </div>
+    </section>
+  </main>
+
+  <audio id="audio"></audio>
+  <script src="player.js"></script>
+</body>
+</html>
