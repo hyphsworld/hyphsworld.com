@@ -21,6 +21,10 @@ body{ body{
 
 header{
   padding:20px;
+} .producer-motion{
+  position:relative;
+  z-index:1;
+  padding:54px 0;
 }
 
 nav a{
