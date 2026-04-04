@@ -1,8 +1,9 @@
 const tracks = [
-  "01-the-way.mp3",
-  "02-you-bad.mp3",
-  "03-bout-you.mp3"
-];
+  "/01-the-way.mp3",
+  "/02-you-bad.mp3",
+  "/03-bout-you.mp3"
+];const tracks = [
+
 
 let current = 0;
 const audio = document.getElementById("audio");
