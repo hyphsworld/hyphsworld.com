@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>HYPHSWORLD</title>
+
+<style>
+:root{
+  --red:#ff2a2a;
+  --black:#050505;
+  --white:#fff;
+}
+
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:linear-gradient(black,#1a0000);
+  color:white;
+  text-align:center;
+}
+
+/* HEADER */
+header{
+  padding:20px;
+}
+
+nav a{
+  margin:10px;
+  color:white;
+  text-decoration:none;
+}
+
+/* HERO */
+.hero{
+  padding:50px 20px;
+}
+
+.big{
+  font-size:40px;
+  font-weight:bold;
+}
+
+/* BUTTONS */
+.buttons{
+  margin-top:20px;
+}
+
+.buttons button{
+  padding:15px 25px;
+  border-radius:30px;
+  border:none;
+  margin:10px;
+  font-size:16px;
+  cursor:pointer;
+}
+
+/* PLAYER SECTION */
+.home-player{
+  padding:60px 0;
+}
+
+.player-card{
+  margin:20px auto;
+  padding:20px;
+  max-width:400px;
+  border-radius:24px;
+  background:rgba(20,20,20,.9);
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow:0 0 30px rgba(255,42,42,.2);
+}
+
+.player-art{
+  width:100%;
+  border-radius:20px;
+}
+
+.player-controls{
+  margin-top:15px;
+}
+
+.player-controls button{
+  margin:10px;
+  padding:12px 18px;
+  font-size:18px;
+  border:none;
+  border-radius:50px;
+  background:#fff;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h2>AMS WEST PRESENTS</h2>
+  <h1>HYPHSWORLD</h1>
+
+  <nav>
+    <a href="#">Music</a>
+    <a href="#">01 Show</a>
+    <a href="#">Merch</a>
+    <a href="#">Visuals</a>
+    <a href="#">Socials</a>
+    <a href="#">Booking</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <p>RICHMOND, CA • HYPH LIFE • AMS WEST</p>
+
+  <h1 class="big">WELCOME TO HYPHSWORLD 5</h1>
+
+  <p>
+    Tap in with the music, visuals, merch, and motion.<br>
+    Clean enough to trust. Hard enough to remember.
+  </p>
+
+  <div class="buttons">
+    <button onclick="scrollToPlayer()">STREAM NOW</button>
+  </div>
+</section>
+
+<!-- 🔥 PLAYER SECTION -->
+<section class="home-player" id="player">
+
+  <h2>NOW PLAYING</h2>
+  <p>NO TRACE — Hyph Life (prod by Cuz Zaid)</p>
+
+  <div class="player-card">
+
+    <!-- ALBUM COVER -->
+    <img src="album-hyphsworld5.jpg" class="player-art">
+
+    <!-- AUDIO -->
+    <audio id="main-audio" src="no-trace.wav"></audio>
+
+    <!-- CONTROLS -->
+    <div class="player-controls">
+      <button onclick="playTrack()">▶️</button>
+      <button onclick="pauseTrack()">⏸</button>
+    </div>
+
+  </div>
+
+</section>
+
+<script>
+const audio = document.getElementById("main-audio");
+
+function playTrack(){
+  audio.play();
+}
+
+function pauseTrack(){
+  audio.pause();
+}
+
+function scrollToPlayer(){
+  document.getElementById("player").scrollIntoView({behavior:"smooth"});
+}
+</script>
+
+</body>
+</html>
