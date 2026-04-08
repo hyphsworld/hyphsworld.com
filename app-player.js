@@ -134,5 +134,10 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   audio.volume = 1;
-  loadTrack(0);
+  loadTrack(0);if (volume) {
+  volume.value = 1;
+  volume.addEventListener("input", function () {
+    audio.volume = parseFloat(this.value);
+  });
+}
 });
