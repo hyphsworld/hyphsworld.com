@@ -26,8 +26,20 @@
           <h1 id="trackTitle">WHAT’S HANNIN</h1>
           <p id="trackMeta" class="meta">Hyph Life ft 3D The Capo, Thali — prod by Cuz Zaid</p>
 
-          <div class="progress-card">
-            const volume = document.getElementById("volume");
+          <div class="progress-card"> 
+e<script>
+const audio = document.getElementById("main-audio");
+
+function playTrack(){
+  audio.play();
+}
+
+function pauseTrack(){
+  audio.pause();
+}
+
+/* VOLUME FIX */
+const volume = document.getElementById("volume");
 
 if (volume && audio) {
   volume.value = audio.volume;
@@ -35,6 +47,8 @@ if (volume && audio) {
   volume.addEventListener("input", function () {
     audio.volume = parseFloat(this.value);
   });
+}
+</script>
 }
             <div class="time-row">
               <span id="currentTime">0:00</span>
