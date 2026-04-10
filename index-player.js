@@ -1,0 +1,1 @@
+console.log('home player ready')
