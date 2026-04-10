@@ -8,10 +8,15 @@
   --line:rgba(255,255,255,.10);
   --radius:24px;
   --shadow:0 24px 60px rgba(0,0,0,.45);
-}
+} 
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{
+body{ .story-block .hero-quote{
+  margin-top:16px;
+  font-size:20px;
+  font-weight:800;
+  color:var(--white);
+}
   margin:0;
   color:var(--white);
   font-family:Arial, Helvetica, sans-serif;
