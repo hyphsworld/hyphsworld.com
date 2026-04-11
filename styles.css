@@ -1,0 +1,49 @@
+body {
+  margin: 0;
+  font-family: Arial;
+  background: linear-gradient(black, #3b0000);
+  color: white;
+  text-align: center;
+}
+
+header {
+  padding: 20px;
+}
+
+nav a {
+  margin: 10px;
+  color: white;
+  text-decoration: none;
+}
+
+.hero-art {
+  width: 90%;
+  max-width: 400px;
+  border-radius: 20px;
+  margin: 20px 0;
+}
+
+.player-art {
+  width: 250px;
+  border-radius: 15px;
+  margin: 20px 0;
+}
+
+.buttons button {
+  padding: 12px 20px;
+  margin: 10px;
+  border: none;
+  background: red;
+  color: white;
+  border-radius: 20px;
+}
+
+.controls button {
+  padding: 15px;
+  margin: 10px;
+  border-radius: 50%;
+}
+
+.story {
+  padding: 40px;
+}
