@@ -134,3 +134,14 @@ nav a {
   50% { opacity: .6; }
   100% { opacity: .3; }
 }
+.sticky-player {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: black;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 2px solid red;
+}
