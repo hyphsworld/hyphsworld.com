@@ -21,5 +21,10 @@ if (volume) {
 
   volume.addEventListener("input", function () {
     audio.volume = this.value;
-  });
-}
+});
+} window.addEventListener("load", () => {
+  setTimeout(() => {
+    audio.volume = 0.2;
+    audio.play().catch(() => {});
+  }, 1500);
+});
