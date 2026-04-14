@@ -241,7 +241,11 @@ h2{
   box-shadow:0 0 0 1px rgba(255,255,255,.05), 0 12px 28px rgba(201,163,74,.18);
 }
 
-
+.btn:hover{
+  transform:translateY(-2px);
+  transition:.2s;
+  box-shadow:0 0 25px rgba(229,57,53,.4);
+}
 
 .btn-dark{
   background:rgba(255,255,255,.03);
