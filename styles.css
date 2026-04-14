@@ -235,13 +235,13 @@ h2{
   align-items:center;
   justify-content:center;
   cursor:pointer;
-}
-
-.btn-gold{
+}.btn-gold{
   background:linear-gradient(180deg,var(--gold-light) 0%, var(--gold) 100%);
   color:#111;
   box-shadow:0 0 0 1px rgba(255,255,255,.05), 0 12px 28px rgba(201,163,74,.18);
 }
+
+
 
 .btn-dark{
   background:rgba(255,255,255,.03);
