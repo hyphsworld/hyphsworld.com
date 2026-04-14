@@ -486,4 +486,48 @@ h2{
   .hero-art-shell{
     justify-content:flex-start;
   }
+} .merch-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:20px;
+}
+
+.merch-card{
+  background:#0d0d0d;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:20px;
+  padding:18px;
+  text-align:center;
+  box-shadow:0 10px 30px rgba(0,0,0,.4);
+}
+
+.merch-card img{
+  width:100%;
+  border-radius:14px;
+  margin-bottom:12px;
+}
+
+.merch-card h3{
+  margin:10px 0 5px;
+  font-size:18px;
+  letter-spacing:.08em;
+}
+
+.price{
+  color:#c9a34a;
+  font-weight:900;
+  margin-bottom:12px;
+}
+
+.merch-actions{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.merch-note{
+  text-align:center;
+  margin-top:20px;
+  color:#aaa;
+  font-size:14px;
 }
