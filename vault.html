@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HYPHSWORLD Vault</title>
+  <link rel="stylesheet" href="vault.css" />
+
+  <!-- Google tag -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CT7CWHCHYC"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-CT7CWHCHYC');
+  </script>
+</head>
+
+<body>
+
+<main class="vault-shell">
+
+<!-- LOCK SCREEN -->
+<section class="vault-panel" id="gatePanel">
+  <h1>ENTER THE VAULT</h1>
+  <p>Private access only.</p>
+
+  <input id="vaultPassword" type="password" placeholder="Enter code">
+  <button id="unlockBtn">UNLOCK</button>
+
+  <p id="vaultMessage"></p>
+</section>
+
+<!-- UNLOCKED CONTENT -->
+<section id="vaultContent" class="vault-hidden">
+
+  <h1>VAULT UNLOCKED</h1>
+
+  <!-- 🏆 PRODUCER CRED SECTION -->
+  <h2>PRODUCTION POWER</h2>
+
+  <div class="vault-grid">
+
+    <div class="vault-card">
+      <img src="zaid-award.jpg">
+      <h3>Cuz Zaid</h3>
+      <p>Producer behind multiple records. Proven sound. Real industry motion.</p>
+    </div>
+
+    <div class="vault-card">
+      <img src="rojas-awards.jpg">
+      <h3>RojasOnTheBeat</h3>
+      <p>Certified plaques. Major placements. Elite production energy.</p>
+    </div>
+
+  </div>
+
+  <!-- 🔥 VAULT SONGS -->
+  <h2>UNRELEASED VAULT</h2>
+
+  <div class="vault-grid">
+
+    <div class="vault-card">
+      <h3>VAULT TRACK 1</h3>
+      <audio controls>
+        <source src="vault-song1.mp3" type="audio/mpeg">
+      </audio>
+    </div>
+
+    <div class="vault-card">
+      <h3>VAULT TRACK 2</h3>
+      <audio controls>
+        <source src="vault-song2.mp3" type="audio/mpeg">
+      </audio>
+    </div>
+
+  </div>
+
+</section>
+
+</main>
+
+<script src="vault.js"></script>
+
+</body>
+</html>
