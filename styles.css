@@ -17,7 +17,16 @@
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 
-body{
+body{ 
+  body{
+  margin:0;
+  color:#fff;
+  font-family:Arial, Helvetica, sans-serif;
+
+  background:
+    linear-gradient(rgba(0,0,0,.75), rgba(0,0,0,.85)),
+    url("album-art.jpg") center/cover no-repeat fixed;
+}
   margin:0;
   color:var(--white);
   font-family:Arial, Helvetica, sans-serif;
