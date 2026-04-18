@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HYPHSWORLD Vault</title>
+  <link rel="stylesheet" href="vault.css" />
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CT7CWHCHYC"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-CT7CWHCHYC');
+  </script>
+</head>
+<body>
+  <main class="vault-shell">
+
+    <section class="vault-panel" id="gatePanel">
+      <p class="eyebrow">HYPHSWORLD ACCESS MODE</p>
+      <h1>ENTER THE VAULT</h1>
+      <p class="copy">
+        Private access only. Different codes unlock different parts of the world.
+      </p>
+
+      <div class="vault-form">
+        <input id="vaultPassword" type="password" placeholder="Enter access code" />
+        <button id="unlockBtn" type="button">UNLOCK</button>
+      </div>
+
+      <p id="vaultMessage" class="message"></p>
+
+      <div class="code-hint-box">
+        <p class="hint-title">Vault Rules</p>
+        <p class="hint-copy">
+          Main code opens the full vault. Elite code opens the deeper private zone.
+        </p>
+      </div>
+
+      <div class="vault-links">
+        <a href="index.html">← Back to Site</a>
+      </div>
+    </section>
+
+    <section class="vault-panel vault-hidden" id="mainVaultContent">
+      <p class="eyebrow">VAULT UNLOCKED</p>
+      <h1>PRIVATE ACCESS</h1>
+      <p class="copy">
+        Welcome to the hidden side of HYPHSWORLD. This zone holds exclusive music,
+        producer credibility, secret merch energy, and private fan rewards.
+      </p>
+
+      <div class="vault-grid">
+        <div class="vault-card">
+          <img src="zaid-1.jpg" alt="Cuz Zaid" class="vault-image">
+          <h3>CUZ ZAID</h3>
+          <p>Proven production power. Real studio motion and real records.</p>
+        </div>
+
+        <div class="vault-card">
+          <img src="rojas-1.jpg" alt="RojasOnTheBeat" class="vault-image">
+          <h3>ROJASONTHEBEAT</h3>
+          <p>Plaques, placements, and real industry weight behind the sound.</p>
+        </div>
+      </div>
+
+      <div class="vault-section">
+        <p class="eyebrow">Unreleased Audio</p>
+        <h2>VAULT SONGS</h2>
+
+        <div class="vault-grid vault-song-grid">
+          <div class="vault-card song-card">
+            <img src="gotta-go-remix.jpg" alt="Gotta Go Remix artwork" class="vault-image" onerror="this.src='album-art.jpg'">
+            <h3>GOTTA GO (REMIX)</h3>
+            <p>Hyph Life x Young Tez</p>
+            <audio controls class="vault-audio">
+              <source src="gotta-go-remix.mp3" type="audio/mpeg">
+            </audio>
+          </div>
+
+          <div class="vault-card song-card">
+            <img src="money-is-the-root.jpg" alt="Money Is The Root artwork" class="vault-image" onerror="this.src='album-art.jpg'">
+            <h3>MONEY IS THE ROOT</h3>
+            <p>Hyph Life x Young Tez — prod by #1ManBand</p>
+            <audio controls class="vault-audio">
+              <source src="money-is-the-root.mp3" type="audio/mpeg">
+            </audio>
+          </div>
+
+          <div class="vault-card song-card">
+            <img src="album-art.jpg" alt="Free-Hyph artwork" class="vault-image">
+            <h3>FREE-HYPH</h3>
+            <p>Hyph Life</p>
+            <audio controls class="vault-audio">
+              <source src="free-hyph.mp3" type="audio/mpeg">
+            </audio>
+          </div>
+        </div>
+      </div>
+
+      <div class="vault-section">
+        <p class="eyebrow">Fan Reward Zone</p>
+        <h2>SECRET DROP AREA</h2>
+
+        <div class="vault-grid">
+          <div class="vault-card">
+            <h3>SECRET MERCH</h3>
+            <p>Password-only merch, hidden colorways, and direct-order drops can live here.</p>
+          </div>
+
+          <div class="vault-card">
+            <h3>PRIVATE CLIPS</h3>
+            <p>Use this area for unreleased visuals, behind-the-scenes content, and coded fan content.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="vault-links">
+        <a href="index.html">← Back to Site</a>
+      </div>
+    </section>
+
+    <section class="vault-panel vault-hidden" id="eliteVaultContent">
+      <p class="eyebrow">ELITE CODE ACCEPTED</p>
+      <h1>LEVEL 2 UNLOCKED</h1>
+      <p class="copy">
+        This is the deeper cut. Use this area for secret links, private merch offers,
+        unreleased clips, or exclusive fan access.
+      </p>
+
+      <div class="elite-banner">
+        <strong>ELITE ACCESS ACTIVE</strong>
+        <span>Built with vision. Backed by motion.</span>
+      </div>
+
+      <div class="vault-grid">
+        <div class="vault-card">
+          <h3>ELITE REWARD</h3>
+          <p>Drop a hidden merch code, a private buy link, or a one-time fan offer here.</p>
+        </div>
+
+        <div class="vault-card">
+          <h3>SECRET DESTINATION</h3>
+          <p>This can later link to a second private page, hidden video, or game unlock.</p>
+        </div>
+
+        <div class="vault-card">
+          <h3>LEVEL 2 SONG ACCESS</h3>
+          <p>Use this slot for a fourth exclusive track later if you want to go deeper.</p>
+        </div>
+
+        <div class="vault-card">
+          <h3>INNER CIRCLE</h3>
+          <p>Perfect for supporters who got the real code from you directly.</p>
+        </div>
+      </div>
+
+      <div class="vault-links">
+        <a href="index.html">← Back to Site</a>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="vault.js"></script>
+</body>
+</html>
