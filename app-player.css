@@ -1,0 +1,56 @@
+:root{
+  --primary:#7A0C0C;
+  --accent:#E53935;
+  --black:#020202;
+  --panel:#0B0B0B;
+  --panel-2:#121212;
+  --white:#ffffff;
+  --muted:#9A9A9A;
+  --line:rgba(255,255,255,.08);
+  --highlight-soft:#F2C2A2;
+  --radius:24px;
+  --shadow:0 24px 60px rgba(0,0,0,.7);
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:Arial, Helvetica, sans-serif;
+  color:var(--white);
+  background:
+    linear-gradient(rgba(0,0,0,.84), rgba(0,0,0,.95)),
+    url("album-art.jpg") center center / cover no-repeat fixed;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+a{
+  text-decoration:none;
+  color:inherit;
+}
+
+button,
+input{
+  font:inherit;
+}
+
+.overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.25);
+  pointer-events:none;
+  z-index:0;
+}
+
+.topbar{
+  position:relative;
+  z-index:3;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:20px min(4vw,32px);
+  border-bottom:1px solid rgba(255,255,255
