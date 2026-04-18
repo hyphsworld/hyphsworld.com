@@ -1,111 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HYPHSWORLD Player</title>
-  <link rel="stylesheet" href="app-player.css" />
-</head>
-<body>
-  <main class="app-shell">
-    <section class="app-hero">
-      <div class="topbar">
-        <a class="ghost-btn" href="index.html">← Back</a>
-        <div class="brand">HYPHSWORLD PLAYER</div>
-        <a class="ghost-btn" href="https://youtube.com/@the01showtv?si=ZzIx6jWoJQVdXt_8" target="_blank" rel="noreferrer">01 SHOW</a>
-      </div>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>HYPHSWORLD Full Player</title>
+<meta name="description" content="Official HYPHSWORLD music player. Stream Hyph Life releases, exclusives and new drops.">
 
-      <div class="hero-grid">
-        <div class="cover-wrap">
-          <img id="coverArt" src="album-art.jpg" alt="HYPHSWORLD 5 cover">
-        </div>
+<link rel="stylesheet" href="app-player.css">
 
-        <div class="player-side">
-          <p class="eyebrow">NOW PLAYING</p>
-          <h1 id="trackTitle">WHAT’S HANNIN</h1>
-          <p id="trackMeta" class="meta">Hyph Life ft 3D The Capo, Thali — prod by Cuz Zaid</p>
-
-          <div class="progress-card">
-            <input id="progress" type="range" min="0" max="100" value="0" step="0.1">
-            <div class="time-row">
-              <span id="currentTime">0:00</span>
-              <span id="duration">0:00</span>
-            </div>
-          </div>
-
-          <div class="controls">
-            <button id="prevBtn" class="control-btn" type="button">⏮</button>
-            <button id="playBtn" class="control-btn play-btn" type="button">▶</button>
-            <button id="nextBtn" class="control-btn" type="button">⏭</button>
-          </div>
-
-          <div class="volume-card">
-            <label for="volume">Volume</label>
-            <input id="volume" type="range" min="0" max="1" step="0.01" value="1">
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="queue-section">
-      <div class="queue-head">
-        <h2>Queue</h2>
-        <span>5 records loaded</span>
-      </div>
-
-      <div id="playlist" class="playlist">
-        <button class="track-item active" data-index="0" type="button">
-          <span class="track-num">01</span>
-          <span class="track-copy">
-            <strong>WHAT’S HANNIN</strong>
-            <small>Hyph Life ft 3D The Capo, Thali — prod by Cuz Zaid</small>
-          </span>
-        </button>
-
-        <button class="track-item" data-index="1" type="button">
-          <span class="track-num">02</span>
-          <span class="track-copy">
-            <strong>WITH ME</strong>
-            <small>Hyph Life — prod K.M.T.</small>
-          </span>
-        </button>
-
-        <button class="track-item" data-index="2" type="button">
-          <span class="track-num">03</span>
-          <span class="track-copy">
-            <strong>BOUT YOU</strong>
-            <small>Hyph Life</small>
-          </span>
-        </button>
-
-        <button class="track-item" data-index="3" type="button">
-          <span class="track-num">04</span>
-          <span class="track-copy">
-            <strong>NO TRACE SNIP</strong>
-            <small>Hyph Life — prod by Cuz Zaid</small>
-          </span>
-        </button>
-
-        <button class="track-item" data-index="4" type="button">
-          <span class="track-num">05</span>
-          <span class="track-copy">
-            <strong>TIME</strong>
-            <small>Sixx Figgaz x Hyph Life</small>
-          </span>
-        </button>
-      </div>
-    </section>
-  </main>
-
-  <audio id="audio"></audio>
-  <script src="app-player.js"></script>
-</body> <!-- Google tag (gtag.js) -->
+<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-CT7CWHCHYC"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-CT7CWHCHYC');
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-CT7CWHCHYC');
 </script>
+</head>
+
+<body>
+
+<div class="overlay"></div>
+
+<header class="topbar">
+  <a href="index.html" class="logo">← HYPHSWORLD</a>
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="vault.html">Vault</a>
+    <a href="merch.html">Merch</a>
+  </nav>
+</header>
+
+<section class="hero">
+
+  <div class="cover-wrap">
+    <img id="coverArt" src="album-art.jpg" alt="Album Cover">
+  </div>
+
+  <div class="player-side">
+
+    <p class="mini">OFFICIAL MUSIC PLAYER</p>
+    <h1 id="songTitle">WHAT'S HANNIN</h1>
+    <p id="songArtist">Hyph Life ft 3D The Capo, Thali</p>
+
+    <audio id="audio"></audio>
+
+    <input type="range" id="seekBar" value="0" min="0" max="100">
+
+    <div class="times">
+      <span id="currentTime">0:00</span>
+      <span id="duration">0:00</span>
+    </div>
+
+    <div class="controls">
+      <button id="prevBtn">⏮</button>
+      <button id="playBtn" class="play">▶</button>
+      <button id="nextBtn">⏭</button>
+    </div>
+
+    <div class="secondary">
+      <button id="shuffleBtn">Shuffle</button>
+      <button id="repeatBtn">Repeat</button>
+    </div>
+
+  </div>
+
+</section>
+
+<section class="queue">
+
+  <div class="queue-head">
+    <h2>PLAYER QUEUE</h2>
+    <p>Built with vision. Backed by motion.</p>
+  </div>
+
+  <div id="playlist"></div>
+
+</section>
+
+<section class="extras">
+
+  <div class="box">
+    <h3>THE 01 SHOW</h3>
+    <p>Watch the animated universe and movement.</p>
+    <a href="https://youtube.com/@the01showtv?si=ZzIx6jWoJQVdXt_8" target="_blank">Watch</a>
+  </div>
+
+  <div class="box">
+    <h3>PODCAST</h3>
+    <p>Real conversation. Real story.</p>
+    <a href="https://youtu.be/4jvPUvhXnBA?si=zF4gPE8a1dkuTiqy" target="_blank">Play</a>
+  </div>
+
+  <div class="box">
+    <h3>VAULT MODE</h3>
+    <p>Unlock hidden records and premium drops.</p>
+    <a href="vault.html">Enter</a>
+  </div>
+
+</section>
+
+<script src="app-player.js"></script>
+</body>
 </html>
