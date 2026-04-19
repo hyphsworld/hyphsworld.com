@@ -87,5 +87,53 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
     });
-  });
+    audio.addEventListener("play", () => {
+  if (typeof trackVaultEvent === "function") {
+    trackVaultEvent("vault_play", {
+      track_title: "WHATS HANNIN",
+      track_artist: "Hyph Life"
+    });
+  }
+});
+
+audio.addEventListener("pause", () => {
+  if (!audio.ended && typeof trackVaultEvent === "function") {
+    trackVaultEvent("vault_pause", {
+      track_title: "WHATS HANNIN",
+      current_time: Math.floor(audio.currentTime || 0)
+    });
+  }
+});
+
+audio.addEventListener("timeupdate", () => {
+  if (!audio.duration || !isFinite(audio.duration)) return;
+
+  const percent = (audio.currentTime / audio.duration) * 100;
+
+  if (percent > 25 && !audio._tracked25) {
+    audio._tracked25 = true;
+    trackVaultEvent("vault_progress", {
+      track_title: "WHATS HANNIN",
+      progress: "25%"
+    });
+  }
+
+  if (percent > 50 && !audio._tracked50) {
+    audio._tracked50 = true;
+    trackVaultEvent("vault_progress", {
+      track_title: "WHATS HANNIN",
+      progress: "50%"
+    });
+  }
+
+  if (percent > 75 && !audio._tracked75) {
+    audio._tracked75 = true;
+    trackVaultEvent("vault_progress", {
+      track_title: "WHATS HANNIN",
+      progress: "75%"
+    });
+  }
+});
+  }); 
+  
 });
