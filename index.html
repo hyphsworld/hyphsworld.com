@@ -17,6 +17,16 @@
     gtag('js', new Date());
     gtag('config', 'G-69CN3QYLK1');
   </script>
+  <script>
+  function trackVaultEvent(eventName, details = {}) {
+    if (typeof gtag === 'function') {
+      gtag('event', eventName, {
+        section: 'vault',
+        ...details
+      });
+    }
+  }
+</script>
 </head>
 <body>
   <div class="bg-glow glow-1"></div>
