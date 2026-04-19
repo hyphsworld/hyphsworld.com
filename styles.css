@@ -564,4 +564,148 @@ h2{
   gap:12px;
   align-items:center;
   text-align:left;
-  box
+  box-sizing:border-box;
+} /* MOBILE FIX FOR FULL PLAYER PAGE */
+@media (max-width: 768px) {
+  html, body {
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  .player-page,
+  .player-shell,
+  .player-layout,
+  .player-container,
+  .full-player,
+  main {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .player-hero,
+  .hero,
+  .album-hero,
+  .cover-hero {
+    width: 100%;
+    max-width: 100%;
+    min-height: auto;
+    height: auto;
+    padding: 0;
+    margin: 0;
+  }
+
+  .player-hero img,
+  .hero img,
+  .album-art img,
+  .cover-art img,
+  .player-cover img {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+  }
+
+  .player-content,
+  .player-info,
+  .player-meta,
+  .queue-section,
+  .track-list,
+  .playlist,
+  .music-player {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  h1,
+  .track-title,
+  .player-title {
+    font-size: 2rem !important;
+    line-height: 1.05;
+    word-break: break-word;
+  }
+
+  h2,
+  .queue-title {
+    font-size: 1.8rem !important;
+    line-height: 1.1;
+  }
+
+  p,
+  span,
+  .track-meta,
+  .artist-name,
+  .player-subtitle {
+    font-size: 1rem !important;
+    line-height: 1.35;
+  }
+
+  .player-controls,
+  .controls,
+  .music-controls,
+  .sticky-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .player-controls button,
+  .controls button,
+  .music-controls button,
+  .shuffle-btn,
+  .repeat-btn,
+  .play-btn,
+  .pause-btn,
+  .next-btn,
+  .prev-btn,
+  .mini-btn {
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 0.95rem;
+  }
+
+  input[type="range"],
+  .progress,
+  .progress-bar,
+  .seek-bar {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .queue-item,
+  .track-item,
+  .playlist-item,
+  .home-song {
+    display: block;
+    width: 100%;
+    padding: 10px 0;
+  }
+
+  .queue-item strong,
+  .track-item strong,
+  .playlist-item strong,
+  .home-song strong {
+    display: block;
+    font-size: 1rem;
+    line-height: 1.2;
+  }
+
+  .queue-item span,
+  .track-item span,
+  .playlist-item span,
+  .home-song span {
+    display: block;
+    font-size: 0.95rem;
+    opacity: 0.9;
+  }
+}
