@@ -1,0 +1,554 @@
+:root{
+  --primary:#7A0C0C;
+  --accent:#E53935;
+  --black:#020202;
+  --panel:#0B0B0B;
+  --panel-2:#121212;
+  --white:#ffffff;
+  --muted:#9A9A9A;
+  --line:rgba(255,255,255,.08);
+  --highlight-soft:#F2C2A2;
+  --radius:28px;
+  --shadow:0 24px 60px rgba(0,0,0,.7);
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  font-family:Arial, Helvetica, sans-serif;
+  color:var(--white);
+  background:
+    linear-gradient(rgba(0,0,0,.88), rgba(0,0,0,.96)),
+    url("album-art.jpg") center center / cover no-repeat fixed;
+  overflow-x:hidden;
+  padding-bottom:110px;
+}
+
+img{
+  width:100%;
+  display:block;
+}
+
+a{
+  text-decoration:none;
+  color:inherit;
+}
+
+button,
+input{
+  font:inherit;
+}
+
+.wrap{
+  width:min(1180px, 92vw);
+  margin:auto;
+}
+
+/* background glow */
+.bg-glow{
+  position:fixed;
+  border-radius:999px;
+  filter:blur(90px);
+  pointer-events:none;
+  z-index:0;
+}
+
+.glow-1{
+  width:360px;
+  height:360px;
+  top:-6%;
+  left:-8%;
+  background:rgba(163,18,18,.25);
+}
+
+.glow-2{
+  width:280px;
+  height:280px;
+  top:14%;
+  right:-8%;
+  background:rgba(242,194,162,.12);
+}
+
+/* header */
+.site-header{
+  position:sticky;
+  top:0;
+  z-index:50;
+  backdrop-filter:blur(16px);
+  background:rgba(0,0,0,.82);
+  border-bottom:1px solid var(--line);
+}
+
+.nav{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  padding:16px 0;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.brand-logo{
+  width:56px;
+  height:56px;
+  object-fit:contain;
+  border-radius:14px;
+  background:rgba(255,255,255,.04);
+  padding:4px;
+}
+
+.brand-top{
+  color:var(--muted);
+  font-size:11px;
+  letter-spacing:.28em;
+  text-transform:uppercase;
+}
+
+.brand-main{
+  font-size:28px;
+  font-weight:900;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+
+.nav-links{
+  display:flex;
+  flex-wrap:wrap;
+  gap:16px;
+}
+
+.nav-links a{
+  color:var(--muted);
+  font-size:14px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  transition:.2s;
+}
+
+.nav-links a:hover{
+  color:var(--white);
+}
+
+/* motion bar */
+.motion-bar{
+  overflow:hidden;
+  white-space:nowrap;
+  border-top:1px solid rgba(255,255,255,.05);
+  border-bottom:1px solid rgba(255,255,255,.05);
+  background:rgba(122,12,12,.22);
+}
+
+.motion-track{
+  display:inline-flex;
+  gap:34px;
+  min-width:max-content;
+  padding:10px 0;
+  animation:marquee 28s linear infinite;
+}
+
+.motion-track span{
+  color:var(--highlight-soft);
+  font-size:13px;
+  font-weight:800;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+
+@keyframes marquee{
+  from{transform:translateX(0);}
+  to{transform:translateX(-50%);}
+}
+
+/* generic sections */
+.hero,
+.section{
+  position:relative;
+  z-index:2;
+}
+
+.hero{
+  padding:72px 0 50px;
+}
+
+.section{
+  padding:56px 0;
+}
+
+.hero-grid,
+.feature-grid,
+.card-grid,
+.merch-grid,
+.social-grid{
+  display:grid;
+  gap:24px;
+}
+
+.hero-grid,
+.feature-grid,
+.card-grid,
+.merch-grid{
+  grid-template-columns:1fr 1fr;
+}
+
+.social-grid{
+  grid-template-columns:repeat(3,1fr);
+}
+
+.music-stack,
+.video-stack{
+  display:grid;
+  gap:24px;
+}
+
+.section-head{
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  gap:18px;
+  margin-bottom:24px;
+}
+
+.eyebrow{
+  color:var(--highlight-soft);
+  font-size:12px;
+  letter-spacing:.28em;
+  text-transform:uppercase;
+}
+
+h1{
+  margin:14px 0 12px;
+  line-height:.95;
+  text-transform:uppercase;
+}
+
+.headline-top{
+  display:block;
+  font-size:clamp(32px,5vw,62px);
+}
+
+.headline-mid{
+  display:block;
+  font-size:clamp(38px,6vw,74px);
+}
+
+.headline-bottom{
+  display:block;
+  font-size:clamp(38px,6vw,74px);
+  color:var(--highlight-soft);
+}
+
+h2{
+  font-size:clamp(28px,4vw,44px);
+  text-transform:uppercase;
+}
+
+.hero-quote-main{
+  margin-top:16px;
+  font-size:18px;
+  font-weight:800;
+  letter-spacing:.08em;
+  color:var(--highlight-soft);
+  text-transform:uppercase;
+}
+
+.hero-text,
+.section-copy,
+.form-note{
+  color:var(--muted);
+  line-height:1.8;
+  font-size:16px;
+}
+
+/* buttons */
+.hero-actions,
+.player-actions,
+.merch-actions,
+.mini-links{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-top:24px;
+}
+
+.btn{
+  min-height:56px;
+  padding:0 24px;
+  border-radius:999px;
+  border:1px solid transparent;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:900;
+  letter-spacing:.06em;
+  cursor:pointer;
+  transition:.2s ease;
+}
+
+.btn:hover{
+  transform:translateY(-2px);
+}
+
+.btn-red{
+  color:#fff;
+  background:linear-gradient(180deg,var(--accent) 0%, var(--primary) 100%);
+  box-shadow:0 10px 30px rgba(122,12,12,.45);
+}
+
+.btn-dark{
+  color:#fff;
+  background:rgba(255,255,255,.03);
+  border-color:rgba(255,255,255,.10);
+}
+
+.btn-outline{
+  color:#fff;
+  background:transparent;
+  border-color:rgba(229,57,53,.35);
+}
+
+.pill,
+.mini-btn{
+  padding:10px 14px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.03);
+  color:var(--muted);
+  font-size:13px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+
+/* cards */
+.hero-art-card,
+.feature-card,
+.social-card,
+.merch-card{
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  background:linear-gradient(
+    180deg,
+    rgba(11,11,11,.92) 0%,
+    rgba(18,18,18,.94) 100%
+  );
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  backdrop-filter:blur(8px);
+}
+
+.hero-art{
+  aspect-ratio:1 / 1.05;
+  object-fit:cover;
+}
+
+.feature-card,
+.social-card{
+  padding:22px;
+}
+
+.feature-image{
+  border-radius:20px;
+  aspect-ratio:1 / 1.02;
+  object-fit:cover;
+}
+
+.card-copy h3,
+.feature-copy h3,
+.merch-copy h3{
+  margin:0 0 12px;
+  font-size:28px;
+  text-transform:uppercase;
+}
+
+.top-pad{
+  padding-top:16px;
+}
+
+/* player */
+.music-card audio{
+  display:none;
+}
+
+.progress-box{
+  margin-top:16px;
+  padding:14px;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.03);
+}
+
+#homeProgress{
+  width:100%;
+  accent-color:var(--accent);
+}
+
+.time-row{
+  display:flex;
+  justify-content:space-between;
+  margin-top:8px;
+  color:var(--muted);
+  font-size:13px;
+}
+
+/* merch */
+.merch-card{
+  padding:0;
+}
+
+.merch-image{
+  height:360px;
+  object-fit:cover;
+}
+
+.merch-copy{
+  padding:20px;
+}
+
+.price{
+  margin-top:10px;
+  color:var(--highlight-soft);
+  font-size:24px;
+  font-weight:900;
+}
+
+.merch-note-card{
+  margin-top:24px;
+}
+
+/* socials */
+.social-card strong{
+  display:block;
+  margin-bottom:8px;
+  font-size:18px;
+}
+
+.social-card span{
+  color:var(--muted);
+}
+
+/* quote */
+.hero-quote{
+  margin-top:18px;
+  color:var(--highlight-soft);
+  font-size:20px;
+  font-weight:900;
+}
+
+/* sticky player */
+.sticky-player{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  z-index:60;
+  background:rgba(0,0,0,.92);
+  backdrop-filter:blur(14px);
+  border-top:1px solid rgba(255,255,255,.08);
+}
+
+.sticky-player-inner{
+  min-height:82px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+}
+
+.sticky-track{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.sticky-art{
+  width:50px;
+  height:50px;
+  object-fit:cover;
+  border-radius:12px;
+}
+
+.sticky-track strong{
+  display:block;
+  font-size:15px;
+}
+
+.sticky-track span{
+  color:var(--muted);
+  font-size:13px;
+}
+
+.sticky-controls{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+
+/* mobile */
+@media(max-width:960px){
+
+  .hero-grid,
+  .feature-grid,
+  .card-grid,
+  .merch-grid,
+  .social-grid{
+    grid-template-columns:1fr;
+  }
+
+  .section-head,
+  .nav,
+  .sticky-player-inner{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .brand-main{
+    font-size:24px;
+  }
+
+  .nav-links{
+    gap:12px;
+  }
+
+  .motion-track{
+    animation-duration:22s;
+  }
+
+  .merch-image{
+    height:300px;
+  }
+}
+
+@media(max-width:560px){
+
+  .btn{
+    width:100%;
+  }
+
+  .hero-actions,
+  .player-actions,
+  .merch-actions,
+  .mini-links{
+    flex-direction:column;
+  }
+
+  .sticky-controls{
+    width:100%;
+  }
+
+  .sticky-controls .mini-btn{
+    flex:1;
+    text-align:center;
+  }
+}
