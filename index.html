@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hyph Life | HYPHSWORLD</title>
+  <meta
+    name="description"
+    content="Official HYPHSWORLD website for Hyph Life and AMS WEST. Real music. Real motion. Real legacy."
+  />
+  <link rel="stylesheet" href="styles.css" />
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-69CN3QYLK1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-69CN3QYLK1');
+  </script>
+</head>
+<body>
+  <div class="bg-glow glow-1"></div>
+  <div class="bg-glow glow-2"></div>
+
+  <header class="site-header">
+    <div class="wrap nav">
+      <a href="#top" class="brand">
+        <img src="ams-logo.jpg" alt="AMS WEST logo" class="brand-logo" onerror="this.style.display='none'">
+        <div>
+          <div class="brand-top">AMS WEST PRESENTS</div>
+          <div class="brand-main">HYPHSWORLD</div>
+        </div>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#music">Music</a>
+        <a href="#world">World</a>
+        <a href="#interview">Interview</a>
+        <a href="#story">Story</a>
+        <a href="#shop">Merch</a>
+        <a href="#socials">Socials</a>
+        <a href="vault.html">Vault</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="ticker-wrap" aria-label="HYPHSWORLD ticker">
+    <div class="ticker-track">
+      <span class="ticker-item gold">WELCOME 2 HYPHSWORLD</span>
+      <span class="ticker-item">DO YOU KNOW THE CODE</span>
+      <span class="ticker-item">MUSIC TRIVIA LIVE NOW</span>
+      <span class="ticker-item gold">ENTER THE VAULT IF YOU KNOW</span>
+      <span class="ticker-item">WHAT SONG IS PROD BY CUZ ZAID</span>
+      <span class="ticker-item">WHO IS ON WHAT'S HANNIN</span>
+      <span class="ticker-item gold">WELCOME 2 HYPHSWORLD</span>
+      <span class="ticker-item">DO YOU KNOW THE CODE</span>
+      <span class="ticker-item">MUSIC TRIVIA LIVE NOW</span>
+      <span class="ticker-item gold">ENTER THE VAULT IF YOU KNOW</span>
+      <span class="ticker-item">WHAT SONG IS PROD BY CUZ ZAID</span>
+      <span class="ticker-item">WHO IS ON WHAT'S HANNIN</span>
+    </div>
+  </div>
+
+  <main id="top">
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">RICHMOND, CA • HYPH LIFE • AMS WEST</p>
+
+          <h1>
+            <span class="headline-top">REAL MUSIC.</span>
+            <span class="headline-mid">REAL MOTION.</span>
+            <span class="headline-bottom">REAL LEGACY.</span>
+          </h1>
+
+          <p class="hero-text">
+            HYPHSWORLD is the official home base for the music, the visuals,
+            the story, and the movement behind Hyph Life.
+          </p>
+
+          <div class="hero-actions">
+            <a class="btn btn-gold track-click" data-track-link="hero_stream_now" href="#music">STREAM NOW</a>
+            <a class="btn btn-dark track-click" data-track-link="hero_watch_world" href="#world">WATCH THE WORLD</a>
+            <a class="btn btn-outline track-click" data-track-link="hero_vault" href="vault.html">OPEN VAULT</a>
+          </div>
+
+          <div class="hero-stamp">
+            <span>HYPHSWORLD 5</span>
+            <span>AMS WEST</span>
+            <span>PRESSURE MODE</span>
+          </div>
+        </div>
+
+        <div class="hero-art-shell">
+          <div class="hero-art-card">
+            <img src="album-art.jpg" alt="HYPHSWORLD 5 artwork" class="hero-art">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="music" class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">The Music</p>
+            <h2>TRIVIA. CODES. FULL PLAYER.</h2>
+          </div>
+          <p class="section-copy">We killed the homepage player and turned this into a cleaner HYPHSWORLD entry point.</p>
+        </div>
+
+        <div class="feature-card music-gateway-card">
+          <div class="music-gateway-grid">
+            <div class="music-gateway-art">
+              <img src="album-art.jpg" alt="HYPHSWORLD cover" class="feature-image">
+            </div>
+
+            <div class="music-gateway-copy">
+              <p class="eyebrow">Now Entering</p>
+              <h3>DO YOU KNOW THE CODE?</h3>
+              <p class="section-copy">
+                The homepage is now built for motion, discovery, and curiosity.
+                Test your knowledge, crack the code, then jump into the full player.
+              </p>
+
+              <div class="music-trivia">
+                <div class="music-trivia-head">
+                  <p class="eyebrow">Trivia Mode</p>
+                  <h4 class="music-trivia-title">WELCOME 2 HYPHSWORLD</h4>
+                </div>
+
+                <p class="music-trivia-question" id="triviaQuestion">
+                  Music trivia question loading...
+                </p>
+
+                <form class="trivia-form" id="triviaForm">
+                  <input
+                    id="triviaInput"
+                    class="trivia-input"
+                    type="text"
+                    placeholder="ENTER CODE OR ANSWER"
+                    autocomplete="off"
+                  />
+                  <button id="triviaSubmit" class="btn btn-gold" type="submit">UNLOCK</button>
+                </form>
+
+                <div class="trivia-feedback" id="triviaFeedback" aria-live="polite"></div>
+
+                <div class="trivia-help">
+                  <span class="trivia-pill">HINT: SONG TITLES</span>
+                  <span class="trivia-pill">HINT: PRODUCERS</span>
+                  <span class="trivia-pill">HINT: FEATURES</span>
+                  <span class="trivia-pill">HINT: HYPHSWORLD</span>
+                </div>
+              </div>
+
+              <div class="music-code-grid">
+                <div class="music-code-card">
+                  <p class="eyebrow">Code Lane</p>
+                  <h4>KNOWN CODES</h4>
+                  <p class="section-copy">
+                    Start simple and build from there. This can expand later into vault drops,
+                    hidden pages, snippets, exclusives, and fan rewards.
+                  </p>
+                </div>
+
+                <div class="music-code-card">
+                  <p class="eyebrow">What’s Next</p>
+                  <h4>FULL PLAYER ONLY</h4>
+                  <p class="section-copy">
+                    All direct playback now lives on the dedicated player page so the homepage
+                    stays cleaner and more premium.
+                  </p>
+                </div>
+              </div>
+
+              <div class="hero-actions music-actions">
+                <a class="btn btn-gold track-click" data-track-link="music_full_player" href="app-player.html">OPEN FULL PLAYER</a>
+                <a class="btn btn-dark track-click" data-track-link="music_vault" href="vault.html">OPEN VAULT</a>
+                <a class="btn btn-outline track-click" data-track-link="music_story_jump" href="#story">THE STORY</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="world" class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">The World</p>
+            <h2>WATCH THE 01 SHOW</h2>
+          </div>
+          <p class="section-copy">Animation, universe-building, pressure, and pure motion.</p>
+        </div>
+
+        <div class="card-grid">
+          <div class="feature-card tall-card">
+            <div class="card-copy">
+              <p class="eyebrow">The 01 Show</p>
+              <h3>THE UNIVERSE IS LIVE</h3>
+              <p class="section-copy">
+                Step into the world behind the records. Characters, stories, motion, and style.
+              </p>
+              <a
+                class="btn btn-gold track-click"
+                data-track-link="watch_01_show"
+                href="https://youtube.com/@the01showtv?si=ZzIx6jWoJQVdXt_8"
+                target="_blank"
+                rel="noreferrer"
+              >
+                WATCH THE 01 SHOW
+              </a>
+            </div>
+          </div>
+
+          <div class="feature-card tall-card">
+            <div class="card-copy">
+              <p class="eyebrow">AMS WEST TV</p>
+              <h3>MORE MOTION</h3>
+              <p class="section-copy">
+                More visuals. More drops. More direct access into the world and the rollout.
+              </p>
+              <a
+                class="btn btn-dark track-click"
+                data-track-link="watch_amswesttv"
+                href="https://youtube.com/@amswesttv?si=UQyRcQh6mSuTqt5b"
+                target="_blank"
+                rel="noreferrer"
+              >
+                WATCH AMS WEST TV
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="interview" class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">The Interview</p>
+            <h2>WATCH THE PODCAST</h2>
+          </div>
+          <p class="section-copy">Voice, story, and personality all in one place.</p>
+        </div>
+
+        <div class="feature-card interview-card">
+          <div class="card-copy">
+            <p class="eyebrow">Featured Conversation</p>
+            <h3>REAL TALK. REAL ENERGY.</h3>
+            <p class="section-copy">
+              Sit with the story, the voice, and the bigger picture behind the music.
+            </p>
+            <a
+              class="btn btn-gold track-click"
+              data-track-link="watch_podcast"
+              href="https://youtu.be/4jvPUvhXnBA?si=zF4gPE8a1dkuTiqy"
+              target="_blank"
+              rel="noreferrer"
+            >
+              WATCH PODCAST
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="story" class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">The Story</p>
+            <h2>MORE THAN MUSIC</h2>
+          </div>
+          <p class="section-copy">This site carries more than records.</p>
+        </div>
+
+        <div class="card-grid">
+          <div class="feature-card">
+            <div class="card-copy">
+              <p class="eyebrow">Richmond Built</p>
+              <h3>REAL PRESSURE</h3>
+              <p class="section-copy">
+                Hyph Life is built from Richmond, California — real motion, real loyalty,
+                and real relationships that shaped the lane.
+              </p>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="card-copy">
+              <p class="eyebrow">Hero Energy</p>
+              <h3>REAL CHARACTER</h3>
+              <p class="section-copy">
+                In a life-or-death moment, Hyph Life helped save a man’s life.
+                That kind of leadership lives deeper than music.
+              </p>
+              <p class="hero-quote">“I’m not chasing the game… I became it.”</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="shop" class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">The Merch</p>
+            <h2>HYPHSWORLD STORE</h2>
+          </div>
+          <p class="section-copy">Official gear. Direct orders. Real support.</p>
+        </div>
+
+        <div class="merch-grid">
+          <div class="merch-card">
+            <img src="black-hoodie.jpg" alt="Black Hoodie" onerror="this.src='album-art.jpg'">
+            <h3>BLACK HOODIE</h3>
+            <p class="price">$39.99</p>
+            <div class="merch-actions">
+              <a href="mailto:tone@amsenterprisecorp.com?subject=Black Hoodie Order" class="btn btn-dark">ORDER</a>
+              <a href="https://www.paypal.me/1Hyphsworld" target="_blank" rel="noreferrer" class="btn btn-gold">PAYPAL</a>
+              <a href="https://cash.app/$TonioOsborne" target="_blank" rel="noreferrer" class="btn btn-outline">CASH APP</a>
+            </div>
+          </div>
+
+          <div class="merch-card">
+            <img src="blue-tee.jpg" alt="Blue Tee" onerror="this.src='album-art.jpg'">
+            <h3>BLUE TEE</h3>
+            <p class="price">$14.99</p>
+            <div class="merch-actions">
+              <a href="mailto:tone@amsenterprisecorp.com?subject=Blue Tee Order" class="btn btn-dark">ORDER</a>
+              <a href="https://www.paypal.me/1Hyphsworld" target="_blank" rel="noreferrer" class="btn btn-gold">PAYPAL</a>
+              <a href="https://cash.app/$TonioOsborne" target="_blank" rel="noreferrer" class="btn btn-outline">CASH APP</a>
+            </div>
+          </div>
+
+          <div class="merch-card">
+            <img src="pink-tee.jpg" alt="Pink Tee" onerror="this.src='album-art.jpg'">
+            <h3>PINK TEE</h3>
+            <p class="price">$14.99</p>
+            <div class="merch-actions">
+              <a href="mailto:tone@amsenterprisecorp.com?subject=Pink Tee Order" class="btn btn-dark">ORDER</a>
+              <a href="https://www.paypal.me/1Hyphsworld" target="_blank" rel="noreferrer" class="btn btn-gold">PAYPAL</a>
+              <a href="https://cash.app/$TonioOsborne" target="_blank" rel="noreferrer" class="btn btn-outline">CASH APP</a>
+            </div>
+          </div>
+
+          <div class="merch-card">
+            <img src="red-tee.jpg" alt="Red Tee" onerror="this.src='album-art.jpg'">
+            <h3>RED TEE</h3>
+            <p class="price">$14.99</p>
+            <div class="merch-actions">
+              <a href="mailto:tone@amsenterprisecorp.com?subject=Red Tee Order" class="btn btn-dark">ORDER</a>
+              <a href="https://www.paypal.me/1Hyphsworld" target="_blank" rel="noreferrer" class="btn btn-gold">PAYPAL</a>
+              <a href="https://cash.app/$TonioOsborne" target="_blank" rel="noreferrer" class="btn btn-outline">CASH APP</a>
+            </div>
+          </div>
+        </div>
+
+        <p class="merch-note">
+          Other colors available for shirts and hoodies.<br>
+          Contact Tone direct for custom orders.
+        </p>
+      </div>
+    </section>
+
+    <section id="socials" class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Stay Connected</p>
+            <h2>FOLLOW THE WORLD</h2>
+          </div>
+          <p class="section-copy">Keep the traffic moving through HYPHSWORLD.</p>
+        </div>
+
+        <div class="social-grid">
+          <a class="social-card track-click" data-track-link="instagram" href="https://www.instagram.com/hyphsworld" target="_blank" rel="noreferrer">
+            <strong>INSTAGRAM</strong><span>@hyphsworld</span>
+          </a>
+          <a class="social-card track-click" data-track-link="tiktok" href="https://www.tiktok.com/@hyphsworld1" target="_blank" rel="noreferrer">
+            <strong>TIKTOK</strong><span>@hyphsworld1</span>
+          </a>
+          <a class="social-card track-click" data-track-link="x" href="https://x.com/hyphsworld?s=21" target="_blank" rel="noreferrer">
+            <strong>X</strong><span>@hyphsworld</span>
+          </a>
+          <a class="social-card track-click" data-track-link="the01showtv" href="https://youtube.com/@the01showtv?si=ZzIx6jWoJQVdXt_8" target="_blank" rel="noreferrer">
+            <strong>THE 01 SHOW TV</strong><span>YouTube Channel</span>
+          </a>
+          <a class="social-card track-click" data-track-link="amswesttv" href="https://youtube.com/@amswesttv?si=UQyRcQh6mSuTqt5b" target="_blank" rel="noreferrer">
+            <strong>AMS WEST TV</strong><span>YouTube Channel</span>
+          </a>
+          <a class="social-card track-click" data-track-link="amswest_ig" href="https://www.instagram.com/amswestenterprise" target="_blank" rel="noreferrer">
+            <strong>AMS WEST</strong><span>@amswestenterprise</span>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="index-player.js"></script>
+</body>
+</html>
