@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>THE VAULT | HYPHSWORLD</title>
+  <meta
+    name="description"
+    content="Enter THE VAULT. Private music access, unlock codes, rare drops, exclusive videos, and HYPHSWORLD content."
+  />
+  <meta name="robots" content="index,follow" />
+  <link rel="canonical" href="https://hyphsworld.com/vault.html" />
+  <link rel="stylesheet" href="vault.css" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="THE VAULT | HYPHSWORLD" />
+  <meta
+    property="og:description"
+    content="Enter THE VAULT. Private music access, unlock codes, rare drops, exclusive videos, and HYPHSWORLD content."
+  />
+  <meta property="og:url" content="https://hyphsworld.com/vault.html" />
+  <meta property="og:site_name" content="HYPHSWORLD" />
+  <meta property="og:image" content="https://hyphsworld.com/share-preview.jpg" />
+  <meta property="og:image:secure_url" content="https://hyphsworld.com/share-preview.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="THE VAULT by HYPHSWORLD" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="THE VAULT | HYPHSWORLD" />
+  <meta
+    name="twitter:description"
+    content="Enter THE VAULT. Private music access, unlock codes, rare drops, exclusive videos, and HYPHSWORLD content."
+  />
+  <meta name="twitter:image" content="https://hyphsworld.com/share-preview.jpg" />
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CT7CWHCHYC"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-CT7CWHCHYC');
+  </script>
+</head>
+<body>
+  <div class="vault-bg vault-bg-1"></div>
+  <div class="vault-bg vault-bg-2"></div>
+
+  <header class="vault-topbar">
+    <div class="vault-shell vault-topbar-inner">
+      <a href="index.html" class="vault-brand">
+        <span class="vault-brand-top">HYPHSWORLD ACCESS</span>
+        <span class="vault-brand-main">THE VAULT</span>
+      </a>
+
+      <nav class="vault-nav">
+        <a href="index.html">Home</a>
+        <a href="app-player.html">Full Player</a>
+        <a href="index.html#shop">Merch</a>
+        <a href="#vaultControlPanel" class="vault-nav-cta">Vault</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="vault-ticker-wrap" aria-label="THE VAULT ticker">
+    <div class="vault-ticker-track">
+      <span>WELCOME 2 HYPHSWORLD</span>
+      <span>TRIVIA IS HERE</span>
+      <span>ITS 2 NAMES IN THE 01 WORLD</span>
+      <span>GOOD LUCK</span>
+      <span>WELCOME 2 HYPHSWORLD</span>
+      <span>TRIVIA IS HERE</span>
+      <span>ITS 2 NAMES IN THE 01 WORLD</span>
+      <span>GOOD LUCK</span>
+      <span>WELCOME 2 HYPHSWORLD</span>
+      <span>TRIVIA IS HERE</span>
+      <span>ITS 2 NAMES IN THE 01 WORLD</span>
+      <span>GOOD LUCK</span>
+    </div>
+  </div>
+
+  <main class="vault-shell">
+    <section class="vault-hero gate-panel" id="gatePanel">
+      <div class="vault-hero-grid">
+        <div class="vault-hero-copy">
+          <p class="eyebrow">Restricted HYPHSWORLD Access</p>
+          <h1>ENTER THE VAULT</h1>
+          <p class="copy">
+            Trivia mode is live. There are <strong>2 names in the 01 world</strong>.
+            One opens main access. One opens elite access.
+          </p>
+
+          <div class="code-hint-box">
+            <p class="hint-title">Current Vault Rules</p>
+            <p class="hint-copy">
+              Main access opens the entry room.<br>
+              Elite access opens the deeper HYPHSWORLD 5 room.<br>
+              Use what you know.
+            </p>
+          </div>
+
+          <div class="vault-form">
+            <input id="vaultPassword" type="password" placeholder="ENTER ACCESS CODE" autocomplete="off" />
+            <button id="unlockBtn" type="button">UNLOCK</button>
+          </div>
+
+          <p id="vaultMessage" class="message" aria-live="polite"></p>
+
+          <div class="vault-links">
+            <a href="index.html">← Back to Site</a>
+          </div>
+        </div>
+
+        <div class="vault-hero-art">
+          <div class="vault-hero-card">
+            <img src="youngin-remix.jpg" alt="YOUNGIN (REMIX) artwork" class="vault-image hero-image" onerror="this.src='album-art.jpg'">
+            <div class="hero-art-copy">
+              <p class="eyebrow">Featured Entry</p>
+              <h2>YOUNGIN (REMIX)</h2>
+              <p class="copy">
+                The current active entry still lives inside THE VAULT.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="vault-panel vault-hidden" id="vaultApp">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Access Granted</p>
+          <h1>THE VAULT</h1>
+        </div>
+        <div class="status-badge" id="vaultAccessBadge">MAIN ACCESS</div>
+      </div>
+
+      <div class="vault-control-panel" id="vaultControlPanel">
+        <div class="vault-control-head">
+          <div>
+            <p class="eyebrow">Vault Navigation</p>
+            <h2>CONTROL PANEL</h2>
+          </div>
+          <p class="control-copy">Move through levels without going back to the lobby.</p>
+        </div>
+
+        <div class="vault-level-nav">
+          <button class="vault-level-btn active" id="level1Btn" type="button">LEVEL 1</button>
+          <button class="vault-level-btn" id="level2Btn" type="button">LEVEL 2</button>
+          <a href="#vaultControlPanel" class="vault-level-btn vault-level-link active-link">VAULT</a>
+          <button class="vault-level-btn vault-level-btn-dark" id="resetVaultBtn" type="button">LOCK VAULT</button>
+        </div>
+
+        <div class="vault-status-strip">
+          <div class="vault-status-card">
+            <span class="vault-status-label">ACCESS</span>
+            <strong id="vaultStatusAccess">MAIN</strong>
+          </div>
+          <div class="vault-status-card">
+            <span class="vault-status-label">CURRENT ROOM</span>
+            <strong id="vaultStatusRoom">LEVEL 1</strong>
+          </div>
+          <div class="vault-status-card">
+            <span class="vault-status-label">ACTIVE ENTRY</span>
+            <strong>YOUNGIN (REMIX)</strong>
+          </div>
+          <div class="vault-status-card">
+            <span class="vault-status-label">NEXT MOVE</span>
+            <strong id="vaultStatusMove">GO TO LEVEL 2</strong>
+          </div>
+        </div>
+      </div>
+
+      <section id="level1Panel">
+        <div class="project-room-header">
+          <img src="quarantine-mixtape.jpg" alt="The Quarantine Mixtape cover" class="project-room-cover" onerror="this.src='album-art.jpg'">
+          <div class="project-room-copy">
+            <p class="eyebrow">Level 1 Project Room</p>
+            <h2>THE QUARANTINE MIXTAPE</h2>
+            <p class="copy">
+              This room carries the quarantine-era project energy, plus extra Vault cuts and the work/fishing video lane.
+            </p>
+          </div>
+        </div>
+
+        <div class="vault-grid">
+          <div class="vault-card access-panel-card">
+            <p class="eyebrow">Main Code</p>
+            <h3>NIKKI MAE</h3>
+            <p>
+              This opens the main room and keeps you moving through THE VAULT without another code entry.
+            </p>
+          </div>
+
+          <div class="vault-card access-panel-card spotlight-card">
+            <p class="eyebrow">Level 1 Status</p>
+            <h3>PROJECT ROOM ACTIVE</h3>
+            <p>
+              Quarantine visuals, quarantine records, and the Level 1 video room all live here.
+            </p>
+          </div>
+        </div>
+
+        <div class="vault-section">
+          <p class="eyebrow">Level 1 Project</p>
+          <h2>QUARANTINE MIXTAPE</h2>
+
+          <div class="vault-grid vault-song-grid">
+            <div class="vault-card song-card">
+              <img src="quarantine-mixtape.jpg" alt="Jay Z Shit artwork" class="vault-image" onerror="this.src='album-art.jpg'">
+              <h3>JAY Z SHIT</h3>
+              <p>Champ Young x Hyph Life</p>
+              <audio controls class="vault-audio">
+                <source src="jay-z-shit.mp3" type="audio/mpeg">
+              </audio>
+            </div>
+
+            <div class="vault-card song-card">
+              <img src="quarantine-mixtape.jpg" alt="I'm A Beast artwork" class="vault-image" onerror="this.src='album-art.jpg'">
+              <h3>I’M A BEAST</h3>
+              <p>Champ Young x Hyph Life</p>
+              <audio controls class="vault-audio">
+                <source src="im-a-beast.mp3" type="audio/mpeg">
+              </audio>
+            </div>
+
+            <div class="vault-card song-card">
+              <img src="quarantine-mixtape.jpg" alt="Share My Money artwork" class="vault-image" onerror="this.src='album-art.jpg'">
+              <h3>SHARE MY MONEY</h3>
+              <p>Hyph Life, Nitti Bo, Skweaze</p>
+              <audio controls class="vault-audio">
+                <source src="share-my-money.mp3" type="audio/mpeg">
+              </audio>
+            </div>
+
+            <div class="vault-card song-card">
+              <img src="quarantine-mixtape.jpg" alt="50Cent Shit artwork" class="vault-image" onerror="this.src='album-art.jpg'">
+              <h3>50CENT SHIT</h3>
+              <p>Champ Young x Hyph Life</p>
+              <audio controls class="vault-audio">
+                <source src="50-cent-shit.mp3" type="audio/mpeg">
+              </audio>
+            </div>
+          </div>
+        </div>
+
+        <div class="vault-section">
+          <p class="eyebrow">Additional Vault Cuts</p>
+          <h2>LEVEL 1 BONUS ROTATION</h2>
+
+          <div class="vault-grid vault-song-grid">
+            <div class="vault-card song-card">
+              <img src="quarantine-mixtape.jpg" alt="Bananaz artwork" class="vault-image" onerror="this.src='album-art.jpg'">
+              <h3>BANANAZ</h3>
+              <p>Hyph Life</p>
+              <audio controls class="vault-audio">
+                <source src="bananaz.mp3" type="audio/mpeg">
+              </audio>
+            </div>
+
+            <div class="vault-card song-card">
+              <img src="quarantine-mixtape.jpg" alt="Still Ballin artwork" class="vault-image" onerror="this.src='album-art.jpg'">
+              <h3>STILL BALLIN</h3>
+              <p>Champ Young x Hyph Life</p>
+              <audio controls class="vault-audio">
+                <source src="still-ballin.mp3" type="audio/mpeg">
+              </audio>
+            </div>
+
+            <div class="vault-card song-card">
+              <img src="quarantine-mixtape.jpg" alt="Da Vault Freestyle artwork" class="vault-image" onerror="this.src='album-art.jpg'">
+              <h3>DA VAULT FREESTYLE</h3>
+              <p>Hyph Life</p>
+              <audio controls class="vault-audio">
+                <source src="da-vault-freestyle.mp3" type="audio/mpeg">
+              </audio>
+            </div>
+          </div>
+        </div>
+
+        <div class="vault-section">
+          <p class="eyebrow">Level 1 Video Room</p>
+          <h2>FISHING / WORK VIDEOS</h2>
+
+          <div class="vault-grid vault-video-grid">
+            <div class="vault-card video-card">
+              <h3>DELTA WORK</h3>
+              <video controls playsinline preload="metadata" class="vault-video">
+                <source src="delta-work.mp4" type="video/mp4">
+              </video>
+            </div>
+
+            <div class="vault-card video-card">
+              <h3>BANK BANK</h3>
+              <video controls playsinline preload="metadata" class="vault-video">
+                <source src="bank-bank.mp4" type="video/mp4">
+              </video>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="level2Panel" class="vault-hidden">
+        <div class="project-room-header">
+          <img src="album-art.jpg" alt="HYPHSWORLD 5 cover" class="project-room-cover">
+          <div class="project-room-copy">
+            <p class="eyebrow">Level 2 Elite Room</p>
+            <h2>HYPHSWORLD 5</h2>
+            <p class="copy">
+              Elite access opens the premium HYPHSWORLD 5 room where the project lives together with its video lane.
+            </p>
+          </div>
+        </div>
+
+        <div class="elite-banner">
+          <strong>ELITE ACCESS ACTIVE</strong>
+          <span>DUCKSAUCE opened the deeper room.</span>
+        </div>
+
+        <div class="vault-grid">
+          <div class="vault-card access-panel-card">
+            <p class="eyebrow">Elite Code</p>
+            <h3>DUCKSAUCE</h3>
+            <p>
+              This unlocks the deeper HYPHSWORLD 5 room and keeps it open while you move around inside THE VAULT.
+            </p>
+          </div>
+
+          <div class="vault-card access-panel-card spotlight-card">
+            <p class="eyebrow">Level 2 Status</p>
+            <h3>HYPHSWORLD 5 LIVE</h3>
+            <p>
+              MULA, WHAT’S HANNIN, WITH ME, BOUT YOU, and NO TRACE SNIP now live together in the elite room.
+            </p>
+          </div>
+        </div>
+
+        <div class="vault-section">
+          <p class="eyebrow">Level 2 Project</p>
+          <h2>HYPHSWORLD 5</h2>
+
+          <div class="vault-grid vault-song-grid">
+            <div class="vault-card song-card">
+              <img src="album-art.jpg" alt="Mula artwork" class="vault-image">
+              <h3>MULA</h3>
+              <p>Hyph Life x Kili631 — prod by Cuz Zaid</p>
+              <audio controls class="vault-audio">
+                <source src="mula.mp3" type="audio/mpeg">
+              </audio>
+            </div>
+
+            <div class="vault-card song-card">
+              <img src="album-art.jpg" alt="What's Hannin artwork" class="vault-image">
+              <h3>WHAT’S HANNIN</h3>
+              <p>Hyph Life ft 3D The Capo, Thali</p>
+              <audio controls class="vault-audio">
+                <source src="whats-hannin.mp3" type="audio/mpeg">
+              </audio>
+            </div>
+
+            <div class="vault-card song-card">
+              <img src="album-art.jpg" alt="With Me artwork" class="vault-image">
+              <h3>WITH ME</h3>
+              <p>Hyph Life</p>
+              <audio controls class="vault-audio">
+                <source src="with-me.mp3" type="audio/mpeg">
+              </audio>
+            </div>
+
+            <div class="vault-card song-card">
+              <img src="album-art.jpg" alt="Bout You artwork" class="vault-image">
+              <h3>BOUT YOU</h3>
+              <p>Hyph Life</p>
+              <audio controls class="vault-audio">
+                <source src="bout-you.mp3" type="audio/mpeg">
+              </audio>
+            </div>
+
+            <div class="vault-card song-card">
+              <img src="album-art.jpg" alt="No Trace Snip artwork" class="vault-image">
+              <h3>NO TRACE SNIP</h3>
+              <p>Hyph Life</p>
+              <audio controls class="vault-audio">
+                <source src="no-trace-snip.mp3" type="audio/mpeg">
+              </audio>
+            </div>
+          </div>
+        </div>
+
+        <div class="vault-section">
+          <p class="eyebrow">Level 2 Video Room</p>
+          <h2>HYPHSWORLD 5 VIDEOS</h2>
+
+          <div class="vault-grid vault-video-grid">
+            <div class="vault-card video-card">
+              <h3>01 SHOW TEASER</h3>
+              <video controls playsinline preload="metadata" class="vault-video">
+                <source src="01-show-teaser.mp4" type="video/mp4">
+              </video>
+            </div>
+
+            <div class="vault-card">
+              <h3>ROOM STATUS</h3>
+              <p>
+                This lane is ready for more HYPHSWORLD 5 visuals, performance clips, and future elite-only videos.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="vault-links">
+        <a href="index.html">← Back to Site</a>
+      </div>
+    </section>
+  </main>
+
+  <script src="vault.js"></script>
+</body>
+</html>
