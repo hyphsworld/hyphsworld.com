@@ -1,0 +1,26 @@
+:root{
+  --gold:#c9a34a;
+  --gold-light:#f1d28a;
+  --black:#050505;
+  --panel:#0d0d0d;
+  --panel-2:#121212;
+  --white:#ffffff;
+  --muted:#bdbdbd;
+  --line:rgba(255,255,255,.08);
+  --radius:28px;
+  --shadow:0 24px 60px rgba(0,0,0,.45);
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+
+body{
+  margin:0;
+  color:var(--white);
+  font-family:Arial, Helvetica, sans-serif;
+  background:
+    linear-gradient(rgba(0,0,0,.78), rgba(0,0,0,.90)),
+    url("album-art.jpg") center/cover no-repeat fixed;
+  overflow-x:hidden;
+  padding-bottom:110px;
+  position:
