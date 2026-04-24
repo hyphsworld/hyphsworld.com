@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vault Access Pad | HYPHSWORLD</title>
+  <meta name="description" content="Enter the HYPHSWORLD Vault access code." />
+  <link rel="stylesheet" href="vault-gate.css" />
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-69CN3QYLK1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-69CN3QYLK1');
+  </script>
+</head>
+<body>
+
+<div class="vault-bg"></div>
+
+<main class="gate-shell">
+  <section class="gate-card" id="gateCard">
+
+    <a href="index.html" class="back-link">← Back to HYPHSWORLD</a>
+
+    <div class="brand-row">
+      <div>
+        <p>AMS WEST PRESENTS</p>
+        <h1>VAULT ACCESS</h1>
+      </div>
+    </div>
+
+    <div class="vault-lock">
+      <span class="lock-light"></span>
+      <strong>DO YOU KNOW THE CODE?</strong>
+    </div>
+
+    <p class="gate-copy">
+      Enter the code to unlock the HYPHSWORLD Vault.
+    </p>
+
+    <div class="code-display" id="codeDisplay">
+      <span></span><span></span><span></span>
+      <span></span><span></span><span></span>
+    </div>
+
+    <div class="keypad">
+      <button data-key="1">1</button>
+      <button data-key="2">2</button>
+      <button data-key="3">3</button>
+
+      <button data-key="4">4</button>
+      <button data-key="5">5</button>
+      <button data-key="6">6</button>
+
+      <button data-key="7">7</button>
+      <button data-key="8">8</button>
+      <button data-key="9">9</button>
+
+      <button data-key="CLEAR">CLR</button>
+      <button data-key="0">0</button>
+      <button data-key="BACK">⌫</button>
+    </div>
+
+    <input
+      id="wordCodeInput"
+      type="text"
+      placeholder="Or type: HYPH / DUCK / AMS"
+      autocomplete="off"
+    />
+
+    <button id="unlockBtn" class="unlock-btn">
+      UNLOCK VAULT
+    </button>
+
+    <p id="gateMessage" class="gate-message">
+      Access pad online.
+    </p>
+
+  </section>
+</main>
+
+<script src="vault-gate.js"></script>
+</body>
+</html>
