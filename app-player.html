@@ -1,0 +1,15 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HYPHSWORLD Player</title>
+<meta name="description" content="Full HYPHSWORLD streaming player for Hyph Life and AMS WEST.">
+<link rel="stylesheet" href="app-player.css">
+<link rel="stylesheet" href="duck-helper.css">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-69CN3QYLK1"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-69CN3QYLK1');
+</script>
+</head><body><main class="app-shell"><section class="app-hero"><div class="topbar"><a class="ghost-btn" href="index.html">← Back</a><div class="brand">HYPHSWORLD PLAYER</div><a class="ghost-btn" href="vault.html">Vault</a></div><div class="hero-grid"><div class="cover-wrap"><img id="coverArt" src="album-art.jpg" alt="HYPHSWORLD 5 cover"></div><div class="player-side"><p class="eyebrow">NOW PLAYING</p><h1 id="trackTitle">WHAT’S HANNIN</h1><p id="trackMeta" class="meta">Hyph Life ft 3D The Capo, Thali — prod by Cuz Zaid</p><div class="progress-card"><input id="progress" type="range" min="0" max="100" value="0" step="0.1"><div class="time-row"><span id="currentTime">0:00</span><span id="duration">0:00</span></div></div><div class="controls"><button id="prevBtn" class="control-btn" type="button">⏮</button><button id="playBtn" class="control-btn play-btn" type="button">▶</button><button id="nextBtn" class="control-btn" type="button">⏭</button></div><div class="volume-card"><label for="volume">Volume</label><input id="volume" type="range" min="0" max="1" step="0.01" value="1"></div></div></div></section><section class="queue-section"><div class="queue-head"><h2>Queue</h2><span>4 records loaded</span></div><div id="playlist" class="playlist"><button class="track-item active" data-index="0" type="button"><span class="track-num">01</span><span class="track-copy"><strong>WHAT’S HANNIN</strong><small>Hyph Life ft 3D The Capo, Thali — prod by Cuz Zaid</small></span></button><button class="track-item" data-index="1" type="button"><span class="track-num">02</span><span class="track-copy"><strong>WITH ME</strong><small>Hyph Life — prod K.M.T.</small></span></button><button class="track-item" data-index="2" type="button"><span class="track-num">03</span><span class="track-copy"><strong>BOUT YOU</strong><small>Hyph Life</small></span></button><button class="track-item" data-index="3" type="button"><span class="track-num">04</span><span class="track-copy"><strong>NO TRACE SNIP</strong><small>Hyph Life — prod by Cuz Zaid</small></span></button></div></section></main><audio id="audio"></audio><div id="duck-helper"></div><script src="duck-helper.js"></script><script src="app-player.js"></script></body></html>
