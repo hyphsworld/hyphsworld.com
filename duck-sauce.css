@@ -1,0 +1,226 @@
+:root{
+  --duck-gold:#C9A34A;
+  --duck-peach:#F2C2A2;
+  --duck-black:#050505;
+  --duck-panel:#0d0d0d;
+  --duck-muted:#a8a8a8;
+}
+
+.duck-sauce-launcher{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:9999;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  border:1px solid rgba(201,163,74,.35);
+  background:linear-gradient(180deg, rgba(13,13,13,.96), rgba(0,0,0,.96));
+  color:#fff;
+  border-radius:999px;
+  padding:10px 14px 10px 10px;
+  box-shadow:0 18px 42px rgba(0,0,0,.55), 0 0 24px rgba(201,163,74,.14);
+  cursor:pointer;
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+}
+
+.duck-sauce-orb{
+  width:46px;
+  height:46px;
+  border-radius:999px;
+  display:grid;
+  place-items:center;
+  background:
+    radial-gradient(circle at 35% 25%, rgba(242,194,162,.95), rgba(201,163,74,.55) 40%, rgba(122,12,12,.16) 75%),
+    rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow:inset 0 0 18px rgba(255,255,255,.12);
+  font-size:24px;
+}
+
+.duck-sauce-launcher-text{
+  display:flex;
+  flex-direction:column;
+  line-height:1.05;
+  text-align:left;
+}
+
+.duck-sauce-launcher-text strong{
+  font-size:12px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+}
+
+.duck-sauce-launcher-text span{
+  color:var(--duck-peach);
+  font-size:11px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  margin-top:4px;
+}
+
+.duck-sauce-panel{
+  position:fixed;
+  right:18px;
+  bottom:86px;
+  z-index:9998;
+  width:min(360px, calc(100vw - 36px));
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:28px;
+  background:
+    radial-gradient(circle at top right, rgba(201,163,74,.16), transparent 35%),
+    linear-gradient(180deg, rgba(13,13,13,.98), rgba(0,0,0,.98));
+  color:#fff;
+  box-shadow:0 24px 70px rgba(0,0,0,.70);
+  overflow:hidden;
+  transform:translateY(14px);
+  opacity:0;
+  pointer-events:none;
+  transition:.22s ease;
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+}
+
+.duck-sauce-panel.is-open{
+  transform:translateY(0);
+  opacity:1;
+  pointer-events:auto;
+}
+
+.duck-sauce-head{
+  display:flex;
+  justify-content:space-between;
+  gap:16px;
+  padding:20px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.duck-sauce-kicker{
+  display:block;
+  color:var(--duck-peach);
+  font-size:11px;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  margin-bottom:6px;
+}
+
+.duck-sauce-title{
+  margin:0;
+  font-size:26px;
+  line-height:.95;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+.duck-sauce-close{
+  width:38px;
+  height:38px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.04);
+  color:#fff;
+  cursor:pointer;
+  font-size:18px;
+}
+
+.duck-sauce-body{
+  padding:20px;
+}
+
+.duck-sauce-line{
+  color:var(--duck-muted);
+  line-height:1.65;
+  margin:0 0 16px;
+}
+
+.duck-sauce-points{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding:14px;
+  border-radius:18px;
+  border:1px solid rgba(201,163,74,.18);
+  background:rgba(201,163,74,.07);
+  margin-bottom:16px;
+}
+
+.duck-sauce-points span{
+  color:var(--duck-peach);
+  font-size:11px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+}
+
+.duck-sauce-points strong{
+  font-size:22px;
+}
+
+.duck-sauce-actions{
+  display:grid;
+  gap:10px;
+}
+
+.duck-sauce-actions a,
+.duck-sauce-actions button{
+  min-height:46px;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:0 16px;
+  text-decoration:none;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.10em;
+  text-transform:uppercase;
+  cursor:pointer;
+}
+
+.duck-sauce-primary{
+  color:#111;
+  border:none;
+  background:linear-gradient(180deg, #F2D08B 0%, var(--duck-gold) 100%);
+}
+
+.duck-sauce-secondary{
+  color:#fff;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.04);
+}
+
+.duck-sauce-note{
+  margin:14px 0 0;
+  color:var(--duck-muted);
+  font-size:12px;
+  line-height:1.55;
+}
+
+@media(max-width:560px){
+  .duck-sauce-launcher{
+    right:14px;
+    bottom:14px;
+    padding:8px 12px 8px 8px;
+  }
+
+  .duck-sauce-orb{
+    width:42px;
+    height:42px;
+  }
+
+  .duck-sauce-launcher-text strong{
+    font-size:11px;
+  }
+
+  .duck-sauce-launcher-text span{
+    font-size:10px;
+  }
+
+  .duck-sauce-panel{
+    right:14px;
+    bottom:76px;
+    width:calc(100vw - 28px);
+  }
+}
