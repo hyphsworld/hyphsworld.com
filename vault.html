@@ -1,0 +1,240 @@
+<!-- File: vault.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The Vault | HYPHSWORLD</title>
+  <meta
+    name="description"
+    content="Inside the HYPHSWORLD Vault. Access unlocked levels, hidden eras, and premium drops."
+  />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .vault-page {
+      padding: 56px 0 140px;
+    }
+
+    .vault-hero {
+      margin-bottom: 24px;
+    }
+
+    .vault-hero-copy {
+      max-width: 760px;
+    }
+
+    .vault-status-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .vault-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      padding: 0 14px;
+      border: 3px solid #000;
+      border-radius: 999px;
+      background: #fff;
+      color: #000;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      box-shadow: 3px 3px 0 #000;
+    }
+
+    .vault-badge.on {
+      background: #72ff4f;
+    }
+
+    .vault-badge.off {
+      background: #ffd4f5;
+    }
+
+    .vault-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .vault-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 22px;
+      margin-top: 28px;
+    }
+
+    .vault-panel {
+      padding: 22px;
+    }
+
+    .vault-panel[hidden] {
+      display: none !important;
+    }
+
+    .vault-track-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .vault-track {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      border: 3px solid #000;
+      border-radius: 18px;
+      background: #fff;
+      color: #000;
+      box-shadow: 4px 4px 0 #000;
+    }
+
+    .vault-track:nth-child(2n) {
+      background: #cff4ff;
+    }
+
+    .vault-track:nth-child(3n) {
+      background: #ffd4f5;
+    }
+
+    .vault-track-num {
+      min-width: 44px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .vault-track-copy strong {
+      display: block;
+      font-size: 16px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .vault-track-copy small {
+      display: block;
+      margin-top: 2px;
+      color: #222;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .vault-empty {
+      padding: 22px;
+      margin-top: 28px;
+    }
+
+    .vault-empty[hidden] {
+      display: none !important;
+    }
+
+    @media (max-width: 900px) {
+      .vault-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body data-page="vault">
+  <div class="bg-glow glow-1"></div>
+  <div class="bg-glow glow-2"></div>
+
+  <header class="site-header">
+    <div class="wrap nav">
+      <a href="index.html" class="brand">
+        <div>
+          <div class="brand-top">AMS WEST PRESENTS</div>
+          <div class="brand-main">THE VAULT</div>
+        </div>
+      </a>
+
+      <nav class="nav-links" aria-label="Vault navigation">
+        <a href="index.html">Home</a>
+        <a href="vault-gate.html">Vault Gate</a>
+        <a href="app-player.html">Full Player</a>
+        <a href="shop.html">Merch</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="vault-page">
+    <section class="section vault-hero">
+      <div class="wrap">
+        <div class="vault-hero-copy">
+          <p class="eyebrow">Restricted Access</p>
+          <h1>
+            <span class="headline-top">YOU MADE</span>
+            <span class="headline-bottom">IT IN.</span>
+          </h1>
+          <p class="hero-text">
+            Hidden eras. Current pressure. Only unlocked levels show below.
+          </p>
+        </div>
+
+        <div class="vault-status-row">
+          <span class="vault-badge off" id="badgeLevel1">Level 1 Locked</span>
+          <span class="vault-badge off" id="badgeLevel2">Level 2 Locked</span>
+        </div>
+
+        <div class="vault-nav">
+          <a class="btn btn-gold" id="jumpLevel1" href="#level1" hidden>Level 1</a>
+          <a class="btn btn-dark" id="jumpLevel2" href="#level2" hidden>Level 2</a>
+          <a class="btn btn-outline" href="vault-gate.html">Back To Gate</a>
+        </div>
+
+        <div class="vault-grid">
+          <section id="level1" class="feature-card vault-panel" hidden>
+            <p class="eyebrow">Level 1</p>
+            <h2>Quarantine Mixtape</h2>
+            <p class="section-copy">
+              Hidden era. Unreleased pressure. First floor access is active.
+            </p>
+
+            <div class="vault-track-list">
+              <div class="vault-track">
+                <div class="vault-track-num">01</div>
+                <div class="vault-track-copy">
+                  <strong>I'M A BEAST</strong>
+                  <small>Quarantine era selection</small>
+                </div>
+              </div>
+              <div class="vault-track">
+                <div class="vault-track-num">02</div>
+                <div class="vault-track-copy">
+                  <strong>FREE HYPH</strong>
+                  <small>Quarantine era selection</small>
+                </div>
+              </div>
+              <div class="vault-track">
+                <div class="vault-track-num">03</div>
+                <div class="vault-track-copy">
+                  <strong>GOTTA GO</strong>
+                  <small>Quarantine era selection</small>
+                </div>
+              </div>
+              <div class="vault-track">
+                <div class="vault-track-num">04</div>
+                <div class="vault-track-copy">
+                  <strong>JAY Z SH!T</strong>
+                  <small>Quarantine era selection</small>
+                </div>
+              </div>
+              <div class="vault-track">
+                <div class="vault-track-num">05</div>
+                <div class="vault-track-copy">
+                  <strong>DON'T YOU</strong>
+                  <small>Quarantine era selection</small>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="level2" class="feature-card vault-panel" hidden>
+            <p class="eyebrow">Level 2</p>
+            <h
