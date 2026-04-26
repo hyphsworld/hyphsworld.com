@@ -1,1 +1,96 @@
-document.addEventListener('DOMContentLoaded',()=>{const mount=document.getElementById('cool-points-widget');if(!mount)return;const key='hyphsworldCoolPoints',dayKey='hyphsworldLastDaily';const rewards=[['100','Level 2 Vault'],['250','Secret Snippet'],['500','Game Room'],['1000','Merch Discount'],['2500','Private Track'],['5000','VIP Fan Rank']];let points=parseInt(localStorage.getItem(key)||'0',10);function rank(p){if(p>=2500)return'Bossed Up';if(p>=1000)return'Hyphy Member';if(p>=500)return'Certified';if(p>=100)return'Solid';return'Visitor'}function nextReward(p){return rewards.find(r=>p<parseInt(r[0],10))||['MAX','VIP Status']}function save(){localStorage.setItem(key,String(points))}function render(){const next=nextReward(points);const nextPts=parseInt(next[0],10)||points;const prev=[0,100,250,500,1000,2500,5000].filter(x=>x<=points).pop()||0;const pct=next[0]==='MAX'?100:Math.min(100,((points-prev)/(nextPts-prev))*100);mount.className='cool-points';mount.innerHTML=`<button class="cool-pill" id="coolToggle" type="button">😎 <span>COOL POINTS:</span> <strong>${points}</strong></button><div class="cool-panel"><div class="cool-title"><h3>Cool Points</h3><button class="cool-close" id="coolClose" type="button">×</button></div><div class="cool-big">${points}</div><p class="cool-rank">Rank: <strong>${rank(points)}</strong></p><div class="cool-bar"><div class="cool-fill" style="width:${pct}%"></div></div><p class="cool-next">Next unlock: <strong>${next[1]}</strong> at <strong>${next[0]}</strong> points.</p><div class="cool-rewards">${rewards.map(r=>`<div class="cool-reward"><span>${r[1]}</span><strong>${r[0]}</strong></div>`).join('')}</div></div>`;document.getElementById('coolToggle').onclick=()=>mount.classList.toggle('open');document.getElementById('coolClose').onclick=()=>mount.classList.remove('open')}function toast(txt){let t=document.querySelector('.cool-toast');if(!t){t=document.createElement('div');t.className='cool-toast';document.body.appendChild(t)}t.textContent=txt;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1700)}window.addCoolPoints=(amount,reason='Explored HYPHSWORLD')=>{amount=parseInt(amount,10)||0;if(amount<=0)return;points+=amount;save();render();toast(`+${amount} Cool Points`);if(typeof gtag==='function')gtag('event','cool_points_earned',{event_category:'cool_points',event_label:reason,value:amount})};document.querySelectorAll('.earn-points').forEach(el=>el.addEventListener('click',()=>window.addCoolPoints(el.dataset.points,el.dataset.reason)));const today=new Date().toISOString().slice(0,10);if(localStorage.getItem(dayKey)!==today){localStorage.setItem(dayKey,today);window.addCoolPoints(10,'Daily visit')}render()});
+
+(function(){
+  const POINTS_KEY = "hyphsworld_points_v2";
+  const LEGACY_KEYS = ["hyphsworld_points","hyphsworld_points_v1"];
+
+  LEGACY_KEYS.forEach(function(k){
+    try { localStorage.removeItem(k); } catch(e){}
+  });
+
+  function getPoints(){
+    const n = parseInt(localStorage.getItem(POINTS_KEY) || "0", 10);
+    return isNaN(n) ? 0 : n;
+  }
+
+  function setPoints(v){
+    localStorage.setItem(POINTS_KEY, String(Math.max(0, v)));
+    render();
+  }
+
+  function addPoints(v){
+    setPoints(getPoints() + v);
+  }
+
+  function rank(points){
+    if(points >= 5000) return "Legend";
+    if(points >= 2500) return "Major Motion";
+    if(points >= 1000) return "Certified";
+    if(points >= 500) return "Pressure";
+    if(points >= 100) return "Active";
+    return "Rookie";
+  }
+
+  function ensureWidget(){
+    let el = document.getElementById("cool-points-widget");
+    if(!el){
+      el = document.createElement("div");
+      el.id = "cool-points-widget";
+      el.style.position = "fixed";
+      el.style.left = "18px";
+      el.style.bottom = "92px";
+      el.style.zIndex = "9999";
+      el.style.padding = "12px 18px";
+      el.style.borderRadius = "999px";
+      el.style.background = "rgba(0,0,0,.78)";
+      el.style.border = "1px solid rgba(241,210,138,.45)";
+      el.style.color = "#fff";
+      el.style.fontWeight = "800";
+      el.style.fontFamily = "Arial,sans-serif";
+      el.style.boxShadow = "0 10px 30px rgba(0,0,0,.35)";
+      document.body.appendChild(el);
+    }
+    return el;
+  }
+
+  function render(){
+    const points = getPoints();
+    const el = ensureWidget();
+    el.innerHTML = "😎 COOL POINTS: <span style='color:#f1d28a'>" + points +
+                   "</span> <span style='opacity:.7;font-size:12px'>• " + rank(points) + "</span>";
+  }
+
+  function bindEarners(){
+    document.querySelectorAll(".earn-points").forEach(function(node){
+      if(node.dataset.boundPoints) return;
+      node.dataset.boundPoints = "1";
+      node.addEventListener("click", function(){
+        const amt = parseInt(node.dataset.points || "5", 10);
+        addPoints(isNaN(amt) ? 5 : amt);
+      });
+    });
+  }
+
+  function dailyBonus(){
+    const today = new Date().toISOString().slice(0,10);
+    const key = "hyphsworld_daily_bonus_v2";
+    const last = localStorage.getItem(key);
+    if(last !== today){
+      localStorage.setItem(key, today);
+      addPoints(25);
+    }
+  }
+
+  window.HYPHSWORLD_POINTS = {
+    add:addPoints,
+    get:getPoints,
+    set:setPoints,
+    reset:function(){ setPoints(0); }
+  };
+
+  document.addEventListener("DOMContentLoaded", function(){
+    render();
+    bindEarners();
+    dailyBonus();
+    setInterval(bindEarners, 2000);
+  });
+})();
