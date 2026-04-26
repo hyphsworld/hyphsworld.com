@@ -95,8 +95,10 @@
     audio.src = track.file;
     audio.load();
 
-    art.src = track.art;
-    art.alt = `${track.title} artwork`;
+    art.src = track.art;art.onerror = () => {
+  art.onerror = null;
+  art.src = "album-art.jpg";
+};    art.alt = `${track.title} artwork`;
     title.textContent = track.title;
     meta.textContent = track.meta;
     section.textContent = track.section;
