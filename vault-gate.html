@@ -1,0 +1,193 @@
+<!-- File: vault-gate.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Vault Gate | HYPHSWORLD</title>
+  <meta
+    name="description"
+    content="Unlock the HYPHSWORLD Vault. Enter valid codes to access hidden eras and premium drops."
+  />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="vault-gate.css" />
+</head>
+<body data-page="vault-gate">
+  <div class="bg-glow glow-1"></div>
+  <div class="bg-glow glow-2"></div>
+
+  <header class="site-header">
+    <div class="wrap nav">
+      <a href="index.html" class="brand">
+        <img
+          src="ams-logo.jpg"
+          alt="AMS WEST logo"
+          class="brand-logo"
+          width="56"
+          height="56"
+          onerror="this.style.display='none'"
+        />
+        <div>
+          <div class="brand-top">AMS WEST PRESENTS</div>
+          <div class="brand-main">VAULT GATE</div>
+        </div>
+      </a>
+
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="index.html">Home</a>
+        <a href="vault.html">Vault</a>
+        <a href="app-player.html">Full Player</a>
+        <a href="merch.html">Merch</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="vault-shell">
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Vault Gate</p>
+            <h2>Unlock The Eras</h2>
+          </div>
+          <p class="section-copy">
+            Use the main code to unlock everything, or unlock each level separately.
+          </p>
+        </div>
+
+        <div class="vault-status-row">
+          <span class="vault-badge off" id="gateBadgeMaster">Master Locked</span>
+          <span class="vault-badge off" id="gateBadgeLevel1">Level 1 Locked</span>
+          <span class="vault-badge off" id="gateBadgeLevel2">Level 2 Locked</span>
+        </div>
+
+        <div class="vault-stack">
+          <article class="feature-card vault-master-card" data-level="master">
+            <div class="vault-lock-head">
+              <div>
+                <p class="eyebrow">Secret Main Code</p>
+                <h3>Master Access</h3>
+              </div>
+              <div class="vault-state locked" data-role="state">Locked</div>
+            </div>
+
+            <div class="vault-lock-copy">
+              <p class="section-copy">One code. Full access. Unlocks Level 1 and Level 2 together.</p>
+              <p><strong>Access:</strong> Main code required</p>
+            </div>
+
+            <form class="vault-form" data-role="form" novalidate>
+              <label class="vault-label" for="code-master">Enter Main Code</label>
+              <input
+                id="code-master"
+                class="vault-input"
+                data-role="input"
+                type="text"
+                inputmode="text"
+                autocomplete="off"
+                spellcheck="false"
+                placeholder="MAIN CODE"
+                maxlength="40"
+              />
+              <div class="vault-row">
+                <button class="btn btn-gold" data-role="submit" type="submit">Unlock Everything</button>
+                <button class="btn btn-dark" data-role="clear" type="button">Clear</button>
+              </div>
+              <div class="vault-message" data-role="message"></div>
+            </form>
+
+            <div class="vault-links" data-role="links" hidden>
+              <a class="pill earn-points" data-points="50" data-reason="Vault master unlock" href="vault.html">Enter Full Vault</a>
+            </div>
+          </article>
+
+          <div class="vault-grid">
+            <article class="feature-card vault-lock-card" data-level="level1">
+              <div class="vault-lock-head">
+                <div>
+                  <p class="eyebrow">Level 1</p>
+                  <h3>Quarantine Mixtape</h3>
+                </div>
+                <div class="vault-state locked" data-role="state">Locked</div>
+              </div>
+
+              <div class="vault-lock-copy">
+                <p class="section-copy">Hidden era. Unreleased pressure. First floor in the Vault.</p>
+                <p><strong>Access:</strong> Code required</p>
+              </div>
+
+              <form class="vault-form" data-role="form" novalidate>
+                <label class="vault-label" for="code-level1">Enter Code</label>
+                <input
+                  id="code-level1"
+                  class="vault-input"
+                  data-role="input"
+                  type="text"
+                  inputmode="text"
+                  autocomplete="off"
+                  spellcheck="false"
+                  placeholder="LEVEL 1 CODE"
+                  maxlength="40"
+                />
+                <div class="vault-row">
+                  <button class="btn btn-gold" data-role="submit" type="submit">Unlock Level 1</button>
+                  <button class="btn btn-dark" data-role="clear" type="button">Clear</button>
+                </div>
+                <div class="vault-message" data-role="message"></div>
+              </form>
+
+              <div class="vault-links" data-role="links" hidden>
+                <a class="pill earn-points" data-points="25" data-reason="Vault level 1 unlocked" href="vault.html#level1">Enter Level 1</a>
+              </div>
+            </article>
+
+            <article class="feature-card vault-lock-card" data-level="level2">
+              <div class="vault-lock-head">
+                <div>
+                  <p class="eyebrow">Level 2</p>
+                  <h3>HYPHSWORLD 5</h3>
+                </div>
+                <div class="vault-state locked" data-role="state">Locked</div>
+              </div>
+
+              <div class="vault-lock-copy">
+                <p class="section-copy">Current pressure. Premium floor. Better for repeat traffic and featured drops.</p>
+                <p><strong>Access:</strong> Code required</p>
+              </div>
+
+              <form class="vault-form" data-role="form" novalidate>
+                <label class="vault-label" for="code-level2">Enter Code</label>
+                <input
+                  id="code-level2"
+                  class="vault-input"
+                  data-role="input"
+                  type="text"
+                  inputmode="text"
+                  autocomplete="off"
+                  spellcheck="false"
+                  placeholder="LEVEL 2 CODE"
+                  maxlength="40"
+                />
+                <div class="vault-row">
+                  <button class="btn btn-gold" data-role="submit" type="submit">Unlock Level 2</button>
+                  <button class="btn btn-dark" data-role="clear" type="button">Clear</button>
+                </div>
+                <div class="vault-message" data-role="message"></div>
+              </form>
+
+              <div class="vault-links" data-role="links" hidden>
+                <a class="pill earn-points" data-points="25" data-reason="Vault level 2 unlocked" href="vault.html#level2">Enter Level 2</a>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="cool-points-widget"></div>
+
+  <script src="cool-points.js" defer></script>
+  <script src="vault-gate.js" defer></script>
+</body>
+</html>
