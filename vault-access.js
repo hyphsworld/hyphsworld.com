@@ -1,4 +1,3 @@
-// File: vault-access.js
 (() => {
   const STORAGE_KEY = "hyphsworld_vault_access_v2";
   const MAX_ATTEMPTS = 5;
@@ -7,7 +6,7 @@
   const VAULT_CONFIG = {
     master: {
       title: "Master Access",
-      codes: ["510", "HYPH510", "MASTER510", "ALLACCESS"],
+      codes: ["510", "HYPH510", "MASTER510", "ALLACCESS", "THANK YOU"],
       successMessage: "Master code accepted. Full Vault unlocked.",
     },
     level1: {
@@ -45,20 +44,13 @@
   }
 
   function defaultState() {
-    return {
-      unlocked: false,
-      attempts: 0,
-      cooldownUntil: 0,
-    };
+    return { unlocked: false, attempts: 0, cooldownUntil: 0 };
   }
 
   function getLevelState(level) {
     const store = getStore();
     const entry = store[level];
-
-    if (!entry || typeof entry !== "object") {
-      return defaultState();
-    }
+    if (!entry || typeof entry !== "object") return defaultState();
 
     return {
       unlocked: Boolean(entry.unlocked),
@@ -78,11 +70,7 @@
   }
 
   function unlockSingle(level) {
-    setLevelState(level, {
-      unlocked: true,
-      attempts: 0,
-      cooldownUntil: 0,
-    });
+    setLevelState(level, { unlocked: true, attempts: 0, cooldownUntil: 0 });
   }
 
   function unlockAllLevels() {
@@ -106,9 +94,34 @@
     if (window.HYPHSWORLD_POINTS && typeof window.HYPHSWORLD_POINTS.add === "function") {
       window.HYPHSWORLD_POINTS.add(amount);
     }
-
     if (typeof window.gtag === "function") {
       window.gtag("event", "vault_reward", { amount, reason });
+    }
+  }
+
+  function updateGateBadges() {
+    const store = getStore();
+    const masterUnlocked = Boolean(store.master && store.master.unlocked);
+    const level1Unlocked = Boolean(store.level1 && store.level1.unlocked);
+    const level2Unlocked = Boolean(store.level2 && store.level2.unlocked);
+
+    const badgeMaster = document.getElementById("gateBadgeMaster");
+    const badgeLevel1 = document.getElementById("gateBadgeLevel1");
+    const badgeLevel2 = document.getElementById("gateBadgeLevel2");
+
+    if (badgeMaster) {
+      badgeMaster.textContent = masterUnlocked ? "Master Unlocked" : "Master Locked";
+      badgeMaster.className = masterUnlocked ? "vault-badge master" : "vault-badge off";
+    }
+
+    if (badgeLevel1) {
+      badgeLevel1.textContent = level1Unlocked ? "Level 1 Unlocked" : "Level 1 Locked";
+      badgeLevel1.className = level1Unlocked ? "vault-badge on" : "vault-badge off";
+    }
+
+    if (badgeLevel2) {
+      badgeLevel2.textContent = level2Unlocked ? "Level 2 Unlocked" : "Level 2 Locked";
+      badgeLevel2.className = level2Unlocked ? "vault-badge on" : "vault-badge off";
     }
   }
 
@@ -133,6 +146,7 @@
       messageEl.classList.add("ok");
       messageEl.textContent = config.successMessage;
       linksEl.hidden = false;
+      updateGateBadges();
       return;
     }
 
@@ -145,6 +159,7 @@
       submitEl.disabled = true;
       messageEl.classList.add("bad");
       messageEl.textContent = `Too many tries. Wait ${formatRemaining(state.cooldownUntil - Date.now())}.`;
+      updateGateBadges();
       return;
     }
 
@@ -162,6 +177,8 @@
     if (!messageEl.textContent) {
       messageEl.textContent = "Enter a valid code to unlock access.";
     }
+
+    updateGateBadges();
   }
 
   function refreshAllCards() {
@@ -178,7 +195,6 @@
       unlockAllLevels();
       refreshAllCards();
       addPoints(50, "master_unlock");
-
       if (typeof window.gtag === "function") {
         window.gtag("event", "vault_unlock", {
           level: "master",
@@ -190,6 +206,7 @@
 
     unlockSingle(level);
     updateCardUI(card, level);
+    updateGateBadges();
     addPoints(25, `${level}_unlock`);
 
     if (typeof window.gtag === "function") {
@@ -203,12 +220,7 @@
   function failLevel(level, card) {
     const currentState = getLevelState(level);
     const attempts = currentState.attempts + 1;
-
-    const nextState = {
-      unlocked: false,
-      attempts,
-      cooldownUntil: 0,
-    };
+    const nextState = { unlocked: false, attempts, cooldownUntil: 0 };
 
     if (attempts >= MAX_ATTEMPTS) {
       nextState.attempts = 0;
@@ -229,10 +241,7 @@
     updateCardUI(card, level);
 
     if (typeof window.gtag === "function") {
-      window.gtag("event", "vault_denied", {
-        level,
-        attempts,
-      });
+      window.gtag("event", "vault_denied", { level, attempts });
     }
   }
 
@@ -288,9 +297,7 @@
   }
 
   function startCooldownRefresh() {
-    window.setInterval(() => {
-      refreshAllCards();
-    }, 1000);
+    window.setInterval(refreshAllCards, 1000);
   }
 
   function init() {
@@ -299,6 +306,7 @@
 
     cards.forEach(bindCard);
     refreshAllCards();
+    updateGateBadges();
     startCooldownRefresh();
   }
 
