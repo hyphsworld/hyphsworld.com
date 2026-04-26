@@ -1,0 +1,122 @@
+/* File: app-player.css */
+.player-page {
+  padding-bottom: 120px;
+}
+
+.player-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: 22px;
+  align-items: start;
+}
+
+.player-stage,
+.player-playlist {
+  padding: 22px;
+}
+
+.player-stage {
+  display: grid;
+  gap: 18px;
+}
+
+.player-art {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border: 3px solid #000;
+  border-radius: 20px;
+  box-shadow: 5px 5px 0 #000;
+}
+
+.player-copy h3 {
+  margin: 0 0 10px;
+  color: #fff;
+  font-size: clamp(30px, 4vw, 48px);
+  line-height: 1;
+  text-transform: uppercase;
+  text-shadow: 4px 4px 0 #000;
+}
+
+.player-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.playlist-group + .playlist-group {
+  margin-top: 22px;
+}
+
+.playlist {
+  display: grid;
+  gap: 10px;
+}
+
+.track-item {
+  appearance: none;
+  width: 100%;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  border: 3px solid #000;
+  border-radius: 18px;
+  background: #fff;
+  color: #000;
+  box-shadow: 4px 4px 0 #000;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease,
+    filter 160ms ease;
+}
+
+.track-item:nth-child(2n) {
+  background: #cff4ff;
+}
+
+.track-item:nth-child(3n) {
+  background: #ffd4f5;
+}
+
+.track-item:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 7px 7px 0 #000;
+  filter: saturate(1.03);
+}
+
+.track-item.active {
+  background: #f4c95d;
+}
+
+.track-num {
+  min-width: 44px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.track-copy strong {
+  display: block;
+  font-size: 16px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.track-copy small {
+  display: block;
+  margin-top: 2px;
+  color: #222;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+@media (max-width: 960px) {
+  .player-layout {
+    grid-template-columns: 1fr;
+  }
+}
