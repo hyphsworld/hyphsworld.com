@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Point Store | HYPHSWORLD</title>
+<meta name="description" content="Spend HYPHSWORLD Cool Points on Vault access, music rewards, merch perks, and status badges.">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="cool-points.css">
+<link rel="stylesheet" href="duck-helper.css">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CT7CWHCHYC"></script>
+<script>
+window.dataLayer=window.dataLayer||[];
+function gtag(){dataLayer.push(arguments);}
+gtag('js',new Date());
+gtag('config','G-CT7CWHCHYC');
+</script>
+<style>
+.store-balance{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  border:1px solid rgba(241,210,138,.45);
+  background:rgba(0,0,0,.72);
+  color:#fff;
+  border-radius:999px;
+  padding:12px 18px;
+  font-weight:900;
+}
+.store-balance span{color:#f1d28a}
+.reward-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:20px;
+}
+.reward-card{
+  position:relative;
+  border:1px solid rgba(255,255,255,.10);
+  background:linear-gradient(180deg,rgba(20,20,20,.96),rgba(5,5,5,.98));
+  border-radius:28px;
+  padding:22px;
+  overflow:hidden;
+  box-shadow:0 24px 60px rgba(0,0,0,.45);
+}
+.reward-card:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:radial-gradient(circle at 20% 0%,rgba(241,210,138,.16),transparent 34%);
+  pointer-events:none;
+}
+.reward-card>*{position:relative}
+.reward-price{
+  display:inline-flex;
+  border:1px solid rgba(241,210,138,.35);
+  color:#f1d28a;
+  border-radius:999px;
+  padding:8px 12px;
+  font-weight:900;
+  margin:10px 0 16px;
+}
+.reward-card h3{
+  margin:0;
+  font-size:26px;
+  text-transform:uppercase;
+}
+.reward-card p{
+  color:#bdbdbd;
+  line-height:1.6;
+}
+.reward-owned{
+  color:#7dff9b;
+  font-weight:900;
+  margin-top:10px;
+}
+.store-message{
+  position:fixed;
+  right:16px;
+  bottom:104px;
+  z-index:99999;
+  background:linear-gradient(180deg,#f1d28a,#c9a34a);
+  color:#111;
+  border-radius:16px;
+  padding:12px 16px;
+  font-weight:900;
+  box-shadow:0 18px 42px rgba(0,0,0,.45);
+  display:none;
+}
+.store-message.bad{
+  background:linear-gradient(180deg,#ffb3b3,#d83b3b);
+}
+</style>
+</head>
+<body data-page="point-store">
+
+<header class="site-header">
+  <div class="wrap nav">
+    <a href="index.html" class="brand">
+      <img src="ams-logo.jpg" alt="AMS WEST logo" class="brand-logo" width="56" height="56" onerror="this.style.display='none'">
+      <div>
+        <div class="brand-top">AMS WEST PRESENTS</div>
+        <div class="brand-main">POINT STORE</div>
+      </div>
+    </a>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="vault-gate.html">Vault</a>
+      <a href="app-player.html">Player</a>
+      <a href="login.html">Login</a>
+    </nav>
+  </div>
+</header>
+
+<div class="ticker-wrap">
+  <div class="ticker">
+    <span>POINT STORE OPEN ✦ SPEND COOL POINTS ✦ VAULT PASSES ✦ MUSIC REWARDS ✦ MERCH PERKS ✦ STATUS BADGES ✦</span>
+  </div>
+</div>
+
+<main>
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow">Cool Points Economy</p>
+      <h1>
+        <span class="headline-top">SPEND</span>
+        <span class="headline-mid">YOUR</span>
+        <span class="headline-bottom">POINTS.</span>
+      </h1>
+      <p class="hero-text">
+        Use Cool Points for Vault perks, hidden music previews, merch rewards, and status badges.
+      </p>
+      <div class="store-balance">😎 Balance: <span id="storeBalance">0</span></div>
+    </div>
+    <div class="hero-art-card">
+      <img src="album-art.jpg" alt="HYPHSWORLD artwork" class="hero-art" width="1200" height="1200">
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Vault Access</p>
+        <h2>Unlocks</h2>
+      </div>
+      <p class="section-copy">Low enough to feel possible, high enough to feel earned.</p>
+    </div>
+
+    <div class="reward-grid">
+      <article class="reward-card" data-id="level-skip" data-cost="250">
+        <p class="eyebrow">Vault Pass</p>
+        <h3>Level Skip Pass</h3>
+        <div class="reward-price">250 pts</div>
+        <p>Skip straight to Vault access without hunting the main code.</p>
+        <button class="btn btn-gold buy-reward" type="button">REDEEM</button>
+      </article>
+
+      <article class="reward-card" data-id="secret-room" data-cost="500">
+        <p class="eyebrow">Hidden Zone</p>
+        <h3>Secret Room Access</h3>
+        <div class="reward-price">500 pts</div>
+        <p>Unlock a hidden reward slot for future secret drops.</p>
+        <button class="btn btn-gold buy-reward" type="button">REDEEM</button>
+      </article>
+
+      <article class="reward-card" data-id="early-drop" data-cost="750">
+        <p class="eyebrow">First Look</p>
+        <h3>Early Drop Access</h3>
+        <div class="reward-price">750 pts</div>
+        <p>Get marked for early access to upcoming music and visuals.</p>
+        <button class="btn btn-gold buy-reward" type="button">REDEEM</button>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Music Rewards</p>
+        <h2>Audio Perks</h2>
+      </div>
+    </div>
+
+    <div class="reward-grid">
+      <article class="reward-card" data-id="snippet" data-cost="200">
+        <p class="eyebrow">Music</p>
+        <h3>Exclusive Snippet</h3>
+        <div class="reward-price">200 pts</div>
+        <p>Unlock a secret snippet reward marker.</p>
+        <button class="btn btn-dark buy-reward" type="button">REDEEM</button>
+      </article>
+
+      <article class="reward-card" data-id="preview" data-cost="300">
+        <p class="eyebrow">Music</p>
+        <h3>Unreleased Preview</h3>
+        <div class="reward-price">300 pts</div>
+        <p>Unlock preview status for unreleased drops.</p>
+        <button class="btn btn-dark buy-reward" type="button">REDEEM</button>
+      </article>
+
+      <article class="reward-card" data-id="download-pack" data-cost="600">
+        <p class="eyebrow">Music</p>
+        <h3>Download Pack</h3>
+        <div class="reward-price">600 pts</div>
+        <p>Reserve access for future download pack drops.</p>
+        <button class="btn btn-dark buy-reward" type="button">REDEEM</button>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Merch + Status</p>
+        <h2>Real Rewards</h2>
+      </div>
+    </div>
+
+    <div class="reward-grid">
+      <article class="reward-card" data-id="discount10" data-cost="800">
+        <p class="eyebrow">Merch</p>
+        <h3>10% Off Code</h3>
+        <div class="reward-price">800 pts</div>
+        <p>Unlock a future merch discount code.</p>
+        <button class="btn btn-outline buy-reward" type="button">REDEEM</button>
+      </article>
+
+      <article class="reward-card" data-id="shipping" data-cost="1200">
+        <p class="eyebrow">Merch</p>
+        <h3>Free Shipping</h3>
+        <div class="reward-price">1200 pts</div>
+        <p>Reserve a free shipping reward for future merch drops.</p>
+        <button class="btn btn-outline buy-reward" type="button">REDEEM</button>
+      </article>
+
+      <article class="reward-card" data-id="legend-badge" data-cost="2500">
+        <p class="eyebrow">Status</p>
+        <h3>Major Motion Badge</h3>
+        <div class="reward-price">2500 pts</div>
+        <p>Claim a premium supporter badge for future account profiles.</p>
+        <button class="btn btn-outline buy-reward" type="button">REDEEM</button>
+      </article>
+    </div>
+  </div>
+</section>
+</main>
+
+<div class="store-message" id="storeMessage"></div>
+<div id="duck-helper"></div>
+<div id="cool-points-widget"></div>
+
+<script src="duck-helper.js"></script>
+<script src="cool-points.js"></script>
+<script>
+(function(){
+  const POINTS_KEY = "hyphsworld_points_v2";
+  const PURCHASES_KEY = "hyphsworld_purchases_v1";
+  const balance = document.getElementById("storeBalance");
+  const msg = document.getElementById("storeMessage");
+
+  function getPoints(){
+    return parseInt(localStorage.getItem(POINTS_KEY) || "0", 10) || 0;
+  }
+
+  function setPoints(v){
+    localStorage.setItem(POINTS_KEY, String(Math.max(0, v)));
+    render();
+    if(window.HYPHSWORLD_POINTS && window.HYPHSWORLD_POINTS.set){
+      window.HYPHSWORLD_POINTS.set(Math.max(0, v));
+    }
+  }
+
+  function getPurchases(){
+    try{return JSON.parse(localStorage.getItem(PURCHASES_KEY) || "[]");}
+    catch(e){return [];}
+  }
+
+  function setPurchases(list){
+    localStorage.setItem(PURCHASES_KEY, JSON.stringify(list));
+  }
+
+  function toast(text,bad){
+    msg.textContent = text;
+    msg.classList.toggle("bad", !!bad);
+    msg.style.display = "block";
+    setTimeout(()=>msg.style.display="none",2600);
+  }
+
+  function render(){
+    const pts = getPoints();
+    balance.textContent = pts;
+    const bought = getPurchases();
+    document.querySelectorAll(".reward-card").forEach(card=>{
+      const id = card.dataset.id;
+      const button = card.querySelector(".buy-reward");
+      let owned = card.querySelector(".reward-owned");
+
+      if(bought.includes(id)){
+        if(button) button.disabled = true;
+        if(button) button.textContent = "OWNED";
+        if(!owned){
+          owned = document.createElement("div");
+          owned.className = "reward-owned";
+          owned.textContent = "CLAIMED";
+          card.appendChild(owned);
+        }
+      }
+    });
+  }
+
+  document.querySelectorAll(".buy-reward").forEach(button=>{
+    button.addEventListener("click",()=>{
+      const card = button.closest(".reward-card");
+      const id = card.dataset.id;
+      const cost = parseInt(card.dataset.cost,10);
+      const pts = getPoints();
+      const bought = getPurchases();
+
+      if(bought.includes(id)){
+        toast("Already claimed.", false);
+        return;
+      }
+
+      if(pts < cost){
+        toast("Not enough points blood.", true);
+        return;
+      }
+
+      bought.push(id);
+      setPurchases(bought);
+      setPoints(pts - cost);
+      toast("Reward claimed. Points spent.", false);
+
+      if(window.gtag){
+        gtag("event","point_store_purchase",{reward:id,cost:cost});
+      }
+    });
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
