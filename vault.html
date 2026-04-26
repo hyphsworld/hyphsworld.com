@@ -1,0 +1,434 @@
+<!-- File: vault.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The Vault | HYPHSWORLD</title>
+  <meta
+    name="description"
+    content="Inside the HYPHSWORLD Vault. Access unlocked levels, hidden eras, and premium drops."
+  />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .vault-page {
+      padding: 56px 0 140px;
+    }
+
+    .vault-hero {
+      margin-bottom: 24px;
+    }
+
+    .vault-hero-copy {
+      max-width: 760px;
+    }
+
+    .vault-status-row,
+    .vault-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .vault-status-row {
+      margin-top: 20px;
+    }
+
+    .vault-nav {
+      margin-top: 24px;
+    }
+
+    .vault-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      padding: 0 14px;
+      border: 3px solid #000;
+      border-radius: 999px;
+      background: #fff;
+      color: #000;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      box-shadow: 3px 3px 0 #000;
+    }
+
+    .vault-badge.on {
+      background: #72ff4f;
+    }
+
+    .vault-badge.off {
+      background: #ffd4f5;
+    }
+
+    .vault-badge.master {
+      background: #f4c95d;
+    }
+
+    .vault-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 22px;
+      margin-top: 28px;
+    }
+
+    .vault-panel {
+      padding: 22px;
+    }
+
+    .vault-panel[hidden],
+    .vault-empty[hidden] {
+      display: none !important;
+    }
+
+    .vault-track-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .vault-track {
+      display: grid;
+      gap: 10px;
+      padding: 14px;
+      border: 3px solid #000;
+      border-radius: 18px;
+      background: #fff;
+      color: #000;
+      box-shadow: 4px 4px 0 #000;
+    }
+
+    .vault-track:nth-child(2n) {
+      background: #cff4ff;
+    }
+
+    .vault-track:nth-child(3n) {
+      background: #ffd4f5;
+    }
+
+    .vault-track-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .vault-track-num {
+      min-width: 44px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .vault-track-copy strong {
+      display: block;
+      font-size: 16px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .vault-track-copy small {
+      display: block;
+      margin-top: 2px;
+      color: #222;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .vault-audio {
+      width: 100%;
+    }
+
+    .vault-empty {
+      padding: 22px;
+      margin-top: 28px;
+    }
+
+    @media (max-width: 900px) {
+      .vault-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body data-page="vault">
+  <div class="bg-glow glow-1"></div>
+  <div class="bg-glow glow-2"></div>
+
+  <header class="site-header">
+    <div class="wrap nav">
+      <a href="index.html" class="brand">
+        <div>
+          <div class="brand-top">AMS WEST PRESENTS</div>
+          <div class="brand-main">THE VAULT</div>
+        </div>
+      </a>
+
+      <nav class="nav-links" aria-label="Vault navigation">
+        <a href="index.html">Home</a>
+        <a href="vault-gate.html">Vault Gate</a>
+        <a href="app-player.html">Full Player</a>
+        <a href="merch.html">Merch</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="vault-page">
+    <section class="section vault-hero">
+      <div class="wrap">
+        <div class="vault-hero-copy">
+          <p class="eyebrow">Restricted Access</p>
+          <h1>
+            <span class="headline-top">YOU MADE</span>
+            <span class="headline-bottom">IT IN.</span>
+          </h1>
+          <p class="hero-text">
+            Hidden eras. Current pressure. Only unlocked levels show below.
+          </p>
+        </div>
+
+        <div class="vault-status-row">
+          <span class="vault-badge off" id="badgeMaster">Master Locked</span>
+          <span class="vault-badge off" id="badgeLevel1">Level 1 Locked</span>
+          <span class="vault-badge off" id="badgeLevel2">Level 2 Locked</span>
+        </div>
+
+        <div class="vault-nav">
+          <a class="btn btn-gold" id="jumpLevel1" href="#level1" hidden>Level 1</a>
+          <a class="btn btn-dark" id="jumpLevel2" href="#level2" hidden>Level 2</a>
+          <a class="btn btn-outline" href="vault-gate.html">Back To Gate</a>
+        </div>
+
+        <div class="vault-grid">
+          <section id="level1" class="feature-card vault-panel" hidden>
+            <p class="eyebrow">Level 1</p>
+            <h2>Quarantine Mixtape</h2>
+            <p class="section-copy">
+              Hidden era. Unreleased pressure. First floor access is active.
+            </p>
+
+            <div class="vault-track-list">
+              <div class="vault-track">
+                <div class="vault-track-top">
+                  <div class="vault-track-num">01</div>
+                  <div class="vault-track-copy">
+                    <strong>I'M A BEAST</strong>
+                    <small>Level 1 selection</small>
+                  </div>
+                </div>
+                <audio class="vault-audio" controls preload="none" src="im-a-beast.mp3"></audio>
+              </div>
+
+              <div class="vault-track">
+                <div class="vault-track-top">
+                  <div class="vault-track-num">02</div>
+                  <div class="vault-track-copy">
+                    <strong>GOTTA GO REMIX</strong>
+                    <small>Level 1 selection</small>
+                  </div>
+                </div>
+                <audio class="vault-audio" controls preload="none" src="gotta-go-remix.mp3"></audio>
+              </div>
+
+              <div class="vault-track">
+                <div class="vault-track-top">
+                  <div class="vault-track-num">03</div>
+                  <div class="vault-track-copy">
+                    <strong>JAYS SHIT</strong>
+                    <small>Level 1 selection</small>
+                  </div>
+                </div>
+                <audio class="vault-audio" controls preload="none" src="jay-z-shit.mp3"></audio>
+              </div>
+
+              <div class="vault-track">
+                <div class="vault-track-top">
+                  <div class="vault-track-num">04</div>
+                  <div class="vault-track-copy">
+                    <strong>SHARE MY MONEY</strong>
+                    <small>Level 1 selection</small>
+                  </div>
+                </div>
+                <audio class="vault-audio" controls preload="none" src="share-my-money.mp3"></audio>
+              </div>
+
+              <div class="vault-track">
+                <div class="vault-track-top">
+                  <div class="vault-track-num">05</div>
+                  <div class="vault-track-copy">
+                    <strong>FREE HYPH</strong>
+                    <small>Level 1 selection</small>
+                  </div>
+                </div>
+                <audio class="vault-audio" controls preload="none" src="free-hyph.mp3"></audio>
+              </div>
+
+              <div class="vault-track">
+                <div class="vault-track-top">
+                  <div class="vault-track-num">06</div>
+                  <div class="vault-track-copy">
+                    <strong>50 CENT SHIT</strong>
+                    <small>Level 1 selection</small>
+                  </div>
+                </div>
+                <audio class="vault-audio" controls preload="none" src="50-cent-shit.mp3"></audio>
+              </div>
+            </div>
+          </section>
+
+          <section id="level2" class="feature-card vault-panel" hidden>
+            <p class="eyebrow">Level 2</p>
+            <h2>HYPHSWORLD 5</h2>
+            <p class="section-copy">
+              Current pressure. Premium floor. Second floor access is active.
+            </p>
+
+            <div class="vault-track-list">
+              <div class="vault-track">
+                <div class="vault-track-top">
+                  <div class="vault-track-num">01</div>
+                  <div class="vault-track-copy">
+                    <strong>WHATS HANNIN</strong>
+                    <small>Level 2 selection</small>
+                  </div>
+                </div>
+                <audio class="vault-audio" controls preload="none" src="whats-hannin.mp3"></audio>
+              </div>
+
+              <div class="vault-track">
+                <div class="vault-track-top">
+                  <div class="vault-track-num">02</div>
+                  <div class="vault-track-copy">
+                    <strong>BOUT YOU</strong>
+                    <small>Level 2 selection</small>
+                  </div>
+                </div>
+                <audio class="vault-audio" controls preload="none" src="bout-you.mp3"></audio>
+              </div>
+
+              <div class="vault-track">
+                <div class="vault-track-top">
+                  <div class="vault-track-num">03</div>
+                  <div class="vault-track-copy">
+                    <strong>MULA</strong>
+                    <small>Level 2 selection</small>
+                  </div>
+                </div>
+                <audio class="vault-audio" controls preload="none" src="mula.mp3"></audio>
+              </div>
+
+              <div class="vault-track">
+                <div class="vault-track-top">
+                  <div class="vault-track-num">04</div>
+                  <div class="vault-track-copy">
+                    <strong>NO TRACE SNIP</strong>
+                    <small>Level 2 selection</small>
+                  </div>
+                </div>
+                <audio class="vault-audio" controls preload="none" src="no-trace-snip.mp3"></audio>
+              </div>
+
+              <div class="vault-track">
+                <div class="vault-track-top">
+                  <div class="vault-track-num">05</div>
+                  <div class="vault-track-copy">
+                    <strong>WIKKED WAYS</strong>
+                    <small>Level 2 selection</small>
+                  </div>
+                </div>
+                <audio class="vault-audio" controls preload="none" src="wikked-wayz.mp3"></audio>
+              </div>
+
+              <div class="vault-track">
+                <div class="vault-track-top">
+                  <div class="vault-track-num">06</div>
+                  <div class="vault-track-copy">
+                    <strong>WITH ME</strong>
+                    <small>Level 2 selection</small>
+                  </div>
+                </div>
+                <audio class="vault-audio" controls preload="none" src="with-me.mp3"></audio>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <section id="vaultEmpty" class="feature-card vault-empty" hidden>
+          <p class="eyebrow">No Access</p>
+          <h2>Vault Locked</h2>
+          <p class="section-copy">
+            No unlocked levels were found. Go back to the gate and enter a valid code.
+          </p>
+          <div class="vault-nav">
+            <a class="btn btn-gold" href="vault-gate.html">Go To Vault Gate</a>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const STORAGE_KEY = "hyphsworld_vault_access_v2";
+
+      function getStore() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return {};
+          const parsed = JSON.parse(raw);
+          return parsed && typeof parsed === "object" ? parsed : {};
+        } catch {
+          return {};
+        }
+      }
+
+      function isUnlocked(store, key) {
+        return Boolean(store[key] && store[key].unlocked);
+      }
+
+      const store = getStore();
+      const masterUnlocked = isUnlocked(store, "master");
+      const level1Unlocked = isUnlocked(store, "level1");
+      const level2Unlocked = isUnlocked(store, "level2");
+
+      if (!masterUnlocked && !level1Unlocked && !level2Unlocked) {
+        window.location.replace("vault-gate.html");
+        return;
+      }
+
+      const badgeMaster = document.getElementById("badgeMaster");
+      const badgeLevel1 = document.getElementById("badgeLevel1");
+      const badgeLevel2 = document.getElementById("badgeLevel2");
+      const jumpLevel1 = document.getElementById("jumpLevel1");
+      const jumpLevel2 = document.getElementById("jumpLevel2");
+      const level1 = document.getElementById("level1");
+      const level2 = document.getElementById("level2");
+      const empty = document.getElementById("vaultEmpty");
+
+      if (masterUnlocked) {
+        badgeMaster.textContent = "Master Unlocked";
+        badgeMaster.className = "vault-badge master";
+      }
+
+      if (level1Unlocked) {
+        badgeLevel1.textContent = "Level 1 Unlocked";
+        badgeLevel1.className = "vault-badge on";
+        jumpLevel1.hidden = false;
+        level1.hidden = false;
+      }
+
+      if (level2Unlocked) {
+        badgeLevel2.textContent = "Level 2 Unlocked";
+        badgeLevel2.className = "vault-badge on";
+        jumpLevel2.hidden = false;
+        level2.hidden = false;
+      }
+
+      if (!level1Unlocked && !level2Unlocked) {
+        empty.hidden = false;
+      }
+    })();
+  </script>
+</body>
+</html>
