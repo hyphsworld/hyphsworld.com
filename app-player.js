@@ -1,18 +1,135 @@
-const tracks=[{title:"HAM",meta:"Hyph Life — prod by 1ManBand",src:"ham.mp3",art:"album-art.jpg"},{title:"KIKI",meta:"Cuz Zaid x JCrown x Ruzzo — prod by Cuz Zaid",src:"kiki.mp3",art:"kiki-art.jpg"},{title:"ON GOD",meta:"BooGotGluu x No Flash",src:"on-god.mp3",art:"album-art.jpg"},{title:"TIME",meta:"SIXX FIGGAZ x HYPH LIFE",src:"time.mp3",art:"time-art.jpg"}];
-const audio=document.getElementById("audio"),coverArt=document.getElementById("coverArt"),songTitle=document.getElementById("songTitle"),songMeta=document.getElementById("songMeta"),seekBar=document.getElementById("seekBar"),currentTimeEl=document.getElementById("currentTime"),durationEl=document.getElementById("duration"),playBtn=document.getElementById("playBtn"),prevBtn=document.getElementById("prevBtn"),nextBtn=document.getElementById("nextBtn"),shuffleBtn=document.getElementById("shuffleBtn"),repeatBtn=document.getElementById("repeatBtn"),playlist=document.getElementById("playlist"),coolPoints=document.getElementById("coolPoints"),duckBtn=document.getElementById("duckBtn");
-let currentIndex=0,isPlaying=false,shuffle=false,repeat=false,points=Number(localStorage.getItem("hyphsworldCoolPoints")||80);
-function time(s){if(!Number.isFinite(s))return"0:00";return Math.floor(s/60)+":"+String(Math.floor(s%60)).padStart(2,"0")}
-function savePoints(n=0){points+=n;localStorage.setItem("hyphsworldCoolPoints",String(points));coolPoints.textContent=points}
-function render(){playlist.innerHTML=tracks.map((t,i)=>`<article class="track-card ${i===currentIndex?"active":""}" data-index="${i}"><div class="track-thumb"><img src="${t.art}" alt="${t.title}" onerror="this.style.display='none'"></div><h3>${t.title}</h3><p>${t.meta}</p></article>`).join("");document.querySelectorAll(".track-card").forEach(c=>c.onclick=()=>load(Number(c.dataset.index),true))}
-function load(i,auto=false){currentIndex=i;let t=tracks[i];songTitle.textContent=t.title;songMeta.textContent=t.meta;coverArt.src=t.art;audio.src=t.src;render();if(window.gtag)gtag("event","player_track_select",{event_label:t.title});if(auto)play()}
-function play(){audio.play().then(()=>{isPlaying=true;playBtn.textContent="⏸";savePoints(5);if(window.gtag)gtag("event","player_play",{event_label:tracks[currentIndex].title})}).catch(()=>pop("Tap play again — browser blocked autoplay until you interact."))}
-function pause(){audio.pause();isPlaying=false;playBtn.textContent="▶"}
-function next(){if(shuffle){let n=Math.floor(Math.random()*tracks.length);if(n===currentIndex)n=(n+1)%tracks.length;load(n,true)}else load((currentIndex+1)%tracks.length,true)}
-function prev(){load((currentIndex-1+tracks.length)%tracks.length,true)}
-function pop(txt){document.querySelector(".duck-pop")?.remove();let d=document.createElement("div");d.className="duck-pop";d.textContent=txt;document.body.appendChild(d);setTimeout(()=>d.remove(),4000)}
-playBtn.onclick=()=>isPlaying?pause():play();nextBtn.onclick=next;prevBtn.onclick=prev;
-shuffleBtn.onclick=()=>{shuffle=!shuffle;shuffleBtn.textContent=shuffle?"SHUFFLE ON":"SHUFFLE";shuffleBtn.style.background=shuffle?"#45ff63":"#49cfff"};
-repeatBtn.onclick=()=>{repeat=!repeat;repeatBtn.textContent=repeat?"REPEAT ON":"REPEAT OFF";repeatBtn.style.background=repeat?"#45ff63":"#49cfff"};
-audio.onloadedmetadata=()=>durationEl.textContent=time(audio.duration);audio.ontimeupdate=()=>{currentTimeEl.textContent=time(audio.currentTime);if(audio.duration)seekBar.value=(audio.currentTime/audio.duration)*100};seekBar.oninput=()=>{if(audio.duration)audio.currentTime=(Number(seekBar.value)/100)*audio.duration};audio.onended=()=>repeat?(audio.currentTime=0,play()):next();
-duckBtn.onclick=()=>{savePoints(10);pop(["Duck Sauce says: run HAM back one more time.","Duck Sauce says: full player loaded. No middleman.","Duck Sauce says: hit the Vault after this song.","BuckTheBodyguard says: music first, code second."][Math.floor(Math.random()*4)])};
-savePoints(0);load(0,false);
+(() => {
+  const tracks = [
+    { title: "HAM", artist: "Hyph Life", src: "ham.mp3", cover: "album-art.jpg" },
+    { title: "25/8", artist: "Young Tez", src: "25-8.mp3", cover: "25-8.jpg" },
+    { title: "KIKI", artist: "Cuz Zaid x JCrown x Ruzzo", src: "kiki.mp3", cover: "album-art.jpg" },
+    { title: "ON GOD", artist: "BooGotGluu x No Flash", src: "on-god.mp3", cover: "album-art.jpg" },
+    { title: "DA VAULT FREESTYLE", artist: "Hyph Life", src: "da-vault-freestyle.mp3", cover: "album-art.jpg" },
+    { title: "FREE HYPH", artist: "Hyph Life", src: "free-hyph.mp3", cover: "album-art.jpg" },
+    { title: "BOUT THAT", artist: "Hyph Life", src: "bout-that.mp3", cover: "bout-that-art.jpg" },
+    { title: "50 CENT SHIT", artist: "Hyph Life", src: "50-cent-shit.mp3", cover: "album-art.jpg" }
+  ];
+
+  const $ = (id) => document.getElementById(id);
+  const audio = $("audio");
+  const playBtn = $("playBtn");
+  const prevBtn = $("prevBtn");
+  const nextBtn = $("nextBtn");
+  const shuffleBtn = $("shuffleBtn");
+  const repeatBtn = $("repeatBtn");
+  const seekBar = $("seekBar");
+  const volumeBar = $("volumeBar");
+  const title = $("songTitle");
+  const artist = $("songArtist");
+  const cover = $("coverArt");
+  const currentTime = $("currentTime");
+  const duration = $("duration");
+  const playlist = $("playlist");
+  const status = $("playerStatus");
+
+  let index = 0;
+  let shuffle = false;
+  let repeat = false;
+  let seeking = false;
+
+  function fmt(seconds) {
+    if (!Number.isFinite(seconds)) return "0:00";
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60).toString().padStart(2, "0");
+    return `${m}:${s}`;
+  }
+
+  function trackEvent(name, data = {}) {
+    if (typeof gtag === "function") gtag("event", name, data);
+  }
+
+  function renderQueue() {
+    playlist.innerHTML = "";
+    tracks.forEach((track, i) => {
+      const row = document.createElement("button");
+      row.className = "track" + (i === index ? " active" : "");
+      row.type = "button";
+      row.innerHTML = `<img src="${track.cover}" alt="" onerror="this.src='album-art.jpg'"><span><strong>${track.title}</strong><em>${track.artist}</em></span><small>${i === index ? "NOW" : "PLAY"}</small>`;
+      row.addEventListener("click", () => {
+        loadTrack(i, true);
+      });
+      playlist.appendChild(row);
+    });
+  }
+
+  function loadTrack(i, shouldPlay = false) {
+    index = (i + tracks.length) % tracks.length;
+    const track = tracks[index];
+    title.textContent = track.title;
+    artist.textContent = track.artist;
+    cover.src = track.cover;
+    audio.src = track.src;
+    status.textContent = `Loaded: ${track.title}`;
+    renderQueue();
+    trackEvent("player_load_track", { track_title: track.title });
+    if (shouldPlay) play();
+  }
+
+  async function play() {
+    try {
+      await audio.play();
+      playBtn.textContent = "❚❚";
+      status.textContent = `Playing: ${tracks[index].title}`;
+      trackEvent("player_play", { track_title: tracks[index].title });
+    } catch (err) {
+      status.textContent = "Audio file missing or browser blocked playback. Check the MP3 filename in the repo.";
+      console.warn(err);
+    }
+  }
+
+  function pause() {
+    audio.pause();
+    playBtn.textContent = "▶";
+    status.textContent = "Paused.";
+  }
+
+  function next() {
+    if (shuffle) {
+      let nextIndex = Math.floor(Math.random() * tracks.length);
+      if (tracks.length > 1 && nextIndex === index) nextIndex = (nextIndex + 1) % tracks.length;
+      loadTrack(nextIndex, true);
+    } else {
+      loadTrack(index + 1, true);
+    }
+  }
+
+  playBtn.addEventListener("click", () => audio.paused ? play() : pause());
+  prevBtn.addEventListener("click", () => loadTrack(index - 1, true));
+  nextBtn.addEventListener("click", next);
+  shuffleBtn.addEventListener("click", () => {
+    shuffle = !shuffle;
+    shuffleBtn.classList.toggle("active", shuffle);
+  });
+  repeatBtn.addEventListener("click", () => {
+    repeat = !repeat;
+    repeatBtn.classList.toggle("active", repeat);
+  });
+
+  audio.addEventListener("loadedmetadata", () => {
+    duration.textContent = fmt(audio.duration);
+  });
+  audio.addEventListener("timeupdate", () => {
+    if (!seeking && Number.isFinite(audio.duration)) {
+      seekBar.value = (audio.currentTime / audio.duration) * 100 || 0;
+    }
+    currentTime.textContent = fmt(audio.currentTime);
+  });
+  audio.addEventListener("ended", () => repeat ? loadTrack(index, true) : next());
+
+  seekBar.addEventListener("input", () => seeking = true);
+  seekBar.addEventListener("change", () => {
+    if (Number.isFinite(audio.duration)) audio.currentTime = (Number(seekBar.value) / 100) * audio.duration;
+    seeking = false;
+  });
+  volumeBar.addEventListener("input", () => {
+    audio.volume = Number(volumeBar.value);
+  });
+
+  audio.volume = Number(volumeBar.value);
+  loadTrack(0, false);
+})();
