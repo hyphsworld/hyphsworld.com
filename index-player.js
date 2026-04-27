@@ -1,1 +1,109 @@
-document.addEventListener('DOMContentLoaded',()=>{const tracks=[{title:'WHAT’S HANNIN',meta:'Hyph Life ft 3D The Capo, Thali — prod by Cuz Zaid',files:['whats-hannin.mp3','HYPH LIFE WHATS HANNIN MASTER.mp3']},{title:'WITH ME',meta:'Hyph Life — prod K.M.T.',files:['with-me.mp3','WITH ME prod K.M.T.mp3']},{title:'BOUT YOU',meta:'Hyph Life',files:['bout-you.mp3','BOUT YOU prod by .mp3']},{title:'NO TRACE SNIP',meta:'Hyph Life — prod by Cuz Zaid',files:['no-trace-snip.mp3','4DAY NO TRACE SNIP.mp3']}];const audio=document.getElementById('main-audio'),progress=document.getElementById('homeProgress'),currentTimeEl=document.getElementById('homeCurrentTime'),durationEl=document.getElementById('homeDuration'),playBtn=document.getElementById('playBtn'),pauseBtn=document.getElementById('pauseBtn'),stickyPlayBtn=document.getElementById('stickyPlayBtn'),stickyPauseBtn=document.getElementById('stickyPauseBtn'),titleEl=document.getElementById('homeTrackTitle'),metaEl=document.getElementById('homeTrackMeta'),stickyTitleEl=document.getElementById('stickyTrackTitle'),stickyMetaEl=document.getElementById('stickyTrackMeta'),songButtons=[...document.querySelectorAll('.home-song')];let currentIndex=0,fileTry=0,isSeeking=false;function fmt(t){if(!Number.isFinite(t))return'0:00';return`${Math.floor(t/60)}:${String(Math.floor(t%60)).padStart(2,'0')}`}function set(t){if(titleEl)titleEl.textContent=t.title;if(metaEl)metaEl.textContent=t.meta;if(stickyTitleEl)stickyTitleEl.textContent=t.title;if(stickyMetaEl)stickyMetaEl.textContent=t.meta}function active(){songButtons.forEach((b,i)=>b.classList.toggle('active',i===currentIndex))}function load(i){currentIndex=i;fileTry=0;const t=tracks[i];if(!audio)return;audio.pause();audio.src=t.files[fileTry];audio.load();set(t);active();if(progress)progress.value=0}async function play(){try{await audio.play();if(window.addCoolPoints)window.addCoolPoints(5,'Played song')}catch(e){console.log(e)}}function pause(){audio.pause()}function next(){load(currentIndex===tracks.length-1?0:currentIndex+1);play()}playBtn?.addEventListener('click',play);pauseBtn?.addEventListener('click',pause);stickyPlayBtn?.addEventListener('click',play);stickyPauseBtn?.addEventListener('click',pause);songButtons.forEach(b=>b.addEventListener('click',()=>{load(Number(b.dataset.index));play()}));audio?.addEventListener('error',()=>{if(fileTry<tracks[currentIndex].files.length-1){fileTry++;audio.src=tracks[currentIndex].files[fileTry];audio.load();play()}});audio?.addEventListener('loadedmetadata',()=>{if(durationEl)durationEl.textContent=fmt(audio.duration)});audio?.addEventListener('timeupdate',()=>{if(!isSeeking&&progress&&audio.duration)progress.value=audio.currentTime/audio.duration*100;if(currentTimeEl)currentTimeEl.textContent=fmt(audio.currentTime)});audio?.addEventListener('ended',()=>{if(window.addCoolPoints)window.addCoolPoints(20,'Completed song');next()});progress?.addEventListener('input',()=>isSeeking=true);progress?.addEventListener('change',()=>{if(audio.duration)audio.currentTime=progress.value/100*audio.duration;isSeeking=false});load(0)});
+const TRACKS = {
+  "young-tez": {
+    title: "Young Tez â€” 25/8",
+    meta: "Prod. by Marty McPhresh",
+    src: ""
+  },
+  "ham": {
+    title: "Hyph Life â€” HAM",
+    meta: "Prod. by Hyph Life",
+    src: ""
+  },
+  "ongod": {
+    title: "BooGotGluu x No Flash â€” ON GOD",
+    meta: "Spotlight Rotation",
+    src: ""
+  },
+  "kiki": {
+    title: "Cuz Zaid x JCrown x Ruzzo â€” KIKI",
+    meta: "Prod. by Cuz Zaid",
+    src: ""
+  }
+};
+
+const VAULT_CODES = {
+  "510": "Main Room unlocked. Richmond is in the building.",
+  "HYPH": "Main Room unlocked. HYPHSWORLD access granted.",
+  "DUCK": "Duck Sauce opened the door. Donâ€™t ask how.",
+  "AMS": "AMS WEST access granted.",
+  "RICHMOND": "Richmond code accepted.",
+  "QUARANTINE": "Level 1 unlocked.",
+  "WORLD5": "Level 2 unlocked. HYPHSWORLD 5 loading."
+};
+
+function selectTrack(key) {
+  const track = TRACKS[key];
+  if (!track) return;
+
+  const title = document.querySelector("[data-now-title]");
+  const meta = document.querySelector("[data-now-meta]");
+  const audio = document.querySelector("[data-audio]");
+
+  if (title) title.textContent = track.title;
+  if (meta) meta.textContent = track.meta;
+
+  if (audio) {
+    const source = audio.querySelector("source");
+    if (source) source.src = track.src || "";
+    audio.load();
+  }
+
+  document.querySelectorAll("[data-track]").forEach((button) => {
+    button.classList.toggle("active", button.dataset.track === key);
+  });
+}
+
+function unlockVault(code) {
+  const cleaned = String(code || "").trim().toUpperCase();
+  const message = document.querySelector("[data-code-message]");
+  const response = VAULT_CODES[cleaned];
+
+  if (!message) return;
+
+  if (!response) {
+    message.textContent = "Code not recognized yet. Try 510, HYPH, DUCK, AMS, RICHMOND, QUARANTINE, or WORLD5.";
+    message.style.color = "#ffd166";
+    return;
+  }
+
+  message.textContent = response;
+  message.style.color = "#30ff78";
+
+  if (["510", "HYPH", "DUCK", "AMS", "RICHMOND"].includes(cleaned)) {
+    document.querySelector('[data-room="main"]')?.classList.add("unlocked");
+  }
+  if (cleaned === "QUARANTINE") {
+    document.querySelector('[data-room="level1"]')?.classList.add("unlocked");
+  }
+  if (cleaned === "WORLD5") {
+    document.querySelector('[data-room="level2"]')?.classList.add("unlocked");
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const navToggle = document.querySelector("[data-nav-toggle]");
+  const nav = document.querySelector("[data-nav]");
+
+  navToggle?.addEventListener("click", () => {
+    nav?.classList.toggle("open");
+  });
+
+  document.querySelectorAll("[data-track]").forEach((button) => {
+    button.addEventListener("click", () => selectTrack(button.dataset.track));
+  });
+
+  document.querySelectorAll("[data-fill-code]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const input = document.querySelector("#vault-code");
+      if (input) input.value = button.dataset.fillCode;
+      unlockVault(button.dataset.fillCode);
+    });
+  });
+
+  const form = document.querySelector("[data-code-form]");
+  form?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const input = form.querySelector("input[name='code']");
+    unlockVault(input?.value);
+  });
+});
