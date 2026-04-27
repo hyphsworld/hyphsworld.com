@@ -1,0 +1,121 @@
+/* HYPHSWORLD Vault Status + Cool Points Add-On */
+/* Safe add-on file: does not replace your main styles.css */
+
+.hyphs-status-panel {
+  margin-top: 22px;
+  padding: 18px;
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 12% 10%, rgba(57,255,20,.18), transparent 32%),
+    radial-gradient(circle at 85% 18%, rgba(255,215,0,.16), transparent 28%),
+    rgba(7,7,7,.78);
+  box-shadow: 0 22px 60px rgba(0,0,0,.35);
+  backdrop-filter: blur(10px);
+}
+
+.hyphs-status-top {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.hyphs-status-top .eyebrow {
+  margin: 0;
+}
+
+#vaultStatusLabel {
+  font-size: clamp(18px, 2vw, 26px);
+  letter-spacing: .03em;
+  text-transform: uppercase;
+}
+
+.hyphs-meter {
+  display: grid;
+  gap: 10px;
+}
+
+.hyphs-meter-copy {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+#coolPointsCount {
+  color: #39ff14;
+  font-size: 28px;
+  text-shadow: 0 0 20px rgba(57,255,20,.35);
+}
+
+.hyphs-meter-bar {
+  height: 12px;
+  overflow: hidden;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.15);
+  background: rgba(255,255,255,.08);
+}
+
+.hyphs-meter-bar span {
+  display: block;
+  height: 100%;
+  width: 0%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #39ff14, #f5d24b);
+  box-shadow: 0 0 24px rgba(57,255,20,.45);
+  transition: width .35s ease;
+}
+
+.hyphs-status-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.hyphs-status-note {
+  margin: 12px 0 0;
+  color: rgba(255,255,255,.72);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.trivia-feedback.success,
+#coolPointsMessage.success {
+  color: #39ff14;
+  font-weight: 900;
+}
+
+.trivia-feedback.error,
+#coolPointsMessage.error {
+  color: #ff5a5a;
+  font-weight: 900;
+}
+
+.playlist-item.locked {
+  opacity: .68;
+  cursor: pointer;
+  border-style: dashed;
+}
+
+.playlist-item.locked strong::before {
+  content: "ðŸ”’ ";
+}
+
+@media (max-width: 760px) {
+  .hyphs-status-top,
+  .hyphs-meter-copy {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .hyphs-status-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
