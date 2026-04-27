@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HYPHSWORLD | AMS WEST</title>
+  <meta name="description" content="HYPHSWORLD by Hyph Life and AMS WEST. Music, artist spotlights, vault access, merch, and the 01 universe." />
+  <meta property="og:title" content="HYPHSWORLD | AMS WEST" />
+  <meta property="og:description" content="Music, vault access, artist spotlights, merch, and the 01 universe." />
+  <meta property="og:image" content="album-art.jpg" />
+  <meta property="og:type" content="website" />
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CT7CWHCHYC"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);} 
+    gtag('js', new Date());
+    gtag('config', 'G-CT7CWHCHYC');
+  </script>
+</head>
+<body>
+  <div class="site-bg"></div>
+  <div class="noise"></div>
+
+  <header class="topbar">
+    <a class="brand track-click" data-track-link="nav_home" href="#top" aria-label="HYPHSWORLD home">
+      <span class="brand-kicker">AMS WEST PRESENTS</span>
+      <span class="brand-main">HYPHSWORLD</span>
+    </a>
+
+    <nav class="nav-links" aria-label="Main navigation">
+      <a class="track-click" data-track-link="nav_player" href="#player">Music</a>
+      <a class="track-click" data-track-link="nav_spotlight" href="#spotlight">Spotlight</a>
+      <a class="track-click" data-track-link="nav_vault" href="vault.html">Vault</a>
+      <a class="track-click nav-pill" data-track-link="nav_full_player" href="app-player.html">Full Player</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero section-pad">
+      <div class="hero-copy">
+        <p class="eyebrow">Richmond, CA • Hyph Life • AMS WEST</p>
+        <h1>
+          <span>Music.</span>
+          <span>Culture.</span>
+          <span>Vault Access.</span>
+        </h1>
+        <p class="hero-text">
+          The official HYPHSWORLD home base — built for the records, the codes, the artists,
+          the 01 universe, and the fans who know how to tap in.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary track-click" data-track-link="hero_play" href="#player">Play Now</a>
+          <a class="btn btn-dark track-click" data-track-link="hero_vault" href="vault.html">Enter Vault</a>
+          <a class="btn btn-ghost track-click" data-track-link="hero_full_player" href="app-player.html">Full Player</a>
+        </div>
+        <div class="hero-badges" aria-label="HYPHSWORLD badges">
+          <span>HYPHSWORLD 5</span>
+          <span>DUCK SAUCE WATCHING</span>
+          <span>CODES ACTIVE</span>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="album-card">
+          <img src="album-art.jpg" alt="HYPHSWORLD artwork" />
+          <div class="album-glass">
+            <strong>NOW LOADED</strong>
+            <span>HAM • KIKI • ON GOD • TIME</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="ticker" aria-label="HYPHSWORLD ticker">
+      <div class="ticker-track">
+        <span>WELCOME TO HYPHSWORLD</span>
+        <span>HAM LOADED</span>
+        <span>KIKI LOADED</span>
+        <span>ON GOD LOADED</span>
+        <span>TIME LOADED</span>
+        <span>VAULT CODES ACTIVE</span>
+        <span>RICHMOND CALIFORNIA</span>
+        <span>DUCK SAUCE WATCHING</span>
+        <span>WELCOME TO HYPHSWORLD</span>
+        <span>HAM LOADED</span>
+        <span>KIKI LOADED</span>
+        <span>ON GOD LOADED</span>
+      </div>
+    </div>
+
+    <section id="player" class="section-pad split-section">
+      <div class="section-head">
+        <p class="eyebrow">Homepage Player</p>
+        <h2>Tap in fast.</h2>
+        <p>Clean homepage rotation with the newest records front and center.</p>
+      </div>
+
+      <div class="player-card">
+        <div class="player-art-wrap">
+          <img id="homeCover" class="player-art" src="album-art.jpg" alt="Current track artwork" />
+        </div>
+
+        <div class="player-ui">
+          <p class="mini-label" id="homeSpotlightLabel">SPOTLIGHT 02</p>
+          <h3 id="homeTitle">HAM</h3>
+          <p id="homeMeta">Artist: Hyph Life • Produced by 1ManBand</p>
+
+          <audio id="homeAudio" preload="metadata"></audio>
+
+          <div class="progress-wrap">
+            <input id="homeProgress" type="range" min="0" max="100" value="0" step="0.1" aria-label="Song progress" />
+            <div class="time-row">
+              <span id="homeCurrent">0:00</span>
+              <span id="homeDuration">0:00</span>
+            </div>
+          </div>
+
+          <div class="control-row">
+            <button id="prevTrack" class="circle-btn" type="button" aria-label="Previous track">⟵</button>
+            <button id="playTrack" class="play-btn" type="button">PLAY HAM</button>
+            <button id="nextTrack" class="circle-btn" type="button" aria-label="Next track">⟶</button>
+          </div>
+
+          <div id="trackList" class="track-list" aria-label="Homepage track list"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="spotlight" class="section-pad spotlight-section">
+      <div class="section-head center-head">
+        <p class="eyebrow">Artist Spotlight</p>
+        <h2>Who’s in rotation?</h2>
+        <p>The spotlight cards are now high contrast: black, green, white, and easy to read.</p>
+      </div>
+
+      <div class="spotlight-grid">
+        <article class="spotlight-card active">
+          <span>01</span>
+          <h3>Young Tez</h3>
+          <p>25/8 • Prod by Marty McPhresh</p>
+        </article>
+        <article class="spotlight-card">
+          <span>02</span>
+          <h3>Hyph Life</h3>
+          <p>HAM • Prod by 1ManBand</p>
+        </article>
+        <article class="spotlight-card">
+          <span>03</span>
+          <h3>BooGotGluu x No Flash</h3>
+          <p>ON GOD</p>
+        </article>
+        <article class="spotlight-card">
+          <span>04</span>
+          <h3>Cuz Zaid x JCrown x Ruzzo</h3>
+          <p>KIKI • Prod by Cuz Zaid</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section-pad world-grid">
+      <a class="world-card track-click" data-track-link="world_full_player" href="app-player.html">
+        <p class="eyebrow">Full Player</p>
+        <h3>Stream the full queue.</h3>
+        <span>Open Player →</span>
+      </a>
+
+      <a class="world-card track-click" data-track-link="world_vault" href="vault.html">
+        <p class="eyebrow">Vault</p>
+        <h3>Codes, drops, private access.</h3>
+        <span>Enter Vault →</span>
+      </a>
+
+      <a class="world-card track-click" data-track-link="world_01_show" href="https://youtube.com/@the01showtv?si=ZzIx6jWoJQVdXt_8" target="_blank" rel="noreferrer">
+        <p class="eyebrow">The 01 Show</p>
+        <h3>Watch the universe.</h3>
+        <span>Watch Now →</span>
+      </a>
+
+      <a class="world-card track-click" data-track-link="world_merch" href="merch.html">
+        <p class="eyebrow">Merch</p>
+        <h3>Gear for the movement.</h3>
+        <span>Shop Merch →</span>
+      </a>
+    </section>
+
+    <section class="section-pad vault-band">
+      <div>
+        <p class="eyebrow">Access Mode</p>
+        <h2>Do you know the code?</h2>
+        <p>Level 1, Level 2, and the main Vault all stay connected from the homepage.</p>
+      </div>
+      <a class="btn btn-primary track-click" data-track-link="vault_band_enter" href="vault.html">Unlock Vault</a>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© HYPHSWORLD / AMS WEST</p>
+    <div>
+      <a class="track-click" data-track-link="footer_instagram" href="https://www.instagram.com/hyphsworld" target="_blank" rel="noreferrer">Instagram</a>
+      <a class="track-click" data-track-link="footer_youtube" href="https://youtube.com/@amswesttv" target="_blank" rel="noreferrer">YouTube</a>
+      <a class="track-click" data-track-link="footer_email" href="mailto:tone@amsenterprisecorp.com">Booking</a>
+    </div>
+  </footer>
+
+  <script src="homepage.js"></script>
+</body>
+</html>
