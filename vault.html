@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HYPHSWORLD Vault</title>
+  <meta name="description" content="Enter the HYPHSWORLD Vault. Unlock levels, earn Cool Points, and access exclusive music." />
+
+  <style>
+    :root {
+      --bg: #050505;
+      --panel: rgba(16, 16, 16, 0.92);
+      --panel-2: rgba(26, 26, 26, 0.92);
+      --text: #f5f5f5;
+      --muted: #a7a7a7;
+      --red: #ff1f2f;
+      --green: #22ff75;
+      --white: #ffffff;
+      --line: rgba(255,255,255,0.12);
+      --shadow: 0 22px 80px rgba(0,0,0,0.55);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(34,255,117,0.18), transparent 32%),
+        radial-gradient(circle at bottom right, rgba(255,31,47,0.22), transparent 38%),
+        linear-gradient(135deg, #030303 0%, #0b0b0b 55%, #030303 100%);
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .vault-wrap {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 46px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 950;
+      letter-spacing: -0.04em;
+      text-transform: uppercase;
+    }
+
+    .brand-mark {
+      width: 46px;
+      height: 46px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--green), var(--red));
+      color: #050505;
+      box-shadow: 0 0 36px rgba(34,255,117,0.22);
+    }
+
+    .nav-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .btn {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 11px 15px;
+      font-weight: 900;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); border-color: rgba(255,255,255,0.32); }
+    .btn-primary { background: var(--green); color: #041006; border-color: var(--green); }
+    .btn-red { background: var(--red); color: white; border-color: var(--red); }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.18fr 0.82fr;
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .hero-card,
+    .panel {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 30px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero-card {
+      padding: clamp(24px, 4vw, 46px);
+      min-height: 480px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .hero-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(120deg, rgba(34,255,117,0.11), transparent 38%),
+        repeating-linear-gradient(135deg, rgba(255,255,255,0.045) 0 1px, transparent 1px 12px);
+      pointer-events: none;
+    }
+
+    .kicker {
+      width: fit-content;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(34,255,117,0.42);
+      background: rgba(34,255,117,0.09);
+      color: var(--green);
+      border-radius: 999px;
+      padding: 9px 13px;
+      font-size: 12px;
+      font-weight: 950;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      position: relative;
+      z-index: 1;
+    }
+
+    h1 {
+      margin: 20px 0 14px;
+      font-size: clamp(52px, 9vw, 104px);
+      line-height: 0.85;
+      letter-spacing: -0.08em;
+      text-transform: uppercase;
+      position: relative;
+      z-index: 1;
+    }
+
+    .red { color: var(--red); }
+    .green { color: var(--green); }
+
+    .hero-copy {
+      max-width: 660px;
+      color: #d8d8d8;
+      font-size: clamp(16px, 2vw, 20px);
+      line-height: 1.45;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 26px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 28px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .stat {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.055);
+      border-radius: 20px;
+      padding: 14px;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 23px;
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .stat small {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .unlock-panel {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .status-card {
+      border: 1px solid rgba(255,255,255,0.14);
+      background: linear-gradient(135deg, rgba(34,255,117,0.12), rgba(255,31,47,0.08));
+      border-radius: 24px;
+      padding: 20px;
+    }
+
+    .status-card small,
+    .panel-label {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 950;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 9px;
+    }
+
+    .status-card strong {
+      display: block;
+      font-size: 30px;
+      letter-spacing: -0.05em;
+      text-transform: uppercase;
+    }
+
+    .code-form {
+      display: grid;
+      gap: 10px;
+    }
+
+    .code-input {
+      width: 100%;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(0,0,0,0.45);
+      color: var(--white);
+      border-radius: 18px;
+      padding: 17px 16px;
+      font-size: 18px;
+      font-weight: 950;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      outline: none;
+    }
+
+    .code-input:focus { border-color: var(--green); box-shadow: 0 0 0 4px rgba(34,255,117,0.12); }
+
+    .message {
+      min-height: 22px;
+      color: var(--green);
+      font-weight: 950;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .levels {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 22px;
+    }
+
+    .level-card {
+      border: 1px solid var(--line);
+      background: var(--panel-2);
+      border-radius: 24px;
+      padding: 18px;
+      min-height: 210px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .level-card::after {
+      content: "";
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      border-radius: 999px;
+      right: -54px;
+      top: -54px;
+      background: rgba(255,255,255,0.06);
+    }
+
+    .level-card.unlocked { border-color: rgba(34,255,117,0.48); }
+    .level-card.locked { opacity: 0.72; }
+
+    .level-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 11px;
+      font-weight: 950;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .pill.on { color: #061006; background: var(--green); border-color: var(--green); }
+    .pill.lock { color: white; background: rgba(255,31,47,0.26); border-color: rgba(255,31,47,0.42); }
+
+    .level-card h2 {
+      margin: 0 0 10px;
+      font-size: 24px;
+      letter-spacing: -0.04em;
+      text-transform: uppercase;
+      position: relative;
+      z-index: 1;
+    }
+
+    .level-card p {
+      margin: 0;
+      color: #c9c9c9;
+      line-height: 1.45;
+      position: relative;
+      z-index: 1;
+    }
+
+    .reward-list {
+      margin: 16px 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 8px;
+      color: #eeeeee;
+      font-size: 14px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .reward-list li::before {
+      content: "•";
+      color: var(--green);
+      margin-right: 8px;
+    }
+
+    .lower-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .panel { padding: 22px; }
+
+    .cool-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      border-top: 1px solid var(--line);
+      padding: 13px 0;
+      color: #e9e9e9;
+      font-weight: 800;
+    }
+
+    .cool-row:first-of-type { border-top: 0; }
+    .cool-row span:last-child { color: var(--green); font-weight: 950; }
+
+    .ticker {
+      margin-top: 22px;
+      border: 1px solid rgba(34,255,117,0.35);
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(34,255,117,0.08);
+      color: var(--green);
+      font-weight: 950;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .ticker-track {
+      display: inline-block;
+      padding: 12px 0;
+      animation: scroll 18s linear infinite;
+    }
+
+    @keyframes scroll {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    @media (max-width: 860px) {
+      .hero,
+      .levels,
+      .lower-grid { grid-template-columns: 1fr; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .nav-actions { justify-content: flex-start; }
+      .stats-grid { grid-template-columns: 1fr; }
+      .hero-card { min-height: auto; }
+    }
+  </style>
+</head>
+<body>
+  <main class="vault-wrap">
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="Back to HYPHSWORLD homepage">
+        <span class="brand-mark">HW</span>
+        <span>HYPHSWORLD</span>
+      </a>
+      <nav class="nav-actions" aria-label="Vault navigation">
+        <a class="btn" href="index.html">Home</a>
+        <a class="btn" href="app-player.html">Full Player</a>
+        <button class="btn btn-red" id="resetVaultBtn" type="button">Reset Vault</button>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <article class="hero-card">
+        <div>
+          <div class="kicker">🔐 Code Access Only</div>
+          <h1>THE <span class="green">VAULT</span><br><span class="red">IS LIVE</span></h1>
+          <p class="hero-copy">
+            Enter the code, unlock levels, earn Cool Points, and open exclusive HYPHSWORLD songs without giving away the whole player for free.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="app-player.html">Open Player</a>
+            <button class="btn" id="dailyClaimBtn" type="button">Daily +5 Points</button>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat">
+            <strong id="vaultLevelStat">0</strong>
+            <small>Vault Level</small>
+          </div>
+          <div class="stat">
+            <strong id="coolPointsStat">0</strong>
+            <small>Cool Points</small>
+          </div>
+          <div class="stat">
+            <strong id="vaultStatusStat">Locked</strong>
+            <small>Status</small>
+          </div>
+        </div>
+      </article>
+
+      <aside class="panel unlock-panel" aria-label="Unlock vault form">
+        <div class="status-card">
+          <small>Current Access</small>
+          <strong id="vaultStatusText">Vault Locked</strong>
+        </div>
+
+        <form class="code-form" id="vaultForm">
+          <label class="panel-label" for="vaultCode">Enter Code</label>
+          <input class="code-input" id="vaultCode" type="text" placeholder="COOLMAN" autocomplete="off" />
+          <button class="btn btn-primary" type="submit">Unlock Vault</button>
+          <div class="message" id="vaultMessage" role="status" aria-live="polite"></div>
+        </form>
+
+        <div class="panel-label">Active Codes</div>
+        <div class="cool-row"><span>COOLMAN</span><span>Level 1</span></div>
+        <div class="cool-row"><span>PRESSURE</span><span>Level 2</span></div>
+        <div class="cool-row"><span>DUCKSAUCE</span><span>Level 2</span></div>
+      </aside>
+    </section>
+
+    <section class="levels" aria-label="Vault levels">
+      <article class="level-card unlocked" id="level0Card">
+        <div class="level-top">
+          <span class="pill on">Open</span>
+          <span>🎧</span>
+        </div>
+        <h2>Featured</h2>
+        <p>Public songs stay available so visitors can still hear the brand before entering codes.</p>
+        <ul class="reward-list">
+          <li>Homepage tracks</li>
+          <li>Featured music</li>
+          <li>Public player access</li>
+        </ul>
+      </article>
+
+      <article class="level-card locked" id="level1Card">
+        <div class="level-top">
+          <span class="pill lock" id="level1Pill">Locked</span>
+          <span>🔒</span>
+        </div>
+        <h2>Level 1</h2>
+        <p>First code opens the first hidden floor and gives fans a reason to come back.</p>
+        <ul class="reward-list">
+          <li>Level 1 songs</li>
+          <li>+25 Cool Points</li>
+          <li>Early supporter status</li>
+        </ul>
+      </article>
+
+      <article class="level-card locked" id="level2Card">
+        <div class="level-top">
+          <span class="pill lock" id="level2Pill">Locked</span>
+          <span>💎</span>
+        </div>
+        <h2>Level 2</h2>
+        <p>Second floor unlocks deeper content for real fans with the right code.</p>
+        <ul class="reward-list">
+          <li>Level 2 songs</li>
+          <li>+50 Cool Points</li>
+          <li>Diamond access badge</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="lower-grid">
+      <article class="panel">
+        <span class="panel-label">Cool Points Menu</span>
+        <div class="cool-row"><span>Daily visit claim</span><span>+5</span></div>
+        <div class="cool-row"><span>Unlock Level 1</span><span>+25</span></div>
+        <div class="cool-row"><span>Unlock Level 2</span><span>+50</span></div>
+        <div class="cool-row"><span>Future share reward</span><span>+50</span></div>
+      </article>
+
+      <article class="panel">
+        <span class="panel-label">What This Fixes</span>
+        <div class="cool-row"><span>Full Player</span><span>Gated</span></div>
+        <div class="cool-row"><span>Codes</span><span>Live</span></div>
+        <div class="cool-row"><span>Fan loop</span><span>Active</span></div>
+        <div class="cool-row"><span>Vault feel</span><span>Major</span></div>
+      </article>
+    </section>
+
+    <div class="ticker" aria-label="Vault ticker">
+      <div class="ticker-track">
+        WELCOME 2 HYPHSWORLD • DO YOU KNOW THE CODE • UNLOCK THE VAULT • EARN COOL POINTS • HYPHSWORLD 5 COMING SOON •&nbsp;
+        WELCOME 2 HYPHSWORLD • DO YOU KNOW THE CODE • UNLOCK THE VAULT • EARN COOL POINTS • HYPHSWORLD 5 COMING SOON •&nbsp;
+      </div>
+    </div>
+  </main>
+
+  <script>
+    (() => {
+      const CODES = {
+        COOLMAN: { level: 1, points: 25, label: "Level 1" },
+        PRESSURE: { level: 2, points: 50, label: "Level 2" },
+        DUCKSAUCE: { level: 2, points: 50, label: "Level 2" }
+      };
+
+      const STORAGE = {
+        level: "hyphsVaultLevel",
+        points: "hyphsCoolPoints",
+        claimed: "hyphsDailyClaimDate",
+        usedCodes: "hyphsUsedCodes"
+      };
+
+      const $ = (id) => document.getElementById(id);
+
+      const todayKey = () => new Date().toISOString().slice(0, 10);
+      const getLevel = () => Number(localStorage.getItem(STORAGE.level) || "0");
+      const getPoints = () => Number(localStorage.getItem(STORAGE.points) || "0");
+      const setLevel = (level) => localStorage.setItem(STORAGE.level, String(Math.max(getLevel(), level)));
+      const setPoints = (points) => localStorage.setItem(STORAGE.points, String(Math.max(0, points)));
+
+      function getUsedCodes() {
+        try { return JSON.parse(localStorage.getItem(STORAGE.usedCodes) || "[]"); }
+        catch { return []; }
+      }
+
+      function setUsedCodes(codes) {
+        localStorage.setItem(STORAGE.usedCodes, JSON.stringify([...new Set(codes)]));
+      }
+
+      function statusText(level) {
+        if (level >= 2) return "Level 2 Active";
+        if (level >= 1) return "Level 1 Active";
+        return "Vault Locked";
+      }
+
+      function render() {
+        const level = getLevel();
+        const points = getPoints();
+        const status = statusText(level);
+
+        $("vaultLevelStat").textContent = String(level);
+        $("coolPointsStat").textContent = String(points);
+        $("vaultStatusStat").textContent = level ? "Unlocked" : "Locked";
+        $("vaultStatusText").textContent = status;
+
+        const level1Card = $("level1Card");
+        const level2Card = $("level2Card");
+        const level1Pill = $("level1Pill");
+        const level2Pill = $("level2Pill");
+
+        level1Card.classList.toggle("unlocked", level >= 1);
+        level1Card.classList.toggle("locked", level < 1);
+        level1Pill.className = level >= 1 ? "pill on" : "pill lock";
+        level1Pill.textContent = level >= 1 ? "Unlocked" : "Locked";
+
+        level2Card.classList.toggle("unlocked", level >= 2);
+        level2Card.classList.toggle("locked", level < 2);
+        level2Pill.className = level >= 2 ? "pill on" : "pill lock";
+        level2Pill.textContent = level >= 2 ? "Unlocked" : "Locked";
+
+        const dailyBtn = $("dailyClaimBtn");
+        const claimed = localStorage.getItem(STORAGE.claimed) === todayKey();
+        dailyBtn.textContent = claimed ? "Daily Claimed" : "Daily +5 Points";
+        dailyBtn.disabled = claimed;
+      }
+
+      $("vaultForm")?.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const input = $("vaultCode");
+        const message = $("vaultMessage");
+        const code = input.value.trim().toUpperCase();
+        const reward = CODES[code];
+
+        if (!code) {
+          message.textContent = "Enter a code first.";
+          return;
+        }
+
+        if (!reward) {
+          message.textContent = "Invalid code. Try another one.";
+          return;
+        }
+
+        const usedCodes = getUsedCodes();
+        const alreadyUsed = usedCodes.includes(code);
+
+        setLevel(reward.level);
+
+        if (!alreadyUsed) {
+          setPoints(getPoints() + reward.points);
+          setUsedCodes([...usedCodes, code]);
+          message.textContent = `${reward.label} unlocked. +${reward.points} Cool Points.`;
+        } else {
+          message.textContent = `${reward.label} already unlocked.`;
+        }
+
+        input.value = "";
+        render();
+      });
+
+      $("dailyClaimBtn")?.addEventListener("click", () => {
+        const today = todayKey();
+        const claimed = localStorage.getItem(STORAGE.claimed) === today;
+        const message = $("vaultMessage");
+
+        if (claimed) {
+          message.textContent = "Daily points already claimed.";
+          render();
+          return;
+        }
+
+        localStorage.setItem(STORAGE.claimed, today);
+        setPoints(getPoints() + 5);
+        message.textContent = "Daily check-in claimed. +5 Cool Points.";
+        render();
+      });
+
+      $("resetVaultBtn")?.addEventListener("click", () => {
+        localStorage.removeItem(STORAGE.level);
+        localStorage.removeItem(STORAGE.points);
+        localStorage.removeItem(STORAGE.claimed);
+        localStorage.removeItem(STORAGE.usedCodes);
+        $("vaultMessage").textContent = "Vault reset on this browser.";
+        render();
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>
