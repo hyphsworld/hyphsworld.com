@@ -1,15 +1,96 @@
-▶ FULL PLAYERHYPHSWORLD RADIO ☰
-Home Vault Merch
-AMS WEST Player
-HYPHSWORLD Radio
-A clean player page ready for real audio links. Buttons work now and can be wired to MP3 files any time.
-Now Selected
-Young Tez — 25/8
-Prod. by Marty McPhresh
-Your browser does not support audio playback.
-Add audio file URLs inside index-player.js when ready.
-Rotation
-Select Track
-Young Tez — 25/8 Prod. Marty McPhresh Hyph Life — HAM Prod. Hyph Life BooGotGluu x No Flash — ON GOD Spotlight Rotation Cuz Zaid x JCrown x Ruzzo — KIKI Prod. Cuz Zaid
-DUCK SAUCE APPROVED BUCKTHEBODYGUARD WATCHING THE DOOR FULL PLAYER ONLINE THE VAULT IS ACTIVE HYPHSWORLD 5 LOADING
-© 2026 HYPHSWORLD · AMS WEST LLC
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Full Player — HYPHSWORLD</title>
+  <meta name="description" content="HYPHSWORLD full player — Hyph Life, AMS WEST, Artist Spotlight, and Vault rotation." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <div class="site-shell">
+    <header class="topbar">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">▶</span>
+        <span><strong>FULL PLAYER</strong><em>HYPHSWORLD RADIO</em></span>
+      </a>
+      <button class="nav-toggle" type="button" data-nav-toggle aria-label="Open menu">☰</button>
+      <nav class="nav" data-nav>
+        <a href="index.html">Home</a>
+        <a href="vault.html">Vault</a>
+        <a href="shop.html">Merch</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero player-hero">
+        <div>
+          <p class="eyebrow">AMS WEST Player</p>
+          <h1>HYPHSWORLD Radio</h1>
+          <p class="hero-text">A clean player page ready for real audio links. Buttons work now and can be wired to MP3 files any time.</p>
+        </div>
+
+        <div class="player-card">
+          <p class="tag" data-now-tag>Now Selected</p>
+          <h2 data-now-title>Young Tez — 25/8</h2>
+          <p data-now-meta>Prod. by Marty McPhresh</p>
+
+          <audio class="audio-player" controls data-audio>
+            <source src="" type="audio/mpeg" />
+            Your browser does not support audio playback.
+          </audio>
+
+          <p class="player-note">
+            Add audio file URLs inside <strong>index-player.js</strong> when ready.
+          </p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <p class="eyebrow">Rotation</p>
+          <h2>Select Track</h2>
+        </div>
+
+        <div class="playlist" data-playlist>
+          <button class="track active" data-track="young-tez">
+            <strong>Young Tez — 25/8</strong>
+            <span>Prod. Marty McPhresh</span>
+          </button>
+          <button class="track" data-track="ham">
+            <strong>Hyph Life — HAM</strong>
+            <span>Prod. Hyph Life</span>
+          </button>
+          <button class="track" data-track="ongod">
+            <strong>BooGotGluu x No Flash — ON GOD</strong>
+            <span>Spotlight Rotation</span>
+          </button>
+          <button class="track" data-track="kiki">
+            <strong>Cuz Zaid x JCrown x Ruzzo — KIKI</strong>
+            <span>Prod. Cuz Zaid</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="ticker-wrap">
+          <div class="ticker">
+            <span>DUCK SAUCE APPROVED</span>
+            <span>BUCKTHEBODYGUARD WATCHING THE DOOR</span>
+            <span>FULL PLAYER ONLINE</span>
+            <span>THE VAULT IS ACTIVE</span>
+            <span>HYPHSWORLD 5 LOADING</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>© 2026 HYPHSWORLD · AMS WEST LLC</p>
+    </footer>
+  </div>
+
+  <script src="index-player.js"></script>
+</body>
+</html>
