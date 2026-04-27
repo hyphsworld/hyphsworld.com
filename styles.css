@@ -1,0 +1,35 @@
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#050505;color:#fff}
+.header{padding:18px 16px;background:#000;position:sticky;top:0;z-index:10;border-bottom:2px solid #111}
+.brand{display:flex;gap:14px;align-items:center}
+.logo{width:62px;height:62px;border-radius:18px;background:#fff;object-fit:cover}
+.brand p{margin:0;color:#45ff63;font-size:12px;letter-spacing:.28em;font-weight:900}
+.brand h1{margin:0;font-size:42px;line-height:1;letter-spacing:.04em}
+.nav{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.nav a{text-decoration:none;color:#000;background:#fff;padding:12px 17px;border-radius:999px;font-weight:900;box-shadow:5px 5px 0 #000;border:2px solid #000}
+.ticker-wrap{background:linear-gradient(90deg,#45ff63,#49cfff,#ffd95a,#ff55d6);color:#000;border-top:4px solid #000;border-bottom:4px solid #000;overflow:hidden;white-space:nowrap}
+.ticker-track{display:inline-flex;gap:18px;padding:15px 0;animation:ticker 26s linear infinite}
+.ticker-track span{background:#fff;border:3px solid #000;border-radius:999px;box-shadow:5px 5px 0 #000;padding:11px 20px;font-weight:950;letter-spacing:.12em}
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.hero{position:relative;min-height:72vh;background:url('album-art.jpg') center/cover no-repeat}
+.overlay{position:absolute;inset:0;background:rgba(0,0,0,.64)}
+.hero-inner{position:relative;padding:48px 18px;max-width:780px}
+.tag{display:inline-block;background:#45ff63;color:#000;padding:12px 18px;border-radius:999px;font-weight:950;font-size:12px;letter-spacing:.18em;box-shadow:5px 5px 0 #000}
+h2{font-size:64px;line-height:.92;margin:28px 0 18px;letter-spacing:-.04em;text-shadow:4px 4px 0 #000}
+h2 span{color:#49cfff}
+.hero p{font-size:24px;line-height:1.45;color:#eee;max-width:700px;text-shadow:2px 2px 0 #000}
+.cta-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:28px}
+.btn{text-decoration:none;background:#fff;color:#000;padding:18px 24px;border-radius:999px;font-weight:950;box-shadow:6px 6px 0 #000}
+.btn.primary{background:#ff55d6}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;padding:22px}
+.card{background:#111;border:2px solid #222;padding:22px;border-radius:24px}
+.card h3{margin-top:0;color:#ffd95a}
+@media(max-width:700px){
+  .brand h1{font-size:34px}
+  .brand{gap:12px}
+  .logo{width:58px;height:58px}
+  h2{font-size:48px}
+  .hero p{font-size:20px}
+  .nav a{font-size:13px;padding:10px 12px}
+  .ticker-track span{font-size:13px;padding:10px 16px}
+}
