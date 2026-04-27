@@ -1,5 +1,0 @@
-document.querySelectorAll('.btn,.nav a').forEach(el=>{
-  el.addEventListener('click',()=>{
-    if(window.gtag){gtag('event','click',{event_label:el.textContent.trim()});}
-  });
-});
