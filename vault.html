@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>HYPHSWORLD Vault | Hidden Casino</title>
+  <meta name="description" content="HYPHSWORLD hidden casino vault. Enter codes, unlock levels, earn Cool Points, and access private drops." />
+  <link rel="stylesheet" href="vault.css" />
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CT7CWHCHYC"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
+    gtag("config", "G-CT7CWHCHYC");
+  </script>
+</head>
+
+<body>
+  <div class="casino-bg"></div>
+  <div class="casino-glass"></div>
+
+  <header class="vault-header">
+    <a class="brand" href="index.html">
+      <img src="ams-logo.jpg" alt="AMS WEST" onerror="this.style.display='none'" />
+      <div>
+        <p>AMS WEST PRESENTS</p>
+        <h1>HYPHSWORLD</h1>
+      </div>
+    </a>
+
+    <nav>
+      <a href="index.html">HOME</a>
+      <a href="app-player.html">FULL PLAYER</a>
+      <a href="shop.html">MERCH</a>
+    </nav>
+  </header>
+
+  <section class="ticker" aria-label="Vault ticker">
+    <div class="ticker-track">
+      <span>🎰 HIDDEN CASINO OPEN</span>
+      <span>DUCK SAUCE DEALING HINTS</span>
+      <span>BUCKTHEBODYGUARD AT THE DOOR</span>
+      <span>LEVEL 1: QUARANTINE</span>
+      <span>LEVEL 2: WORLD5</span>
+      <span>MAIN CODES: 510 • HYPH • DUCK • AMS • RICHMOND</span>
+      <span>🎰 HIDDEN CASINO OPEN</span>
+      <span>DUCK SAUCE DEALING HINTS</span>
+      <span>BUCKTHEBODYGUARD AT THE DOOR</span>
+      <span>LEVEL 1: QUARANTINE</span>
+      <span>LEVEL 2: WORLD5</span>
+      <span>MAIN CODES: 510 • HYPH • DUCK • AMS • RICHMOND</span>
+    </div>
+  </section>
+
+  <main class="vault-shell">
+    <section class="casino-door">
+      <div class="door-copy">
+        <p class="eyebrow">PRIVATE BACK ROOM</p>
+        <h2>HIDDEN CASINO VAULT</h2>
+        <p class="lead">
+          Enter the right code and the room opens. Main codes unlock the house.
+          Level codes unlock private tables.
+        </p>
+
+        <div class="status-row">
+          <div class="chip">
+            <span>COOL POINTS</span>
+            <strong id="coolPoints">80</strong>
+          </div>
+          <div class="chip">
+            <span>STATUS</span>
+            <strong id="vaultStatus">LOCKED</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-panel">
+        <div class="guard-card">
+          <div class="guard-icon">🕴🏾</div>
+          <div>
+            <p>BUCKTHEBODYGUARD</p>
+            <strong>“Code first. Questions later.”</strong>
+          </div>
+        </div>
+
+        <label for="vaultCode">ENTER VAULT CODE</label>
+        <div class="input-row">
+          <input id="vaultCode" type="text" placeholder="TYPE CODE..." autocomplete="off" />
+          <button id="unlockBtn" type="button">UNLOCK</button>
+        </div>
+
+        <p id="vaultMessage" class="message">Duck Sauce got hints if you tap the bulb.</p>
+
+        <div class="quick-codes">
+          <button type="button" data-code="QUARANTINE">LEVEL 1</button>
+          <button type="button" data-code="WORLD5">LEVEL 2</button>
+          <button type="button" data-code="RICHMOND">MAIN</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="slot-room">
+      <div class="section-head">
+        <p class="eyebrow">JACKPOT TABLES</p>
+        <h2>UNLOCK THE ERAS</h2>
+      </div>
+
+      <div class="slot-grid">
+        <article class="slot-card locked" id="masterCard">
+          <div class="slot-lights"></div>
+          <p class="table-label">MAIN TABLE</p>
+          <h3>MASTER ACCESS</h3>
+          <p>One code opens the full room: songs, previews, merch rewards, and hidden drops.</p>
+          <strong class="lock-state">LOCKED</strong>
+        </article>
+
+        <article class="slot-card locked" id="level1Card">
+          <div class="slot-lights"></div>
+          <p class="table-label">LEVEL 1</p>
+          <h3>QUARANTINE</h3>
+          <p>Unlock the first private table. Starter reward lane and fan-only teasers.</p>
+          <strong class="lock-state">LOCKED</strong>
+        </article>
+
+        <article class="slot-card locked" id="level2Card">
+          <div class="slot-lights"></div>
+          <p class="table-label">LEVEL 2</p>
+          <h3>WORLD5</h3>
+          <p>Deeper table. HYPHSWORLD 5 energy, private previews, and higher Cool Points.</p>
+          <strong class="lock-state">LOCKED</strong>
+        </article>
+      </div>
+    </section>
+
+    <section class="reward-room" id="rewardRoom">
+      <div class="section-head">
+        <p class="eyebrow">REWARD ROOM</p>
+        <h2>CASINO PRIZES</h2>
+      </div>
+
+      <div class="reward-grid">
+        <article class="reward">
+          <span>🎵</span>
+          <h3>Vault Audio</h3>
+          <p>Private songs and snippets live here once unlocked.</p>
+        </article>
+        <article class="reward">
+          <span>🎥</span>
+          <h3>Secret Visuals</h3>
+          <p>01 Universe clips, trailers, and hidden previews.</p>
+        </article>
+        <article class="reward">
+          <span>👕</span>
+          <h3>Merch Chips</h3>
+          <p>Discount codes, drops, and priority access.</p>
+        </article>
+        <article class="reward">
+          <span>🎰</span>
+          <h3>Jackpot Codes</h3>
+          <p>More codes can open deeper rooms later.</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <button class="duck-btn" id="duckBtn" type="button" aria-label="Duck Sauce hint">
+    <span>💡</span>
+    <img src="duck-sauce.png" alt="Duck Sauce" onerror="this.style.display='none'" />
+  </button>
+
+  <script src="vault.js"></script>
+</body>
+</html>
