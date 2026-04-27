@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>HYPHSWORLD | AMS WEST</title>
+  <meta name="description" content="HYPHSWORLD by Hyph Life and AMS WEST. Music, spotlight, vault access, merch, and The 01 Universe." />
+
+  <meta property="og:title" content="HYPHSWORLD | AMS WEST" />
+  <meta property="og:description" content="Music. Culture. Vault Access. The 01 Universe." />
+  <meta property="og:image" content="album-art.jpg" />
+  <meta property="og:type" content="website" />
+
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CT7CWHCHYC"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
+    gtag("config", "G-CT7CWHCHYC");
+  </script>
+</head>
+
+<body>
+  <div class="site-bg"></div>
+  <div class="site-overlay"></div>
+
+  <header class="site-header">
+    <div class="brand-row">
+      <img src="ams-logo.jpg" alt="AMS WEST logo" class="ams-logo" onerror="this.style.display='none'" />
+      <div class="brand-copy">
+        <p>AMS WEST PRESENTS</p>
+        <h1>HYPHSWORLD</h1>
+      </div>
+    </div>
+
+    <nav class="nav-pills" aria-label="Main navigation">
+      <a class="pill pill-white" href="#music">MUSIC</a>
+      <a class="pill pill-blue" href="#spotlight">SPOTLIGHT</a>
+      <a class="pill pill-gold" href="vault.html">VAULT</a>
+      <a class="pill pill-pink" href="app-player.html">FULL PLAYER</a>
+      <a class="pill pill-white" href="shop.html">MERCH</a>
+      <a class="pill pill-gold" href="#connect">CONNECT</a>
+      <a class="pill pill-white" href="#join">LOGIN / JOIN</a>
+    </nav>
+  </header>
+
+  <section class="live-feed" aria-label="HYPHSWORLD live feed">
+    <div class="feed-title"><span></span> HYPHSWORLD LIVE FEED <span></span></div>
+    <div class="ticker">
+      <div class="ticker-track">
+        <b>LEVEL 1: QUARANTINE</b>
+        <b>LEVEL 2: WORLD5</b>
+        <b>NOW PLAYING: HAM</b>
+        <b>DUCK SAUCE WATCHING</b>
+        <b>CODES ACTIVE</b>
+        <b>COOL POINTS LOADED</b>
+        <b>LEVEL 1: QUARANTINE</b>
+        <b>LEVEL 2: WORLD5</b>
+        <b>NOW PLAYING: HAM</b>
+        <b>DUCK SAUCE WATCHING</b>
+        <b>CODES ACTIVE</b>
+        <b>COOL POINTS LOADED</b>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <section class="hero" id="music">
+      <div class="hero-content">
+        <div class="green-tag">RICHMOND, CA • HYPH LIFE • AMS WEST</div>
+
+        <h2>
+          <span>REAL MUSIC.</span>
+          <span class="blue-text">NO MIDDLEMAN.</span>
+          <span class="gold-text">HYPHSWORLD.</span>
+        </h2>
+
+        <p class="hero-copy">
+          The official HYPHSWORLD home base — built for the records, the codes,
+          the artists, the 01 universe, and the fans who know how to tap in.
+        </p>
+
+        <div class="cool-card" id="coolCard">
+          <p>COOL POINTS</p>
+          <strong id="coolPoints">80</strong>
+          <span id="coolRank">Rookie</span>
+        </div>
+
+        <div class="hero-player-card">
+          <div class="track-art">
+            <img src="album-art.jpg" alt="HYPHSWORLD album art" onerror="this.style.display='none'" />
+          </div>
+
+          <div class="track-info">
+            <p class="mini">HOMEPAGE PLAYER</p>
+            <h3 id="trackTitle">HAM</h3>
+            <p id="trackMeta">Hyph Life — prod by 1ManBand</p>
+          </div>
+        </div>
+
+        <div class="action-grid">
+          <button class="action-btn action-white" id="playBtn" type="button">▶ PLAY</button>
+          <button class="action-btn action-white" id="pauseBtn" type="button">⏸ PAUSE</button>
+          <a class="action-btn action-white" href="app-player.html">FULL PLAYER</a>
+        </div>
+
+        <audio id="homeAudio" preload="metadata">
+          <source src="ham.mp3" type="audio/mpeg" />
+        </audio>
+      </div>
+    </section>
+
+    <section class="section spotlight-section" id="spotlight">
+      <div class="section-head">
+        <p class="mini">ARTIST SPOTLIGHT</p>
+        <h2>SPOTLIGHT 02</h2>
+      </div>
+
+      <div class="spotlight-card">
+        <div class="spotlight-art">
+          <img src="album-art.jpg" alt="HAM artwork" onerror="this.style.display='none'" />
+        </div>
+
+        <div class="spotlight-copy">
+          <span class="green-tag small">FEATURED NOW</span>
+          <h3>HAM</h3>
+          <p><b>Artist:</b> Hyph Life</p>
+          <p><b>Produced by:</b> 1ManBand</p>
+          <p class="soft">
+            Clean, direct, and built to send fans straight into the full player.
+          </p>
+          <div class="button-row">
+            <button class="action-btn pill-pink" id="spotlightPlay" type="button">PLAY HAM</button>
+            <a class="action-btn pill-blue" href="app-player.html">OPEN PLAYER</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section vault-strip" id="vault">
+      <div>
+        <p class="mini">VAULT ACCESS</p>
+        <h2>DO YOU KNOW THE CODE?</h2>
+        <p>Level 1: QUARANTINE • Level 2: WORLD5 • Main codes active.</p>
+      </div>
+      <a class="action-btn pill-gold" href="vault.html">ENTER VAULT</a>
+    </section>
+
+    <section class="section grid-section">
+      <article class="feature-box">
+        <h3>MUSIC</h3>
+        <p>Homepage records push fans into the full player.</p>
+        <a href="app-player.html">Open Full Player</a>
+      </article>
+
+      <article class="feature-box">
+        <h3>THE 01 SHOW</h3>
+        <p>The animated universe gives the brand real culture.</p>
+        <a href="https://youtube.com/@the01showtv" target="_blank" rel="noreferrer">Watch</a>
+      </article>
+
+      <article class="feature-box">
+        <h3>MERCH</h3>
+        <p>Official gear. Direct orders. Real support.</p>
+        <a href="shop.html">Shop</a>
+      </article>
+    </section>
+
+    <section class="section connect-section" id="connect">
+      <p class="mini">CONNECT</p>
+      <h2>FOLLOW THE WORLD</h2>
+
+      <div class="social-grid">
+        <a href="https://www.instagram.com/hyphsworld" target="_blank" rel="noreferrer">INSTAGRAM</a>
+        <a href="https://www.tiktok.com/@hyphsworld1" target="_blank" rel="noreferrer">TIKTOK</a>
+        <a href="https://x.com/hyphsworld" target="_blank" rel="noreferrer">X</a>
+        <a href="https://youtube.com/@amswesttv" target="_blank" rel="noreferrer">AMS WEST TV</a>
+      </div>
+    </section>
+
+    <section class="section join-section" id="join">
+      <h2>JOIN HYPHSWORLD</h2>
+      <p>Fan login, codes, drops, and rewards lane coming next.</p>
+      <a class="action-btn pill-white" href="mailto:tone@amsenterprisecorp.com">CONTACT</a>
+    </section>
+  </main>
+
+  <button class="duck-helper" id="duckHelper" type="button" aria-label="Duck Sauce helper">
+    <span>💡</span>
+    <img src="duck-sauce.png" alt="Duck Sauce" onerror="this.style.display='none'" />
+  </button>
+
+  <script src="homepage.js"></script>
+</body>
+</html>
