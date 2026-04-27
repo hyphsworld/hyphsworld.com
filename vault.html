@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>The Vault — HYPHSWORLD</title>
+  <style>
+    :root{--bg:#050505;--text:#fff;--muted:#bdbdbd;--line:rgba(255,255,255,.14);--red:#ff183f;--green:#31ff78;--gold:#ffd166;--shadow:0 24px 80px rgba(0,0,0,.48);--radius:26px}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Inter,Arial,sans-serif;color:var(--text);background:radial-gradient(circle at top left,rgba(255,24,63,.25),transparent 34rem),radial-gradient(circle at top right,rgba(49,255,120,.2),transparent 32rem),linear-gradient(180deg,#050505,#090909 48%,#050505)}
+    a{color:inherit;text-decoration:none}.wrap{width:min(1120px,calc(100% - 28px));margin:0 auto}
+    .topbar{position:sticky;top:14px;z-index:10;margin:14px 0 34px;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:12px;border:1px solid var(--line);border-radius:999px;background:rgba(5,5,5,.78);backdrop-filter:blur(18px);box-shadow:var(--shadow)}
+    .brand{display:flex;align-items:center;gap:12px}.brand-mark{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--green),#0a5c28);color:#031007;font-weight:950;border:2px solid rgba(255,255,255,.18)}.brand strong{display:block;font-size:14px;letter-spacing:.1em}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:.18em;margin-top:3px}
+    .nav{display:flex;gap:8px;flex-wrap:wrap}.nav a{padding:10px 14px;border-radius:999px;color:var(--muted);font-weight:900;font-size:13px}.nav a:hover{background:rgba(255,255,255,.08);color:#fff}
+    .hero{border:1px solid var(--line);border-radius:var(--radius);background:linear-gradient(135deg,rgba(255,255,255,.08),rgba(255,255,255,.03));padding:clamp(28px,5vw,64px);box-shadow:var(--shadow);overflow:hidden}.eyebrow{color:var(--green);text-transform:uppercase;letter-spacing:.2em;font-size:12px;font-weight:950;margin:0 0 12px}
+    h1{margin:0 0 18px;font-size:clamp(50px,9vw,108px);line-height:.86;letter-spacing:-.08em}h1 span{color:var(--red);text-shadow:0 0 28px rgba(255,24,63,.5)}
+    .lead{max-width:760px;color:#e8e8e8;font-size:clamp(18px,2.2vw,24px);line-height:1.42;margin:0 0 26px}.codebox{border:1px solid var(--line);border-radius:24px;background:rgba(0,0,0,.35);padding:20px;max-width:760px;margin-top:26px}.codebox label{display:block;font-weight:950;margin-bottom:10px}.coderow{display:flex;gap:10px}.coderow input{flex:1;min-height:50px;border-radius:999px;border:1px solid var(--line);background:#070707;color:white;padding:0 18px;outline:none}.msg{margin:13px 0 0;color:var(--gold);font-weight:800}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:50px;padding:13px 18px;border-radius:999px;font-weight:950;border:1px solid rgba(255,255,255,.18);cursor:pointer;text-align:center}.btn-red{background:var(--red);color:#fff}.btn-green{background:var(--green);color:#041107}.btn-dark{background:rgba(255,255,255,.08);color:#fff}
+    .section{padding:58px 0}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}.card{min-height:260px;display:flex;flex-direction:column;justify-content:space-between;border:1px solid var(--line);border-radius:var(--radius);padding:24px;background:rgba(17,17,17,.9);box-shadow:0 18px 45px rgba(0,0,0,.28)}.card.unlocked{outline:2px solid var(--green);box-shadow:0 0 38px rgba(49,255,120,.18)}.tag{display:inline-flex;width:max-content;padding:7px 10px;border-radius:999px;background:rgba(49,255,120,.1);color:var(--green);font-weight:950;text-transform:uppercase;letter-spacing:.12em;font-size:11px;margin-bottom:14px}
+    h2{font-size:40px;line-height:1;letter-spacing:-.05em;margin:0 0 18px}h3{font-size:28px;line-height:1;margin:0 0 12px}.card p{color:var(--muted);line-height:1.55;margin:0 0 20px}.codes{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}.pill{border:1px solid var(--line);border-radius:999px;padding:9px 12px;background:rgba(255,255,255,.06);font-weight:950;color:#fff}
+    .ticker-wrap{border:1px solid var(--line);border-radius:999px;background:#000;overflow:hidden;margin-top:28px}.ticker{display:flex;width:max-content;animation:ticker 25s linear infinite}.ticker span{white-space:nowrap;padding:13px 24px;font-weight:950;letter-spacing:.08em}@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+    .footer{display:flex;justify-content:space-between;gap:16px;padding:34px 0 46px;color:var(--muted);border-top:1px solid var(--line);margin-top:64px;flex-wrap:wrap}.footer a{font-weight:900;color:#fff;margin-left:14px}
+    @media(max-width:950px){.grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:700px){.topbar{border-radius:24px;align-items:flex-start;flex-direction:column}.grid{grid-template-columns:1fr}.coderow{flex-direction:column}.nav{justify-content:flex-start}.footer a{display:inline-block;margin:8px 12px 0 0}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="topbar">
+      <a class="brand" href="index.html"><span class="brand-mark">V</span><span><strong>THE VAULT</strong><small>HYPHSWORLD ACCESS</small></span></a>
+      <nav class="nav"><a href="index.html">Home</a><a href="shop.html">Merch</a><a href="app-player.html">Full Player</a></nav>
+    </header>
+    <main>
+      <section class="hero">
+        <p class="eyebrow">Do you know the code?</p>
+        <h1>The <span>Vault</span></h1>
+        <p class="lead">Hidden drops, music rooms, 01 Show extras, cool points, and fan-only unlocks. This page is self-contained so it stays visible.</p>
+        <div class="codebox">
+          <label for="code">Vault Code</label>
+          <div class="coderow"><input id="code" placeholder="Enter code..." autocomplete="off"><button class="btn btn-green" onclick="unlockVault()">Unlock</button></div>
+          <p class="msg" id="msg">Try: 510, HYPH, DUCK, AMS, RICHMOND, QUARANTINE, WORLD5</p>
+        </div>
+        <div class="codes"><span class="pill">510</span><span class="pill">HYPH</span><span class="pill">DUCK</span><span class="pill">AMS</span><span class="pill">RICHMOND</span><span class="pill">QUARANTINE</span><span class="pill">WORLD5</span></div>
+        <div class="ticker-wrap"><div class="ticker"><span>THE VAULT IS ACTIVE</span><span>DUCK SAUCE KNOWS THE CODE</span><span>BUCKTHEBODYGUARD AT THE DOOR</span><span>HYPHSWORLD 5 LOADING</span><span>COOL POINTS COMING</span><span>THE VAULT IS ACTIVE</span><span>DUCK SAUCE KNOWS THE CODE</span></div></div>
+      </section>
+      <section class="section">
+        <p class="eyebrow">Unlocked Rooms</p>
+        <h2>Vault Levels</h2>
+        <div class="grid">
+          <article class="card" id="main"><div><span class="tag">Main Room</span><h3>HYPHSWORLD Lobby</h3><p>Use 510, HYPH, DUCK, AMS, or RICHMOND to unlock the main room.</p></div><a class="btn btn-dark" href="app-player.html">Play Music</a></article>
+          <article class="card" id="level1"><div><span class="tag">Level 1</span><h3>QUARANTINE</h3><p>Older cuts, hidden drops, teaser content, and fan-only moments.</p></div><button class="btn btn-red" onclick="fillCode('QUARANTINE')">Use Code</button></article>
+          <article class="card" id="level2"><div><span class="tag">Level 2</span><h3>WORLD5</h3><p>HYPHSWORLD 5 rollout lane, campaign assets, and premium drops.</p></div><button class="btn btn-green" onclick="fillCode('WORLD5')">Use Code</button></article>
+          <article class="card"><div><span class="tag">Coming Soon</span><h3>Cool Points</h3><p>Future fan rewards for codes, games, merch, traffic, and missions.</p></div><a class="btn btn-dark" href="shop.html">Merch Store</a></article>
+        </div>
+      </section>
+    </main>
+    <footer class="footer"><span>© 2026 HYPHSWORLD · AMS WEST LLC</span><span><a href="index.html">Home</a><a href="shop.html">Merch</a><a href="app-player.html">Player</a></span></footer>
+  </div>
+  <script>
+    const codes={510:"Main Room unlocked. Richmond is in the building.",HYPH:"Main Room unlocked. HYPHSWORLD access granted.",DUCK:"Duck Sauce opened the door.",AMS:"AMS WEST access granted.",RICHMOND:"Richmond code accepted.",QUARANTINE:"Level 1 unlocked.",WORLD5:"Level 2 unlocked. HYPHSWORLD 5 loading."};
+    function fillCode(v){document.getElementById("code").value=v;unlockVault()}
+    function unlockVault(){const raw=document.getElementById("code").value.trim().toUpperCase();const msg=document.getElementById("msg");if(!codes[raw]){msg.textContent="Code not recognized yet. Try 510, HYPH, DUCK, AMS, RICHMOND, QUARANTINE, or WORLD5.";msg.style.color="#ffd166";return}msg.textContent=codes[raw];msg.style.color="#31ff78";if(["510","HYPH","DUCK","AMS","RICHMOND"].includes(raw))document.getElementById("main").classList.add("unlocked");if(raw==="QUARANTINE")document.getElementById("level1").classList.add("unlocked");if(raw==="WORLD5")document.getElementById("level2").classList.add("unlocked")}
+  </script>
+</body>
+</html>
