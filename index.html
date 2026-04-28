@@ -47,7 +47,6 @@
           <span>DO YOU KNOW THE CODE?</span><b>✦</b>
           <span>VAULT OPEN NOW</span><b>✦</b>
           <span>LEVEL 1: QUARANTINE</span><b>✦</b>
-          <span>LEVEL 2: WORLD5</span><b>✦</b>
           <span>NOW PLAYING: HAM • KIKI • ON GOD • TIME</span><b>✦</b>
           <span>EARN COOL POINTS DAILY</span><b>✦</b>
           <span>BUCK SAYS: DENIED BLOOD</span><b>✦</b>
@@ -57,7 +56,6 @@
           <span>DO YOU KNOW THE CODE?</span><b>✦</b>
           <span>VAULT OPEN NOW</span><b>✦</b>
           <span>LEVEL 1: QUARANTINE</span><b>✦</b>
-          <span>LEVEL 2: WORLD5</span><b>✦</b>
           <span>NOW PLAYING: HAM • KIKI • ON GOD • TIME</span><b>✦</b>
           <span>EARN COOL POINTS DAILY</span><b>✦</b>
           <span>BUCK SAYS: DENIED BLOOD</span><b>✦</b>
@@ -177,28 +175,20 @@
         </div>
       </div>
     </section>
-
     <section id="vault-preview" class="section-pad">
       <div class="phone-shell section-card vault-preview">
         <div class="section-title">
           <p class="eyebrow">The Vault</p>
-          <h2>Unlock The Eras</h2>
-          <p>One gate, two floors. Hidden music first, current pressure second.</p>
+          <h2>Unlock Level 1</h2>
+          <p>Start with the first floor. Level 2 does not reveal until Level 1 is earned.</p>
         </div>
 
-        <div class="vault-levels">
+        <div class="vault-levels vault-levels-single">
           <article class="level-card">
             <span>Level 1 Code: QUARANTINE</span>
             <h3>Quarantine Mixtape</h3>
             <p>Never released. Hidden era. First floor in the Vault.</p>
             <a class="pill-btn gold" href="vault.html">Enter Level 1</a>
-          </article>
-
-          <article class="level-card">
-            <span>Level 2 Code: WORLD5</span>
-            <h3>HYPHSWORLD 5</h3>
-            <p>Current pressure. Premium floor. Built for repeat traffic.</p>
-            <a class="pill-btn green" href="vault.html">Unlock Level 2</a>
           </article>
         </div>
       </div>
@@ -277,6 +267,20 @@
   </footer>
 
   <script src="homepage.js"></script>
+
+<style>
+.hero-art{position:relative}
+.duck-badge{max-width:120px}
+.buck-badge{
+ position:absolute; right:8px; bottom:8px; width:96px; height:auto;
+ border-radius:18px; box-shadow:0 8px 24px rgba(0,0,0,.45);
+}
+@media(max-width:700px){
+ .duck-badge{max-width:88px}
+ .buck-badge{width:72px; right:4px; bottom:4px}
+}
+</style>
+
   <script src="duck-helper.js"></script>
 </body>
 </html>

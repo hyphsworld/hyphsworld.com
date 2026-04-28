@@ -801,21 +801,7 @@ body.vault-page,body.player-page,body.shop-page{background:radial-gradient(circl
 @media(max-width:880px){.vault-hero-card,.player-hero-card,.merch-hero-card{grid-template-columns:1fr}.casino-grid,.merch-grid,.vault-stats,.vault-levels{grid-template-columns:1fr}.code-row{grid-template-columns:1fr}.queue-row{grid-template-columns:auto 1fr}.queue-row button{grid-column:1/-1}}@media(max-width:560px){.vault-copy h2,.merch-hero-card h2,.player-main-card h2{font-size:clamp(46px,16vw,70px)}.main-player-controls{justify-content:center}.player-art-card img{aspect-ratio:1/.8}}
 
 
-/* === DUCK + BUCK LEVEL UP SYSTEM === */
-.hero-art{position:relative}
-.duck-badge{max-width:120px}
-.buck-badge{
- position:absolute;
- right:8px;
- bottom:8px;
- width:96px;
- height:auto;
- border-radius:18px;
- box-shadow:0 8px 24px rgba(0,0,0,.45);
- border:4px solid #ffe45c;
- background:#000;
-}
-
+/* === DUCK GUIDE SYSTEM BAKED === */
 .hw-duck-guide{
   position:fixed;
   right:12px;
@@ -870,42 +856,8 @@ body.vault-page,body.player-page,body.shop-page{background:radial-gradient(circl
   50%{transform:translateY(-5px) rotate(8deg)}
 }
 
-.hw-level-chip{
-  pointer-events:none;
-  border:3px solid #000;
-  border-radius:999px;
-  background:linear-gradient(90deg,#24ff72,#ffe45c,#ff42c8);
-  color:#050505;
-  padding:7px 10px;
-  font-size:10px;
-  font-weight:950;
-  letter-spacing:.09em;
-  text-transform:uppercase;
-  box-shadow:4px 4px 0 #000;
-}
-
-.hw-guide-menu{
-  display:flex;
-  gap:6px;
-  pointer-events:auto;
-  opacity:.92;
-}
-
-.hw-guide-menu button{
-  border:3px solid #000;
-  border-radius:999px;
-  background:#fff;
-  color:#050505;
-  padding:7px 9px;
-  font-size:10px;
-  font-weight:950;
-  text-transform:uppercase;
-  box-shadow:3px 3px 0 #000;
-  cursor:pointer;
-}
-
 .hw-speech{
-  max-width:min(320px,calc(100vw - 30px));
+  max-width:min(300px,calc(100vw - 30px));
   transform:translateY(8px) scale(.98);
   opacity:0;
   pointer-events:none;
@@ -959,17 +911,6 @@ body.vault-page,body.player-page,body.shop-page{background:radial-gradient(circl
   opacity:1;
 }
 
-/* keep homepage clean: no duplicate lower mini player */
-body:not(.player-page) .sticky-mini-player,
-body:not(.player-page) .player-panel{
-  display:none!important;
-}
-
-@media(max-width:700px){
- .duck-badge{max-width:88px}
- .buck-badge{width:72px;right:4px;bottom:4px}
-}
-
 @media(max-width:560px){
   .hw-guide-btn{
     width:50px;
@@ -982,12 +923,230 @@ body:not(.player-page) .player-panel{
   }
 
   .hw-speech{
-    max-width:min(270px,calc(100vw - 24px));
+    max-width:min(260px,calc(100vw - 24px));
     font-size:11px;
   }
+}
 
-  .hw-guide-menu button{
-    padding:6px 8px;
-    font-size:9px;
+/* keep homepage clean: no duplicate lower mini player */
+body:not(.player-page) .sticky-mini-player,
+body:not(.player-page) .player-panel{
+  display:none!important;
+}
+
+
+/* === SCAN BAR VAULT ACCESS PAD === */
+.vault-scan-hero{
+  position:relative;
+  overflow:hidden;
+  border:4px solid #000;
+  border-radius:var(--radius-xl);
+  background:
+    radial-gradient(circle at 12% 0%,rgba(36,255,114,.20),transparent 30%),
+    radial-gradient(circle at 92% 8%,rgba(255,66,200,.20),transparent 34%),
+    linear-gradient(145deg,rgba(255,255,255,.12),rgba(255,255,255,.035)),
+    rgba(8,8,8,.96);
+  box-shadow:var(--shadow),10px 10px 0 #000;
+  padding:clamp(18px,4vw,34px);
+  display:grid;
+  grid-template-columns:1fr .86fr;
+  gap:18px;
+  align-items:stretch;
+}
+
+.vault-scan-copy h2{
+  margin:8px 0 12px;
+  font-size:clamp(44px,9vw,96px);
+  line-height:.86;
+  letter-spacing:-.08em;
+  text-transform:uppercase;
+}
+
+.access-pad{
+  margin:18px 0 14px;
+  border:4px solid #000;
+  border-radius:30px;
+  padding:14px;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(36,255,114,.20),transparent 35%),
+    linear-gradient(145deg,rgba(255,255,255,.10),rgba(255,255,255,.03)),
+    #050505;
+  box-shadow:8px 8px 0 #000;
+}
+
+.access-pad-top{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+  margin-bottom:12px;
+}
+
+.access-pad-top span,
+.access-pad-top strong{
+  font-size:10px;
+  font-weight:950;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+}
+
+.access-pad-top span{color:var(--muted)}
+.access-pad-top strong{color:var(--yellow)}
+
+.scan-window{
+  position:relative;
+  overflow:hidden;
+  min-height:190px;
+  border:4px solid #000;
+  border-radius:24px;
+  background:
+    linear-gradient(90deg,rgba(36,255,114,.12),rgba(59,216,255,.08),rgba(255,66,200,.12)),
+    #090909;
+  display:grid;
+  place-items:center;
+}
+
+.scan-grid{
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px);
+  background-size:24px 24px;
+  opacity:.32;
+}
+
+.scan-line{
+  position:absolute;
+  top:-25%;
+  left:0;
+  width:100%;
+  height:38px;
+  background:linear-gradient(180deg,transparent,rgba(36,255,114,.95),rgba(59,216,255,.80),transparent);
+  box-shadow:0 0 28px rgba(36,255,114,.75);
+  opacity:.75;
+  animation:scanPadMove 2.25s linear infinite;
+}
+
+@keyframes scanPadMove{
+  0%{transform:translateY(-20px)}
+  100%{transform:translateY(260px)}
+}
+
+.scan-target{
+  position:relative;
+  z-index:2;
+  width:min(470px,calc(100% - 30px));
+  border:4px solid #000;
+  border-radius:999px;
+  background:#fff;
+  color:#050505;
+  box-shadow:6px 6px 0 #000;
+  padding:16px 18px;
+  text-align:center;
+}
+
+.scan-target span{
+  display:block;
+  font-size:10px;
+  font-weight:950;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:#333;
+}
+
+.scan-target strong{
+  display:block;
+  margin-top:4px;
+  font-size:clamp(24px,7vw,44px);
+  letter-spacing:.12em;
+}
+
+.access-pad.is-scanning .scan-line{
+  animation-duration:.75s;
+}
+
+.access-pad.is-scanning .access-pad-top strong{
+  color:var(--blue);
+}
+
+.access-pad.is-approved{
+  box-shadow:8px 8px 0 #000,0 0 35px rgba(36,255,114,.45);
+}
+
+.access-pad.is-approved .scan-window{
+  background:
+    linear-gradient(90deg,rgba(36,255,114,.28),rgba(59,216,255,.18)),
+    #06140a;
+}
+
+.access-pad.is-approved .access-pad-top strong{
+  color:var(--green);
+}
+
+.access-pad.is-denied{
+  box-shadow:8px 8px 0 #000,0 0 35px rgba(255,40,72,.45);
+}
+
+.access-pad.is-denied .scan-window{
+  background:
+    linear-gradient(90deg,rgba(255,40,72,.28),rgba(255,66,200,.18)),
+    #170407;
+}
+
+.access-pad.is-denied .access-pad-top strong{
+  color:var(--red);
+}
+
+.scan-guard img{
+  object-position:center top;
+}
+
+@media(max-width:880px){
+  .vault-scan-hero{
+    grid-template-columns:1fr;
   }
+}
+
+@media(max-width:560px){
+  .vault-scan-copy h2{
+    font-size:clamp(42px,15vw,68px);
+  }
+
+  .scan-window{
+    min-height:165px;
+  }
+
+  .access-pad{
+    padding:12px;
+    border-radius:24px;
+  }
+
+  .scan-target{
+    padding:13px 12px;
+  }
+}
+
+
+/* === PROGRESSIVE LEVEL DISCLOSURE === */
+.locked-reveal{
+  display:none;
+}
+
+.locked-reveal.is-visible{
+  display:block;
+  animation:levelReveal .28s ease both;
+}
+
+@keyframes levelReveal{
+  from{opacity:0;transform:translateY(14px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.vault-levels-single{
+  grid-template-columns:minmax(0,1fr)!important;
+}
+
+.vault-levels-single .level-card{
+  max-width:720px;
 }

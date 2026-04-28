@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <title>HYPHSWORLD Vault | AMS WEST</title>
-  <meta name="description" content="The HYPHSWORLD Vault: scan bar access pad, codes, Cool Points, BuckTheBodyguard, hidden casino, and exclusive drops." />
+  <meta name="description" content="The HYPHSWORLD Vault: progressive code access, scan bar, Level 1 unlocks Level 2, Level 2 unlocks hidden casino." />
 
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -22,8 +22,7 @@
         <a href="index.html">Home</a>
         <a href="app-player.html">Full Player</a>
         <a href="shop.html">Merch</a>
-        <a href="#casino">Hidden Casino</a>
-        <a href="#codes">Codes</a>
+        <a href="#codes">Level 1</a>
       </nav>
     </div>
   </header>
@@ -36,17 +35,15 @@
           <span>BUCKTHEBODYGUARD ON DUTY</span><b>✦</b>
           <span>SCAN PAD ACTIVE</span><b>✦</b>
           <span>LEVEL 1: QUARANTINE</span><b>✦</b>
-          <span>LEVEL 2: WORLD5</span><b>✦</b>
-          <span>CASINO TABLES LOCKED</span><b>✦</b>
-          <span>DUCK SAUCE TRYING TO SNEAK IN</span><b>✦</b>
+          <span>LEVEL 2 INFO LOCKED</span><b>✦</b>
           <span>COOL POINTS ACTIVE</span><b>✦</b>
-          <span>BUCK SAYS: DENIED BLOOD</span><b>✦</b>
+          <span>BUCK SAYS: CODE FIRST</span><b>✦</b>
 
           <span>BUCKTHEBODYGUARD ON DUTY</span><b>✦</b>
           <span>SCAN PAD ACTIVE</span><b>✦</b>
           <span>LEVEL 1: QUARANTINE</span><b>✦</b>
-          <span>LEVEL 2: WORLD5</span><b>✦</b>
-          <span>CASINO TABLES LOCKED</span><b>✦</b>
+          <span>LEVEL 2 INFO LOCKED</span><b>✦</b>
+          <span>COOL POINTS ACTIVE</span><b>✦</b>
           <span>I NEED YOU LEAVE</span><b>✦</b>
         </div>
       </div>
@@ -56,8 +53,8 @@
       <div class="phone-shell vault-scan-hero">
         <div class="vault-scan-copy">
           <p class="eyebrow">Richmond, CA • AMS WEST • Code access</p>
-          <h2>SCAN THE CODE. OPEN THE DOOR.</h2>
-          <p class="lead">This is the access pad. Type the right code, hit scan, and let Buck decide if you belong in the room.</p>
+          <h2>SCAN LEVEL 1 FIRST.</h2>
+          <p class="lead">No skipping floors. Unlock Level 1, then Level 2 reveals. Unlock Level 2, then the next room reveals.</p>
 
           <div class="access-pad" id="accessPad">
             <div class="access-pad-top">
@@ -77,13 +74,13 @@
             <form id="vaultForm" class="vault-code-box">
               <label for="vaultCode">Vault Code</label>
               <div class="code-row">
-                <input id="vaultCode" name="vaultCode" placeholder="QUARANTINE / WORLD5 / CASINO" autocomplete="off" />
+                <input id="vaultCode" name="vaultCode" placeholder="START WITH LEVEL 1" autocomplete="off" />
                 <button class="pill-btn green" type="submit">Scan</button>
               </div>
-              <p class="hint">Try: 510, HYPH, DUCK, AMS, RICHMOND, QUARANTINE, WORLD5, CASINO</p>
+              <p class="hint" id="vaultHint">Level 1 hint: the hidden era.</p>
             </form>
 
-            <div id="vaultStatus" class="vault-status">Standby. Code first.</div>
+            <div id="vaultStatus" class="vault-status">Standby. Scan Level 1 first.</div>
           </div>
 
           <div class="vault-stats">
@@ -96,8 +93,8 @@
               <strong id="vaultPoints">203</strong>
             </div>
             <div>
-              <span>Casino</span>
-              <strong id="casinoStatus">Locked</strong>
+              <span>Next Room</span>
+              <strong id="nextRoomStatus">Locked</strong>
             </div>
           </div>
         </div>
@@ -106,8 +103,8 @@
           <img src="buck-thebodyguard.jpg" alt="BuckTheBodyguard guarding the Vault" />
           <div class="guard-bubble">
             <span>🛡️ BuckTheBodyguard</span>
-            <strong id="buckLine">Stand still.</strong>
-            <p>Door security, scan verification, no weak codes.</p>
+            <strong id="buckLine">Level 1 first.</strong>
+            <p>Door security, scan verification, no floor skipping.</p>
           </div>
         </div>
       </div>
@@ -116,19 +113,31 @@
     <section id="codes" class="section-pad">
       <div class="phone-shell section-card vault-preview">
         <div class="section-title">
-          <p class="eyebrow">Vault Floors</p>
-          <h2>Unlock The Eras</h2>
-          <p>One door. Two main floors. Hidden casino after that.</p>
+          <p class="eyebrow">Level 1</p>
+          <h2>Quarantine Floor</h2>
+          <p>First unlock only. Earn this floor before the next one appears.</p>
         </div>
 
-        <div class="vault-levels">
+        <div class="vault-levels vault-levels-single">
           <article class="level-card">
             <span>Level 1 Code: QUARANTINE</span>
             <h3>Quarantine Mixtape</h3>
             <p>Never released. Hidden era. First floor in the Vault.</p>
             <button class="pill-btn gold quick-code" data-code="QUARANTINE">Scan Level 1</button>
           </article>
+        </div>
+      </div>
+    </section>
 
+    <section id="level-2" class="section-pad locked-reveal" data-required-level="1">
+      <div class="phone-shell section-card vault-preview">
+        <div class="section-title">
+          <p class="eyebrow">Level 2 Revealed</p>
+          <h2>HYPHSWORLD 5</h2>
+          <p>You earned Level 1. Now the current pressure appears.</p>
+        </div>
+
+        <div class="vault-levels vault-levels-single">
           <article class="level-card">
             <span>Level 2 Code: WORLD5</span>
             <h3>HYPHSWORLD 5</h3>
@@ -139,12 +148,12 @@
       </div>
     </section>
 
-    <section id="casino" class="section-pad">
+    <section id="casino" class="section-pad locked-reveal" data-required-level="2">
       <div class="phone-shell section-card casino-card">
         <div class="section-title">
-          <p class="eyebrow">Hidden Casino</p>
+          <p class="eyebrow">Hidden Casino Revealed</p>
           <h2>Jackpot Tables</h2>
-          <p>Cool Points become the game loop. Phase 3 can turn this into real accounts.</p>
+          <p>You earned Level 2. Now the next room opens.</p>
         </div>
 
         <div class="casino-grid">
@@ -158,7 +167,7 @@
           <article class="casino-table">
             <span>Table 02</span>
             <h3>Cards</h3>
-            <p>Locked until casino code.</p>
+            <p>Casino teaser unlocked after Level 2.</p>
             <button class="pill-btn pink quick-code" data-code="CASINO">Scan Casino</button>
           </article>
 
@@ -178,7 +187,7 @@
       <div>
         <p>AMS WEST</p>
         <h2>THE VAULT</h2>
-        <span>Codes, Cool Points, hidden drops, and fan-world access.</span>
+        <span>Progressive floors. No spoilers. Earn the next room.</span>
       </div>
 
       <div class="footer-links">
