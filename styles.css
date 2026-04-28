@@ -799,3 +799,19 @@ body.vault-page,body.player-page,body.shop-page{background:radial-gradient(circl
 .queue-list{display:grid;gap:12px}.queue-row{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;border:4px solid #000;border-radius:24px;padding:14px;background:rgba(255,255,255,.08);box-shadow:5px 5px 0 #000}.queue-row.active{background:linear-gradient(90deg,rgba(36,255,114,.34),rgba(255,228,92,.18))}.queue-row span{color:var(--yellow);font-weight:950}.queue-row strong{display:block;font-size:22px;text-transform:uppercase}.queue-row button{border:3px solid #000;border-radius:999px;background:var(--green);color:#050505;padding:10px 14px;font-weight:950;text-transform:uppercase;box-shadow:4px 4px 0 #000}
 .merch-hero-card{display:grid;grid-template-columns:1fr .45fr;gap:18px;align-items:center}.merch-mascot{text-align:center;background:linear-gradient(145deg,rgba(255,228,92,.22),rgba(255,66,200,.18)),#0b0b0b}.merch-mascot img{width:min(220px,80%);margin:0 auto 12px;border-radius:999px;border:6px solid var(--yellow);background:#000}.merch-mascot strong{display:block;font-size:28px;text-transform:uppercase;letter-spacing:-.04em}
 @media(max-width:880px){.vault-hero-card,.player-hero-card,.merch-hero-card{grid-template-columns:1fr}.casino-grid,.merch-grid,.vault-stats,.vault-levels{grid-template-columns:1fr}.code-row{grid-template-columns:1fr}.queue-row{grid-template-columns:auto 1fr}.queue-row button{grid-column:1/-1}}@media(max-width:560px){.vault-copy h2,.merch-hero-card h2,.player-main-card h2{font-size:clamp(46px,16vw,70px)}.main-player-controls{justify-content:center}.player-art-card img{aspect-ratio:1/.8}}
+
+
+/* === DUCK / BUCK FLOATING HELPER SYSTEM === */
+.hw-float-wrap{position:fixed;right:12px;bottom:14px;z-index:9999;display:grid;gap:8px;justify-items:end;pointer-events:none}
+.hw-mascot-row{display:flex;gap:8px;pointer-events:auto}
+.hw-mascot-btn{width:58px;height:58px;border:4px solid #000;border-radius:999px;background:#ffe45c;padding:4px;box-shadow:5px 5px 0 #000;overflow:hidden;cursor:pointer}
+.hw-mascot-btn img{width:100%;height:100%;object-fit:cover;border-radius:999px}
+.hw-speech{max-width:min(280px,calc(100vw - 30px));transform:translateY(8px);opacity:0;pointer-events:none;border:4px solid #000;border-radius:20px;background:#fff;color:#050505;padding:12px 14px;font-size:12px;font-weight:950;line-height:1.25;text-transform:uppercase;box-shadow:6px 6px 0 #000;transition:.18s ease}
+.hw-speech.show{transform:translateY(0);opacity:1}
+.hw-points-pop{position:fixed;left:50%;top:18px;z-index:10000;transform:translate(-50%,-12px);opacity:0;pointer-events:none;border:4px solid #000;border-radius:999px;background:linear-gradient(90deg,#24ff72,#ffe45c,#ff42c8,#3bd8ff);color:#050505;padding:10px 14px;font-size:12px;font-weight:950;letter-spacing:.08em;text-transform:uppercase;box-shadow:6px 6px 0 #000;transition:.18s ease}
+.hw-points-pop.show{transform:translate(-50%,0);opacity:1}
+@media(max-width:560px){.hw-mascot-btn{width:50px;height:50px}.hw-float-wrap{right:10px;bottom:10px}}
+
+/* === HOMEPAGE DUPLICATE PLAYER REMOVAL === */
+body:not(.player-page) .sticky-mini-player{display:none!important}
+body:not(.player-page) .player-panel{display:none!important}
