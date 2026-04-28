@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>HYPHSWORLD Vault | AMS WEST</title>
+  <meta name="description" content="The HYPHSWORLD Vault — Level 1 and hidden premium floors." />
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CT7CWHCHYC"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
+    gtag("config", "G-CT7CWHCHYC");
+  </script>
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <div class="page-wrap">
+    <header class="site-header">
+      <div class="brand-block">
+        <p class="eyebrow">AMS WEST PRESENTS</p>
+        <h1>VAULT GATE</h1>
+      </div>
+
+      <nav class="top-nav" aria-label="Main navigation">
+        <a href="index.html">Home</a>
+        <a href="vault.html">Vault</a>
+        <a href="app-player.html">Full Player</a>
+        <a href="#merch-links">Merch</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="vault-hero">
+        <p class="tag">SCAN BAR ACCESS PAD</p>
+        <h2>Unlock The Eras</h2>
+        <p class="lead">
+          Level 1 is the first floor. Level 2 stays hidden until you move deeper inside.
+        </p>
+
+        <div class="scan-pad" aria-hidden="true">
+          <div class="scan-line"></div>
+          <div class="scan-dots">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+
+        <div class="vault-status-row">
+          <span id="masterStatus" class="status-pill locked">MASTER LOCKED</span>
+          <span id="levelOneStatus" class="status-pill locked">LEVEL 1 LOCKED</span>
+          <span id="levelTwoStatus" class="status-pill locked">LEVEL 2 HIDDEN</span>
+        </div>
+      </section>
+
+      <section class="vault-grid">
+        <article class="vault-card master-card">
+          <p class="eyebrow">Secret Main Code</p>
+          <h3>Master Access</h3>
+          <p>One code. Full access. Unlocks Level 1 and Level 2 together.</p>
+          <small>Access: Main code required</small>
+
+          <div class="input-row">
+            <input id="masterCode" type="password" placeholder="ENTER MAIN CODE" autocomplete="off" />
+            <button class="btn primary" id="unlockMaster" type="button">Unlock Everything</button>
+            <button class="btn ghost" id="clearMaster" type="button">Clear</button>
+          </div>
+        </article>
+
+        <article class="vault-card">
+          <p class="eyebrow">Level 1</p>
+          <h3>Quarantine Mixtape</h3>
+          <p>Hidden era. Unreleased pressure. First floor in the Vault.</p>
+          <small>Access: Code required</small>
+
+          <div class="input-row">
+            <input id="levelOneCode" type="password" placeholder="ENTER CODE" autocomplete="off" />
+            <button class="btn primary" id="unlockLevelOne" type="button">Unlock Level 1</button>
+            <button class="btn ghost" id="clearLevelOne" type="button">Clear</button>
+          </div>
+
+          <div id="levelOneContent" class="vault-content locked-content">
+            <h4>LEVEL 1 OPEN</h4>
+            <p>Quarantine Mixtape floor unlocked. Add private links, embeds, drops, or download buttons here.</p>
+            <a class="btn secondary" href="app-player.html">Play Music</a>
+          </div>
+        </article>
+
+        <article id="levelTwoCard" class="vault-card hidden-floor">
+          <p class="eyebrow">Level 2</p>
+          <h3>HYPHSWORLD 5</h3>
+          <p>Current pressure. Premium floor. Built for repeat traffic and featured drops.</p>
+          <small>Access: Master code or Level 2 code required</small>
+
+          <div class="input-row">
+            <input id="levelTwoCode" type="password" placeholder="ENTER CODE" autocomplete="off" />
+            <button class="btn primary" id="unlockLevelTwo" type="button">Unlock Level 2</button>
+            <button class="btn ghost" id="clearLevelTwo" type="button">Clear</button>
+          </div>
+
+          <div id="levelTwoContent" class="vault-content locked-content">
+            <h4>LEVEL 2 OPEN</h4>
+            <p>HYPHSWORLD 5 floor unlocked. Add exclusives, rollout assets, early videos, and premium drops here.</p>
+          </div>
+        </article>
+      </section>
+
+      <section class="section-card duck-guide">
+        <div class="mascot small-duck">🦆</div>
+        <div>
+          <p class="eyebrow">Duck Sauce Guide</p>
+          <h3>“P, Level 2 don’t even show up until Level 1 gets handled.”</h3>
+          <p>BuckTheBodyguard is posted at the gate. Duck Sauce is talking crazy, but he’s useful.</p>
+        </div>
+      </section>
+
+      <section class="section-card" id="merch-links">
+        <div class="section-head">
+          <p class="eyebrow">MERCH</p>
+          <h2>Support links</h2>
+        </div>
+        <div class="merch-grid">
+          <a class="merch-card" href="https://py.pl/" target="_blank" rel="noopener"><strong>$35 Drop</strong><span>Quick link</span></a>
+          <a class="merch-card" href="https://py.pl/BSZvtzUGEJyGWsN22iWSwQ" target="_blank" rel="noopener"><strong>$75 Drop</strong><span>Premium link</span></a>
+          <a class="merch-card" href="https://cash.app/$TonioOsborne" target="_blank" rel="noopener"><strong>Cash App</strong><span>$TonioOsborne</span></a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>© AMS WEST LLC · HYPHSWORLD VAULT</p>
+    </footer>
+  </div>
+
+  <script src="vault.js"></script>
+</body>
+</html>

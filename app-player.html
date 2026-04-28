@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>HYPHSWORLD Full Player | AMS WEST</title>
+  <meta name="description" content="HYPHSWORLD Full Player — AMS WEST music player." />
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CT7CWHCHYC"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
+    gtag("config", "G-CT7CWHCHYC");
+  </script>
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <div class="page-wrap">
+    <header class="site-header">
+      <div class="brand-block">
+        <p class="eyebrow">AMS WEST PRESENTS</p>
+        <h1>FULL PLAYER</h1>
+      </div>
+
+      <nav class="top-nav" aria-label="Main navigation">
+        <a href="index.html">Home</a>
+        <a href="vault.html">Vault</a>
+        <a href="app-player.html">Full Player</a>
+        <a href="index.html#merch">Merch</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="player-hero section-card">
+        <p class="tag">HYPHSWORLD RADIO</p>
+        <h2 id="fullNowTitle">Select a track</h2>
+        <p id="fullNowMeta">Duck Sauce says the big player is ready.</p>
+
+        <audio id="fullAudio" controls preload="metadata">
+          <source id="fullAudioSource" src="" type="audio/mpeg" />
+          Your browser does not support the audio element.
+        </audio>
+      </section>
+
+      <section class="section-card">
+        <div class="section-head">
+          <p class="eyebrow">TRACK LIST</p>
+          <h2>Tap to play</h2>
+        </div>
+
+        <div class="full-track-list">
+          <button class="full-track" data-track="0" type="button">
+            <strong>25/8</strong>
+            <span>Young Tez · Prod. Marty McPhresh</span>
+          </button>
+
+          <button class="full-track" data-track="1" type="button">
+            <strong>HAM</strong>
+            <span>Hyph Life · Prod. Hyph Life</span>
+          </button>
+
+          <button class="full-track" data-track="2" type="button">
+            <strong>ON GOD</strong>
+            <span>BooGotGluu x No Flash</span>
+          </button>
+
+          <button class="full-track" data-track="3" type="button">
+            <strong>KIKI</strong>
+            <span>Cuz Zaid x JCrown x Ruzzo · Prod. Cuz Zaid</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="section-card duck-guide">
+        <div class="mascot small-duck">🦆</div>
+        <div>
+          <p class="eyebrow">Duck Sauce</p>
+          <h3>“The buttons work now, P. Don’t blame me for old files.”</h3>
+          <p>Replace this file together with styles.css and index-player.js.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>© AMS WEST LLC · HYPHSWORLD FULL PLAYER</p>
+    </footer>
+  </div>
+
+  <script src="index-player.js"></script>
+</body>
+</html>

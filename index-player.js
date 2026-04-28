@@ -1,129 +1,87 @@
-const tracks = [
+/*
+  HYPHSWORLD player logic
+  Replace the placeholder src values below with your actual MP3 file paths when ready.
+  Example:
+  src: "audio/young-tez-25-8.mp3"
+*/
+
+const HYPHSWORLD_TRACKS = [
+  {
+    title: "25/8",
+    artist: "Young Tez",
+    producer: "Prod. Marty McPhresh",
+    src: "audio/young-tez-25-8.mp3"
+  },
   {
     title: "HAM",
     artist: "Hyph Life",
-    src: ""
-  },
-  {
-    title: "KIKI",
-    artist: "Cuz Zaid x JCrown x Ruzzo",
-    src: ""
+    producer: "Prod. Hyph Life",
+    src: "audio/hyph-life-ham.mp3"
   },
   {
     title: "ON GOD",
     artist: "BooGotGluu x No Flash",
-    src: ""
+    producer: "AMS WEST Spotlight",
+    src: "audio/on-god.mp3"
   },
   {
-    title: "TIME",
-    artist: "SIXX FIGGAZ x HYPH LIFE",
-    src: ""
+    title: "KIKI",
+    artist: "Cuz Zaid x JCrown x Ruzzo",
+    producer: "Prod. Cuz Zaid",
+    src: "audio/kiki.mp3"
   }
 ];
 
-const audio = document.getElementById("audioPlayer");
-const titleEl = document.getElementById("songTitle");
-const artistEl = document.getElementById("songArtist");
-const playBtn = document.getElementById("playBtn");
-const prevBtn = document.getElementById("prevBtn");
-const nextBtn = document.getElementById("nextBtn");
-const seekBar = document.getElementById("seekBar");
-const timeNow = document.getElementById("timeNow");
-const tabs = Array.from(document.querySelectorAll(".song-tab"));
-const coolPoints = document.getElementById("coolPoints");
+function setPlayerTrack(index, playerType) {
+  const track = HYPHSWORLD_TRACKS[index];
 
-let currentIndex = 2;
-let points = Number(localStorage.getItem("hyphsworldCoolPoints") || 203);
-
-function formatTime(seconds) {
-  if (!Number.isFinite(seconds)) return "0:00";
-  const mins = Math.floor(seconds / 60);
-  const secs = Math.floor(seconds % 60).toString().padStart(2, "0");
-  return `${mins}:${secs}`;
-}
-
-function updatePoints(amount = 1) {
-  points += amount;
-  localStorage.setItem("hyphsworldCoolPoints", String(points));
-  if (coolPoints) coolPoints.textContent = points;
-}
-
-function loadTrack(index, autoplay = false) {
-  currentIndex = (index + tracks.length) % tracks.length;
-  const track = tracks[currentIndex];
-
-  titleEl.textContent = track.title;
-  artistEl.textContent = track.artist;
-
-  tabs.forEach((tab, tabIndex) => {
-    tab.classList.toggle("active", tabIndex === currentIndex);
-  });
-
-  if (track.src) {
-    audio.src = track.src;
-  } else {
-    audio.removeAttribute("src");
-  }
-
-  seekBar.value = 0;
-  timeNow.textContent = "0:00";
-  playBtn.textContent = "▶";
-
-  updatePoints(1);
-
-  if (window.gtag) {
-    gtag("event", "select_track", {
-      track_title: track.title,
-      track_artist: track.artist
-    });
-  }
-
-  if (autoplay && track.src) {
-    audio.play().then(() => {
-      playBtn.textContent = "Ⅱ";
-    }).catch(() => {
-      playBtn.textContent = "▶";
-    });
-  }
-}
-
-playBtn.addEventListener("click", () => {
-  if (!audio.src) {
-    updatePoints(3);
-    playBtn.textContent = playBtn.textContent === "▶" ? "Ⅱ" : "▶";
+  if (!track) {
+    console.warn("Track not found:", index);
     return;
   }
 
-  if (audio.paused) {
-    audio.play();
-    playBtn.textContent = "Ⅱ";
-  } else {
-    audio.pause();
-    playBtn.textContent = "▶";
+  const isFull = playerType === "full";
+  const audio = document.getElementById(isFull ? "fullAudio" : "homeAudio");
+  const source = document.getElementById(isFull ? "fullAudioSource" : "homeAudioSource");
+  const title = document.getElementById(isFull ? "fullNowTitle" : "homeNowTitle");
+  const meta = document.getElementById(isFull ? "fullNowMeta" : "homeNowMeta");
+
+  if (!audio || !source || !title || !meta) return;
+
+  title.textContent = track.title;
+  meta.textContent = `${track.artist} · ${track.producer}`;
+  source.src = track.src;
+
+  audio.load();
+
+  const playAttempt = audio.play();
+  if (playAttempt && typeof playAttempt.catch === "function") {
+    playAttempt.catch(() => {
+      meta.textContent = `${track.artist} · ${track.producer} · Tap play to start`;
+    });
   }
-});
 
-prevBtn.addEventListener("click", () => loadTrack(currentIndex - 1, !audio.paused));
-nextBtn.addEventListener("click", () => loadTrack(currentIndex + 1, !audio.paused));
+  if (window.gtag) {
+    window.gtag("event", "track_select", {
+      track_title: track.title,
+      track_artist: track.artist,
+      player_type: playerType
+    });
+  }
+}
 
-tabs.forEach((tab) => {
-  tab.addEventListener("click", () => {
-    loadTrack(Number(tab.dataset.index), false);
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".track-card").forEach((button) => {
+    button.addEventListener("click", () => {
+      const index = Number(button.dataset.track);
+      setPlayerTrack(index, "home");
+    });
+  });
+
+  document.querySelectorAll(".full-track").forEach((button) => {
+    button.addEventListener("click", () => {
+      const index = Number(button.dataset.track);
+      setPlayerTrack(index, "full");
+    });
   });
 });
-
-audio.addEventListener("timeupdate", () => {
-  if (!audio.duration) return;
-  seekBar.value = String((audio.currentTime / audio.duration) * 100);
-  timeNow.textContent = formatTime(audio.currentTime);
-});
-
-seekBar.addEventListener("input", () => {
-  if (!audio.duration) return;
-  audio.currentTime = (Number(seekBar.value) / 100) * audio.duration;
-});
-
-audio.addEventListener("ended", () => loadTrack(currentIndex + 1, true));
-
-if (coolPoints) coolPoints.textContent = points;
-loadTrack(currentIndex, false);
