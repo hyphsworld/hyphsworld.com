@@ -242,47 +242,7 @@
         </div>
       </div>
     </section>
-  
-    <section class="section-pad">
-      <div class="phone-shell section-card">
-        <div class="section-title">
-          <p class="eyebrow">Security Team</p>
-          <h2>Duck Sauce & BuckTheBodyguard</h2>
-          <p>Buck guards the gates. Duck runs wild in the world. They each get their own lane now.</p>
-        </div>
-
-        <div class="security-mascots">
-          <article class="security-mascot-card">
-            <img src="duck-sauce.jpg" alt="Duck Sauce mascot" />
-            <strong>Duck Sauce</strong>
-            <span>World energy, wild commentary, and motion through the site.</span>
-          </article>
-
-          <article class="security-mascot-card">
-            <img src="buck-thebodyguard.jpg" alt="BuckTheBodyguard mascot" />
-            <strong>BuckTheBodyguard</strong>
-            <span>Vault security, code checks, and no weak access.</span>
-          </article>
-        </div>
-
-        <div class="button-row">
-          <a class="pill-btn gold" href="vault.html">Buck Guards Vault</a>
-          <a class="pill-btn pink" href="app-player.html">Duck In Motion</a>
-        </div>
-      </div>
-    </section>
-
-</main>
-
-  <aside class="sticky-mini-player" aria-label="Mini music player">
-    <div>
-      <strong id="miniTitle">HAM</strong>
-      <span id="miniMeta">Hyph Life — prod by 1ManBand</span>
-    </div>
-    <button id="miniPlay">▶ Play</button>
-    <button id="miniPause">⏸ Pause</button>
-    <a href="app-player.html">Full Player</a>
-  </aside>
+  </main>
 
   <footer id="connect" class="site-footer">
     <div class="phone-shell footer-card">
@@ -301,50 +261,6 @@
   </footer>
 
   <script src="homepage.js"></script>
-
-
-
-
-<style>
-.hero-art { position: relative; }
-.duck-badge { max-width: 120px; }
-.security-mascots {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-  margin-top: 22px;
-}
-.security-mascot-card {
-  background: rgba(0,0,0,.35);
-  border: 3px solid #000;
-  border-radius: 24px;
-  padding: 14px;
-  box-shadow: 0 10px 0 #000;
-}
-.security-mascot-card img {
-  width: 100%;
-  max-height: 220px;
-  object-fit: cover;
-  border-radius: 18px;
-  display: block;
-  background: #111;
-}
-.security-mascot-card strong {
-  display: block;
-  margin-top: 12px;
-  font-size: 1.05rem;
-  letter-spacing: .04em;
-}
-.security-mascot-card span {
-  display: block;
-  margin-top: 4px;
-  color: #d8d8d8;
-}
-@media(max-width:700px){
-  .duck-badge { max-width: 88px; }
-  .security-mascots { grid-template-columns: 1fr; }
-}
-</style>
-
+  <script src="duck-helper.js"></script>
 </body>
 </html>
