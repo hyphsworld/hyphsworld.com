@@ -16,6 +16,13 @@
     gtag("js", new Date());
     gtag("config", "G-CT7CWHCHYC");
   </script>
+  <style>
+    .mini-points { min-width: 92px; text-align: center; border: 2px solid rgba(255,255,255,0.9); box-shadow: 0 0 18px rgba(47,255,108,0.55), 0 0 28px rgba(255,44,90,0.35); background: linear-gradient(135deg, rgba(0,0,0,0.78), rgba(47,255,108,0.18), rgba(255,44,90,0.18)); border-radius: 18px; padding: 10px 12px; }
+    .mini-points span { display: block; font-size: 0.72rem; line-height: 1; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.95; }
+    .mini-points strong { display: block; margin-top: 5px; font-size: 1.8rem; line-height: 1; color: #39ff14; text-shadow: 0 0 10px rgba(57,255,20,0.9), 0 0 18px rgba(255,44,90,0.75); }
+    .player-status { margin: 10px 0 0; font-size: 0.82rem; font-weight: 800; color: #fff; opacity: 0.95; }
+    .song-pills button.active { outline: 2px solid #39ff14; box-shadow: 0 0 14px rgba(57,255,20,0.7); }
+  </style>
 </head>
 
 <body>
@@ -46,8 +53,8 @@
           <span>WELCOME 2 HYPHSWORLD</span><b>✦</b>
           <span>DO YOU KNOW THE CODE?</span><b>✦</b>
           <span>VAULT OPEN NOW</span><b>✦</b>
-          <span>LEVEL 1: QUARANTINE</span><b>✦</b>
-          <span>LEVEL 2: WORLD5</span><b>✦</b>
+          <span>LEVEL 1 LOCKED</span><b>✦</b>
+          <span>LEVEL 2 LOCKED</span><b>✦</b>
           <span>NOW PLAYING: HAM • KIKI • ON GOD • TIME</span><b>✦</b>
           <span>EARN COOL POINTS DAILY</span><b>✦</b>
           <span>BUCK SAYS: DENIED BLOOD</span><b>✦</b>
@@ -56,8 +63,8 @@
           <span>WELCOME 2 HYPHSWORLD</span><b>✦</b>
           <span>DO YOU KNOW THE CODE?</span><b>✦</b>
           <span>VAULT OPEN NOW</span><b>✦</b>
-          <span>LEVEL 1: QUARANTINE</span><b>✦</b>
-          <span>LEVEL 2: WORLD5</span><b>✦</b>
+          <span>LEVEL 1 LOCKED</span><b>✦</b>
+          <span>LEVEL 2 LOCKED</span><b>✦</b>
           <span>NOW PLAYING: HAM • KIKI • ON GOD • TIME</span><b>✦</b>
           <span>EARN COOL POINTS DAILY</span><b>✦</b>
           <span>BUCK SAYS: DENIED BLOOD</span><b>✦</b>
@@ -93,11 +100,11 @@
             </div>
           </div>
 
-          <audio id="audioPlayer"></audio>
+          <audio id="audioPlayer" preload="metadata"></audio>
 
           <div class="compact-controls">
-            <button id="playBtn" class="control-btn">▶ Play</button>
-            <button id="pauseBtn" class="control-btn ghost">⏸ Pause</button>
+            <button id="playBtn" type="button" class="control-btn">▶ Play</button>
+            <button id="pauseBtn" type="button" class="control-btn ghost">⏸ Pause</button>
             <a class="control-btn full-link" href="app-player.html">Full Player</a>
           </div>
 
@@ -106,6 +113,8 @@
             <input id="seekBar" type="range" value="0" min="0" max="100" />
             <span id="duration">0:00</span>
           </div>
+
+          <p id="playerStatus" class="player-status" aria-live="polite">Ready — tap Play to run the front page player.</p>
 
           <div class="song-pills" id="quickTracks">
             <button type="button" data-track="0">HAM</button>
@@ -142,7 +151,7 @@
             <p>Young Tez — prod by Marty McPhresh</p>
 
             <div class="button-row spotlight-actions">
-              <a class="pill-btn green" href="app-player.html">▶ Play</a>
+              <a id="spotlightPlayBtn" class="pill-btn green" href="#music">▶ Play</a>
               <a class="pill-btn gold" href="vault.html">Earn Points</a>
               <a class="pill-btn pink" href="#connect">Tap In</a>
             </div>
@@ -187,14 +196,14 @@
 
         <div class="vault-levels">
           <article class="level-card">
-            <span>Level 1 Code: QUARANTINE</span>
+            <span>Level 1 Locked</span>
             <h3>Quarantine Mixtape</h3>
             <p>Never released. Hidden era. First floor in the Vault.</p>
             <a class="pill-btn gold" href="vault.html">Enter Level 1</a>
           </article>
 
           <article class="level-card">
-            <span>Level 2 Code: WORLD5</span>
+            <span>Level 2 Locked</span>
             <h3>HYPHSWORLD 5</h3>
             <p>Current pressure. Premium floor. Built for repeat traffic.</p>
             <a class="pill-btn green" href="vault.html">Unlock Level 2</a>
