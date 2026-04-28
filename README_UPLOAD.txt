@@ -1,27 +1,26 @@
-HYPHSWORLD FUN FINAL + PHASE 2 PACK
+HYPHSWORLD CLEAN FULL HOMEPAGE FILES - SPOTLIGHT FUN COLORS
 
-Upload every file to the root of your GitHub Pages repo and replace existing versions:
+Upload these files to the ROOT of your GitHub Pages repo:
+- index.html
+- styles.css
+- homepage.js
+- duck-sauce.jpg
+- buck-thebodyguard.jpg
 
-index.html
-vault.html
-app-player.html
-shop.html
-styles.css
-index-player.js
-PHASE2_ROADMAP.txt
+This is a full clean file set, not a patch.
 
-What this adds:
-- Fun final color system
-- Floating Duck Sauce mascot
-- Cool Points demo counter
-- Hidden casino teaser
-- Vault code upgrades
-- Store polish
-- Phase 2 roadmap
-- Player page polish
+What changed:
+- restored Artist Spotlight into the big artwork/card layout
+- uses 25-8.jpg as the main spotlight image
+- keeps fun HYPHSWORLD colors, pill buttons, black comic shadow
+- keeps compact homepage player
+- keeps current homepage content and Vault codes
 
-After upload, check:
-https://hyphsworld.com/
-https://hyphsworld.com/vault.html
-https://hyphsworld.com/app-player.html
-https://hyphsworld.com/shop.html
+Expected media:
+- 25-8.jpg
+- album-art.jpg
+- ham.mp3
+- kiki.mp3
+- on-god.mp3
+- time.mp3
+- 01-show-teaser.mp4
