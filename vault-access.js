@@ -1,49 +1,17 @@
-// SECURE FRONTEND VAULT (NO RAW CODES)
+// vault-access.js
 
-const HASHES = {
-  master: "9f3c2f6c7d6f8b6e0a2f3dcd4b7c3e6a7c2c4a9a6d3c8e7f9a1b2c3d4e5f6a7b",
-  level1: "REPLACE_WITH_LEVEL1_HASH",
-  level2: "REPLACE_WITH_LEVEL2_HASH"
+const codes = {
+    AMSWEST: 'c05cf473094ca91f8e88337f4b1d504467b133ff8c2c38a92af912bff6ffd50f', // SHA-256 hash
+    WORLD5:  'f81dd8a8f53195f2c55fb0917d03602f461b4e2fb18e02f0138ff39d36a5b680', // SHA-256 hash
 };
 
-async function hashInput(input) {
-  const enc = new TextEncoder().encode(input.trim().toUpperCase());
-  const buf = await crypto.subtle.digest("SHA-256", enc);
-  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
+async function verifyCode(inputCode) {
+    const encoder = new TextEncoder();
+    const inputHashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(inputCode));
+    const inputHashArray = Array.from(new Uint8Array(inputHashBuffer));
+    const inputHash = inputHashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+    return Object.values(codes).includes(inputHash);
 }
 
-function unlock(level) {
-  sessionStorage.setItem("vault_" + level, "1");
-
-  if (level === "master") {
-    sessionStorage.setItem("vault_level1", "1");
-    sessionStorage.setItem("vault_level2", "1");
-  }
-
-  location.href = "vault.html";
-}
-
-async function check(level, inputId) {
-  const input = document.getElementById(inputId).value;
-  const hash = await hashInput(input);
-
-  if (hash === HASHES[level]) {
-    unlock(level);
-  } else {
-    alert("Access denied.");
-  }
-}
-
-// LOCK VAULT PAGE
-(function () {
-  if (window.location.pathname.includes("vault.html")) {
-    const allowed =
-      sessionStorage.getItem("vault_master") ||
-      sessionStorage.getItem("vault_level1") ||
-      sessionStorage.getItem("vault_level2");
-
-    if (!allowed) {
-      window.location.href = "/";
-    }
-  }
-})();
+module.exports = { verifyCode };
