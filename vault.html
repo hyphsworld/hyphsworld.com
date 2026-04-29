@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>HYPHSWORLD Vault | AMS WEST</title>
+  <meta name="description" content="HYPHSWORLD Vault access by AMS WEST. High-tech access gate for hidden music, visuals, and drops." />
+
+  <link rel="stylesheet" href="vault.css" />
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CT7CWHCHYC"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag("js", new Date());
+    gtag("config", "G-CT7CWHCHYC");
+  </script>
+</head>
+
+<body>
+  <main class="vault-shell">
+    <nav class="vault-nav">
+      <a href="index.html">← Home</a>
+      <a href="app-player.html">Full Player</a>
+      <a href="shop.html">Merch</a>
+    </nav>
+
+    <section class="vault-hero">
+      <p class="eyebrow">AMS WEST SECURITY SYSTEM</p>
+      <h1>HYPHSWORLD VAULT</h1>
+      <p class="lead">High-tech access gate. Enter your clearance and wait for Buck.</p>
+    </section>
+
+    <section class="arc-reactor-card">
+      <div class="reactor">
+        <div class="ring ring-one"></div>
+        <div class="ring ring-two"></div>
+        <div class="core">HW</div>
+      </div>
+
+      <div class="scanner-panel">
+        <div class="scan-screen" id="scanScreen">
+          <div class="scan-line"></div>
+          <span id="statusText">SYSTEM IDLE</span>
+          <strong id="buckLine">BUCK: ENTER ACCESS CODE.</strong>
+          <p id="duckLine">Duck Sauce: “Don’t type crazy. The wall got cameras.”</p>
+        </div>
+
+        <label for="vaultCode">Access Code</label>
+        <input id="vaultCode" type="password" autocomplete="off" placeholder="ENTER ACCESS CODE" />
+
+        <div class="vault-actions">
+          <button id="scanBtn" type="button">SCAN ACCESS</button>
+          <button id="clearBtn" type="button">CLEAR</button>
+        </div>
+
+        <div class="status-chips">
+          <span id="chipMaster">MASTER LOCKED</span>
+          <span id="chipOne">LEVEL 1 LOCKED</span>
+          <span id="chipTwo">LEVEL 2 LOCKED</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="vault-level-grid" id="vaultLevels">
+      <article class="vault-level unlocked" id="levelOne">
+        <span>LEVEL 1</span>
+        <h2>Quarantine Mixtape</h2>
+        <p>Hidden era. First floor access. Music, notes, and drop zone.</p>
+        <div class="level-lock">LOCKED</div>
+        <a href="app-player.html">Open Level 1 Player</a>
+      </article>
+
+      <article class="vault-level" id="levelTwo">
+        <span>LEVEL 2</span>
+        <h2>HYPHSWORLD 5</h2>
+        <p>Current pressure. Premium floor. Unlock Level 1 first or use master access.</p>
+        <div class="level-lock">LOCKED</div>
+        <a href="app-player.html">Open Level 2 Player</a>
+      </article>
+    </section>
+
+    <section class="vault-note">
+      <strong>Cool Points Sync</strong>
+      <p>Cool Points are stored on-device for now. Final server-side lock can come later when the team is ready.</p>
+    </section>
+  </main>
+
+  <script src="vault.js"></script>
+</body>
+</html>
