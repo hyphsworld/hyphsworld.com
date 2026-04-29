@@ -1,4 +1,21 @@
+/* ================= LOCK SYSTEM ================= */
+
 const userEmail = localStorage.getItem("hyphUserEmail");
+
+// 🚨 HARD RESET FOR GUESTS
+if (!userEmail) {
+  localStorage.removeItem("hyphsworldCoolPoints");
+  localStorage.removeItem("hyphUserPoints");
+}
+
+// 🔐 ONLY RESTORE IF LOGGED IN
+if (userEmail) {
+  const savedPoints = localStorage.getItem("hyphUserPoints");
+
+  if (savedPoints !== null) {
+    localStorage.setItem("hyphsworldCoolPoints", savedPoints);
+  }
+}const userEmail = localStorage.getItem("hyphUserEmail");
 
 // 🔒 RESET IF NOT LOGGED IN
 if (!userEmail) {
