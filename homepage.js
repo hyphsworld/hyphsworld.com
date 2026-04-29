@@ -16,7 +16,12 @@
       }
     }
 
-    return originalSetItem.apply(this, arguments);
+    return originalSetItem.apply(this, arguments);02"}
+const userEmail = localStorage.getItem("hyphUserEmail");
+
+if (!userEmail) {
+  localStorage.removeItem("hyphsworldCoolPoints");
+  localStorage.removeItem("hyphUserPoints"
   };
 }/* ================= LOCK SYSTEM ================= */
 
