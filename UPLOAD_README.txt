@@ -1,7 +1,8 @@
-HYPHSWORLD FINAL HOMEPAGE MP4 + DUCK GUIDE BUNDLE
+HYPHSWORLD FINAL TRANSPORT + QUARANTINE MIXTAPE BUNDLE
 
-Replace these files in the GitHub repo root:
+Full-file rewrites. No patching.
 
+REPLACE THESE EXISTING FILES IN YOUR GITHUB REPO ROOT:
 1. index.html
 2. app-player.html
 3. vault.html
@@ -10,46 +11,55 @@ Replace these files in the GitHub repo root:
 6. index-player.js
 7. vault-access.js
 
-WHAT THIS VERSION FIXES
-- Homepage hero is now a real MP4 video hero.
-- Duck Sauce Info Guide is visible on the homepage.
-- Duck has a lightbulb over him.
-- Duck has funny guide instructions and a Duck Talk button.
-- Buck is represented in the Duck guide panel. If buck-the-bodyguard.jpg exists, it appears. If not, the page shows a clean BUCK fallback.
+ADD THESE NEW LEVEL 1 FILES TO YOUR GITHUB REPO ROOT:
+8. quarantine-mixtape.html
+9. quarantine-player.js
+10. quarantine-tracks.js
+
+WHAT THIS VERSION FIXES:
+- Homepage hero is a real MP4 video element, not a static hero image block.
+- Hero video auto-detects these files if they exist:
+  hyphsworld-hero.mp4
+  delta-work.mp4
+  bank-bank.mp4
+  01-show-preview.mp4
+  01-show-teaser.mp4
+  videos/hyphsworld-hero.mp4
+  video/hyphsworld-hero.mp4
+  assets/hyphsworld-hero.mp4
+- Duck Sauce info guide is on homepage with lightbulb energy.
+- Duck talks cleaner and funnier, not confusing.
+- BuckTheBodyguard is represented in the guide and Vault gate.
+- Cool Points start at 0 and stay memory-only on each page load.
+- Spotlight Play 25/8 plays the track instead of sending users to the wrong place.
 - Homepage only teases Level 1 / Quarantine Mixtape.
-- No public code hints are printed on the homepage or Vault page.
-- Cool Points start at 0 every page load. No localStorage/sessionStorage point saving.
-- Spotlight Play 25/8 triggers the audio system instead of redirecting.
-- Buttons are smaller, lit, and brand-colored.
+- No public code hints are printed on homepage or Vault page.
+- Vault has a real ACCESS GRANTED transport overlay.
+- Successful scan redirects to quarantine-mixtape.html.
+- Quarantine Mixtape page is ready for MP3s, artwork, and track order.
 
-HERO MP4 FILE NAME
-For the cleanest result, upload your homepage MP4 to the repo root as:
+QUARANTINE MIXTAPE FILES THIS VERSION EXPECTS:
+Artwork options:
+- quarantine-mixtape.jpg
+- the-quarantine-mixtape.jpg
+- the-quarantine.jpg
+- album-art.jpg
 
-hyphsworld-hero.mp4
+Track MP3 options already wired from visible repo screenshots:
+- da-vault-freestyle.mp3
+- 50-cent-shit.mp3
+- bout-that.mp3
+- free-hyph.mp3
+- gotta-go-remix.mp3
 
-The page also tries these backup names/paths:
-- homepage-hero.mp4
-- hero.mp4
-- assets/hyphsworld-hero.mp4
-- video/hyphsworld-hero.mp4
-- videos/hyphsworld-hero.mp4
+You can edit quarantine-tracks.js if the official order listing needs a different order or additional tracks.
 
-DUCK / BUCK ART FILES
-Duck image expected:
-- duck-sauce.jpg
+IMPORTANT SECURITY NOTE:
+This is clean static-site gating for GitHub Pages. It does not print public code hints or plain-text codes, but true paid/private content still needs server-side protection later.
 
-Optional Buck image expected:
-- buck-the-bodyguard.jpg
-
-If Buck image is missing, the page will not show a broken image. It uses a clean BUCK fallback card.
-
-AUDIO FILE NAMES
-The player tries common paths for each track:
-- HAM: audio/ham.mp3, music/ham.mp3, ham.mp3, HAM.mp3
-- KIKI: audio/kiki.mp3, music/kiki.mp3, kiki.mp3, KIKI.mp3
-- ON GOD: audio/on-god.mp3, music/on-god.mp3, on-god.mp3, on_god.mp3, ON-GOD.mp3
-- TIME: audio/time.mp3, music/time.mp3, time.mp3, TIME.mp3
-- 25/8: audio/25-8.mp3, music/25-8.mp3, 25-8.mp3, 25_8.mp3, 258.mp3
-
-IMPORTANT
-This bundle does not change your live website by itself. Upload/replace the files in GitHub, commit, and wait for GitHub Pages to publish.
+AFTER UPLOAD:
+1. Replace/add files.
+2. Commit changes.
+3. Wait for GitHub Pages to publish.
+4. Open hyphsworld.com?fresh=1 in a private tab.
+5. Test hero motion, Duck guide, Vault scan, transport, and Quarantine page.
