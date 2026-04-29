@@ -3,80 +3,90 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#020403" />
 
-  <title>Vault | HYPHSWORLD</title>
-  <meta name="description" content="HYPHSWORLD Vault by Hyph Life and AMS WEST. Buck on door. Duck on scanner. Enter access code to scan the Vault." />
+  <title>HYPHSWORLD Vault | AMS WEST</title>
+  <meta name="description" content="HYPHSWORLD Vault access by AMS WEST. High-tech access gate for hidden music, visuals, and drops." />
 
-  <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="homepage-upgrades.css" />
+  <link rel="stylesheet" href="vault.css" />
 
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-CT7CWHCHYC"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-CT7CWHCHYC');
+    function gtag(){ dataLayer.push(arguments); }
+    gtag("js", new Date());
+    gtag("config", "G-CT7CWHCHYC");
   </script>
 </head>
-<body data-page="vault">
-  <a class="skip-link" href="#main-content">Skip to content</a>
 
-  <header class="site-header compact-header">
-    <a class="brand-lockup" href="index.html" aria-label="HYPHSWORLD home">
-      <span class="eyebrow">AMS WEST PRESENTS</span>
-      <span class="brand-title">HYPHSWORLD</span>
-    </a>
-
-    <nav class="main-nav" aria-label="Primary navigation">
-      <a href="index.html#music">Music</a>
-      <a href="index.html#spotlight">Spotlight</a>
-      <a href="vault.html">Vault</a>
+<body>
+  <main class="vault-shell">
+    <nav class="vault-nav">
+      <a href="index.html">← Home</a>
       <a href="app-player.html">Full Player</a>
       <a href="shop.html">Merch</a>
     </nav>
-  </header>
 
-  <main id="main-content" class="section-pad vault-page-shell">
-    <section class="section-heading center-heading">
-      <span class="section-kicker">Scan Bar Vault</span>
-      <h1>Unlock The Eras</h1>
-      <p>Buck on door. Duck on scanner. Enter access code to scan the Vault.</p>
+    <section class="vault-hero">
+      <p class="eyebrow">AMS WEST SECURITY SYSTEM</p>
+      <h1>HYPHSWORLD VAULT</h1>
+      <p class="lead">High-tech access gate. Enter your clearance and wait for Buck.</p>
     </section>
 
-    <section class="vault-terminal glass-card" aria-label="Vault access terminal">
-      <div class="vault-screen">
-        <div class="vault-scan-line" aria-hidden="true"></div>
-        <span class="lock-badge" id="vault-lock-status">LOCKED — CODE REQUIRED</span>
-        <h2>Master Access</h2>
-        <p id="vault-message">Run the scan. If the code hits, the floor opens.</p>
+    <section class="arc-reactor-card">
+      <div class="reactor">
+        <div class="ring ring-one"></div>
+        <div class="ring ring-two"></div>
+        <div class="core">HW</div>
       </div>
 
-      <form id="vault-form" class="vault-form" autocomplete="off">
-        <label for="vault-code">Secret Code</label>
-        <div class="code-row">
-          <input id="vault-code" name="vault-code" type="password" inputmode="text" placeholder="Enter access" aria-describedby="vault-message" />
-          <button class="btn btn-scan" type="submit">Run Scan</button>
-          <button class="btn btn-soft" type="button" id="vault-clear">Clear</button>
+      <div class="scanner-panel">
+        <div class="scan-screen" id="scanScreen">
+          <div class="scan-line"></div>
+          <span id="statusText">SYSTEM IDLE</span>
+          <strong id="buckLine">BUCK: ENTER ACCESS CODE.</strong>
+          <p id="duckLine">Duck Sauce: “Don’t type crazy. The wall got cameras.”</p>
         </div>
-      </form>
+
+        <label for="vaultCode">Access Code</label>
+        <input id="vaultCode" type="password" autocomplete="off" placeholder="ENTER ACCESS CODE" />
+
+        <div class="vault-actions">
+          <button id="scanBtn" type="button">SCAN ACCESS</button>
+          <button id="clearBtn" type="button">CLEAR</button>
+        </div>
+
+        <div class="status-chips">
+          <span id="chipMaster">MASTER LOCKED</span>
+          <span id="chipOne">LEVEL 1 LOCKED</span>
+          <span id="chipTwo">LEVEL 2 LOCKED</span>
+        </div>
+      </div>
     </section>
 
-    <section class="vault-reveal-grid" id="vault-reveal" aria-live="polite">
-      <article class="vault-card glass-card locked-card">
-        <span class="lock-badge">FLOOR 1 WAITING</span>
-        <h2>Quarantine Mixtape Floor</h2>
-        <p>Hidden era. Unreleased pressure. First reward lane.</p>
-        <p class="status-line">Access needed before the floor opens.</p>
+    <section class="vault-level-grid" id="vaultLevels">
+      <article class="vault-level unlocked" id="levelOne">
+        <span>LEVEL 1</span>
+        <h2>Quarantine Mixtape</h2>
+        <p>Hidden era. First floor access. Music, notes, and drop zone.</p>
+        <div class="level-lock">LOCKED</div>
+        <a href="app-player.html">Open Level 1 Player</a>
+      </article>
+
+      <article class="vault-level" id="levelTwo">
+        <span>LEVEL 2</span>
+        <h2>HYPHSWORLD 5</h2>
+        <p>Current pressure. Premium floor. Unlock Level 1 first or use master access.</p>
+        <div class="level-lock">LOCKED</div>
+        <a href="app-player.html">Open Level 2 Player</a>
       </article>
     </section>
 
-    <div class="page-bottom-links button-row center-actions">
-      <a class="btn btn-soft" href="index.html">← Home</a>
-      <a class="btn btn-primary" href="app-player.html">Full Player →</a>
-    </div>
+    <section class="vault-note">
+      <strong>Cool Points Sync</strong>
+      <p>Cool Points are stored on-device for now. Final server-side lock can come later when the team is ready.</p>
+    </section>
   </main>
 
-  <script src="vault-access.js" defer></script>
+  <script src="vault.js"></script>
 </body>
 </html>
