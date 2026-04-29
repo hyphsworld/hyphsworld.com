@@ -1,0 +1,170 @@
+/* HYPHSWORLD final homepage polish: smaller lit buttons, clean spacing, fun brand color hits. */
+
+.hero-actions .btn,
+.compact-actions .btn,
+.player-controls .btn,
+.connect-actions .btn,
+.page-bottom-links .btn {
+  min-width: 118px;
+}
+
+.btn-primary,
+.btn-soft,
+.btn-scan {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::after,
+.btn-soft::after,
+.btn-scan::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 0 35%, rgba(255,255,255,.48) 48%, transparent 62% 100%);
+  transform: translateX(-130%);
+  transition: transform .55s ease;
+}
+
+.btn-primary:hover::after,
+.btn-soft:hover::after,
+.btn-scan:hover::after,
+.btn-primary:focus-visible::after,
+.btn-soft:focus-visible::after,
+.btn-scan:focus-visible::after {
+  transform: translateX(130%);
+}
+
+.main-nav a:nth-child(1) { box-shadow: inset 0 0 0 1px rgba(44,255,106,.08); }
+.main-nav a:nth-child(2) { box-shadow: inset 0 0 0 1px rgba(255,62,231,.11); }
+.main-nav a:nth-child(3) { box-shadow: inset 0 0 0 1px rgba(255,223,77,.11); }
+.main-nav a:nth-child(4) { box-shadow: inset 0 0 0 1px rgba(70,166,255,.11); }
+.main-nav a:nth-child(5) { box-shadow: inset 0 0 0 1px rgba(255,38,56,.11); }
+
+.player-card,
+.spotlight-card,
+.vault-card,
+.video-card,
+.id-card,
+.library-card,
+.vault-terminal {
+  outline: 1px solid rgba(255,255,255,.03);
+}
+
+.player-card:hover,
+.spotlight-card:hover,
+.vault-card:hover,
+.video-card:hover,
+.id-card:hover,
+.library-card:hover {
+  border-color: rgba(44,255,106,.32);
+}
+
+.hero-side-card h2,
+.section-heading h2,
+.player-card h2,
+.library-card h2,
+.vault-screen h2 {
+  text-shadow: 0 0 32px rgba(44,255,106,.14);
+}
+
+.spotlight-card h3 {
+  background: linear-gradient(90deg, #fff, var(--green), var(--yellow), var(--red));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.track-pill,
+.library-track,
+.main-nav a,
+.footer-links a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.track-pill:hover,
+.library-track:hover,
+.footer-links a:hover {
+  border-color: rgba(44,255,106,.55);
+  background: rgba(44,255,106,.10);
+}
+
+.library-track.is-active:hover,
+.track-pill.is-active:hover {
+  background: linear-gradient(135deg, var(--green), var(--yellow));
+}
+
+.create-id-section {
+  padding-top: 18px;
+}
+
+.id-card {
+  display: grid;
+  gap: 8px;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(255,223,77,.16), transparent 35%),
+    radial-gradient(circle at 86% 20%, rgba(255,62,231,.16), transparent 34%),
+    var(--panel);
+}
+
+.vault-preview .vault-card {
+  max-width: 720px;
+}
+
+@media (min-width: 901px) {
+  .hero-actions .btn,
+  .player-controls .btn,
+  .compact-actions .btn,
+  .connect-actions .btn,
+  .page-bottom-links .btn {
+    width: auto;
+  }
+}
+
+@media (max-width: 560px) {
+  .hero-actions .btn,
+  .compact-actions .btn,
+  .player-controls .btn,
+  .connect-actions .btn,
+  .page-bottom-links .btn {
+    min-width: 0;
+  }
+}
+
+
+/* MP4 hero + Duck guide finishing touches */
+.hero-video-frame,
+.duck-guide-panel {
+  outline: 1px solid rgba(255,255,255,.035);
+}
+
+.duck-guide-panel:hover,
+.hero-video-frame:hover {
+  border-color: rgba(44,255,106,.38);
+}
+
+.hero-copy-on-video h1 {
+  background: linear-gradient(90deg, #fff, #fffdf4, var(--green), var(--yellow));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+[data-hero-toggle],
+[data-duck-tip] {
+  user-select: none;
+}
+
+@media (max-width: 560px) {
+  .hero-actions .btn,
+  .compact-actions .btn,
+  .player-controls .btn,
+  .connect-actions .btn,
+  .page-bottom-links .btn {
+    min-width: 0;
+  }
+
+  .hero-actions .btn {
+    flex: 1 1 auto;
+  }
+}
