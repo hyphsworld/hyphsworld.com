@@ -1,4 +1,24 @@
-/* ================= LOCK SYSTEM ================= */
+21"}
+/* ================= GLOBAL POINT LOCK ================= */
+
+(function () {
+  const originalSetItem = localStorage.setItem;
+
+  localStorage.setItem = function (key, value) {
+
+    // 🚫 BLOCK ALL POINT SAVES IF NOT LOGGED IN
+    if (key === "hyphsworldCoolPoints" || key === "hyphUserPoints") {
+      const userEmail = localStorage.getItem("hyphUserEmail");
+
+      if (!userEmail) {
+        console.log("🚫 BLOCKED POINT SAVE (NOT LOGGED IN)");
+        return;
+      }
+    }
+
+    return originalSetItem.apply(this, arguments);
+  };
+}/* ================= LOCK SYSTEM ================= */
 
 const userEmail = localStorage.getItem("hyphUserEmail");
 
