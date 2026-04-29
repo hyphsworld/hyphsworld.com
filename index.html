@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>HYPHSWORLD | AMS WEST</title>
+  <meta name="description" content="HYPHSWORLD by Hyph Life and AMS WEST. Music, visuals, Vault drops, merch, artist spotlight, Cool Points, and direct fan access." />
+
+  <link rel="stylesheet" href="styles.css" />
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CT7CWHCHYC"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag("js", new Date());
+    gtag("config", "G-CT7CWHCHYC");
+  </script>
+  <style>
+    .mini-points { min-width: 92px; text-align: center; border: 2px solid rgba(255,255,255,0.9); box-shadow: 0 0 18px rgba(47,255,108,0.55), 0 0 28px rgba(255,44,90,0.35); background: linear-gradient(135deg, rgba(0,0,0,0.78), rgba(47,255,108,0.18), rgba(255,44,90,0.18)); border-radius: 18px; padding: 10px 12px; }
+    .mini-points span { display: block; font-size: 0.72rem; line-height: 1; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.95; }
+    .mini-points strong { display: block; margin-top: 5px; font-size: 1.8rem; line-height: 1; color: #39ff14; text-shadow: 0 0 10px rgba(57,255,20,0.9), 0 0 18px rgba(255,44,90,0.75); }
+    .player-status { margin: 10px 0 0; font-size: 0.82rem; font-weight: 800; color: #fff; opacity: 0.95; }
+    .song-pills button.active { outline: 2px solid #39ff14; box-shadow: 0 0 14px rgba(57,255,20,0.7); }
+
+
+    /* 01 Show homepage preview system */
+    .o1-preview-card { position: relative; overflow: hidden; }
+    .o1-preview-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(260px, 0.9fr); gap: 22px; align-items: stretch; }
+    .o1-video-wrap { position: relative; border-radius: 24px; overflow: hidden; min-height: 330px; background: #030303; border: 2px solid rgba(57,255,20,0.72); box-shadow: 0 0 24px rgba(57,255,20,0.25), 0 0 34px rgba(255,44,90,0.22); }
+    .o1-video-wrap video { width: 100%; height: 100%; min-height: 330px; display: block; object-fit: cover; background: #000; }
+    .o1-video-label { position: absolute; top: 14px; left: 14px; z-index: 4; display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 999px; background: rgba(0,0,0,0.78); border: 1px solid rgba(255,255,255,0.45); font-size: 0.78rem; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; }
+    .o1-video-label::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: #39ff14; box-shadow: 0 0 12px rgba(57,255,20,0.95); }
+    .o1-choice-overlay { position: absolute; inset: 0; z-index: 5; display: flex; align-items: center; justify-content: center; text-align: center; padding: 20px; background: linear-gradient(135deg, rgba(0,0,0,0.82), rgba(57,255,20,0.16), rgba(255,44,90,0.18)); opacity: 0; pointer-events: none; transform: scale(1.03); transition: opacity 220ms ease, transform 220ms ease; }
+    .o1-choice-overlay.show { opacity: 1; pointer-events: auto; transform: scale(1); }
+    .o1-choice-box { max-width: 430px; border: 2px solid rgba(255,255,255,0.72); border-radius: 24px; background: rgba(0,0,0,0.72); padding: 20px; box-shadow: 0 0 28px rgba(57,255,20,0.32); }
+    .o1-choice-box h3 { margin: 0 0 10px; font-size: clamp(1.45rem, 4vw, 2.15rem); line-height: 0.95; text-transform: uppercase; }
+    .o1-choice-box p { margin: 0 0 16px; opacity: 0.92; }
+    .o1-preview-info { border-radius: 24px; padding: 24px; background: linear-gradient(135deg, rgba(0,0,0,0.72), rgba(57,255,20,0.13), rgba(255,44,90,0.12)); border: 1px solid rgba(255,255,255,0.18); display: flex; flex-direction: column; justify-content: center; }
+    .o1-preview-info h3 { margin: 0 0 10px; font-size: clamp(1.8rem, 4.5vw, 3rem); line-height: 0.92; text-transform: uppercase; }
+    .o1-preview-info .lead { margin-bottom: 18px; }
+    .o1-preview-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 14px 0 18px; }
+    .o1-preview-stats span { border-radius: 16px; border: 1px solid rgba(255,255,255,0.22); padding: 10px; background: rgba(0,0,0,0.36); font-size: 0.78rem; font-weight: 900; text-transform: uppercase; text-align: center; }
+    @media (max-width: 820px) { .o1-preview-grid { grid-template-columns: 1fr; } .o1-video-wrap, .o1-video-wrap video { min-height: 260px; } .o1-preview-stats { grid-template-columns: 1fr; } }
+  </style>
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="phone-shell">
+      <div class="brand-lockup">
+        <p>AMS WEST PRESENTS</p>
+        <h1>HYPHSWORLD</h1>
+      </div>
+
+      <nav class="top-nav" aria-label="Main navigation">
+        <a href="#music">Music</a>
+        <a href="#spotlight">Spotlight</a>
+        <a href="vault.html">Vault</a>
+        <a href="app-player.html">Full Player</a>
+        <a href="shop.html">Merch</a>
+        <a href="#connect">Connect</a>
+        <a href="#join">Login / Join</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="live-feed">
+      <div class="feed-label">HYPHSWORLD LIVE FEED</div>
+      <div class="ticker">
+        <div class="ticker-track">
+          <span>WELCOME 2 HYPHSWORLD</span><b>✦</b>
+          <span>DO YOU KNOW THE CODE?</span><b>✦</b>
+          <span>VAULT OPEN NOW</span><b>✦</b>
+          <span>LEVEL 1 LOCKED</span><b>✦</b>
+          <span>LEVEL 2 LOCKED</span><b>✦</b>
+          <span>NOW PLAYING: HAM • KIKI • ON GOD • TIME</span><b>✦</b>
+          <span>EARN COOL POINTS DAILY</span><b>✦</b>
+          <span>BUCK SAYS: DENIED BLOOD</span><b>✦</b>
+          <span>I NEED YOU TO LEAVE</span><b>✦</b>
+
+          <span>WELCOME 2 HYPHSWORLD</span><b>✦</b>
+          <span>DO YOU KNOW THE CODE?</span><b>✦</b>
+          <span>VAULT OPEN NOW</span><b>✦</b>
+          <span>LEVEL 1 LOCKED</span><b>✦</b>
+          <span>LEVEL 2 LOCKED</span><b>✦</b>
+          <span>NOW PLAYING: HAM • KIKI • ON GOD • TIME</span><b>✦</b>
+          <span>EARN COOL POINTS DAILY</span><b>✦</b>
+          <span>BUCK SAYS: DENIED BLOOD</span><b>✦</b>
+          <span>I NEED YOU TO LEAVE</span><b>✦</b>
+        </div>
+      </div>
+    </section>
+
+    <section class="hero section-pad">
+      <div class="phone-shell hero-card">
+        <div class="hero-copy">
+          <p class="eyebrow">Richmond, CA • Hyph Life • AMS WEST</p>
+          <h2>REAL MUSIC. NO MIDDLEMAN. HYPHSWORLD.</h2>
+          <p class="lead">Music, visuals, Vault drops, merch, and artist spotlight energy — all running direct from the source.</p>
+
+          <div class="button-row">
+            <a class="pill-btn green" href="#music">Listen Now</a>
+            <a class="pill-btn gold" href="vault.html">Enter Vault</a>
+            <a class="pill-btn pink" href="#join">Login / Join</a>
+          </div>
+        </div>
+
+        <aside id="music" class="compact-player" aria-label="Homepage music player">
+          <div class="compact-head">
+            <div>
+              <p class="eyebrow">Now Playing</p>
+              <h3 id="trackTitle">HAM</h3>
+              <p id="trackMeta">Hyph Life — prod by 1ManBand</p>
+            </div>
+            <div class="mini-points">
+              <span>Cool Points</span>
+              <strong id="coolPoints">195</strong>
+            </div>
+          </div>
+
+          <audio id="audioPlayer" preload="metadata"></audio>
+
+          <div class="compact-controls">
+            <button id="playBtn" type="button" class="control-btn">▶ Play</button>
+            <button id="pauseBtn" type="button" class="control-btn ghost">⏸ Pause</button>
+            <a class="control-btn full-link" href="app-player.html">Full Player</a>
+          </div>
+
+          <div class="timebar">
+            <span id="currentTime">0:00</span>
+            <input id="seekBar" type="range" value="0" min="0" max="100" />
+            <span id="duration">0:00</span>
+          </div>
+
+          <p id="playerStatus" class="player-status" aria-live="polite">Ready — tap Play to run the front page player.</p>
+
+          <div class="song-pills" id="quickTracks">
+            <button type="button" data-track="0">HAM</button>
+            <button type="button" data-track="1">KIKI</button>
+            <button type="button" data-track="2">ON GOD</button>
+            <button type="button" data-track="3">TIME</button>
+          </div>
+        </aside>
+
+        <div class="hero-art">
+          <img src="album-art.jpg" alt="HYPHSWORLD featured artwork" onerror="this.src='duck-sauce.jpg'" />
+          <img class="duck-badge" src="duck-sauce.jpg" alt="Duck Sauce badge" />
+        </div>
+      </div>
+    </section>
+
+    <section id="o1-preview" class="section-pad">
+      <div class="phone-shell section-card o1-preview-card">
+        <div class="section-title">
+          <p class="eyebrow">01 Show Live Preview</p>
+          <h2>Watch First. Then Move.</h2>
+          <p>Run the clip, catch the world, then decide if you are listening, watching, or unlocking the Vault.</p>
+        </div>
+
+        <div class="o1-preview-grid">
+          <div class="o1-video-wrap">
+            <span class="o1-video-label">01 Show Clip</span>
+            <video id="o1PreviewVideo" src="01-show-preview.mp4" controls playsinline preload="metadata" poster="album-art.jpg"></video>
+
+            <div id="o1ChoiceOverlay" class="o1-choice-overlay" aria-live="polite">
+              <div class="o1-choice-box">
+                <h3>You Watching… Or You Locking In?</h3>
+                <p>Duck Sauce said don’t just stare at the door. Pick a move.</p>
+                <div class="button-row">
+                  <a class="pill-btn gold" href="vault.html">Enter Vault</a>
+                  <button id="keepWatchingBtn" type="button" class="pill-btn green">Keep Watching</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="o1-preview-info">
+            <p class="eyebrow">O1 Universe</p>
+            <h3>O1 BOYZ — Live From The World</h3>
+            <p class="lead">Cartoon characters. Real pressure. AMS WEST motion running right on the front page.</p>
+            <div class="o1-preview-stats">
+              <span>TV-MA Energy</span>
+              <span>Bay Motion</span>
+              <span>Vault Path</span>
+            </div>
+            <div class="button-row">
+              <a class="pill-btn green" href="#o1-preview">▶ Watch Clip</a>
+              <a class="pill-btn gold" href="vault.html">Enter Vault</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="spotlight" class="section-pad">
+      <div class="phone-shell section-card spotlight-section">
+        <div class="section-title">
+          <p class="eyebrow">Artist Spotlight</p>
+          <h2>Platform Motion</h2>
+          <p>Spotlight is a feature lane — separate from the homepage player.</p>
+        </div>
+
+        <article class="spotlight-feature">
+          <div class="spotlight-art">
+            <img src="25-8.jpg" alt="Young Tez 25/8 artwork" onerror="this.src='album-art.jpg'" />
+            <span class="spotlight-badge">Spotlight #1</span>
+          </div>
+
+          <div class="spotlight-info">
+            <p class="eyebrow">Artist Spotlight #1</p>
+            <h3>25/8</h3>
+            <p>Young Tez — prod by Marty McPhresh</p>
+
+            <div class="button-row spotlight-actions">
+              <a id="spotlightPlayBtn" class="pill-btn green" href="#music">▶ Play</a>
+              <a class="pill-btn gold" href="vault.html">Earn Points</a>
+              <a class="pill-btn pink" href="#connect">Tap In</a>
+            </div>
+          </div>
+        </article>
+
+        <div class="spotlight-strip">
+          <article class="spotlight-tile active">
+            <span>01</span>
+            <strong>25/8</strong>
+            <small>Young Tez</small>
+          </article>
+
+          <article class="spotlight-tile">
+            <span>02</span>
+            <strong>HAM</strong>
+            <small>Hyph Life</small>
+          </article>
+
+          <article class="spotlight-tile">
+            <span>03</span>
+            <strong>ON GOD</strong>
+            <small>BooGotGluu x No Flash</small>
+          </article>
+
+          <article class="spotlight-tile">
+            <span>04</span>
+            <strong>KIKI</strong>
+            <small>Cuz Zaid x JCrown x Ruzzo</small>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="vault-preview" class="section-pad">
+      <div class="phone-shell section-card vault-preview">
+        <div class="section-title">
+          <p class="eyebrow">The Vault</p>
+          <h2>Unlock The Eras</h2>
+          <p>One gate, two floors. Hidden music first, current pressure second.</p>
+        </div>
+
+        <div class="vault-levels">
+          <article class="level-card">
+            <span>Level 1 Locked</span>
+            <h3>Quarantine Mixtape</h3>
+            <p>Never released. Hidden era. First floor in the Vault.</p>
+            <a class="pill-btn gold" href="vault.html">Enter Level 1</a>
+          </article>
+
+          <article class="level-card">
+            <span>Level 2 Locked</span>
+            <h3>HYPHSWORLD 5</h3>
+            <p>Current pressure. Premium floor. Built for repeat traffic.</p>
+            <a class="pill-btn green" href="vault.html">Unlock Level 2</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="video" class="section-pad">
+      <div class="phone-shell section-card">
+        <div class="section-title">
+          <p class="eyebrow">Featured Video</p>
+          <h2>HYPHSWORLD Motion</h2>
+          <p>Featured visuals, interviews, trailers, and 01 Show motion live here.</p>
+        </div>
+
+        <div class="video-slot">
+          <video src="01-show-preview.mp4" controls poster="album-art.jpg"></video>
+        </div>
+
+        <div class="mini-card focus-card">
+          <span>New Focus</span>
+          <h3>TIME</h3>
+          <p>SIXX FIGGAZ x Hyph Life. A record aimed at the youth about choices, pressure, and consequences.</p>
+          <div class="button-row">
+            <a class="pill-btn pink" href="#video">Watch World</a>
+            <a class="pill-btn green" href="app-player.html">Full Player</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="join" class="section-pad">
+      <div class="phone-shell section-card">
+        <div class="section-title">
+          <p class="eyebrow">Tap In</p>
+          <h2>Stay Locked In</h2>
+          <p>For booking, features, merch, interviews, business, and Vault updates.</p>
+        </div>
+
+        <div class="button-row">
+          <a class="pill-btn green" href="mailto:tone@amsenterprisecorp.com">Email AMS WEST</a>
+          <a class="pill-btn gold" href="vault.html">Create ID</a>
+          <a class="pill-btn pink" href="shop.html">Merch</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="connect" class="site-footer">
+    <div class="phone-shell footer-card">
+      <div>
+        <p>AMS WEST</p>
+        <h2>HYPHSWORLD</h2>
+        <span>Richmond, CA • Real music. Real motion. Real legacy.</span>
+      </div>
+
+      <div class="footer-links">
+        <a href="https://www.instagram.com/hyphsworld" target="_blank" rel="noreferrer">Instagram @hyphsworld</a>
+        <a href="https://www.tiktok.com/@hyphsworld1" target="_blank" rel="noreferrer">TikTok @hyphsworld1</a>
+        <a href="https://x.com/hyphsworld" target="_blank" rel="noreferrer">X @hyphsworld</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="homepage.js"></script>
+  <script src="duck-helper.js"></script>
+</body>
+</html>
