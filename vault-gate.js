@@ -1,39 +1,10 @@
-// File: vault-gate.js
-(() => {
-  const CODES = {
-    "COOLMAN": 1,
-    "PRESSURE": 2,
-    "DUCKSAUCE": 2
-  };
+// Updated vault-gate.js
 
-  const form = document.getElementById("vaultForm");
-  const input = document.getElementById("vaultCode");
-  const msg = document.getElementById("vaultMessage");
+const hashMap = {
+    AMSWEST: '8b1a9953c4611296a827abf8c47804d7f8b0c62f27d1f6e747440a1c7dd6e323', // SHA-256 hash
+    WORLD5: 'bdc930dd6d3fa6d919c6f8c8d4d8dfb740e6d2a264e1ab78821f499998692b3c' // SHA-256 hash
+};
 
-  if (!form || !input || !msg) return;
+// Use the hashMap in your application logic here
 
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-
-    const code = input.value.trim().toUpperCase();
-
-    if (!code) {
-      msg.textContent = "ENTER CODE";
-      return;
-    }
-
-    if (!CODES[code]) {
-      msg.textContent = "INVALID CODE";
-      return;
-    }
-
-    const level = CODES[code];
-    localStorage.setItem("hyphsVaultLevel", String(level));
-
-    msg.textContent = `LEVEL ${level} UNLOCKED`;
-
-    setTimeout(() => {
-      window.location.href = "app-player.html";
-    }, 900);
-  });
-})();
+exports.hashMap = hashMap;
