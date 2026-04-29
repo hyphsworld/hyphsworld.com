@@ -1,4 +1,15 @@
-const tracks = [
+const userEmail = localStorage.getItem("hyphUserEmail");
+
+if (!userEmail) {
+  // guest mode → wipe points on reload
+  localStorage.removeItem("hyphsworldCoolPoints");
+} else {
+  // restore saved points
+  const saved = localStorage.getItem("hyphUserPoints");
+  if (saved) {
+    localStorage.setItem("hyphsworldCoolPoints", saved);
+  }
+}const tracks = [
   {
     title: "HAM",
     meta: "Hyph Life — prod by 1ManBand",
