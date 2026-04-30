@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Vault Access | HYPHSWORLD</title>
+  <meta name="description" content="Animated HYPHSWORLD Vault Access Pad with BuckTheBodyguard, Duck Sauce, scanner movement, code entry, and Level 1 transport." />
+
+  <link rel="stylesheet" href="vault.css" />
+</head>
+
+<body class="vault-page">
+  <div class="motion-grid" aria-hidden="true"></div>
+  <div class="graffiti-glow glow-pink" aria-hidden="true"></div>
+  <div class="graffiti-glow glow-blue" aria-hidden="true"></div>
+  <div class="graffiti-glow glow-green" aria-hidden="true"></div>
+
+  <header class="vault-header">
+    <a class="vault-logo" href="index.html" aria-label="Back to HYPHSWORLD homepage">
+      <span>AMS WEST PRESENTS</span>
+      <strong>HYPHSWORLD</strong>
+    </a>
+
+    <nav class="vault-nav" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="vault.html" aria-current="page">Vault</a>
+      <a href="app-player.html">Full Player</a>
+      <a href="merch.html">Merch</a>
+    </nav>
+  </header>
+
+  <main class="vault-main">
+    <section class="vault-stage">
+      <article class="vault-intro">
+        <p class="tagline">LIVE ACCESS TERMINAL // LEVEL 1 ROUTE</p>
+        <h1>Vault Gate</h1>
+        <p class="lead">
+          Scan pad is live. Enter code, let Buck clear the door, and let Duck Sauce talk too much before transport.
+        </p>
+
+        <div class="duo-strip">
+          <div class="duo-card duck">
+            <img src="duck-sauce.jpg" alt="Duck Sauce" onerror="this.style.display='none'" />
+            <div>
+              <strong>Duck Sauce</strong>
+              <span id="duckLine">“Aye the pad moving now. Don’t freeze up.”</span>
+            </div>
+          </div>
+
+          <div class="duo-card buck">
+            <img src="buck-thebodyguard.jpg" alt="BuckTheBodyguard" onerror="this.style.display='none'" />
+            <div>
+              <strong>BuckTheBodyguard</strong>
+              <span id="buckLine">“Code first. Scan second. No shortcuts.”</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <aside class="live-pad">
+        <div class="pad-topper">
+          <span class="live-dot"></span>
+          <strong>ACCESS PAD // LIVE</strong>
+          <span class="live-dot"></span>
+        </div>
+
+        <div class="access-core" id="accessCore">
+          <div class="core-grid"></div>
+          <div class="core-noise"></div>
+
+          <div class="vault-door">
+            <div class="door-side left"></div>
+            <div class="door-side right"></div>
+            <span class="door-line one"></span>
+            <span class="door-line two"></span>
+            <span class="door-line three"></span>
+            <span class="door-line four"></span>
+          </div>
+
+          <div class="scan-rings">
+            <span></span><span></span><span></span>
+          </div>
+
+          <div class="idle-scan-beam"></div>
+
+          <div class="body-target" aria-hidden="true">
+            <span class="head"></span>
+            <span class="torso"></span>
+            <span class="arm left"></span>
+            <span class="arm right"></span>
+            <span class="leg left"></span>
+            <span class="leg right"></span>
+          </div>
+
+          <div class="corner tl"></div>
+          <div class="corner tr"></div>
+          <div class="corner bl"></div>
+          <div class="corner br"></div>
+
+          <div class="floating-tag tag-one">SCAN BAR</div>
+          <div class="floating-tag tag-two">BUCK CLEARANCE</div>
+          <div class="floating-tag tag-three">DUCK WATCHING</div>
+        </div>
+
+        <div class="readout-grid">
+          <div>
+            <span>Status</span>
+            <strong id="gateStatus">STANDBY</strong>
+          </div>
+          <div>
+            <span>Pad</span>
+            <strong id="padStatus">MOVING</strong>
+          </div>
+          <div>
+            <span>Route</span>
+            <strong>LEVEL 1</strong>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="access-console">
+      <div class="console-divider">
+        <span></span>
+        <strong>CONTROL CONSOLE</strong>
+        <span></span>
+      </div>
+
+      <div class="console-card">
+        <div class="console-copy">
+          <p class="tagline">MASKED CODE ENTRY</p>
+          <h2>Run The Scan</h2>
+          <p id="consoleMessage">
+            Buck is posted at the rope. Duck Sauce is pressing random lights.
+          </p>
+        </div>
+
+        <form id="gateForm" class="gate-form">
+          <label for="accessCode">Secret Access Code</label>
+          <div class="input-shell">
+            <input id="accessCode" type="password" autocomplete="off" placeholder="ENTER CODE" />
+            <span class="input-pulse"></span>
+          </div>
+
+          <div class="button-row">
+            <button class="scan-button" type="submit">
+              <span>Run Body Scan</span>
+            </button>
+            <button class="clear-button" type="button" id="clearCode">Clear</button>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <section id="scanOverlay" class="scan-overlay" aria-hidden="true">
+    <div class="overlay-noise"></div>
+
+    <div class="scan-window">
+      <button id="closeOverlay" class="close-overlay" type="button" aria-label="Close scan">×</button>
+
+      <div class="scan-visual" id="scanVisual">
+        <div class="scan-grid"></div>
+        <div class="scan-door-big">
+          <div class="big-door left"></div>
+          <div class="big-door right"></div>
+          <span class="big-door-bar a"></span>
+          <span class="big-door-bar b"></span>
+          <span class="big-door-bar c"></span>
+        </div>
+
+        <div class="scan-person">
+          <span class="scan-head"></span>
+          <span class="scan-torso"></span>
+          <span class="scan-arm left"></span>
+          <span class="scan-arm right"></span>
+          <span class="scan-leg left"></span>
+          <span class="scan-leg right"></span>
+          <span class="real-scan-beam"></span>
+          <span class="particle p1"></span>
+          <span class="particle p2"></span>
+          <span class="particle p3"></span>
+          <span class="particle p4"></span>
+          <span class="particle p5"></span>
+          <span class="particle p6"></span>
+        </div>
+
+        <div class="smoke">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+
+        <div class="granted-badge" id="grantedBadge">ACCESS GRANTED</div>
+
+        <div class="transport-tunnel">
+          <span class="ring r1"></span>
+          <span class="ring r2"></span>
+          <span class="ring r3"></span>
+          <span class="ring r4"></span>
+          <span class="core"></span>
+          <span class="flash"></span>
+        </div>
+      </div>
+
+      <div class="scan-copy">
+        <p class="tagline">HYPHSWORLD SECURITY</p>
+        <h2 id="scanTitle">Body Scan</h2>
+        <p id="scanMessage">Scanner warming up...</p>
+
+        <div class="progress-track">
+          <div id="progressBar" class="progress-bar"></div>
+        </div>
+
+        <ul id="scanLog" class="scan-log"></ul>
+
+        <a id="manualEnter" class="manual-enter" href="level-1.html" hidden>Enter Level 1</a>
+      </div>
+    </div>
+  </section>
+
+  <script src="vault.js" defer></script>
+</body>
+</html>
