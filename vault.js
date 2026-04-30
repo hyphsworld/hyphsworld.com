@@ -1,306 +1,189 @@
-// HYPHSWORLD PHASE A — GATE 2.0
-// Full replacement for vault.js
-
 (() => {
   "use strict";
 
-  const ACCESS_HASHES = {
-  "master": "651d8948587739f3c0aa840fd250b5b547b98a83a9b84aa24800ff1293dc8ed9",
-  "level1": "651d8948587739f3c0aa840fd250b5b547b98a83a9b84aa24800ff1293dc8ed9",
-  "level2": "651d8948587739f3c0aa840fd250b5b547b98a83a9b84aa24800ff1293dc8ed9"
-};
-  const STORAGE_KEY = "hyphsworld_vault_access";
+  const ACCEPTED_HASHES = new Set([
+    "651d8948587739f3c0aa840fd250b5b547b98a83a9b84aa24800ff1293dc8ed9"
+  ]);
+
+  const TRANSPORT_TOKEN_KEY = "HW_LEVEL1_TRANSPORT_READY";
+  const COOL_POINTS_KEY = "coolPoints";
 
   const PASS_STEPS = [
-    { wait: 160, progress: 8, text: "Scanner warming up...", log: "Duck Sauce: scanner on. Stand still." },
-    { wait: 560, progress: 24, text: "Body scan active...", log: "Reading body signature..." },
-    { wait: 620, progress: 46, text: "Checking access code...", log: "BuckTheBodyguard: credentials in review." },
-    { wait: 620, progress: 68, text: "Clearing Vault terminal...", log: "AMS WEST access layer matched." },
-    { wait: 700, progress: 100, text: "Access granted. Gate opening...", log: "ACCESS GRANTED — scan-bar door opening.", pass: true }
+    { delay: 0, progress: 12, title: "Body Scan", message: "Buck locked the door. Scanner moving.", log: "SCAN BAR ACTIVE", stageClass: "scanning" },
+    { delay: 900, progress: 38, title: "Body Scan", message: "Duck Sauce: “Hold still before you glitch the floor.”", log: "BODY SIGNATURE FOUND", stageClass: "scanning" },
+    { delay: 1850, progress: 68, title: "Access Check", message: "Buck: “Clearance looking valid.”", log: "CODE HASH VERIFIED", stageClass: "granted" },
+    { delay: 2700, progress: 88, title: "Access Granted", message: "Duck Sauce: “Aight, you in. Do not embarrass me.”", log: "ACCESS GRANTED", stageClass: "granted" },
+    { delay: 3650, progress: 100, title: "Transport Initiated", message: "Bay portal online. Sliding into Level 1.", log: "TRANSPORT TUNNEL ONLINE", stageClass: "transporting" },
+    { delay: 5050, progress: 100, title: "Transport Complete", message: "Welcome to Level 1 — Quarantine Mixtape Floor.", log: "ARRIVAL CONFIRMED", stageClass: "arrived" }
   ];
 
   const FAIL_STEPS = [
-    { wait: 140, progress: 18, text: "Scanner warming up...", log: "Duck Sauce: wait... that code looking suspicious." },
-    { wait: 620, progress: 52, text: "Checking credentials...", log: "Vault credentials not matching." },
-    { wait: 720, progress: 100, text: "Access denied.", log: "ACCESS DENIED — Buck said try again.", fail: true }
+    { delay: 0, progress: 15, title: "Body Scan", message: "Buck checking access. Code better be right.", log: "SCAN STARTED", stageClass: "scanning" },
+    { delay: 900, progress: 48, title: "Access Check", message: "Duck Sauce: “That code got fake shoes on.”", log: "HASH NOT ACCEPTED", stageClass: "scanning" },
+    { delay: 1750, progress: 0, title: "Access Denied", message: "Buck: “Denied. Back up from the rope.”", log: "ACCESS DENIED", stageClass: "" }
   ];
 
-  function onReady(fn) {
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", fn);
-    } else {
-      fn();
-    }
-  }
+  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-  function sleep(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
-
-  async function sha256Upper(value) {
-    const clean = String(value || "").trim().toUpperCase();
-    const bytes = new TextEncoder().encode(clean);
-    const hashBuffer = await crypto.subtle.digest("SHA-256", bytes);
-    return Array.from(new Uint8Array(hashBuffer))
-      .map((byte) => byte.toString(16).padStart(2, "0"))
-      .join("");
+  function $(selector) {
+    return document.querySelector(selector);
   }
 
   function getParts() {
     return {
-      overlay: document.getElementById("bodyScanOverlay"),
-      message: document.getElementById("scanMessage"),
-      bar: document.getElementById("scanProgressBar"),
-      log: document.getElementById("scanLog"),
-      close: document.getElementById("scanClose"),
-      actions: document.getElementById("transportActions"),
-      manualLink: document.getElementById("manualEnterLink")
+      overlay: $("#bodyScanOverlay"),
+      close: $("#scanClose"),
+      stage: $("#cinemaStage"),
+      title: $("#scanTitle"),
+      message: $("#scanMessage"),
+      progress: $("#scanProgressBar"),
+      log: $("#scanLog"),
+      actions: $("#transportActions"),
+      manual: $("#manualEnterLink"),
+      gateStatus: $("#gateStatus"),
+      gateMode: $("#gateMode"),
+      smallMessage: $("#scanMessageSmall"),
+      masterStatus: $("#masterStatus")
     };
   }
 
-  function injectFallbackStyles() {
-    if (document.getElementById("hyphsworldPhaseAFallbackStyles")) return;
-
-    const style = document.createElement("style");
-    style.id = "hyphsworldPhaseAFallbackStyles";
-    style.textContent = `
-      #bodyScanOverlay.is-open {
-        position: fixed !important;
-        inset: 0 !important;
-        z-index: 2147483000 !important;
-        display: flex !important;
-        opacity: 1 !important;
-        visibility: visible !important;
-        pointer-events: auto !important;
-      }
-      body.vault-scan-lock {
-        overflow: hidden !important;
-      }
-    `;
-    document.head.appendChild(style);
+  async function sha256(text) {
+    const data = new TextEncoder().encode(text.trim().toUpperCase());
+    const digest = await crypto.subtle.digest("SHA-256", data);
+    return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
   }
 
-  function readAccess() {
+  function addCoolPoints(amount) {
     try {
-      return JSON.parse(sessionStorage.getItem(STORAGE_KEY) || "{}");
-    } catch {
-      return {};
-    }
+      const current = Number(localStorage.getItem(COOL_POINTS_KEY) || 0);
+      localStorage.setItem(COOL_POINTS_KEY, String(current + amount));
+    } catch (error) {}
   }
 
-  function saveAccess(level) {
-    const current = readAccess();
-    current[level] = true;
-    current.updatedAt = new Date().toISOString();
-
-    if (level === "master") {
-      current.master = true;
-      current.level1 = true;
-    }
-
+  function grantLevelOneTransport() {
     try {
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(current));
-    } catch (error) {
-      console.warn("Session storage unavailable:", error);
-    }
+      sessionStorage.setItem(TRANSPORT_TOKEN_KEY, JSON.stringify({
+        level: "level-1",
+        grantedAt: Date.now(),
+        route: "level-1.html",
+        nonce: Math.random().toString(36).slice(2)
+      }));
+    } catch (error) {}
   }
 
-  function addLog(text, state = "") {
-    const { log } = getParts();
-    if (!log) return;
-
-    const item = document.createElement("li");
-    item.textContent = text;
-
-    if (state) {
-      item.classList.add(state);
-    }
-
-    log.appendChild(item);
+  function setGateState(status, mode, note) {
+    const parts = getParts();
+    if (parts.gateStatus) parts.gateStatus.textContent = status;
+    if (parts.gateMode) parts.gateMode.textContent = mode;
+    if (parts.smallMessage) parts.smallMessage.textContent = note;
+    if (parts.masterStatus && status === "APPROVED") parts.masterStatus.textContent = "UNLOCKED";
   }
 
-  function resetOverlay() {
-    const { overlay, message, bar, log, actions } = getParts();
-    if (!overlay) {
-      return false;
-    }
+  function openOverlay(destination) {
+    const parts = getParts();
 
-    injectFallbackStyles();
+    if (!parts.overlay) return;
 
-    overlay.classList.remove(
-      "is-open",
-      "is-scanning",
-      "is-granted",
-      "is-door-opening",
-      "is-smoke",
-      "is-disintegrating",
-      "is-transporting",
-      "is-arriving"
-    );
+    parts.overlay.classList.add("is-active");
+    parts.overlay.setAttribute("aria-hidden", "false");
 
-    overlay.classList.add("is-open");
-    overlay.setAttribute("aria-hidden", "false");
-    document.body.classList.add("vault-scan-lock");
-
-    if (message) message.textContent = "Scanner warming up...";
-    if (bar) bar.style.width = "0%";
-    if (log) log.innerHTML = "";
-    if (actions) actions.hidden = true;
-
-    overlay.getBoundingClientRect();
-    return true;
+    if (parts.stage) parts.stage.className = "cinema-stage";
+    if (parts.progress) parts.progress.style.width = "0%";
+    if (parts.log) parts.log.innerHTML = "";
+    if (parts.actions) parts.actions.hidden = true;
+    if (parts.manual) parts.manual.href = destination || "level-1.html";
   }
 
   function closeOverlay() {
-    const { overlay, actions } = getParts();
-    if (!overlay) return;
+    const parts = getParts();
+    if (!parts.overlay) return;
 
-    overlay.classList.remove(
-      "is-open",
-      "is-scanning",
-      "is-granted",
-      "is-door-opening",
-      "is-smoke",
-      "is-disintegrating",
-      "is-transporting",
-      "is-arriving"
-    );
+    parts.overlay.classList.remove("is-active");
+    parts.overlay.setAttribute("aria-hidden", "true");
+  }
 
-    overlay.setAttribute("aria-hidden", "true");
-    document.body.classList.remove("vault-scan-lock");
+  function writeLog(text) {
+    const parts = getParts();
+    if (!parts.log) return;
 
-    if (actions) actions.hidden = true;
+    const item = document.createElement("li");
+    item.textContent = text;
+    parts.log.appendChild(item);
   }
 
   async function playSteps(steps) {
-    const { overlay, message, bar } = getParts();
-    if (!overlay) return;
-
-    overlay.classList.add("is-scanning");
+    const parts = getParts();
 
     for (const step of steps) {
-      await sleep(step.wait);
+      window.setTimeout(() => {
+        if (parts.stage) {
+          parts.stage.classList.remove("scanning", "granted", "transporting", "arrived");
+          if (step.stageClass) parts.stage.classList.add(step.stageClass);
+        }
 
-      if (message) message.textContent = step.text;
-      if (bar) bar.style.width = `${step.progress}%`;
-
-      if (step.log) {
-        addLog(step.log, step.pass ? "pass" : step.fail ? "fail" : "");
-      }
+        if (parts.title) parts.title.textContent = step.title;
+        if (parts.message) parts.message.textContent = step.message;
+        if (parts.progress) parts.progress.style.width = `${step.progress}%`;
+        if (step.log) writeLog(step.log);
+      }, step.delay);
     }
 
-    overlay.classList.remove("is-scanning");
-  }
-
-  function resolveDestination(destination) {
-    const clean = String(destination || "").trim();
-    if (!clean || clean === "#" || clean === "/") return "level-1.html";
-    return clean;
+    const lastDelay = steps.length ? steps[steps.length - 1].delay : 0;
+    await sleep(lastDelay + 500);
   }
 
   async function playGateSequence(destination) {
-    const finalDestination = resolveDestination(destination);
-    const { overlay, message, actions, manualLink } = getParts();
+    const parts = getParts();
+    if (parts.actions) parts.actions.hidden = false;
 
-    if (!overlay) {
-      window.location.href = finalDestination;
-      return;
-    }
+    await sleep(1200);
 
-    if (manualLink) {
-      manualLink.href = finalDestination;
-    }
-
-    overlay.classList.add("is-granted");
-
-    if (message) {
-      message.textContent = "Access granted. Opening scan-bar door...";
-    }
-
-    await sleep(820);
-
-    overlay.classList.add("is-door-opening");
-
-    if (message) {
-      message.textContent = "Scan-bar door opening...";
-    }
-
-    await sleep(920);
-
-    overlay.classList.add("is-smoke");
-
-    if (message) {
-      message.textContent = "Smoke burst detected. Transport preparing...";
-    }
-
-    await sleep(760);
-
-    overlay.classList.add("is-disintegrating");
-
-    if (message) {
-      message.textContent = "Body signature dissolving...";
-    }
-
-    await sleep(1120);
-
-    overlay.classList.add("is-transporting");
-
-    if (message) {
-      message.textContent = "Transport tunnel open...";
-    }
-
-    await sleep(1380);
-
-    overlay.classList.add("is-arriving");
-
-    if (message) {
-      message.textContent = "Transport complete. Welcome to Level 1.";
-    }
-
-    await sleep(900);
-
-    if (actions) {
-      actions.hidden = false;
-    }
-
-    await sleep(650);
-
-    window.location.href = finalDestination;
+    window.location.href = destination || "level-1.html";
   }
 
   async function handleScan(button) {
-    if (!button || button.disabled) return;
+    const level = button.dataset.accessLevel || "level1";
+    const input = document.getElementById(button.dataset.inputId);
+    const destination = button.dataset.destination || "level-1.html";
 
-    const level = button.dataset.accessLevel || "master";
-    const inputId = button.dataset.inputId || "";
-    const destination = resolveDestination(button.dataset.destination || "level-1.html");
-    const input = inputId ? document.getElementById(inputId) : null;
-    const typed = input ? input.value : "";
+    if (!input) return;
 
-    const ready = resetOverlay();
-    if (!ready) return;
+    const raw = input.value.trim();
+
+    if (!raw) {
+      setGateState("STANDBY", "CODE FIRST", "Duck Sauce: “Type something first. I cannot scan air.”");
+      input.focus();
+      return;
+    }
 
     button.disabled = true;
+    setGateState("SCANNING", "BODY SCAN", "Buck is checking clearance. Duck Sauce is watching the scanner.");
+    openOverlay(destination);
 
-    const expectedHash = ACCESS_HASHES[level] || ACCESS_HASHES.master;
-    const typedHash = await sha256Upper(typed);
-    const passed = Boolean(String(typed).trim()) && typedHash === expectedHash;
+    let passed = false;
+
+    try {
+      const hash = await sha256(raw);
+      passed = ACCEPTED_HASHES.has(hash);
+    } catch (error) {
+      setGateState("DENIED", "CRYPTO ERROR", "Browser could not run the code check.");
+    }
+
+    input.value = "";
 
     if (!passed) {
       await playSteps(FAIL_STEPS);
       await sleep(950);
       closeOverlay();
+      setGateState("DENIED", "LOCKED", "Buck: “Denied. Button tap alone does not move the door.”");
       button.disabled = false;
-
-      if (input) {
-        input.focus();
-        input.select();
-      }
-
+      input.focus();
       return;
     }
 
-    saveAccess(level);
+    grantLevelOneTransport();
+    addCoolPoints(level === "master" ? 50 : 25);
+    setGateState("APPROVED", "TRANSPORT", "Access granted. Transport pad warming.");
     await playSteps(PASS_STEPS);
     await playGateSequence(destination);
   }
@@ -317,49 +200,40 @@
           target.value = "";
           target.focus();
         }
+        setGateState("STANDBY", "SCAN", "Terminal cleared. Buck reset the pad.");
       });
     });
 
     document.querySelectorAll(".vault-code-input").forEach((input) => {
       input.addEventListener("keydown", (event) => {
         if (event.key !== "Enter") return;
-
         event.preventDefault();
 
         const card = input.closest(".access-card");
         const button = card ? card.querySelector("[data-scan-trigger]") : null;
 
-        if (button) {
-          handleScan(button);
-        }
+        if (button) handleScan(button);
       });
     });
 
-    const { overlay, close } = getParts();
+    const parts = getParts();
 
-    if (close) {
-      close.addEventListener("click", closeOverlay);
-    }
+    if (parts.close) parts.close.addEventListener("click", closeOverlay);
 
-    if (overlay) {
-      overlay.addEventListener("click", (event) => {
-        if (event.target === overlay) {
-          closeOverlay();
-        }
+    if (parts.overlay) {
+      parts.overlay.addEventListener("click", (event) => {
+        if (event.target === parts.overlay) closeOverlay();
       });
     }
 
     document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") {
-        closeOverlay();
-      }
+      if (event.key === "Escape") closeOverlay();
     });
   }
 
-  onReady(() => {
-    injectFallbackStyles();
+  document.addEventListener("DOMContentLoaded", () => {
     bindEvents();
-    window.HYPHSWORLD_PHASE_A_GATE_READY = true;
-    console.info("HYPHSWORLD Phase A Gate 2.0 loaded.");
+    setGateState("STANDBY", "SCAN", "Buck is posted. Duck is watching the button.");
+    window.HYPHSWORLD_ACCESS_GATE_READY = true;
   });
 })();

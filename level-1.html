@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Level 1 | Quarantine Mixtape | HYPHSWORLD</title>
+  <meta name="description" content="Level 1 Quarantine Mixtape floor with Duck Sauce slot machine, Buck security, Cool Points, and HYPHSWORLD music." />
+
+  <link rel="stylesheet" href="level-1.css" />
+</head>
+
+<body class="level-one-page">
+  <div class="floor-bg-grid" aria-hidden="true"></div>
+  <div class="floor-glow pink" aria-hidden="true"></div>
+  <div class="floor-glow blue" aria-hidden="true"></div>
+
+  <header class="floor-header">
+    <a class="floor-brand" href="index.html">
+      <span>AMS WEST PRESENTS</span>
+      <strong>HYPHSWORLD</strong>
+    </a>
+
+    <nav class="floor-nav" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="vault.html">Vault</a>
+      <a href="app-player.html">Full Player</a>
+      <a href="merch.html">Merch</a>
+    </nav>
+  </header>
+
+  <main class="floor-main">
+    <section class="floor-hero">
+      <article class="mixtape-panel">
+        <p class="eyebrow">LEVEL 1 // FIRST FLOOR</p>
+        <h1>Quarantine Mixtape</h1>
+        <p class="lead">
+          Welcome to the first floor. Run the tape, earn Cool Points, and watch Duck Sauce try to finesse the room.
+        </p>
+
+        <div class="player-card">
+          <div class="now-playing">
+            <span id="trackNumber">TRACK 01</span>
+            <h2 id="trackTitle">KIKI</h2>
+            <p id="trackMeta">Cuz Zaid x JCrown x Ruzzo • Prod. Cuz Zaid</p>
+          </div>
+
+          <audio id="audioPlayer" controls preload="metadata">
+            <source id="audioSource" src="kiki.mp3" type="audio/mpeg" />
+          </audio>
+
+          <div class="track-buttons" id="trackButtons" aria-label="Track list"></div>
+        </div>
+      </article>
+
+      <aside class="points-panel">
+        <div class="points-chip">
+          <span>COOL POINTS</span>
+          <strong id="coolPoints">0</strong>
+        </div>
+
+        <div class="duel-card">
+          <img src="duck-sauce.jpg" alt="Duck Sauce" onerror="this.style.display='none'" />
+          <div>
+            <h2>Duck & Buck</h2>
+            <p>Dynamic Duel active. Duck brings chaos. Buck keeps security tight.</p>
+          </div>
+          <img src="buck-thebodyguard.jpg" alt="BuckTheBodyguard" onerror="this.style.display='none'" />
+        </div>
+      </aside>
+    </section>
+
+    <section class="slot-section" aria-labelledby="slotTitle">
+      <div class="section-divider">
+        <span></span>
+        <strong>LEVEL 1 BONUS MACHINE</strong>
+        <span></span>
+      </div>
+
+      <article class="slot-machine">
+        <div class="slot-copy">
+          <p class="eyebrow">COOL POINTS SLOT</p>
+          <h2 id="slotTitle">Duck Sauce Machine</h2>
+          <p>Spin the machine, run up points, and try not to get hustled by a talking sauce cloud.</p>
+        </div>
+
+        <div class="slot-body">
+          <div class="slot-topper">SPIN TO EARN</div>
+
+          <div class="reels" aria-label="Slot machine reels">
+            <div class="reel"><img id="reelOne" src="duck-sauce.jpg" alt="" /></div>
+            <div class="reel"><img id="reelTwo" src="duck-sauce.jpg" alt="" /></div>
+            <div class="reel"><img id="reelThree" src="duck-sauce.jpg" alt="" /></div>
+          </div>
+
+          <button id="spinButton" class="spin-button" type="button">Spin</button>
+          <p id="slotResult" class="slot-result">Duck Sauce: “Pull it. I dare you.”</p>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <aside id="duckScamModal" class="duck-scam-modal" aria-hidden="true">
+    <div class="scam-card">
+      <button id="closeScam" class="close-scam" type="button" aria-label="Close">×</button>
+
+      <div class="scam-heads">
+        <img src="duck-sauce.jpg" alt="Duck Sauce" onerror="this.style.display='none'" />
+        <img src="buck-thebodyguard.jpg" alt="BuckTheBodyguard" onerror="this.style.display='none'" />
+      </div>
+
+      <p class="scam-kicker">DUCK SAUCE OFFER</p>
+      <h2 id="scamTitle">Lemme hold 20 points.</h2>
+      <p id="scamText">I got a play. Trust me. I’m basically customer service.</p>
+
+      <div class="scam-actions">
+        <button id="trustDuck" class="trust-duck" type="button">Trust Duck 😈</button>
+        <button id="listenBuck" class="listen-buck" type="button">Listen To Buck 🛡️</button>
+      </div>
+    </div>
+  </aside>
+
+  <script src="level-1.js" defer></script>
+</body>
+</html>
