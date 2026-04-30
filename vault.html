@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vault Access | HYPHSWORLD</title>
+  <meta name="description" content="HYPHSWORLD Vault gate with body scan, cinematic transport, and animated access terminal." />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="vault.css" />
+</head>
+<body class="vault-page">
+  <div class="vault-page-grid" aria-hidden="true"></div>
+
+  <header class="vault-header">
+    <a class="brand-lockup" href="index.html" aria-label="Back to homepage">
+      <span class="brand-kicker">AMS WEST PRESENTS</span>
+      <span class="brand-title">HYPHSWORLD</span>
+    </a>
+
+    <nav class="vault-nav" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="vault.html" aria-current="page">Vault</a>
+      <a href="app-player.html">Full Player</a>
+      <a href="merch.html">Merch</a>
+    </nav>
+  </header>
+
+  <main class="vault-main">
+    <section class="vault-hero">
+      <div class="vault-copy-panel">
+        <p class="eyebrow">VAULT GATE // BODY SCAN + TRANSPORT</p>
+        <h1>Control Console</h1>
+        <p class="lead">
+          One code. Body scan. Access granted. Then a real transport into the first floor of the Vault.
+          This version is built to feel more cinematic and alive.
+        </p>
+
+        <div class="guide-stack">
+          <div class="guide-card duck-guide">
+            <div class="guide-badge">DS</div>
+            <div>
+              <h2>Duck Sauce</h2>
+              <p>“Run the scan. Let the body disappear. Then watch the tunnel hit.”</p>
+            </div>
+          </div>
+
+          <div class="guide-card buck-guide">
+            <div class="guide-badge">B</div>
+            <div>
+              <h2>BuckTheBodyguard</h2>
+              <p>“Stand on the pad. Clearance first. Floor access second.”</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="terminal-shell" aria-label="Animated access terminal">
+        <div class="terminal-topbar">
+          <span></span>
+          <strong>ACCESS PAD</strong>
+          <span></span>
+        </div>
+
+        <div class="pad-stage">
+          <div class="pad-grid"></div>
+          <div class="pad-core"></div>
+          <div class="pad-ring pad-ring-a"></div>
+          <div class="pad-ring pad-ring-b"></div>
+          <div class="pad-ring pad-ring-c"></div>
+          <div class="pad-beam"></div>
+
+          <div class="pad-user">
+            <div class="pad-head"></div>
+            <div class="pad-body"></div>
+            <div class="pad-arm left"></div>
+            <div class="pad-arm right"></div>
+            <div class="pad-leg left"></div>
+            <div class="pad-leg right"></div>
+          </div>
+
+          <div class="terminal-corner tl"></div>
+          <div class="terminal-corner tr"></div>
+          <div class="terminal-corner bl"></div>
+          <div class="terminal-corner br"></div>
+        </div>
+
+        <div class="terminal-readouts">
+          <div class="readout-card">
+            <span class="readout-label">STATUS</span>
+            <strong>SCAN READY</strong>
+          </div>
+          <div class="readout-card">
+            <span class="readout-label">MODE</span>
+            <strong>TRANSPORT</strong>
+          </div>
+          <div class="readout-card">
+            <span class="readout-label">FLOOR</span>
+            <strong>LEVEL 1</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="vault-terminal-section">
+      <div class="section-headline">
+        <span></span>
+        <strong>CONTROL CONSOLE</strong>
+        <span></span>
+      </div>
+
+      <div class="console-grid">
+        <article class="access-card master-card">
+          <div class="card-top">
+            <p class="card-kicker">MASTER ACCESS</p>
+            <span class="status-chip locked">LOCKED</span>
+          </div>
+
+          <h2>Vault Gate</h2>
+          <p>One code. Body scan. Then transport into the first floor of the Vault.</p>
+
+          <div class="card-visual card-visual-master" aria-hidden="true">
+            <div class="visual-line"></div>
+            <div class="visual-line"></div>
+            <div class="visual-line"></div>
+            <div class="visual-dot"></div>
+          </div>
+
+          <label class="code-label" for="masterCode">Secret Main Code</label>
+          <input
+            id="masterCode"
+            class="vault-code-input"
+            type="password"
+            inputmode="text"
+            autocomplete="off"
+            placeholder="ENTER MAIN CODE"
+          />
+
+          <div class="button-row">
+            <button
+              class="scan-btn"
+              type="button"
+              data-scan-trigger
+              data-access-level="master"
+              data-input-id="masterCode"
+              data-destination="level-1.html"
+            >
+              Run Body Scan
+            </button>
+            <button class="clear-btn" type="button" data-clear-input="masterCode">Clear</button>
+          </div>
+        </article>
+
+        <article class="access-card level-card">
+          <div class="card-top">
+            <p class="card-kicker">LEVEL 1</p>
+            <span class="status-chip locked">LOCKED</span>
+          </div>
+
+          <h2>Quarantine Mixtape</h2>
+          <p>First floor clearance. Hidden era. Mixtape pressure and artwork access.</p>
+
+          <div class="card-visual card-visual-level" aria-hidden="true">
+            <div class="visual-scan-bar"></div>
+            <div class="visual-grid"></div>
+          </div>
+
+          <label class="code-label" for="levelOneCode">Level 1 Code</label>
+          <input
+            id="levelOneCode"
+            class="vault-code-input"
+            type="password"
+            inputmode="text"
+            autocomplete="off"
+            placeholder="ENTER CODE"
+          />
+
+          <div class="button-row">
+            <button
+              class="scan-btn alt-btn"
+              type="button"
+              data-scan-trigger
+              data-access-level="level1"
+              data-input-id="levelOneCode"
+              data-destination="level-1.html"
+            >
+              Unlock Level 1
+            </button>
+            <button class="clear-btn" type="button" data-clear-input="levelOneCode">Clear</button>
+          </div>
+        </article>
+
+        <article class="access-card preview-card">
+          <div class="card-top">
+            <p class="card-kicker">LEVEL 2</p>
+            <span class="status-chip preview">PREVIEW</span>
+          </div>
+
+          <h2>HYPHSWORLD 5</h2>
+          <p>Keep Level 2 details behind Level 1 so the Vault still feels earned.</p>
+
+          <div class="card-visual card-visual-preview" aria-hidden="true">
+            <div class="preview-orbit orbit-a"></div>
+            <div class="preview-orbit orbit-b"></div>
+            <div class="preview-core"></div>
+          </div>
+
+          <button class="scan-btn ghost-btn" type="button" disabled>Locked Until Level 1</button>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <section class="body-scan-overlay" id="bodyScanOverlay" aria-hidden="true">
+    <div class="overlay-noise" aria-hidden="true"></div>
+
+    <div class="scan-shell" role="dialog" aria-modal="true" aria-labelledby="scanTitle">
+      <button class="scan-close" type="button" id="scanClose" aria-label="Close scan">×</button>
+
+      <div class="scan-stage">
+        <div class="scan-grid"></div>
+
+        <div class="scan-person" id="scanPerson">
+          <div class="scan-head"></div>
+          <div class="scan-body"></div>
+          <div class="scan-arm left"></div>
+          <div class="scan-arm right"></div>
+          <div class="scan-leg left"></div>
+          <div class="scan-leg right"></div>
+          <div class="scan-beam"></div>
+          <div class="scan-particles">
+            <span></span><span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+
+        <div class="granted-badge" id="grantedBadge">ACCESS GRANTED</div>
+
+        <div class="transport-tunnel" aria-hidden="true">
+          <div class="tunnel-ring ring-1"></div>
+          <div class="tunnel-ring ring-2"></div>
+          <div class="tunnel-ring ring-3"></div>
+          <div class="tunnel-ring ring-4"></div>
+          <div class="tunnel-flare"></div>
+          <div class="transport-flash"></div>
+        </div>
+      </div>
+
+      <div class="scan-copy">
+        <p class="scan-kicker">HYPHSWORLD SECURITY</p>
+        <h2 id="scanTitle">Body Scan</h2>
+        <p id="scanMessage">Scanner warming up...</p>
+
+        <div class="scan-progress">
+          <div class="scan-progress-bar" id="scanProgressBar"></div>
+        </div>
+
+        <ul class="scan-log" id="scanLog" aria-live="polite"></ul>
+
+        <div class="transport-actions" id="transportActions" hidden>
+          <a class="manual-enter-btn" id="manualEnterLink" href="level-1.html">Enter Vault Manually</a>
+          <p class="transport-help">If the auto transport gets blocked, use the manual entry button.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="vault.js" defer></script>
+</body>
+</html>
