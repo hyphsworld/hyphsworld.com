@@ -444,6 +444,27 @@ body.level-one-page {
   }
 
   .section-divider span {
-    display: none;
+    display: none;.duck {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: black;
+  padding: 10px;
+  border: 2px solid #ff00ff;
+  z-index: 999;
+}
+
+.duck img {
+  width: 90px;
+}
+
+.bubble {
+  margin: 10px;
+  font-size: 14px;
+}
+
+.hidden {
+  display: none;
+}
   }
 }
