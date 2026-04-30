@@ -12,31 +12,31 @@
       title: 'HAM',
       meta: 'Hyph Life — prod by 1ManBand',
       chip: 'HAM',
-      sources: ['audio/ham.mp3', 'music/ham.mp3', 'ham.mp3', 'HAM.mp3', ':audio:ham.mp3', '%3Aaudio%3Aham.mp3']
+      sources: ['ham.mp3']
     },
     kiki: {
       title: 'KIKI',
       meta: 'Cuz Zaid x JCrown x Ruzzo — prod by Cuz Zaid',
       chip: 'KIKI',
-      sources: ['audio/kiki.mp3', 'music/kiki.mp3', 'kiki.mp3', 'KIKI.mp3', ':audio:kiki.mp3', '%3Aaudio%3Akiki.mp3']
+      sources: ['kiki.mp3']
     },
     ongod: {
       title: 'ON GOD',
       meta: 'BooGotGluu x No Flash',
       chip: 'ON GOD',
-      sources: ['audio/on-god.mp3', 'music/on-god.mp3', 'on-god.mp3', 'on_god.mp3', 'ON-GOD.mp3', ':audio:on-god.mp3', '%3Aaudio%3Aon-god.mp3']
+      sources: ['on-god.mp3']
     },
     time: {
       title: 'TIME',
       meta: 'SIXX FIGGAZ x Hyph Life',
       chip: 'TIME',
-      sources: ['audio/time.mp3', 'music/time.mp3', 'time.mp3', 'TIME.mp3', ':audio:time.mp3', '%3Aaudio%3Atime.mp3']
+      sources: ['time.mp3']
     },
     tez258: {
       title: '25/8',
       meta: 'Young Tez — prod by Marty McPhresh',
       chip: '25/8',
-      sources: ['audio/25-8.mp3', 'music/25-8.mp3', '25-8.mp3', '25_8.mp3', '258.mp3']
+      sources: ['25-8.mp3']
     }
   };
 
