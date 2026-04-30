@@ -33,6 +33,11 @@
 
   function hasTransportAccess() {
     try {
+      const granted = sessionStorage.getItem('hyphsworld_vault_access') === 'granted';
+      const time = Number(sessionStorage.getItem('hyphsworld_vault_access_time') || 0);
+      if (granted && Date.now() - time < 4 * 60 * 60 * 1000) return true;
+    } catch (error) {}
+    try {
       const raw = sessionStorage.getItem(TRANSPORT_TOKEN_KEY);
       if (!raw) return false;
 

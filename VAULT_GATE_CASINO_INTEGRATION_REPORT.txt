@@ -1,0 +1,80 @@
+HYPHSWORLD VAULT GATE + HIDDEN CASINO INTEGRATION REPORT
+
+Base: path-traced cleaned repo from hyphsworld.com-newest.zip.
+No extra live files were removed in this pass.
+
+ADDED / REPLACED
+- login.html
+- login.css
+- login.js
+- vault.html
+- vault-floor.css
+- vault-floor.js
+- vault-guard.js
+- logout.html
+- hidden-casino.html
+- hidden-casino.css
+- hidden-casino.js
+- duck-sauce.png
+- buck-the-bodyguard.png
+
+FLOW
+- Public pages link Vault buttons to login.html.
+- login.html grants session access and redirects to vault.html.
+- vault.html contains the restored high-tech Vault Gate scanner and Hidden Casino slot.
+- hidden-casino.html is protected by vault-guard.js.
+- Level 1 points to quarantine-mixtape.html, matching this repo.
+- vault-floor.js grants the Level 1 transport token before sending visitors to Quarantine Mixtape.
+
+FINAL FILE COUNT: 50
+
+FINAL FILE LIST
+- 01-show-teaser.mp4
+- 25-8.jpg
+- 25-8.mp3
+- 50-cent-shit.mp3
+- CNAME
+- PATH_TRACE_REPORT.txt
+- album-art.jpg
+- app-player.html
+- bout-that-art.jpg
+- bout-that.mp3
+- buck-the-bodyguard.png
+- buck-thebodyguard.jpg
+- da-vault-freestyle.mp3
+- duck-helper.js
+- duck-sauce.jpg
+- duck-sauce.png
+- free-hyph.mp3
+- gotta-go-remix.jpg
+- gotta-go-remix.mp3
+- ham.mp3
+- hidden-casino.css
+- hidden-casino.html
+- hidden-casino.js
+- homepage-upgrades.css
+- hyphsworld-hero.mp4
+- index-player.js
+- index.html
+- kiki.mp3
+- level-1.css
+- level-1.html
+- login.css
+- login.html
+- login.js
+- logout.html
+- merch.html
+- on-god.mp3
+- quarantine-mixtape.html
+- quarantine-mixtape.jpg
+- quarantine-player.js
+- quarantine-tracks.js
+- shop.html
+- styles.css
+- time.mp3
+- vault-floor.css
+- vault-floor.js
+- vault-guard.js
+- vault.css
+- vault.html
+- vault.js
