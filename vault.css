@@ -1,0 +1,805 @@
+/* HYPHSWORLD VAULT BODY SCAN VISUAL FIX
+   Replace vault.css with this full file.
+   Brand colors: black + green + red accents + fun rainbow energy.
+*/
+
+:root {
+  --hw-black: #050608;
+  --hw-black-2: #0b0f10;
+  --hw-green: #39ff88;
+  --hw-green-2: #00c853;
+  --hw-red: #ff1744;
+  --hw-yellow: #ffe600;
+  --hw-blue: #00d5ff;
+  --hw-purple: #a855f7;
+  --hw-white: #f7fff9;
+  --hw-muted: rgba(247, 255, 249, 0.72);
+  --hw-card: rgba(8, 14, 13, 0.9);
+  --hw-border: rgba(57, 255, 136, 0.32);
+  --hw-shadow: 0 24px 80px rgba(0, 0, 0, 0.48);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background: var(--hw-black);
+}
+
+body.vault-page {
+  min-height: 100vh;
+  margin: 0;
+  color: var(--hw-white);
+  background:
+    radial-gradient(circle at 15% 10%, rgba(57, 255, 136, 0.18), transparent 28%),
+    radial-gradient(circle at 85% 20%, rgba(255, 23, 68, 0.16), transparent 28%),
+    radial-gradient(circle at 50% 95%, rgba(0, 213, 255, 0.12), transparent 35%),
+    linear-gradient(135deg, #020303 0%, #06130c 45%, #120407 100%);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  overflow-x: hidden;
+}
+
+.vault-page-glow {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.26;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(circle at center, black 0%, transparent 85%);
+}
+
+.vault-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px clamp(16px, 4vw, 46px);
+  border-bottom: 1px solid rgba(57, 255, 136, 0.18);
+  background: rgba(3, 5, 5, 0.76);
+  backdrop-filter: blur(18px);
+}
+
+.brand-lockup {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+  text-decoration: none;
+  color: var(--hw-white);
+}
+
+.brand-kicker {
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  color: var(--hw-green);
+  font-weight: 900;
+}
+
+.brand-title {
+  font-size: clamp(1.2rem, 3vw, 2rem);
+  letter-spacing: 0.06em;
+  font-weight: 1000;
+  text-shadow: 0 0 18px rgba(57, 255, 136, 0.35);
+}
+
+.vault-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.vault-nav a {
+  color: var(--hw-white);
+  text-decoration: none;
+  font-weight: 900;
+  font-size: 0.9rem;
+  padding: 10px 13px;
+  border: 1px solid rgba(247, 255, 249, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.vault-nav a:hover,
+.vault-nav a[aria-current="page"] {
+  color: #001b0a;
+  background: var(--hw-green);
+  box-shadow: 0 0 26px rgba(57, 255, 136, 0.42);
+}
+
+.vault-main {
+  position: relative;
+  z-index: 2;
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 44px 0 80px;
+}
+
+.vault-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(290px, 0.85fr);
+  gap: 24px;
+  align-items: stretch;
+}
+
+.vault-hero-copy,
+.vault-guide-panel,
+.vault-console,
+.access-card {
+  border: 1px solid var(--hw-border);
+  background:
+    linear-gradient(145deg, rgba(5, 8, 8, 0.92), rgba(5, 26, 13, 0.78)),
+    radial-gradient(circle at top right, rgba(255, 23, 68, 0.12), transparent 38%);
+  border-radius: 30px;
+  box-shadow: var(--hw-shadow);
+}
+
+.vault-hero-copy {
+  padding: clamp(24px, 5vw, 54px);
+  overflow: hidden;
+  position: relative;
+}
+
+.vault-hero-copy::after {
+  content: "";
+  position: absolute;
+  width: 190px;
+  height: 190px;
+  right: -60px;
+  bottom: -70px;
+  border-radius: 50%;
+  background: conic-gradient(from 180deg, var(--hw-green), var(--hw-red), var(--hw-yellow), var(--hw-blue), var(--hw-green));
+  filter: blur(10px);
+  opacity: 0.16;
+}
+
+.vault-eyebrow,
+.card-kicker,
+.scan-kicker {
+  margin: 0 0 10px;
+  color: var(--hw-green);
+  font-weight: 1000;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+}
+
+.vault-hero h1 {
+  margin: 0;
+  font-size: clamp(3rem, 9vw, 7.4rem);
+  line-height: 0.88;
+  letter-spacing: -0.075em;
+  text-transform: uppercase;
+}
+
+.vault-lead {
+  max-width: 720px;
+  margin: 24px 0 0;
+  color: var(--hw-muted);
+  font-size: clamp(1.02rem, 2vw, 1.28rem);
+  line-height: 1.55;
+  font-weight: 700;
+}
+
+.vault-status-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.status-pill,
+.lock-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  border-radius: 999px;
+  padding: 9px 12px;
+  border: 1px solid rgba(57, 255, 136, 0.26);
+  background: rgba(57, 255, 136, 0.08);
+  color: var(--hw-white);
+  font-weight: 1000;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+}
+
+.status-hot {
+  color: #001b0a;
+  background: var(--hw-green);
+  box-shadow: 0 0 28px rgba(57, 255, 136, 0.36);
+}
+
+.vault-guide-panel {
+  padding: 18px;
+  display: grid;
+  gap: 14px;
+}
+
+.guide-card {
+  min-height: 160px;
+  display: grid;
+  grid-template-columns: 74px 1fr;
+  align-items: center;
+  gap: 16px;
+  padding: 18px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.guide-card h2 {
+  margin: 0 0 8px;
+  font-size: 1.18rem;
+}
+
+.guide-card p {
+  margin: 0;
+  color: var(--hw-muted);
+  line-height: 1.35;
+  font-weight: 700;
+}
+
+.guide-badge {
+  width: 72px;
+  height: 72px;
+  display: grid;
+  place-items: center;
+  border-radius: 24px;
+  font-weight: 1000;
+  color: #031007;
+  transform: rotate(-6deg);
+  box-shadow: 0 20px 44px rgba(0,0,0,0.35);
+}
+
+.duck-guide .guide-badge {
+  background: linear-gradient(135deg, var(--hw-yellow), var(--hw-green));
+}
+
+.buck-guide .guide-badge {
+  background: linear-gradient(135deg, var(--hw-green), var(--hw-blue));
+}
+
+.vault-console {
+  margin-top: 24px;
+  padding: clamp(16px, 3vw, 28px);
+}
+
+.console-topline {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+  color: var(--hw-green);
+  letter-spacing: 0.18em;
+  font-weight: 1000;
+  font-size: 0.78rem;
+}
+
+.console-topline span {
+  height: 2px;
+  border-radius: 99px;
+  background: linear-gradient(90deg, transparent, var(--hw-green), transparent);
+}
+
+.console-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.access-card {
+  padding: 22px;
+  min-height: 330px;
+  display: flex;
+  flex-direction: column;
+}
+
+.master-card {
+  background:
+    linear-gradient(145deg, rgba(7, 21, 14, 0.96), rgba(5, 9, 8, 0.88)),
+    radial-gradient(circle at top left, rgba(57, 255, 136, 0.16), transparent 40%);
+}
+
+.card-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.lock-chip {
+  color: var(--hw-green);
+  border-color: rgba(255, 23, 68, 0.32);
+  background: rgba(255, 23, 68, 0.1);
+  white-space: nowrap;
+}
+
+.access-card h2 {
+  margin: 0;
+  font-size: clamp(1.5rem, 3vw, 2.15rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.access-card p {
+  color: var(--hw-muted);
+  line-height: 1.46;
+  font-weight: 700;
+}
+
+.code-label {
+  display: block;
+  margin-top: auto;
+  margin-bottom: 8px;
+  color: var(--hw-white);
+  font-weight: 1000;
+  font-size: 0.9rem;
+}
+
+.code-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.vault-code-input {
+  width: 100%;
+  min-height: 54px;
+  border: 1px solid rgba(57, 255, 136, 0.36);
+  border-radius: 18px;
+  padding: 0 16px;
+  color: var(--hw-white);
+  background: rgba(0, 0, 0, 0.42);
+  outline: none;
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.vault-code-input:focus {
+  border-color: var(--hw-green);
+  box-shadow: 0 0 0 4px rgba(57, 255, 136, 0.12), 0 0 24px rgba(57, 255, 136, 0.18);
+}
+
+.scan-btn,
+.mini-clear,
+.scan-close {
+  cursor: pointer;
+  border: 0;
+  font: inherit;
+}
+
+.scan-btn {
+  width: 100%;
+  min-height: 56px;
+  padding: 13px 16px;
+  border-radius: 18px;
+  color: #001b0a;
+  background: linear-gradient(135deg, var(--hw-green), var(--hw-yellow));
+  font-weight: 1000;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  box-shadow: 0 14px 36px rgba(57, 255, 136, 0.23);
+  transition: transform 170ms ease, filter 170ms ease, box-shadow 170ms ease;
+}
+
+.scan-btn:hover {
+  transform: translateY(-2px);
+  filter: saturate(1.18);
+  box-shadow: 0 20px 46px rgba(57, 255, 136, 0.35);
+}
+
+.scan-btn:active {
+  transform: translateY(0) scale(0.99);
+}
+
+.alt-btn {
+  background: linear-gradient(135deg, var(--hw-blue), var(--hw-green));
+}
+
+.ghost-btn,
+.scan-btn:disabled {
+  cursor: not-allowed;
+  color: rgba(247, 255, 249, 0.52);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: none;
+}
+
+.mini-clear {
+  width: fit-content;
+  margin-top: 10px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  color: var(--hw-muted);
+  background: rgba(255, 255, 255, 0.06);
+  font-weight: 900;
+}
+
+.mini-clear:hover {
+  color: var(--hw-white);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.locked-preview {
+  opacity: 0.78;
+}
+
+/* =========================================================
+   BODY SCAN OVERLAY — FORCE TOP LAYER
+   This is the section that fixes "buttons work but visual does not show".
+   ========================================================= */
+
+.body-scan-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 2147483000 !important;
+  display: none !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100vw !important;
+  min-height: 100vh !important;
+  padding: 18px !important;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(57, 255, 136, 0.22), transparent 34%),
+    radial-gradient(circle at 22% 20%, rgba(255, 23, 68, 0.18), transparent 28%),
+    rgba(0, 0, 0, 0.9) !important;
+  backdrop-filter: blur(14px);
+}
+
+.body-scan-overlay.is-open {
+  display: flex !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+.scan-shell {
+  position: relative;
+  z-index: 2147483001 !important;
+  width: min(960px, 100%);
+  min-height: min(620px, calc(100vh - 36px));
+  display: grid;
+  grid-template-columns: minmax(250px, 0.85fr) minmax(280px, 1fr);
+  gap: 20px;
+  padding: clamp(18px, 4vw, 32px);
+  border-radius: 34px;
+  border: 1px solid rgba(57, 255, 136, 0.5);
+  background:
+    linear-gradient(145deg, rgba(4, 8, 7, 0.98), rgba(9, 28, 16, 0.96)),
+    radial-gradient(circle at top right, rgba(255, 23, 68, 0.18), transparent 35%);
+  box-shadow:
+    0 40px 110px rgba(0, 0, 0, 0.72),
+    0 0 80px rgba(57, 255, 136, 0.17),
+    inset 0 0 80px rgba(57, 255, 136, 0.05);
+  overflow: hidden;
+}
+
+.scan-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(57, 255, 136, 0.06), transparent);
+  animation: shellSweep 2.8s linear infinite;
+}
+
+@keyframes shellSweep {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+
+.scan-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 6;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  color: var(--hw-white);
+  background: rgba(255, 255, 255, 0.12);
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.scan-stage {
+  position: relative;
+  min-height: 430px;
+  display: grid;
+  place-items: center;
+  border-radius: 28px;
+  border: 1px solid rgba(247, 255, 249, 0.12);
+  background: rgba(0, 0, 0, 0.28);
+  overflow: hidden;
+}
+
+.scan-grid {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(57, 255, 136, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(57, 255, 136, 0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+  animation: gridMove 6s linear infinite;
+}
+
+@keyframes gridMove {
+  from { transform: translateY(0); }
+  to { transform: translateY(24px); }
+}
+
+.scan-person {
+  position: relative;
+  width: 210px;
+  height: 360px;
+  filter: drop-shadow(0 0 24px rgba(57, 255, 136, 0.5));
+}
+
+.scan-head,
+.scan-body,
+.scan-arm,
+.scan-leg {
+  position: absolute;
+  border: 3px solid rgba(57, 255, 136, 0.92);
+  background: rgba(57, 255, 136, 0.055);
+}
+
+.scan-head {
+  width: 74px;
+  height: 74px;
+  left: 68px;
+  top: 0;
+  border-radius: 50%;
+}
+
+.scan-body {
+  width: 112px;
+  height: 148px;
+  left: 49px;
+  top: 88px;
+  border-radius: 44px 44px 34px 34px;
+}
+
+.scan-arm {
+  width: 42px;
+  height: 144px;
+  top: 100px;
+  border-radius: 30px;
+}
+
+.scan-arm-left {
+  left: 6px;
+  transform: rotate(9deg);
+}
+
+.scan-arm-right {
+  right: 6px;
+  transform: rotate(-9deg);
+}
+
+.scan-leg {
+  width: 45px;
+  height: 130px;
+  top: 230px;
+  border-radius: 30px;
+}
+
+.scan-leg-left {
+  left: 56px;
+}
+
+.scan-leg-right {
+  right: 56px;
+}
+
+.scan-beam {
+  position: absolute;
+  left: -40px;
+  right: -40px;
+  top: 0;
+  height: 32px;
+  opacity: 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, var(--hw-green), var(--hw-blue), transparent);
+  box-shadow:
+    0 0 28px rgba(57, 255, 136, 0.9),
+    0 0 54px rgba(0, 213, 255, 0.55);
+}
+
+.body-scan-overlay.is-scanning .scan-beam {
+  opacity: 1;
+  animation: scanBeam 2.7s cubic-bezier(0.45, 0, 0.2, 1) forwards;
+}
+
+@keyframes scanBeam {
+  0% { transform: translateY(0); }
+  52% { transform: translateY(328px); }
+  100% { transform: translateY(0); }
+}
+
+.scan-ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 42px;
+  height: 42px;
+  opacity: 0;
+  border-radius: 50%;
+  border: 3px solid var(--hw-green);
+  transform: translate(-50%, -50%) scale(0.2);
+}
+
+.body-scan-overlay.is-transporting .scan-ring {
+  animation: transportPulse 1.25s ease-out infinite;
+}
+
+.body-scan-overlay.is-transporting .scan-ring-two {
+  border-color: var(--hw-blue);
+  animation-delay: 0.18s;
+}
+
+.body-scan-overlay.is-transporting .scan-ring-three {
+  border-color: var(--hw-yellow);
+  animation-delay: 0.36s;
+}
+
+@keyframes transportPulse {
+  0% {
+    opacity: 0.95;
+    transform: translate(-50%, -50%) scale(0.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(7.5);
+  }
+}
+
+.scan-copy {
+  position: relative;
+  z-index: 2;
+  align-self: center;
+  padding: 10px;
+}
+
+.scan-copy h2 {
+  margin: 0;
+  font-size: clamp(2.2rem, 6vw, 5rem);
+  line-height: 0.92;
+  text-transform: uppercase;
+  letter-spacing: -0.06em;
+}
+
+.scan-copy p {
+  color: var(--hw-muted);
+  font-size: 1.05rem;
+  line-height: 1.4;
+  font-weight: 800;
+}
+
+.scan-progress {
+  width: 100%;
+  height: 14px;
+  margin: 22px 0;
+  border-radius: 999px;
+  border: 1px solid rgba(57, 255, 136, 0.34);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.scan-progress-bar {
+  width: 0%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--hw-red), var(--hw-yellow), var(--hw-green), var(--hw-blue));
+  transition: width 260ms ease;
+}
+
+.scan-log {
+  display: grid;
+  gap: 8px;
+  min-height: 154px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.scan-log li {
+  padding: 10px 12px;
+  border: 1px solid rgba(57, 255, 136, 0.16);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.055);
+  color: var(--hw-white);
+  font-weight: 900;
+}
+
+.scan-log li.fail {
+  color: #fff;
+  border-color: rgba(255, 23, 68, 0.5);
+  background: rgba(255, 23, 68, 0.14);
+}
+
+.scan-log li.pass {
+  color: #001b0a;
+  background: var(--hw-green);
+}
+
+@media (max-width: 900px) {
+  .vault-header,
+  .vault-nav {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .vault-header {
+    flex-direction: column;
+  }
+
+  .vault-hero,
+  .console-grid,
+  .scan-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .scan-shell {
+    max-height: calc(100vh - 28px);
+    overflow-y: auto;
+  }
+
+  .scan-stage {
+    min-height: 330px;
+  }
+
+  .scan-person {
+    transform: scale(0.84);
+  }
+}
+
+@media (max-width: 560px) {
+  .vault-main {
+    width: min(100% - 22px, 1180px);
+    padding-top: 24px;
+  }
+
+  .vault-hero h1 {
+    font-size: clamp(2.8rem, 16vw, 4.7rem);
+  }
+
+  .vault-nav a {
+    font-size: 0.78rem;
+    padding: 9px 10px;
+  }
+
+  .access-card {
+    min-height: auto;
+  }
+
+  .body-scan-overlay {
+    padding: 10px !important;
+    align-items: flex-start !important;
+    overflow-y: auto !important;
+  }
+
+  .scan-shell {
+    border-radius: 24px;
+    padding: 16px;
+  }
+
+  .scan-copy h2 {
+    font-size: 3rem;
+  }
+}
