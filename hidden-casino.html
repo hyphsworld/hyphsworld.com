@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Hidden Casino | HYPHSWORLD</title>
+  <meta name="description" content="HYPHSWORLD Hidden Casino back room with Cool Points, Duck Sauce, BuckTheBodyguard, and slot play." />
+
+  <link rel="stylesheet" href="hidden-casino.css" />
+</head>
+
+<body class="casino-page">
+  <div class="casino-grid" aria-hidden="true"></div>
+  <div class="casino-glow pink" aria-hidden="true"></div>
+  <div class="casino-glow green" aria-hidden="true"></div>
+
+  <header class="casino-header">
+    <a class="brand" href="index.html">
+      <span>AMS WEST PRESENTS</span>
+      <strong>HYPHSWORLD</strong>
+    </a>
+
+    <nav class="casino-nav" aria-label="Main navigation">
+      <a href="level-1.html">Back To Level 1</a>
+      <a href="vault.html">Vault Gate</a>
+      <a href="level-2.html">Level 2</a>
+    </nav>
+  </header>
+
+  <main class="casino-main">
+    <section class="casino-hero">
+      <article class="casino-copy">
+        <p class="eyebrow">BACK ROOM OPEN // LEVEL 1 BONUS</p>
+        <h1>Hidden Casino</h1>
+        <p class="lead">
+          Cool Points only. Duck Sauce running the machine, Buck watching the door.
+        </p>
+
+        <div class="points-box">
+          <span>Current Cool Points</span>
+          <strong id="casinoPoints">0</strong>
+        </div>
+      </article>
+
+      <aside class="security-card">
+        <div class="heads">
+          <img src="duck-sauce.jpg" alt="Duck Sauce" onerror="this.style.display='none'" />
+          <img src="buck-thebodyguard.jpg" alt="BuckTheBodyguard" onerror="this.style.display='none'" />
+        </div>
+        <h2>Duck & Buck Posted</h2>
+        <p id="casinoLine">Duck wants a cut. Buck wants order.</p>
+      </aside>
+    </section>
+
+    <section class="machine-section">
+      <article class="casino-machine">
+        <p class="eyebrow">COOL POINTS SLOT</p>
+        <h2>Back Room Machine</h2>
+
+        <div class="reels">
+          <div class="reel"><span id="c1">🦆</span></div>
+          <div class="reel"><span id="c2">🎰</span></div>
+          <div class="reel"><span id="c3">🛡️</span></div>
+        </div>
+
+        <div class="machine-actions">
+          <button id="casinoSpin" type="button">Spin - 5 Points</button>
+          <button id="freeBonus" type="button">Duck Bonus</button>
+        </div>
+
+        <p id="casinoResult">Buck: “Keep the game clean.”</p>
+      </article>
+
+      <article class="rules-card">
+        <p class="eyebrow">HOUSE RULES</p>
+        <h2>Back Room Rules</h2>
+        <ul>
+          <li>Spin costs 5 Cool Points.</li>
+          <li>Two matches pays +15.</li>
+          <li>Three matches pays +50.</li>
+          <li>Three Ducks pays +150.</li>
+          <li>Duck Bonus may help… or finesse.</li>
+        </ul>
+      </article>
+    </section>
+  </main>
+
+  <script src="hidden-casino.js" defer></script>
+</body>
+</html>
