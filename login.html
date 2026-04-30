@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>HYPHSWORLD | Vault Access Terminal</title>
+  <meta name="description" content="HYPHSWORLD Vault Access Terminal by AMS WEST. Login, body scan, Duck Sauce, BuckTheBodyguard, and transport to the Vault Floor." />
+
+  <link rel="stylesheet" href="login.css?v=terminal2" />
+</head>
+
+<body>
+  <main class="login-shell" aria-label="HYPHSWORLD Vault Access Terminal">
+    <section class="terminal-card" id="terminalCard">
+      <div class="terminal-topline">
+        <span class="signal-dot"></span>
+        <span>AMS WEST SECURE SIGNAL</span>
+        <strong id="terminalStatus">Locked</strong>
+      </div>
+
+      <header class="login-hero">
+        <p class="eyebrow">AMS WEST PRESENTS</p>
+        <h1>HYPHSWORLD</h1>
+        <h2>Vault Access Terminal</h2>
+        <p class="lead">
+          Enter the access code. Duck Sauce is watching the scanner.
+          BuckTheBodyguard is watching everybody else.
+        </p>
+      </header>
+
+      <section class="character-grid" aria-label="Vault terminal guides">
+        <article class="character-card duck-card">
+          <span class="character-pill">Duck Sauce</span>
+          <div class="character-image-wrap">
+            <img src="duck-sauce.png" alt="Duck Sauce" />
+          </div>
+          <p>“Don’t guess too loud. The terminal got ears.”</p>
+        </article>
+
+        <article class="character-card buck-card">
+          <span class="character-pill">BuckTheBodyguard</span>
+          <div class="character-image-wrap">
+            <img src="buck-the-bodyguard.png" alt="BuckTheBodyguard" />
+          </div>
+          <p>“Access first. Flex later.”</p>
+        </article>
+      </section>
+
+      <form class="access-form" id="accessForm" autocomplete="off">
+        <label for="accessCode">Secret Access Code</label>
+
+        <div class="code-row">
+          <input
+            id="accessCode"
+            name="accessCode"
+            type="password"
+            placeholder="ENTER CODE"
+            autocomplete="off"
+            spellcheck="false"
+            aria-describedby="accessMessage"
+            required
+          />
+          <button class="show-button" type="button" id="toggleCode" aria-label="Show or hide access code">
+            Show
+          </button>
+        </div>
+
+        <button class="run-button" type="submit">
+          <span>Run Body Scan</span>
+          <b>→</b>
+        </button>
+
+        <p class="access-message" id="accessMessage" role="status" aria-live="polite">
+          Terminal standing by.
+        </p>
+      </form>
+
+      <section class="scan-stage" id="scanStage" aria-label="Body scan and transport animation">
+        <div class="scan-grid"></div>
+
+        <div class="body-silhouette" id="bodySilhouette" aria-hidden="true">
+          <div class="head"></div>
+          <div class="torso"></div>
+          <div class="arm arm-left"></div>
+          <div class="arm arm-right"></div>
+          <div class="leg leg-left"></div>
+          <div class="leg leg-right"></div>
+        </div>
+
+        <div class="scan-beam" aria-hidden="true"></div>
+
+        <div class="smoke-burst" aria-hidden="true">
+          <span></span><span></span><span></span><span></span>
+        </div>
+
+        <div class="transport-rings" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+
+        <div class="scan-readout" id="scanReadout">Scan Ready</div>
+      </section>
+
+      <section class="terminal-footer">
+        <div class="mini-console">
+          <span>Status <b id="statusText">Locked</b></span>
+          <span>Mode <b id="modeText">Code Check</b></span>
+          <span>Destination <b>Vault Floor</b></span>
+        </div>
+
+        <nav class="mini-nav" aria-label="Secondary navigation">
+          <a href="index.html">Back Home</a>
+          <a href="app-player.html">Full Player</a>
+          <a href="merch.html">Merch</a>
+        </nav>
+      </section>
+    </section>
+  </main>
+
+  <noscript>
+    <div class="noscript-box">
+      JavaScript is required for the HYPHSWORLD Vault Access Terminal.
+    </div>
+  </noscript>
+
+  <script src="login.js?v=terminal2" defer></script>
+</body>
+</html>
