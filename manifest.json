@@ -1,0 +1,31 @@
+{
+  "package": "hyphsworld_phase_b_quarantine_live_floor",
+  "files": [
+    "vault.html",
+    "vault.css",
+    "vault.js",
+    "level-1.html",
+    "level-1.css",
+    "quarantine-tracks.js",
+    "quarantine-player.js",
+    "quarantine-mixtape.html"
+  ],
+  "tracks": [
+    "Da Vault Freestyle",
+    "50 Cent Shit",
+    "Bout That",
+    "Free Hyph",
+    "Gotta Go Remix"
+  ],
+  "audio_paths_supported": [
+    "repo root",
+    "audio/",
+    "music/"
+  ],
+  "artwork_fallbacks": [
+    "quarantine-mixtape.jpg",
+    "the-quarantine-mixtape.jpg",
+    "the-quarantine.jpg",
+    "album-art.jpg"
+  ]
+}
