@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>HYPHSWORLD | Vault Floor</title>
+  <meta name="description" content="HYPHSWORLD Vault Floor by AMS WEST. Access granted, scan-bar door, body scan, and Level 1 transport." />
+
+  <link rel="stylesheet" href="styles.css?v=gate2" />
+  <link rel="stylesheet" href="vault-floor.css?v=clean1" />
+</head>
+
+<body class="vault-body">
+  <header class="site-header vault-site-header">
+    <a class="brand-lockup" href="index.html" aria-label="Back to HYPHSWORLD homepage">
+      <span>AMS WEST PRESENTS</span>
+      <strong>HYPHSWORLD</strong>
+    </a>
+
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="vault.html" class="nav-cta">Vault</a>
+      <a href="app-player.html">Full Player</a>
+      <a href="merch.html">Merch</a>
+      <a href="logout.html">Logout</a>
+    </nav>
+  </header>
+
+  <main class="vault-main clean-vault-floor">
+    <section class="vault-gate-card vault-floor-card" aria-labelledby="vaultTitle">
+      <div class="gate-topline">
+        <span class="gate-signal"></span>
+        <span>PHASE A // GATE 2.0</span>
+        <strong id="gateStatus">ACCESS GRANTED</strong>
+      </div>
+
+      <div class="vault-gate-grid">
+        <article class="vault-copy-panel">
+          <p class="eyebrow">Vault Floor</p>
+          <h1 id="vaultTitle">Vault Access</h1>
+          <p class="lead">
+            Run the scan, clear the terminal, open the scan-bar door, and transport into Level 1.
+            This gate is built to feel like a real HYPHSWORLD moment.
+          </p>
+
+          <div class="guide-grid">
+            <article class="duck-card mascot-card">
+              <span class="mascot-tag">DS</span>
+              <div class="mascot-orb duck-orb" aria-hidden="true">🦆</div>
+              <h2>Duck Sauce</h2>
+              <p>“Push the button and let the smoke talk. Don’t blink when the door opens.”</p>
+            </article>
+
+            <article class="buck-card mascot-card">
+              <span class="mascot-tag">B</span>
+              <div class="mascot-orb buck-orb" aria-hidden="true">🛡️</div>
+              <h2>BuckTheBodyguard</h2>
+              <p>“Body scan clears first. Then the gate grants Level 1 transport.”</p>
+            </article>
+          </div>
+
+          <div class="access-pad">
+            <h3>Access Pad Active</h3>
+            <div class="pad-lines">
+              <span>Status <b id="padStatus">Ready</b></span>
+              <span>Mode <b id="padMode">Scan</b></span>
+              <span>Floor <b>Level 1</b></span>
+            </div>
+          </div>
+
+          <div class="button-row vault-actions">
+            <button class="btn btn-primary" id="runVaultScan" type="button">Run Gate Scan</button>
+            <a class="btn btn-neon" href="quarantine.html">Open Level 1</a>
+            <a class="btn btn-soft" href="index.html">Back Home</a>
+          </div>
+
+          <p class="vault-note" id="vaultNote">
+            Login session verified. No code is shown on this floor.
+          </p>
+        </article>
+
+        <aside class="gate-visual-panel" aria-label="Vault scan and transport visual">
+          <div class="control-console">
+            <span class="lock-badge">Unlocked</span>
+            <h2>Vault Gate</h2>
+            <p>Body scan. Smoke burst. Scan-bar door. Transport into Level 1.</p>
+          </div>
+
+          <div class="scan-stage vault-scan-stage" id="vaultScanStage">
+            <div class="scan-grid" aria-hidden="true"></div>
+
+            <div class="body-silhouette" id="bodySilhouette" aria-hidden="true">
+              <div class="head"></div>
+              <div class="torso"></div>
+              <div class="arm arm-left"></div>
+              <div class="arm arm-right"></div>
+              <div class="leg leg-left"></div>
+              <div class="leg leg-right"></div>
+            </div>
+
+            <div class="scan-door-left" aria-hidden="true"></div>
+            <div class="scan-door-right" aria-hidden="true"></div>
+            <div class="scan-beam" aria-hidden="true"></div>
+
+            <div class="transport-rings" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+
+            <div class="scan-readout" id="scanReadout">SCAN READY</div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="level-card level-one-entry" aria-labelledby="levelOneTitle">
+      <span class="track-chip">Level 1</span>
+      <h2 id="levelOneTitle">Quarantine Mixtape</h2>
+      <p>
+        First floor in the Vault. Hidden era. Direct fan access. The scan-bar door opens here first.
+      </p>
+      <div class="button-row">
+        <a class="btn btn-primary" href="quarantine.html">Enter Level 1</a>
+        <a class="btn btn-ice" href="app-player.html">Full Player</a>
+      </div>
+    </section>
+  </main>
+
+  <div class="transport-overlay" id="transportOverlay" aria-hidden="true">
+    <div class="transport-panel">
+      <p class="eyebrow">Transport Active</p>
+      <h2>Loading Level 1</h2>
+      <p>Duck Sauce said hold your breath. Buck said keep moving.</p>
+      <div class="transport-runway" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+
+  <script src="vault-guard.js" defer></script>
+  <script src="vault-floor.js?v=clean1" defer></script>
+</body>
+</html>
