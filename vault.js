@@ -1,14 +1,16 @@
-// HYPHSWORLD VAULT TRANSPORT + TERMINAL FIX
-// Full rewrite of vault.js
+// HYPHSWORLD VAULT TRANSPORT TARGET FIX
+// Replace vault.js with this full file if your current transport is still hitting 404.
+// The destination remains exactly: level-1.html
 
 (() => {
   "use strict";
 
   const ACCESS_HASHES = {
-  "master": "651d8948587739f3c0aa840fd250b5b547b98a83a9b84aa24800ff1293dc8ed9",
-  "level1": "651d8948587739f3c0aa840fd250b5b547b98a83a9b84aa24800ff1293dc8ed9",
-  "level2": "651d8948587739f3c0aa840fd250b5b547b98a83a9b84aa24800ff1293dc8ed9"
-};
+    "master": "22a014d197b6c6ab6e42d5e32e3c31b9461c427c9f1ac12c4da234539dfd5600",
+    "level1": "22a014d197b6c6ab6e42d5e32e3c31b9461c427c9f1ac12c4da234539dfd5600",
+    "level2": "22a014d197b6c6ab6e42d5e32e3c31b9461c427c9f1ac12c4da234539dfd5600"
+  };
+
   const STORAGE_KEY = "hyphsworld_vault_access";
 
   const PASS_STEPS = [
@@ -16,13 +18,13 @@
     { wait: 620, progress: 28, text: "Body scan active...", log: "Checking motion signature..." },
     { wait: 620, progress: 50, text: "Reading Vault credentials...", log: "BuckTheBodyguard: credentials locked in." },
     { wait: 620, progress: 75, text: "Clearing access layer...", log: "AMS WEST access profile matched." },
-    { wait: 720, progress: 100, text: "Access granted. Transport starting...", log: "ACCESS GRANTED — opening transport tunnel.", pass: true },
+    { wait: 720, progress: 100, text: "Access granted. Transport starting...", log: "ACCESS GRANTED — opening transport tunnel.", pass: true }
   ];
 
   const FAIL_STEPS = [
     { wait: 140, progress: 20, text: "Scanner warming up...", log: "Duck Sauce: something off with that code." },
     { wait: 620, progress: 52, text: "Checking credentials...", log: "Vault credentials not matching." },
-    { wait: 700, progress: 100, text: "Access denied.", log: "ACCESS DENIED — Buck said try again.", fail: true },
+    { wait: 700, progress: 100, text: "Access denied.", log: "ACCESS DENIED — Buck said try again.", fail: true }
   ];
 
   function onReady(fn) {
@@ -54,7 +56,7 @@
       log: document.getElementById("scanLog"),
       close: document.getElementById("scanClose"),
       actions: document.getElementById("transportActions"),
-      manualLink: document.getElementById("manualEnterLink"),
+      manualLink: document.getElementById("manualEnterLink")
     };
   }
 
@@ -86,6 +88,7 @@
   function addLog(text, state = "") {
     const { log } = getParts();
     if (!log) return;
+
     const li = document.createElement("li");
     li.textContent = text;
     if (state) li.classList.add(state);
@@ -94,7 +97,10 @@
 
   function resetOverlay() {
     const { overlay, message, bar, log, actions } = getParts();
-    if (!overlay) return false;
+    if (!overlay) {
+      window.location.href = "level-1.html";
+      return false;
+    }
 
     overlay.classList.remove("is-scanning", "is-transporting");
     overlay.classList.add("is-open");
@@ -113,9 +119,11 @@
   function closeOverlay() {
     const { overlay, actions } = getParts();
     if (!overlay) return;
+
     overlay.classList.remove("is-open", "is-scanning", "is-transporting");
     overlay.setAttribute("aria-hidden", "true");
     document.body.classList.remove("vault-scan-lock");
+
     if (actions) actions.hidden = true;
   }
 
@@ -135,34 +143,28 @@
     overlay.classList.remove("is-scanning");
   }
 
-  function goToDestination(destination) {
-    try {
-      window.location.assign(destination);
-    } catch (error) {
-      console.warn("Navigation failed:", error);
-      const { actions, manualLink, message } = getParts();
-      if (manualLink) manualLink.href = destination;
-      if (actions) actions.hidden = false;
-      if (message) message.textContent = "Auto transport blocked. Use manual entry.";
-    }
+  function resolveDestination(destination) {
+    const clean = String(destination || "").trim();
+    if (!clean || clean === "#" || clean === "/") return "level-1.html";
+    return clean;
   }
 
   async function runTransport(destination) {
+    const finalDestination = resolveDestination(destination);
     const { overlay, actions, manualLink, message } = getParts();
-    if (!overlay) return;
 
-    if (manualLink) manualLink.href = destination;
-    overlay.classList.add("is-transporting");
+    if (manualLink) manualLink.href = finalDestination;
+
+    if (overlay) overlay.classList.add("is-transporting");
     if (message) message.textContent = "Transport tunnel open. Entering Vault...";
 
-    // Manual fallback appears before auto-nav in case browser stalls.
     await sleep(1200);
+
     if (actions) actions.hidden = false;
 
-    // Give the animation time to hit.
     await sleep(1100);
 
-    goToDestination(destination);
+    window.location.href = finalDestination;
   }
 
   async function handleScan(button) {
@@ -170,7 +172,7 @@
 
     const level = button.dataset.accessLevel || "master";
     const inputId = button.dataset.inputId || "";
-    const destination = button.dataset.destination || "level-1.html";
+    const destination = resolveDestination(button.dataset.destination || "level-1.html");
     const input = inputId ? document.getElementById(inputId) : null;
     const typed = input ? input.value : "";
 
@@ -188,10 +190,12 @@
       await sleep(900);
       closeOverlay();
       button.disabled = false;
+
       if (input) {
         input.focus();
         input.select();
       }
+
       return;
     }
 
@@ -218,10 +222,12 @@
     document.querySelectorAll(".vault-code-input").forEach((input) => {
       input.addEventListener("keydown", (event) => {
         if (event.key !== "Enter") return;
+
         event.preventDefault();
 
         const card = input.closest(".access-card");
         const button = card ? card.querySelector("[data-scan-trigger]") : null;
+
         if (button) handleScan(button);
       });
     });
@@ -245,7 +251,7 @@
 
   onReady(() => {
     bindEvents();
-    window.HYPHSWORLD_VAULT_TRANSPORT_READY = true;
-    console.info("HYPHSWORLD Vault transport + terminal fix loaded.");
+    window.HYPHSWORLD_VAULT_TARGET_READY = true;
+    console.info("HYPHSWORLD Vault target fix loaded. Transport destination: level-1.html");
   });
 })();
