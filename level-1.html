@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Level 1 | Quarantine Mixtape | HYPHSWORLD</title>
+  <meta name="description" content="Level 1 | Quarantine Mixtape | HYPHSWORLD. Official Vault floor player by Hyph Life and AMS WEST." />
+
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="level-1.css" />
+</head>
+
+<body class="level-one-page">
+  <div class="level-bg-grid" aria-hidden="true"></div>
+
+  <header class="level-header">
+    <a class="level-brand" href="index.html" aria-label="Back to HYPHSWORLD homepage">
+      <span>AMS WEST PRESENTS</span>
+      <strong>HYPHSWORLD</strong>
+    </a>
+
+    <nav class="level-nav" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="vault.html">Vault Gate</a>
+      <a href="level-1.html" aria-current="page">Level 1</a>
+      <a href="level-2.html">Level 2</a>
+      <a href="app-player.html">Full Player</a>
+      <a href="merch.html">Merch</a>
+    </nav>
+  </header>
+
+  <main class="level-main">
+    <section class="arrival-hero">
+      <div class="arrival-copy">
+        <p class="eyebrow">LEVEL 1 // QUARANTINE MIXTAPE</p>
+        <h1>Quarantine Mixtape</h1>
+        <p class="lead">Welcome to the first floor of the Vault. This is the official Quarantine Mixtape zone with the correct 6-track order, artwork, and live player.</p>
+
+        <div class="hero-actions">
+          <a class="primary-btn" href="#floor-player">Enter Floor</a>
+          <a class="secondary-btn" href="vault.html">Back To Gate</a>
+        </div>
+      </div>
+
+      <aside class="level-status">
+        <article>
+          <span>ACCESS</span>
+          <strong>ACTIVE</strong>
+          <p>The official floor map is now wired into this room.</p>
+        </article>
+
+        <article>
+          <span>DUCK SAUCE</span>
+          <strong>“No placeholders.”</strong>
+          <p>“This one got the real list. Let the music talk.”</p>
+        </article>
+
+        <article>
+          <span>BUCK</span>
+          <strong>SECURITY ONLINE</strong>
+          <p>Floor routing stays clean. No broken transport doors.</p>
+        </article>
+      </aside>
+    </section>
+
+    <section class="mixtape-section" id="floor-player">
+      <div class="section-divider">
+        <span></span>
+        <strong>OFFICIAL PLAYER</strong>
+        <span></span>
+      </div>
+
+      <div class="mixtape-grid">
+        <article class="cover-card">
+          <p class="card-kicker">OFFICIAL ARTWORK</p>
+          <div class="cover-frame">
+            <img id="quarantine-cover" src="quarantine-mixtape.jpg" alt="The Quarantine Mixtape artwork" />
+            <div id="coverFallback" class="cover-fallback" hidden>
+              <span>HYPH LIFE</span>
+              <strong>THE QUARANTINE MIXTAPE</strong>
+              <em>AMS WEST</em>
+            </div>
+          </div>
+        </article>
+
+        <article class="player-card">
+          <div class="now-playing-card">
+            <span id="quarantine-chip" class="track-chip">TRACK 01</span>
+            <h2 id="quarantine-title">Quarantine Mixtape</h2>
+            <p id="quarantine-meta">Pick a track below.</p>
+            <audio id="quarantine-audio" preload="metadata"></audio>
+          </div>
+
+          <div class="progress-wrap" aria-label="Track progress">
+            <span id="quarantine-current">0:00</span>
+            <input id="quarantine-progress" type="range" min="0" max="100" value="0" aria-label="Audio progress" />
+            <span id="quarantine-duration">0:00</span>
+          </div>
+
+          <div class="player-controls" aria-label="Player controls">
+            <button id="quarantine-play" type="button">Play</button>
+            <button id="quarantine-pause" type="button">Pause</button>
+            <button id="quarantine-prev" type="button">Prev</button>
+            <button id="quarantine-next" type="button">Next</button>
+          </div>
+
+          <p id="quarantine-status" class="status-line">Choose a track.</p>
+          <div id="quarantine-track-list" class="quarantine-track-list" aria-label="Quarantine Mixtape tracks"></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="order-section">
+      <div class="section-divider">
+        <span></span>
+        <strong>OFFICIAL ORDER LISTING</strong>
+        <span></span>
+      </div>
+
+      <ol id="official-order-list" class="official-order-list"></ol>
+    </section>
+
+    <section class="level-two-door">
+      <div>
+        <p class="eyebrow">NEXT MOVE</p>
+        <h2>Level 2: HYPHSWORLD 5</h2>
+        <p>Next door is now wired with the official HYPHSWORLD 5 tracklist.</p>
+      </div>
+      <a class="locked-btn" href="level-2.html">ENTER LEVEL 2</a>
+    </section>
+  </main>
+
+  <div id="access-denied" class="access-denied-overlay" aria-hidden="true">
+    <div class="access-denied-card">
+      <p class="eyebrow">BUCK SAID HOLD UP</p>
+      <h2>Scan Required</h2>
+      <p>Level 1 requires Vault transport first. Run the Gate body scan, clear the access pad, then come back through the tunnel.</p>
+      <a class="primary-btn" href="vault.html">Run Vault Scan</a>
+    </div>
+  </div>
+
+  <footer class="level-footer">
+    <span>© <span id="year"></span> AMS WEST LLC</span>
+    <span>Level 1 — The Quarantine Mixtape</span>
+  </footer>
+
+  <script src="quarantine-tracks.js"></script>
+  <script src="quarantine-player.js"></script>
+</body>
+</html>
