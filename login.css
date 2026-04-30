@@ -1,0 +1,90 @@
+body {
+  margin: 0;
+  background: black;
+  color: #00ff88;
+  font-family: monospace;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.terminal {
+  border: 2px solid #00ff88;
+  padding: 30px;
+  width: 320px;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 0 20px #00ff88;
+}
+
+.logo {
+  margin-bottom: 10px;
+}
+
+.duck-line {
+  font-size: 12px;
+  margin-bottom: 15px;
+  color: #fff;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+  background: black;
+  border: 1px solid #00ff88;
+  color: #00ff88;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  background: #00ff88;
+  color: black;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+button:hover {
+  background: #00cc66;
+}
+
+.scan-bar {
+  width: 100%;
+  height: 4px;
+  background: #00ff88;
+  animation: scan 2s infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes scan {
+  0% {transform: translateY(0);}
+  50% {transform: translateY(100px);}
+  100% {transform: translateY(0);}
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: black;
+  color: #00ff88;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  font-size: 40px;
+}
+
+.access {
+  animation: glow 1s infinite alternate;
+}
+
+@keyframes glow {
+  from {opacity: 0.5;}
+  to {opacity: 1;}
+}
