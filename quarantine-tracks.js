@@ -1,215 +1,49 @@
-window.HW_QUARANTINE_COVER_SOURCES = ['quarantine-mixtape.jpg','the-quarantine-mixtape.jpg','the-quarantine.jpg','album-art.jpg','assets/images/quarantine-mixtape.jpg'];
+window.HW_QUARANTINE_COVER_SOURCES = [
+  'quarantine-mixtape.jpg',
+  'album-art.jpg'
+];
+
 window.HW_QUARANTINE_TRACKS = [
   {
-    "number": "01",
-    "title": "Im a beast",
-    "artist": "Hyph Life",
-    "meta": "Quarantine Mixtape",
-    "code": "BEAST",
-    "sources": [
-      "im-a-beast.mp3",
-      "assets/audio/im-a-beast.mp3",
-      "audio/im-a-beast.mp3",
-      "music/im-a-beast.mp3",
-      "ima-beast.mp3",
-      "assets/audio/ima-beast.mp3",
-      "audio/ima-beast.mp3",
-      "music/ima-beast.mp3",
-      "imabeast.mp3",
-      "assets/audio/imabeast.mp3",
-      "audio/imabeast.mp3",
-      "music/imabeast.mp3",
-      "im-a-beast.MP3",
-      "assets/audio/im-a-beast.MP3",
-      "audio/im-a-beast.MP3",
-      "music/im-a-beast.MP3",
-      "Im a beast.mp3",
-      "assets/audio/Im a beast.mp3",
-      "audio/Im a beast.mp3",
-      "music/Im a beast.mp3",
-      "Im A Beast.mp3",
-      "assets/audio/Im A Beast.mp3",
-      "audio/Im A Beast.mp3",
-      "music/Im A Beast.mp3",
-      "IM A BEAST.mp3",
-      "assets/audio/IM A BEAST.mp3",
-      "audio/IM A BEAST.mp3",
-      "music/IM A BEAST.mp3"
-    ],
-    "art": [
-      "quarantine-mixtape.jpg",
-      "the-quarantine-mixtape.jpg",
-      "the-quarantine.jpg",
-      "album-art.jpg",
-      "assets/images/quarantine-mixtape.jpg"
-    ]
+    id: 'da-vault-freestyle',
+    number: '01',
+    title: 'Da Vault Freestyle',
+    artist: 'Hyph Life',
+    meta: 'Quarantine Mixtape — Level 1',
+    sources: ['da-vault-freestyle.mp3']
   },
   {
-    "number": "02",
-    "title": "Gotta Go",
-    "artist": "Hyph Life",
-    "meta": "Quarantine Mixtape",
-    "code": "GOTTA",
-    "sources": [
-      "gotta-go.mp3",
-      "assets/audio/gotta-go.mp3",
-      "audio/gotta-go.mp3",
-      "music/gotta-go.mp3",
-      "gotta-go-remix.mp3",
-      "assets/audio/gotta-go-remix.mp3",
-      "audio/gotta-go-remix.mp3",
-      "music/gotta-go-remix.mp3",
-      "Gotta Go.mp3",
-      "assets/audio/Gotta Go.mp3",
-      "audio/Gotta Go.mp3",
-      "music/Gotta Go.mp3",
-      "GOTTA GO.mp3",
-      "assets/audio/GOTTA GO.mp3",
-      "audio/GOTTA GO.mp3",
-      "music/GOTTA GO.mp3",
-      "gotta_go.mp3",
-      "assets/audio/gotta_go.mp3",
-      "audio/gotta_go.mp3",
-      "music/gotta_go.mp3"
-    ],
-    "art": [
-      "quarantine-mixtape.jpg",
-      "the-quarantine-mixtape.jpg",
-      "the-quarantine.jpg",
-      "album-art.jpg",
-      "assets/images/quarantine-mixtape.jpg"
-    ]
+    id: '50-cent-shit',
+    number: '02',
+    title: '50 Cent Shit',
+    artist: 'Hyph Life',
+    meta: 'Quarantine Mixtape — Level 1',
+    sources: ['50-cent-shit.mp3']
   },
   {
-    "number": "03",
-    "title": "JAYZ shit",
-    "artist": "Hyph Life",
-    "meta": "Quarantine Mixtape",
-    "code": "JAYZ",
-    "sources": [
-      "jayz-shit.mp3",
-      "assets/audio/jayz-shit.mp3",
-      "audio/jayz-shit.mp3",
-      "music/jayz-shit.mp3",
-      "jay-z-shit.mp3",
-      "assets/audio/jay-z-shit.mp3",
-      "audio/jay-z-shit.mp3",
-      "music/jay-z-shit.mp3",
-      "JAYZ shit.mp3",
-      "assets/audio/JAYZ shit.mp3",
-      "audio/JAYZ shit.mp3",
-      "music/JAYZ shit.mp3",
-      "JAYZ Shit.mp3",
-      "assets/audio/JAYZ Shit.mp3",
-      "audio/JAYZ Shit.mp3",
-      "music/JAYZ Shit.mp3",
-      "jayz_shit.mp3",
-      "assets/audio/jayz_shit.mp3",
-      "audio/jayz_shit.mp3",
-      "music/jayz_shit.mp3"
-    ],
-    "art": [
-      "quarantine-mixtape.jpg",
-      "the-quarantine-mixtape.jpg",
-      "the-quarantine.jpg",
-      "album-art.jpg",
-      "assets/images/quarantine-mixtape.jpg"
-    ]
+    id: 'bout-that',
+    number: '03',
+    title: 'Bout That',
+    artist: 'Hyph Life x Young Tez',
+    meta: 'Prod by 1ManBand',
+    art: ['bout-that-art.jpg', 'quarantine-mixtape.jpg', 'album-art.jpg'],
+    sources: ['bout-that.mp3']
   },
   {
-    "number": "04",
-    "title": "Share My Money",
-    "artist": "Hyph Life",
-    "meta": "Quarantine Mixtape",
-    "code": "MONEY",
-    "sources": [
-      "share-my-money.mp3",
-      "assets/audio/share-my-money.mp3",
-      "audio/share-my-money.mp3",
-      "music/share-my-money.mp3",
-      "Share My Money.mp3",
-      "assets/audio/Share My Money.mp3",
-      "audio/Share My Money.mp3",
-      "music/Share My Money.mp3",
-      "SHARE MY MONEY.mp3",
-      "assets/audio/SHARE MY MONEY.mp3",
-      "audio/SHARE MY MONEY.mp3",
-      "music/SHARE MY MONEY.mp3",
-      "share_my_money.mp3",
-      "assets/audio/share_my_money.mp3",
-      "audio/share_my_money.mp3",
-      "music/share_my_money.mp3"
-    ],
-    "art": [
-      "quarantine-mixtape.jpg",
-      "the-quarantine-mixtape.jpg",
-      "the-quarantine.jpg",
-      "album-art.jpg",
-      "assets/images/quarantine-mixtape.jpg"
-    ]
+    id: 'free-hyph',
+    number: '04',
+    title: 'Free Hyph',
+    artist: 'Hyph Life',
+    meta: 'Quarantine Mixtape — Level 1',
+    sources: ['free-hyph.mp3']
   },
   {
-    "number": "05",
-    "title": "Free Hyph",
-    "artist": "Hyph Life",
-    "meta": "Quarantine Mixtape",
-    "code": "FREE",
-    "sources": [
-      "free-hyph.mp3",
-      "assets/audio/free-hyph.mp3",
-      "audio/free-hyph.mp3",
-      "music/free-hyph.mp3",
-      "Free Hyph.mp3",
-      "assets/audio/Free Hyph.mp3",
-      "audio/Free Hyph.mp3",
-      "music/Free Hyph.mp3",
-      "FREE HYPH.mp3",
-      "assets/audio/FREE HYPH.mp3",
-      "audio/FREE HYPH.mp3",
-      "music/FREE HYPH.mp3",
-      "free_hyph.mp3",
-      "assets/audio/free_hyph.mp3",
-      "audio/free_hyph.mp3",
-      "music/free_hyph.mp3"
-    ],
-    "art": [
-      "quarantine-mixtape.jpg",
-      "the-quarantine-mixtape.jpg",
-      "the-quarantine.jpg",
-      "album-art.jpg",
-      "assets/images/quarantine-mixtape.jpg"
-    ]
-  },
-  {
-    "number": "06",
-    "title": "50 Cent Shit",
-    "artist": "Hyph Life",
-    "meta": "Quarantine Mixtape",
-    "code": "50",
-    "sources": [
-      "50-cent-shit.mp3",
-      "assets/audio/50-cent-shit.mp3",
-      "audio/50-cent-shit.mp3",
-      "music/50-cent-shit.mp3",
-      "50 Cent Shit.mp3",
-      "assets/audio/50 Cent Shit.mp3",
-      "audio/50 Cent Shit.mp3",
-      "music/50 Cent Shit.mp3",
-      "50 CENT SHIT.mp3",
-      "assets/audio/50 CENT SHIT.mp3",
-      "audio/50 CENT SHIT.mp3",
-      "music/50 CENT SHIT.mp3",
-      "50_cent_shit.mp3",
-      "assets/audio/50_cent_shit.mp3",
-      "audio/50_cent_shit.mp3",
-      "music/50_cent_shit.mp3"
-    ],
-    "art": [
-      "quarantine-mixtape.jpg",
-      "the-quarantine-mixtape.jpg",
-      "the-quarantine.jpg",
-      "album-art.jpg",
-      "assets/images/quarantine-mixtape.jpg"
-    ]
+    id: 'gotta-go-remix',
+    number: '05',
+    title: 'Gotta Go Remix',
+    artist: 'Hyph Life',
+    meta: 'Quarantine Mixtape — Level 1',
+    art: ['gotta-go-remix.jpg', 'quarantine-mixtape.jpg', 'album-art.jpg'],
+    sources: ['gotta-go-remix.mp3']
   }
 ];
