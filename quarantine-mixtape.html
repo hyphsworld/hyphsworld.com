@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quarantine Mixtape | HYPHSWORLD Vault</title>
+  <meta name="description" content="Level 1 of the HYPHSWORLD Vault: The Quarantine Mixtape by Hyph Life." />
+  <meta name="theme-color" content="#00ff66" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="homepage-upgrades.css" />
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand-lockup" href="index.html"><span>AMS WEST PRESENTS</span><strong>HYPHSWORLD</strong></a>
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="vault.html">Vault</a>
+      <a href="app-player.html">Full Player</a>
+      <a href="shop.html">Merch</a>
+    </nav>
+  </header>
+
+  <main class="quarantine-main">
+    <section class="ticker" aria-label="Quarantine ticker">
+      <div class="ticker-track">
+        <span>LEVEL 1 OPEN</span><b>✦</b><span>QUARANTINE MIXTAPE</span><b>✦</b><span>HIDDEN ERA</span><b>✦</b><span>DUCK SAUCE TRANSPORT COMPLETE</span><b>✦</b><span>BUCK CLEARED THE DOOR</span><b>✦</b>
+        <span>LEVEL 1 OPEN</span><b>✦</b><span>QUARANTINE MIXTAPE</span><b>✦</b><span>HIDDEN ERA</span><b>✦</b><span>DUCK SAUCE TRANSPORT COMPLETE</span><b>✦</b><span>BUCK CLEARED THE DOOR</span><b>✦</b>
+      </div>
+    </section>
+
+    <section class="section-pad">
+      <div class="phone-shell quarantine-shell">
+        <div class="quarantine-hero">
+          <div>
+            <img id="quarantine-cover" class="quarantine-cover" src="quarantine-mixtape.jpg" alt="The Quarantine Mixtape artwork" />
+          </div>
+          <div>
+            <p class="eyebrow">Vault Level 1</p>
+            <h1 class="vault-title">THE QUARANTINE MIXTAPE</h1>
+            <p class="lead">Hidden era unlocked. This room is built for the mixtape files: MP3s, artwork, and the order listing. Duck Sauce says do not skip track one like you own the building.</p>
+            <div class="button-row compact-actions">
+              <button id="quarantine-play" class="btn btn-primary" type="button">Play Level 1</button>
+              <button id="quarantine-pause" class="btn btn-soft" type="button">Pause</button>
+              <a class="btn btn-hot" href="vault.html">Back To Gate</a>
+            </div>
+          </div>
+        </div>
+
+        <section class="quarantine-player-card">
+          <div class="now-playing-card">
+            <span id="quarantine-chip" class="track-chip">LEVEL 1</span>
+            <h3 id="quarantine-title">Quarantine Mixtape</h3>
+            <p id="quarantine-meta">Pick a track below.</p>
+            <audio id="quarantine-audio" preload="metadata"></audio>
+          </div>
+
+          <div class="progress-wrap" aria-label="Quarantine track progress">
+            <span id="quarantine-current">0:00</span>
+            <input id="quarantine-progress" type="range" min="0" max="100" value="0" aria-label="Audio progress" />
+            <span id="quarantine-duration">0:00</span>
+          </div>
+
+          <p id="quarantine-status" class="status-line">Transport complete. Choose a track.</p>
+          <div id="quarantine-track-list" class="quarantine-track-list"></div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <div id="access-denied" class="access-denied-overlay" aria-hidden="true">
+    <div class="access-denied-card section-card">
+      <p class="eyebrow">Buck Said Hold Up</p>
+      <h2>SCAN REQUIRED</h2>
+      <p class="lead">Level 1 needs Vault transport first. Run the scanner, get cleared, then come back through the tunnel.</p>
+      <a class="btn btn-primary" href="vault.html">Run Vault Scan</a>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <span>© <span id="year"></span> AMS WEST LLC</span>
+    <span>Level 1 — Quarantine Mixtape</span>
+  </footer>
+
+  <script src="quarantine-tracks.js"></script>
+  <script src="quarantine-player.js"></script>
+</body>
+</html>
