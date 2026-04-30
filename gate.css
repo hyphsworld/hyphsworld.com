@@ -1,0 +1,80 @@
+body {
+  margin: 0;
+  background: black;
+  color: #00ff88;
+  font-family: monospace;
+  overflow: hidden;
+}
+
+.gate-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.scan-pad {
+  width: 220px;
+  height: 220px;
+  border: 2px solid #00ff88;
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.scan-bar {
+  position: absolute;
+  width: 100%;
+  height: 4px;
+  background: #00ff88;
+  top: 0;
+  animation: idleScan 2s infinite;
+}
+
+@keyframes idleScan {
+  0% { top: 0; }
+  100% { top: 100%; }
+}
+
+.scan-text {
+  position: absolute;
+  bottom: 10px;
+  width: 100%;
+  text-align: center;
+}
+
+.status {
+  margin-top: 20px;
+  font-size: 14px;
+  letter-spacing: 2px;
+}
+
+.hud {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: url('hud-overlay.png');
+  opacity: 0.08;
+  pointer-events: none;
+}
+
+/* ACTIVE SCAN /
+.scanning .scan-bar {
+  animation: scanFast 1s infinite;
+}
+
+@keyframes scanFast {
+  0% { top: 0; }
+  100% { top: 100%; }
+}
+
+/ FLASH */
+.flash {
+  animation: flash 0.3s;
+}
+
+@keyframes flash {
+  from { background: white; }
+  to { background: black; }
+}
