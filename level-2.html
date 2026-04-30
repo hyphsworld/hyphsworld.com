@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Level 2 | HYPHSWORLD 5 | HYPHSWORLD</title>
+  <meta name="description" content="Level 2 | HYPHSWORLD 5 | HYPHSWORLD. Official Vault floor player by Hyph Life and AMS WEST." />
+
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="level-1.css" />
+</head>
+
+<body class="level-two-page">
+  <div class="level-bg-grid" aria-hidden="true"></div>
+
+  <header class="level-header">
+    <a class="level-brand" href="index.html" aria-label="Back to HYPHSWORLD homepage">
+      <span>AMS WEST PRESENTS</span>
+      <strong>HYPHSWORLD</strong>
+    </a>
+
+    <nav class="level-nav" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="vault.html">Vault Gate</a>
+      <a href="level-1.html">Level 1</a>
+      <a href="level-2.html" aria-current="page">Level 2</a>
+      <a href="app-player.html">Full Player</a>
+      <a href="merch.html">Merch</a>
+    </nav>
+  </header>
+
+  <main class="level-main">
+    <section class="arrival-hero">
+      <div class="arrival-copy">
+        <p class="eyebrow">LEVEL 2 // HYPHSWORLD 5</p>
+        <h1>HYPHSWORLD 5</h1>
+        <p class="lead">Welcome to the second floor of the Vault. HYPHSWORLD 5 is wired with the official 6-track order and live player.</p>
+
+        <div class="hero-actions">
+          <a class="primary-btn" href="#floor-player">Enter Floor</a>
+          <a class="secondary-btn" href="vault.html">Back To Gate</a>
+        </div>
+      </div>
+
+      <aside class="level-status">
+        <article>
+          <span>ACCESS</span>
+          <strong>ACTIVE</strong>
+          <p>The official floor map is now wired into this room.</p>
+        </article>
+
+        <article>
+          <span>DUCK SAUCE</span>
+          <strong>“No placeholders.”</strong>
+          <p>“This one got the real list. Let the music talk.”</p>
+        </article>
+
+        <article>
+          <span>BUCK</span>
+          <strong>SECURITY ONLINE</strong>
+          <p>Floor routing stays clean. No broken transport doors.</p>
+        </article>
+      </aside>
+    </section>
+
+    <section class="mixtape-section" id="floor-player">
+      <div class="section-divider">
+        <span></span>
+        <strong>OFFICIAL PLAYER</strong>
+        <span></span>
+      </div>
+
+      <div class="mixtape-grid">
+        <article class="cover-card">
+          <p class="card-kicker">HYPHSWORLD 5 ARTWORK</p>
+          <div class="cover-frame">
+            <img id="hyphsworld5-cover" src="hyphsworld-5.jpg" alt="HYPHSWORLD 5 artwork" />
+            <div id="coverFallback" class="cover-fallback" hidden>
+              <span>HYPH LIFE</span>
+              <strong>HYPHSWORLD 5</strong>
+              <em>AMS WEST</em>
+            </div>
+          </div>
+        </article>
+
+        <article class="player-card">
+          <div class="now-playing-card">
+            <span id="hyphsworld5-chip" class="track-chip">TRACK 01</span>
+            <h2 id="hyphsworld5-title">HYPHSWORLD 5</h2>
+            <p id="hyphsworld5-meta">Pick a track below.</p>
+            <audio id="hyphsworld5-audio" preload="metadata"></audio>
+          </div>
+
+          <div class="progress-wrap" aria-label="Track progress">
+            <span id="hyphsworld5-current">0:00</span>
+            <input id="hyphsworld5-progress" type="range" min="0" max="100" value="0" aria-label="Audio progress" />
+            <span id="hyphsworld5-duration">0:00</span>
+          </div>
+
+          <div class="player-controls" aria-label="Player controls">
+            <button id="hyphsworld5-play" type="button">Play</button>
+            <button id="hyphsworld5-pause" type="button">Pause</button>
+            <button id="hyphsworld5-prev" type="button">Prev</button>
+            <button id="hyphsworld5-next" type="button">Next</button>
+          </div>
+
+          <p id="hyphsworld5-status" class="status-line">Choose a track.</p>
+          <div id="hyphsworld5-track-list" class="hyphsworld5-track-list" aria-label="HYPHSWORLD 5 tracks"></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="order-section">
+      <div class="section-divider">
+        <span></span>
+        <strong>OFFICIAL ORDER LISTING</strong>
+        <span></span>
+      </div>
+
+      <ol id="official-order-list" class="official-order-list"></ol>
+    </section>
+
+    <section class="level-two-door">
+      <div>
+        <p class="eyebrow">NEXT MOVE</p>
+        <h2>Full Player</h2>
+        <p>The Full Player has the official 6-song rotation locked in.</p>
+      </div>
+      <a class="locked-btn" href="app-player.html">OPEN FULL PLAYER</a>
+    </section>
+  </main>
+
+  <div id="access-denied" class="access-denied-overlay" aria-hidden="true">
+    <div class="access-denied-card">
+      <p class="eyebrow">BUCK SAID HOLD UP</p>
+      <h2>Scan Required</h2>
+      <p>Level 2 is reached through the Vault flow. Run Level 1 first, then enter this room from the Level 1 floor.</p>
+      <a class="primary-btn" href="vault.html">Run Vault Scan</a>
+    </div>
+  </div>
+
+  <footer class="level-footer">
+    <span>© <span id="year"></span> AMS WEST LLC</span>
+    <span>Level 2 — HYPHSWORLD 5</span>
+  </footer>
+
+  <script src="hyphsworld5-tracks.js"></script>
+  <script src="hyphsworld5-player.js"></script>
+</body>
+</html>
