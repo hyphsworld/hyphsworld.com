@@ -24,12 +24,8 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   min-height: 100vh;
-  background:
-    radial-gradient(circle at 15% 8%, rgba(69, 255, 54, 0.25), transparent 30%),
-    radial-gradient(circle at 78% 12%, rgba(255, 79, 216, 0.18), transparent 28%),
-    radial-gradient(circle at 55% 92%, rgba(66, 204, 255, 0.14), transparent 34%),
-    linear-gradient(180deg, #050505 0%, #101014 48%, #050505 100%);
-  color: var(--white);
+  background: #ffffff;
+  color: #111111;
   font-family: Arial, Helvetica, sans-serif;
   overflow-x: hidden;
 }
@@ -47,8 +43,8 @@ button, input { font: inherit; }
   justify-content: space-between;
   gap: 18px;
   padding: 16px clamp(14px, 4vw, 44px);
-  background: rgba(0, 0, 0, 0.74);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.92);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
   backdrop-filter: blur(18px);
 }
 
@@ -81,9 +77,9 @@ button, input { font: inherit; }
   justify-content: center;
   padding: 8px 12px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.11);
-  color: #f8f8f8;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  color: #111;
   font-weight: 850;
   font-size: 0.78rem;
   text-transform: uppercase;
@@ -94,9 +90,9 @@ button, input { font: inherit; }
 
 .ticker {
   overflow: hidden;
-  background: #000;
-  border-bottom: 1px solid rgba(69, 255, 54, 0.35);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: #ffffff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.14);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
 }
 .ticker-track {
   display: flex;

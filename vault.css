@@ -3,7 +3,7 @@
 :root {
   --black: #07060d;
   --white: #fff7ef;
-  --muted: rgba(255,255,255,.72);
+  --muted: rgba(20,20,20,.78);
   --pink: #ff2bd6;
   --cyan: #20f7ff;
   --green: #7cff00;
@@ -18,13 +18,9 @@
 html, body { margin: 0; min-height: 100%; }
 
 body.vault-page {
-  color: var(--white);
+  color: #111;
   font-family: Impact, Haettenschweiler, "Arial Narrow Bold", system-ui, sans-serif;
-  background:
-    radial-gradient(circle at 12% 18%, rgba(255,43,214,.35), transparent 28%),
-    radial-gradient(circle at 90% 14%, rgba(32,247,255,.30), transparent 25%),
-    radial-gradient(circle at 75% 90%, rgba(124,255,0,.22), transparent 28%),
-    linear-gradient(135deg, #06050b, #181020 54%, #06050b);
+  background: #fff;
   overflow-x: hidden;
 }
 
@@ -33,11 +29,11 @@ body.vault-page {
   inset: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
+    linear-gradient(rgba(0,0,0,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,.06) 1px, transparent 1px);
   background-size: 34px 34px;
   animation: pageGridMove 8s linear infinite;
-  opacity: .5;
+  opacity: .7;
 }
 
 @keyframes pageGridMove {
@@ -77,9 +73,9 @@ body.vault-page {
 .vault-logo {
   display: grid;
   line-height: .9;
-  color: var(--white);
+  color: #111;
   text-decoration: none;
-  text-shadow: 4px 4px 0 rgba(255,43,214,.60);
+  text-shadow: 4px 4px 0 rgba(255,43,214,.35);
 }
 
 .vault-logo span {
@@ -100,10 +96,10 @@ body.vault-page {
 }
 
 .vault-nav a {
-  color: var(--white);
+  color: #111;
   text-decoration: none;
-  border: 2px solid rgba(255,255,255,.24);
-  background: rgba(255,255,255,.08);
+  border: 2px solid rgba(0,0,0,.14);
+  background: rgba(255,255,255,.98);
   padding: 10px 14px;
   border-radius: 999px;
   font-family: Arial, sans-serif;
@@ -452,7 +448,7 @@ body.vault-page {
   border-radius: 999px;
   background: rgba(0,0,0,.55);
   border: 2px solid rgba(255,255,255,.18);
-  color: var(--white);
+  color: #111;
   font: 1000 11px Arial, sans-serif;
   letter-spacing: .1em;
   animation: tagFloat 2.6s ease-in-out infinite alternate;
@@ -551,7 +547,7 @@ body.vault-page {
   border-radius: 22px;
   border: 3px solid rgba(255,255,255,.22);
   background: rgba(0,0,0,.52);
-  color: var(--white);
+  color: #111;
   font: 1000 20px Arial, sans-serif;
   outline: none;
   box-shadow: inset 0 0 26px rgba(32,247,255,.10);
@@ -611,7 +607,7 @@ body.vault-page {
 }
 
 .clear-button {
-  color: var(--white);
+  color: #111;
   background: rgba(255,255,255,.13);
   border: 2px solid rgba(255,255,255,.18);
 }

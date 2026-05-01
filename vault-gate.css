@@ -1,1 +1,64 @@
-*{box-sizing:border-box}body{margin:0;min-height:100vh;color:#fff;font-family:Arial,Helvetica,sans-serif;background:#050505}.vault-bg{position:fixed;inset:0;background:linear-gradient(rgba(0,0,0,.75),rgba(0,0,0,.92)),url("album-art.jpg") center/cover no-repeat;filter:blur(18px);transform:scale(1.08);z-index:-1}.gate-shell{min-height:100vh;display:grid;place-items:center;padding:24px 16px 120px}.gate-card{width:min(460px,94vw);border:1px solid rgba(201,163,74,.34);background:linear-gradient(180deg,rgba(12,12,12,.94),rgba(0,0,0,.96));border-radius:30px;box-shadow:0 30px 80px rgba(0,0,0,.6);padding:22px}.back-link{color:#cfcfcf;text-decoration:none}.brand-row{display:flex;gap:12px;margin-top:18px}.brand-row img{width:54px;height:54px;object-fit:contain;border-radius:14px;background:#fff}.brand-row p{margin:0;color:#bdbdbd;font-size:11px;letter-spacing:.24em}.brand-row h1{margin:0;font-size:32px}.vault-lock{margin-top:24px;border:1px solid rgba(255,255,255,.10);border-radius:18px;padding:14px;display:flex;gap:12px}.lock-light{width:14px;height:14px;border-radius:999px;background:#c9a34a;box-shadow:0 0 16px #f1d28a}.vault-lock strong{color:#f1d28a}.gate-copy{color:#d1d1d1}.code-display{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:18px 0}.code-display span{height:50px;border-radius:14px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);display:grid;place-items:center}.code-display span.filled:before{content:'•';color:#f1d28a;font-size:24px}.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.keypad button,.unlock-btn,input{min-height:56px;border-radius:18px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.045);color:#fff;font-weight:900}input{width:100%;margin-top:14px;padding:0 14px;text-transform:uppercase}.unlock-btn{width:100%;margin-top:14px;background:linear-gradient(180deg,#f1d28a,#c9a34a);color:#111}.gate-message{text-align:center}.gate-message.error{color:#ff7070}.gate-message.success{color:#f1d28a}.shake{animation:shake .35s}@keyframes shake{25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-5px)}}
+*{box-sizing:border-box}
+:root{
+  --spray-pink:#ff4fd8;
+  --spray-cyan:#42ccff;
+  --spray-green:#45ff36;
+  --spray-gold:#ffe45c;
+}
+body[data-page="vault-gate"]{
+  margin:0;
+  min-height:100vh;
+  color:#111;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#fff;
+}
+.vault-shell{padding-bottom:120px}
+.section-head{position:relative}
+.section-head:after{
+  content:"VAULT GATE FLOOR";
+  position:absolute;
+  right:0;
+  top:-8px;
+  font-weight:1000;
+  letter-spacing:.08em;
+  font-size:12px;
+  color:rgba(255,255,255,.25);
+  transform:rotate(-6deg);
+}
+.vault-status-row{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0 18px}
+.vault-badge{padding:8px 12px;border-radius:999px;font-weight:900;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08)}
+.vault-badge.on{background:rgba(69,255,54,.22);border-color:rgba(69,255,54,.5);color:#9dff9f}
+.vault-stack{display:grid;gap:18px}
+.vault-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+.feature-card{
+  position:relative;
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:24px;
+  padding:20px;
+  background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(245,245,245,.98));
+  overflow:hidden;
+  box-shadow:0 24px 60px rgba(0,0,0,.45);
+}
+.feature-card:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(120deg,transparent 30%,rgba(255,79,216,.14) 45%,transparent 58%),
+    linear-gradient(150deg,transparent 30%,rgba(66,204,255,.1) 45%,transparent 62%);
+  pointer-events:none;
+}
+.feature-card>*{position:relative}
+.vault-lock-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}
+.vault-state{padding:6px 10px;border-radius:999px;font-size:12px;font-weight:1000;border:1px solid rgba(255,255,255,.18)}
+.vault-state.locked{color:#ff9da6;border-color:rgba(255,128,144,.45);background:rgba(185,27,44,.2)}
+.vault-state.unlocked{color:#95ff8f;border-color:rgba(69,255,54,.45);background:rgba(18,142,44,.2)}
+.vault-lock-copy p{margin:10px 0;color:#d3d3d3}
+.vault-form{display:grid;gap:10px}
+.vault-label{font-weight:900;letter-spacing:.04em;text-transform:uppercase;font-size:12px;color:#cfd7e3}
+.vault-input{min-height:48px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:#111;padding:0 12px;text-transform:uppercase;font-weight:900}
+.vault-row{display:flex;gap:10px;flex-wrap:wrap}
+.vault-message{min-height:22px;font-weight:900}
+.vault-links{margin-top:8px}
+.pill{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:10px 14px;border-radius:999px;text-decoration:none;background:linear-gradient(90deg,var(--spray-green),var(--spray-gold));color:#111;font-weight:1000}
+@media(max-width:680px){.section-head:after{position:static;display:block;transform:none;margin-top:8px}}
