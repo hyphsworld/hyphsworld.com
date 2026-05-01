@@ -515,3 +515,142 @@ h3 { font-size: clamp(1.5rem, 3.2vw, 2.6rem); margin-bottom: 8px; letter-spacing
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+
+/* Merch page refresh */
+.page-merch {
+  background: #ffffff;
+  color: #111111;
+}
+
+.page-merch .skip-link {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  background: #ffffff;
+  border: 2px solid #ff2ec4;
+  color: #111;
+  padding: 6px 10px;
+  border-radius: 10px;
+  z-index: 100;
+}
+
+.page-merch .merch-header {
+  background: #ffffff;
+  border-bottom: 2px solid #e8e8e8;
+}
+
+.page-merch .brand-title {
+  font-size: clamp(2rem, 6vw, 3.6rem);
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  color: #101010;
+}
+
+.page-merch .nav-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.page-merch .pill {
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-weight: 900;
+  border: 2px solid #111;
+  background: #fff;
+}
+
+.page-merch .pill-green { border-color: #00e95f; color: #00a43f; }
+.page-merch .pill-yellow { border-color: #ffd43d; color: #a16d00; }
+.page-merch .pill-cyan { border-color: #18d4ff; color: #006b86; }
+.page-merch .pill-purple { border-color: #9d6dff; color: #5a25cc; }
+.page-merch .pill-pink,
+.page-merch .pill.is-active {
+  border-color: #ff2ec4;
+  color: #7d0957;
+  box-shadow: 0 0 0 4px rgba(255, 46, 196, 0.15);
+}
+
+.page-merch .merch-main {
+  padding: clamp(16px, 4vw, 44px);
+}
+
+.page-merch .merch-card {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: clamp(20px, 4vw, 42px);
+  border-radius: 28px;
+  border: 2px solid #111;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(57, 255, 20, 0.16), transparent 26%),
+    radial-gradient(circle at 100% 0%, rgba(255, 0, 166, 0.16), transparent 26%),
+    #fff;
+}
+
+.page-merch .section-tag {
+  margin: 0;
+  color: #00ae52;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+}
+
+.page-merch #merch-title {
+  margin: 10px 0 14px;
+  font-size: clamp(2.1rem, 7vw, 4.6rem);
+  line-height: 0.95;
+  color: #0a0a0a;
+}
+
+.page-merch .hero-text {
+  max-width: 760px;
+  font-size: clamp(1rem, 2.5vw, 1.3rem);
+  color: #313131;
+}
+
+.page-merch .merch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.page-merch .merch-item {
+  background: #fff;
+  border: 2px solid #0f0f0f;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+}
+
+.page-merch .merch-image {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-bottom: 2px solid #111;
+}
+
+.page-merch .merch-item h2,
+.page-merch .merch-item p {
+  padding: 0 14px;
+}
+
+.page-merch .merch-item h2 {
+  margin-top: 12px;
+  margin-bottom: 8px;
+  font-size: clamp(1.2rem, 4vw, 2rem);
+}
+
+.page-merch .merch-item p {
+  margin-bottom: 16px;
+  color: #404040;
+}
+
+.page-merch .merch-footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 18px 24px 30px;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #111;
+}
