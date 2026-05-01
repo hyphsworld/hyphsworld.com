@@ -1,3 +1,5 @@
+if (!window.HWAuth) { location.href = "auth.html?next=login.html"; }
+HWAuth.getSession().then(function(s){ if(!s){ location.href = "auth.html?next=login.html"; }});
 const AUTH_KEY="hyphsworld_vault_access",AUTH_TIME_KEY="hyphsworld_vault_access_time",ACCESS_DURATION_MS=14400000;
 const ALLOWED_HASHES=["651d8948587739f3c0aa840fd250b5b547b98a83a9b84aa24800ff1293dc8ed9"];
 const form=document.getElementById("accessForm"),input=document.getElementById("accessCode"),toggle=document.getElementById("toggleCode"),terminal=document.getElementById("terminalCard"),terminalStatus=document.getElementById("terminalStatus"),message=document.getElementById("accessMessage"),scanStage=document.getElementById("scanStage"),scanReadout=document.getElementById("scanReadout"),statusText=document.getElementById("statusText"),modeText=document.getElementById("modeText"),scannerMode=document.getElementById("scannerMode"),scanLineA=document.getElementById("scanLineA"),scanLineB=document.getElementById("scanLineB"),scanLineC=document.getElementById("scanLineC");
