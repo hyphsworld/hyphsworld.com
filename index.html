@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HYPHSWORLD | AMS WEST</title>
+  <meta name="description" content="HYPHSWORLD by Hyph Life and AMS WEST. Music, Vault drops, Duck Sauce guide, artist spotlight, merch, and direct fan access." />
+  <meta property="og:title" content="HYPHSWORLD | AMS WEST" />
+  <meta property="og:description" content="Real music. Direct access. Duck Sauce watching. Buck at the door." />
+  <meta property="og:image" content="album-art.jpg" />
+  <meta name="theme-color" content="#00ff66" />
+  <!-- Referrer policy added to mitigate YouTube Error 153 -->
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="homepage-upgrades.css" />
+</head>
+<body class="home-page">
+  <header class="site-header">
+    <a class="brand-lockup" href="index.html" aria-label="HYPHSWORLD home">
+      <span>AMS WEST PRESENTS</span>
+      <strong>HYPHSWORLD</strong>
+    </a>
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="#music">Music</a>
+      <a href="#spotlight">Spotlight</a>
+      <a href="vault.html">Vault</a>
+      <a href="app-player.html">Full Player</a>
+      <a href="shop.html">Merch</a>
+      <a href="#connect">Connect</a>
+      <a class="nav-cta" href="vault.html">Create ID</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="ticker" aria-label="HYPHSWORLD ticker">
+      <div class="ticker-track">
+        <span>WELCOME 2 HYPHSWORLD</span><b>✦</b><span>DUCK SAUCE GOT INSTRUCTIONS</span><b>✦</b><span>BUCKTHEBODYGUARD AT THE DOOR</span><b>✦</b><span>VAULT TRANSPORT READY</span><b>✦</b><span>QUARANTINE MIXTAPE ON LEVEL 1</span><b>✦</b><span>COOL POINTS START CLEAN</span><b>✦</b>
+        <span>WELCOME 2 HYPHSWORLD</span><b>✦</b><span>DUCK SAUCE GOT INSTRUCTIONS</span><b>✦</b><span>BUCKTHEBODYGUARD AT THE DOOR</span><b>✦</b><span>VAULT TRANSPORT READY</span><b>✦</b><span>QUARANTINE MIXTAPE ON LEVEL 1</span><b>✦</b><span>COOL POINTS START CLEAN</span><b>✦</b>
+      </div>
+    </section>
+
+    <section class="hero-shell" id="top">
+      <div class="hero-video-card">
+        <video id="hero-video" class="hero-video" autoplay muted loop playsinline preload="auto" poster="album-art.jpg" data-hero-sources="hyphsworld-hero.mp4"></video>
+        <div class="hero-video-tint"></div>
+        <div class="hero-scan-line"></div>
+        <div class="hero-content">
+          <p class="eyebrow neon-text">Richmond, CA • AMS WEST • Direct Motion</p>
+          <h1>REAL MUSIC.<br />NO MIDDLEMEN.</h1>
+          <p class="lead">HYPHSWORLD is the lobby. The Vault is the pressure. Duck Sauce gives the bad directions. Buck decides who really gets through the door.</p>
+          <div class="button-row compact-actions">
+            <button class="btn btn-primary" type="button" data-track-id="ham">Play HAM</button>
+            <a class="btn btn-hot" href="vault.html">Enter Vault</a>
+            <a class="btn btn-soft" href="app-player.html">Full Player</a>
+          </div>
+          <div class="hero-video-status" id="hero-video-status">MP4 hero loading…</div>
+        </div>
+        <button class="hero-sound-toggle" type="button" data-hero-toggle>Hero Sound: Off</button>
+      </div>
+    </section>
+
+    <section class="section-pad duck-zone" id="duck-guide">
+      <div class="phone-shell duck-guide-card">
+        <div class="duck-visual-wrap">
+          <span class="lightbulb" aria-hidden="true">💡</span>
+          <img class="duck-main" src="duck-sauce.png" alt="Duck Sauce guide" onerror="this.onerror=null;this.src='duck-sauce.jpg';" />
+          <div class="buck-mini-card">
+            <img src="buck-thebodyguard.jpg" alt="BuckTheBodyguard" onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';" />
+            <span class="buck-fallback">BUCK</span>
+          </div>
+        </div>
+        <div class="duck-copy">
+          <p class="eyebrow">Duck Sauce Help Desk</p>
+          <h2>Don’t just stand in the lobby.</h2>
+          <p id="duck-line" class="duck-line">Spotlight for the slap. Vault for the pressure. Full Player if you really listening. And stop asking Buck questions he do not work in customer service.</p>
+          <div class="duck-guide-grid" aria-label="Duck guide quick instructions">
+            <article><strong>01</strong><span>Press play. The lobby wakes up.</span></article>
+            <article><strong>02</strong><span>Run the Vault scan. No public hints.</span></article>
+            <article><strong>03</strong><span>Access granted starts transport.</span></article>
+            <article><strong>04</strong><span>Level 1 opens Quarantine Mixtape.</span></article>
+          </div>
+          <div class="button-row compact-actions">
+            <button class="btn btn-primary" type="button" data-duck-tip>Duck Talk</button>
+            <a class="btn btn-soft" href="vault.html">Run Scan</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="music" class="section-pad">
+      <div class="phone-shell section-card player-card">
+        <div class="section-title">
+          <p class="eyebrow">HYPHSWORLD Radio</p>
+          <h2>Homepage Player</h2>
+          <p>Session-only Cool Points. No fake saved score. Every visitor starts clean.</p>
+        </div>
+
+        <div class="player-grid">
+          <div class="now-playing-card">
+            <span id="active-track-chip" class="track-chip">HAM</span>
+            <h3 id="track-title">HAM</h3>
+            <p id="track-meta">Hyph Life — prod by 1ManBand</p>
+            <audio id="hyph-audio" preload="metadata"></audio>
+          </div>
+
+          <div class="player-side">
+            <div class="points-box">
+              <span>Cool Points</span>
+              <strong id="cool-points">0</strong>
+            </div>
+            <p id="player-status" class="status-line">Pick a record. Browser may ask for one tap before audio starts.</p>
+          </div>
+        </div>
+
+        <div class="progress-wrap" aria-label="Track progress">
+          <span id="current-time">0:00</span>
+          <input id="track-progress" type="range" min="0" max="100" value="0" aria-label="Audio progress" />
+          <span id="duration-time">0:00</span>
+        </div>
+
+        <div class="button-row player-controls">
+          <button class="btn btn-primary" type="button" data-player-action="play">Play</button>
+          <button class="btn btn-soft" type="button" data-player-action="pause">Pause</button>
+          <button class="btn btn-hot" type="button" data-track-id="kiki">KIKI</button>
+          <button class="btn btn-neon" type="button" data-track-id="ongod">ON GOD</button>
+          <button class="btn btn-ice" type="button" data-track-id="time">TIME</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="spotlight" class="section-pad">
+      <div class="phone-shell section-card spotlight-section">
+        <div class="section-title">
+          <p class="eyebrow">Artist Spotlight</p>
+          <h2>Platform Motion</h2>
+          <p>Spotlight plays right here. No wrong redirect.</p>
+        </div>
+
+        <article class="spotlight-feature">
+          <div class="spotlight-art">
+            <img src="25-8.jpg" alt="Young Tez 25/8 artwork" onerror="this.onerror=null;this.src='album-art.jpg';" />
+            <span class="spotlight-badge">Spotlight #1</span>
+          </div>
+          <div class="spotlight-info">
+            <p class="eyebrow">Artist Spotlight #1</p>
+            <h3>25/8</h3>
+            <p>Young Tez — prod by Marty McPhresh</p>
+            <div class="button-row compact-actions">
+              <button class="btn btn-primary" type="button" data-track-id="tez258">Play 25/8</button>
+              <a class="btn btn-soft" href="app-player.html#track-tez258">Open Full Player</a>
+              <a class="btn btn-hot" href="#connect">Tap In</a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="vault-preview" class="section-pad">
+      <div class="phone-shell section-card vault-preview-card">
+        <div class="section-title">
+          <p class="eyebrow">The Vault</p>
+          <h2>Level 1 is waiting.</h2>
+          <p>Homepage only teases the first floor. Level 2 stays out the lobby.</p>
+        </div>
+        <article class="level-card level-one-only">
+          <span class="lock-badge">LEVEL 1</span>
+          <h3>Quarantine Mixtape</h3>
+          <p>Hidden era. Unreleased pressure. Access scan required before transport.</p>
+          <div class="mini-transport-preview">
+            <span></span><span></span><span></span>
+          </div>
+          <a class="btn btn-primary" href="vault.html">Run Vault Scan</a>
+        </article>
+      </div>
+    </section>
+
+    <section id="video" class="section-pad">
+      <div class="phone-shell section-card">
+        <div class="section-title">
+          <p class="eyebrow">Featured Motion</p>
+          <h2>Visuals + 01 Show Energy</h2>
+          <p>Trailers, interviews, motion covers, and show drops can rotate here.</p>
+        </div>
+        <div class="video-slot">
+          <iframe src="https://www.youtube.com/embed/4jvPUvhXnBA?si=xcAaqs7WezNUJeS7"
+                  referrerpolicy="strict-origin-when-cross-origin"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen></iframe>
+        </div>
+      </div>
+    </section>
+
+    <section id="connect" class="section-pad">
+      <div class="phone-shell section-card connect-card">
+        <div class="section-title">
+          <p class="eyebrow">Tap In</p>
+          <h2>Stay Locked In</h2>
+          <p>Booking, features, merch, interviews, business, and Vault updates.</p>
+        </div>
+        <div class="button-row compact-actions">
+          <a class="btn btn-primary" href="mailto:tone@amsenterprisecorp.com">Email AMS WEST</a>
+          <a class="btn btn-hot" href="shop.html">Merch</a>
+          <a class="btn btn-soft" href="vault.html">Create ID</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span>© <span id="year"></span> AMS WEST LLC</span>
+    <span>HYPHSWORLD • Richmond, CA</span>
+  </footer>
+
+  <script src="index-player.js"></script>
+</body>
+</html>
