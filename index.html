@@ -17,10 +17,8 @@
 <body class="home-page">
   <!-- Simple client-side login section. Stores username in localStorage and retrieves saved points -->
   <div id="login-section" style="background:#0f1e2b; color:#a9ff87; padding: 10px; text-align:center;">
-    <label for="username">Username: </label>
-    <input type="text" id="username" placeholder="Enter your username" />
-    <button id="login-button">Login</button>
-    <span id="login-status" style="margin-left:20px;"></span>
+    <span id="login-status" style="margin-left:20px;">Checking session...</span>
+    <a href="auth.html" id="auth-link" style="margin-left:12px; color:#45ff36; font-weight:700;">Create ID / Login</a>
   </div>
   <header class="site-header">
     <a class="brand-lockup" href="index.html" aria-label="HYPHSWORLD home">
@@ -34,7 +32,7 @@
       <a href="app-player.html">Full Player</a>
       <a href="shop.html">Merch</a>
       <a href="#connect">Connect</a>
-      <a class="nav-cta" href="vault.html">Create ID</a>
+      <a class="nav-cta" href="auth.html">Create ID</a>
     </nav>
   </header>
 
@@ -222,56 +220,25 @@
 
   <!-- Login and points-saving script -->
   <script>
-  // Retrieve username on page load and update points display
-  document.addEventListener('DOMContentLoaded', function() {
-    var storedUsername = localStorage.getItem('username');
-    if (storedUsername) {
-      document.getElementById('username').value = storedUsername;
-      // Show saved points for this user
-      var savedPoints = localStorage.getItem(storedUsername + '_points');
-      if (savedPoints !== null) {
-        var pointsElement = document.getElementById('cool-points');
-        if (pointsElement) pointsElement.textContent = savedPoints;
-      }
-      document.getElementById('login-status').textContent = 'Logged in as ' + storedUsername;
+  document.addEventListener("DOMContentLoaded", async function () {
+    var statusEl = document.getElementById("login-status");
+    var authLink = document.getElementById("auth-link");
+    if (!window.HWAuth) {
+      statusEl.textContent = "Auth unavailable";
+      return;
+    }
+    var session = await HWAuth.getSession();
+    if (session && session.email) {
+      statusEl.textContent = "Logged in as " + session.email;
+      authLink.textContent = "Manage Account";
+      authLink.href = "auth.html";
+    } else {
+      statusEl.textContent = "Not logged in";
+      authLink.textContent = "Create ID / Login";
+      authLink.href = "auth.html";
     }
   });
-
-  // Handle login button click
-  document.getElementById('login-button').addEventListener('click', function() {
-    var username = document.getElementById('username').value.trim();
-    if (username) {
-      localStorage.setItem('username', username);
-      document.getElementById('login-status').textContent = 'Logged in as ' + username;
-      // Set initial points if not already saved
-      if (!localStorage.getItem(username + '_points')) {
-        localStorage.setItem(username + '_points', document.getElementById('cool-points').textContent || '0');
-      } else {
-        // Show saved points
-        document.getElementById('cool-points').textContent = localStorage.getItem(username + '_points');
-      }
-    }
-  });
-
-  // Function to update points and save to localStorage
-  function updatePoints(newPoints) {
-    var username = localStorage.getItem('username');
-    if (username) {
-      localStorage.setItem(username + '_points', newPoints);
-    }
-  }
-
-  // Example: update points when clicking the "Run Vault Scan" button
-  var scanButton = document.querySelector('.level-card a.btn.btn-primary');
-  if (scanButton) {
-    scanButton.addEventListener('click', function() {
-      // Example logic: add 10 points when running the vault scan
-      var currentPoints = parseInt(document.getElementById('cool-points').textContent) || 0;
-      var newPoints = currentPoints + 10;
-      document.getElementById('cool-points').textContent = newPoints;
-      updatePoints(newPoints);
-    });
-  }
-  </script>
+</script>
+<script src="auth-client.js"></script>
 </body>
 </html>

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HYPHSWORLD | Create ID</title>
+  <link rel="stylesheet" href="auth.css" />
+</head>
+<body>
+  <main class="auth-shell">
+    <section class="card">
+      <h1>Create ID</h1>
+      <p class="sub">Real account entry point (hybrid-ready)</p>
+
+      <div id="message" class="message" role="status" aria-live="polite"></div>
+
+      <div class="grid">
+        <form id="signupForm" class="panel">
+          <h2>Sign Up</h2>
+          <label>Email <input id="signupEmail" type="email" required /></label>
+          <label>Password <input id="signupPassword" type="password" minlength="6" required /></label>
+          <button type="submit">Create ID</button>
+        </form>
+
+        <form id="signinForm" class="panel">
+          <h2>Sign In</h2>
+          <label>Email <input id="signinEmail" type="email" required /></label>
+          <label>Password <input id="signinPassword" type="password" required /></label>
+          <button type="submit">Login</button>
+        </form>
+      </div>
+
+      <div class="actions">
+        <a href="index.html">Back Home</a>
+        <button id="walletBtn" type="button" disabled title="Wallet linking comes after backend setup">Link Wallet (Soon)</button>
+      </div>
+    </section>
+  </main>
+  <script src="auth-client.js"></script>
+  <script src="auth.js"></script>
+</body>
+</html>
