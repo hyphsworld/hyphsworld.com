@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Casino | HYPHSWORLD</title>
+  <meta name="description" content="HYPHSWORLD hidden casino floor with live blackjack." />
+  <link rel="stylesheet" href="vault-floors.css" />
+</head>
+<body>
+  <main class="vault-shell">
+    <header class="topbar">
+      <a class="brand-lockup" href="vault.html">
+        <small>AMS WEST PRESENTS</small>
+        <strong>HYPHSWORLD</strong>
+      </a>
+      <nav class="nav-pills">
+        <a class="nav-pill" href="vault.html">Vault Gate</a>
+        <a class="nav-pill" href="floor1.html">Level 1</a>
+        <a class="nav-pill" href="floor2.html">Level 2</a>
+      </nav>
+    </header>
+
+    <section class="casino-grid">
+      <aside class="casino-panel">
+        <div class="scanline"></div>
+        <div class="floor-tag-row">
+          <span class="tag green">CASINO LIVE</span>
+          <span class="tag red">BLACKJACK OPEN</span>
+          <span class="tag cyan">NO BLANK PAGE</span>
+        </div>
+
+        <div class="casino-title">
+          <h1>HIDDEN<br>CASINO</h1>
+          <p>Duck & Buck got the table open. Fun brand energy, live chips, blackjack, and Cool Points.</p>
+        </div>
+
+        <div class="chips" aria-label="Chip rack">
+          <button class="chip" data-bet="5">$5</button>
+          <button class="chip" data-bet="10">$10</button>
+          <button class="chip" data-bet="25">$25</button>
+          <button class="chip" data-bet="50">$50</button>
+        </div>
+
+        <div class="casino-stats">
+          <div class="stat"><small>BALANCE</small><strong id="balance">500</strong></div>
+          <div class="stat"><small>BET</small><strong id="bet">25</strong></div>
+          <div class="stat"><small>STREAK</small><strong id="streak">0</strong></div>
+        </div>
+
+        <div class="alive-banner">
+          BuckTheBodyguard: “Keep it fun. Keep it moving. Don’t let the floor go dry.”
+        </div>
+      </aside>
+
+      <section class="game-panel">
+        <div class="panel-head">
+          <div>
+            <h3>Blackjack Table</h3>
+            <p>Beat the dealer without going over 21.</p>
+          </div>
+          <span class="tag yellow">COOL POINTS</span>
+        </div>
+
+        <div class="blackjack-table">
+          <div class="hand-zone">
+            <h3>Dealer <span class="score-pill">Score: <span id="dealerScore">0</span></span></h3>
+            <div class="cards" id="dealerCards"></div>
+          </div>
+
+          <div class="hand-zone">
+            <h3>You <span class="score-pill">Score: <span id="playerScore">0</span></span></h3>
+            <div class="cards" id="playerCards"></div>
+          </div>
+
+          <div class="game-message" id="message">
+            Tap Deal. Duck Sauce is watching the table way too close.
+          </div>
+
+          <div class="game-controls">
+            <button class="primary" id="dealBtn">Deal</button>
+            <button id="hitBtn" disabled>Hit</button>
+            <button id="standBtn" disabled>Stand</button>
+            <button id="resetBtn">Reset Points</button>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script src="casino.js"></script>
+</body>
+</html>
