@@ -3,71 +3,70 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>Full Player | HYPHSWORLD</title>
-  <meta name="description" content="HYPHSWORLD Full Player with official 6-song rotation." />
-
+  <meta name="description" content="HYPHSWORLD full music player by Hyph Life and AMS WEST." />
+  <meta name="theme-color" content="#00ff66" />
   <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="app-player.css" />
+  <link rel="stylesheet" href="homepage-upgrades.css" />
 </head>
-
-<body class="full-player-page">
-  <div class="player-bg-grid" aria-hidden="true"></div>
-
-  <header class="player-header">
-    <a class="player-brand" href="index.html" aria-label="Back to HYPHSWORLD homepage">
-      <span>AMS WEST PRESENTS</span>
-      <strong>HYPHSWORLD</strong>
-    </a>
-
-    <nav class="player-nav" aria-label="Main navigation">
-      <a href="index.html">Home</a>
-      <a href="vault.html">Vault</a>
-      <a href="level-1.html">Level 1</a>
-      <a href="level-2.html">Level 2</a>
-      <a href="app-player.html" aria-current="page">Full Player</a>
-      <a href="merch.html">Merch</a>
+<body>
+  <header class="site-header">
+    <a class="brand-lockup" href="index.html"><span>AMS WEST PRESENTS</span><strong>HYPHSWORLD</strong></a>
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="index.html#music">Music</a>
+      <a href="index.html#spotlight">Spotlight</a>
+      <a href="login.html">Vault</a>
+      <a href="quarantine-mixtape.html">Level 1</a>
+      <a href="shop.html">Merch</a>
     </nav>
   </header>
 
-  <main class="player-main">
-    <section class="player-hero">
-      <p class="eyebrow">OFFICIAL FULL PLAYER</p>
-      <h1>Full Player</h1>
-      <p class="lead">
-        Official 6-song rotation locked from the floor map: Youngan Remix, Time, On God, Bout That, KIKI, and 25/8.
-      </p>
-    </section>
+  <main class="section-pad">
+    <section class="phone-shell section-card">
+      <div class="section-title">
+        <p class="eyebrow">Full Player</p>
+        <h2>HYPHSWORLD Radio</h2>
+        <p>Clean player lane. All homepage records live here too.</p>
+      </div>
 
-    <section class="player-console">
-      <article class="now-card">
-        <span id="playerArtText" class="track-chip">YR</span>
-        <h2 id="playerTitle">Youngan Remix</h2>
-        <p id="playerArtist">Hyph Life • Full Player</p>
-        <audio id="mainAudio" preload="metadata"></audio>
-
-        <div class="progress-wrap">
-          <span id="playerCurrent">0:00</span>
-          <input id="playerProgress" type="range" min="0" max="100" value="0" aria-label="Player progress" />
-          <span id="playerDuration">0:00</span>
+      <div class="full-player-grid">
+        <div class="now-playing-card">
+          <span id="active-track-chip" class="track-chip">HAM</span>
+          <h3 id="track-title">HAM</h3>
+          <p id="track-meta">Hyph Life — prod by 1ManBand</p>
+          <audio id="hyph-audio" preload="metadata"></audio>
         </div>
-
-        <div class="big-controls">
-          <button id="prevTrack" type="button">Prev</button>
-          <button id="playTrack" type="button">▶</button>
-          <button id="nextTrack" type="button">Next</button>
+        <div class="points-box">
+          <span>Cool Points</span>
+          <strong id="cool-points">0</strong>
+          <p class="status-line">Session-only. Starts clean every load.</p>
         </div>
+      </div>
 
-        <p id="playerStatus" class="status-line">Ready</p>
-        <p id="playerFile" class="file-line">assets/audio/youngan-remix.mp3</p>
-      </article>
+      <div class="progress-wrap" aria-label="Track progress">
+        <span id="current-time">0:00</span>
+        <input id="track-progress" type="range" min="0" max="100" value="0" aria-label="Audio progress" />
+        <span id="duration-time">0:00</span>
+      </div>
 
-      <article class="list-card">
-        <p class="eyebrow">TRACK LIST</p>
-        <div id="trackList" class="track-list"></div>
-      </article>
+      <p id="player-status" class="status-line">Pick a track.</p>
+
+      <div class="button-row player-controls">
+        <button class="btn btn-primary" type="button" data-player-action="play">Play</button>
+        <button class="btn btn-soft" type="button" data-player-action="pause">Pause</button>
+        <button class="btn btn-hot" type="button" data-track-id="ham">HAM</button>
+        <button class="btn btn-neon" type="button" data-track-id="kiki">KIKI</button>
+        <button class="btn btn-ice" type="button" data-track-id="ongod">ON GOD</button>
+        <button class="btn btn-primary" type="button" data-track-id="time">TIME</button>
+        <button class="btn btn-hot" type="button" data-track-id="tez258">25/8</button>
+      </div>
     </section>
   </main>
+
+  <footer class="site-footer">
+    <span>© <span id="year"></span> AMS WEST LLC</span>
+    <span>Full Player</span>
+  </footer>
 
   <script src="index-player.js"></script>
 </body>

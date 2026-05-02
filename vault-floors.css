@@ -1,0 +1,334 @@
+/* HYPHSWORLD / AMS WEST — Vault Floors + Casino Shared Style */
+
+:root{
+  --black:#050505;
+  --green:#39ff14;
+  --red:#ff1744;
+  --yellow:#ffe600;
+  --cyan:#00e5ff;
+  --pink:#ff2bd6;
+  --purple:#7c4dff;
+  --white:#fff;
+  --smoke:rgba(255,255,255,.08);
+  --glass:rgba(8,8,8,.72);
+  --line:rgba(255,255,255,.18);
+  --shadow:0 25px 80px rgba(0,0,0,.55);
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--black);color:var(--white);font-family:Arial Black, Impact, system-ui, sans-serif}
+body{
+  overflow-x:hidden;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(57,255,20,.18), transparent 28%),
+    radial-gradient(circle at 85% 18%, rgba(255,23,68,.22), transparent 30%),
+    radial-gradient(circle at 45% 90%, rgba(0,229,255,.18), transparent 36%),
+    linear-gradient(135deg, #040404 0%, #101010 42%, #070707 100%);
+}
+
+a{color:inherit;text-decoration:none}
+button{font:inherit}
+
+.vault-shell{
+  min-height:100vh;
+  position:relative;
+  padding:24px;
+  isolation:isolate;
+}
+
+.vault-shell:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(255,255,255,.035) 1px, transparent 1px);
+  background-size:42px 42px;
+  mask-image:linear-gradient(to bottom, rgba(0,0,0,.8), transparent 88%);
+  pointer-events:none;
+  z-index:-2;
+}
+
+.vault-shell:after{
+  content:"";
+  position:fixed;
+  inset:-20%;
+  background:conic-gradient(from 180deg, transparent, rgba(57,255,20,.13), transparent, rgba(255,23,68,.11), transparent);
+  animation:brandSpin 16s linear infinite;
+  z-index:-3;
+  pointer-events:none;
+}
+
+@keyframes brandSpin{to{transform:rotate(360deg)}}
+
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  margin:0 auto 22px;
+  max-width:1180px;
+}
+
+.brand-lockup{
+  display:flex;
+  flex-direction:column;
+  line-height:1;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.brand-lockup small{color:var(--green);font-size:12px}
+.brand-lockup strong{font-size:clamp(24px,4vw,54px);text-shadow:3px 3px 0 var(--red), -2px -2px 0 var(--cyan)}
+
+.nav-pills{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end}
+.nav-pill,.brand-btn{
+  border:2px solid var(--line);
+  padding:11px 14px;
+  border-radius:999px;
+  background:rgba(255,255,255,.08);
+  backdrop-filter:blur(10px);
+  box-shadow:0 10px 25px rgba(0,0,0,.28);
+  transition:.2s transform,.2s border-color,.2s background;
+}
+.nav-pill:hover,.brand-btn:hover{transform:translateY(-2px);border-color:var(--green);background:rgba(57,255,20,.14)}
+
+.floor-grid{
+  max-width:1180px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:1.03fr .97fr;
+  gap:22px;
+  align-items:stretch;
+}
+
+.floor-hero,.track-panel,.casino-panel,.game-panel{
+  border:2px solid var(--line);
+  border-radius:28px;
+  background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  position:relative;
+}
+
+.floor-hero{min-height:600px;display:flex;flex-direction:column;justify-content:space-between;padding:28px}
+
+.floor-hero .scanline,.casino-panel .scanline{
+  position:absolute;
+  left:0;right:0;top:-30%;
+  height:22%;
+  background:linear-gradient(to bottom, transparent, rgba(57,255,20,.35), transparent);
+  animation:scanDrop 3.2s ease-in-out infinite;
+  pointer-events:none;
+  mix-blend-mode:screen;
+}
+
+@keyframes scanDrop{
+  0%{transform:translateY(-30vh);opacity:.2}
+  45%{opacity:.9}
+  100%{transform:translateY(105vh);opacity:.1}
+}
+
+.floor-tag-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;z-index:2}
+.tag{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:9px 12px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.2);
+  background:rgba(0,0,0,.42);
+  font-size:12px;
+  letter-spacing:.08em;
+}
+.tag.green{color:var(--green);box-shadow:0 0 22px rgba(57,255,20,.22)}
+.tag.red{color:var(--red)}
+.tag.cyan{color:var(--cyan)}
+.tag.yellow{color:var(--yellow)}
+
+.floor-title{z-index:2;margin-top:auto}
+.floor-title h1{
+  font-size:clamp(52px,9vw,116px);
+  line-height:.82;
+  margin:0 0 10px;
+  text-transform:uppercase;
+  letter-spacing:-.06em;
+}
+.floor-title h2{
+  margin:0;
+  font-size:clamp(28px,5vw,64px);
+  color:var(--green);
+  text-shadow:3px 3px 0 var(--red);
+}
+.floor-title p{
+  font-family:system-ui,sans-serif;
+  font-weight:800;
+  font-size:18px;
+  color:rgba(255,255,255,.8);
+  max-width:620px;
+}
+
+.floor-actions{display:flex;flex-wrap:wrap;gap:12px;z-index:2}
+.brand-btn{
+  cursor:pointer;
+  color:var(--white);
+  background:linear-gradient(135deg, rgba(57,255,20,.28), rgba(255,23,68,.22));
+}
+.brand-btn.hot{background:linear-gradient(135deg, var(--red), var(--pink));border-color:rgba(255,255,255,.45)}
+.brand-btn.fun{background:linear-gradient(135deg, var(--green), var(--cyan));color:#020202}
+.brand-btn.gold{background:linear-gradient(135deg, var(--yellow), #ff7a00);color:#050505}
+
+.track-panel{padding:20px;min-height:600px}
+.panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:16px}
+.panel-head h3{margin:0;font-size:28px;text-transform:uppercase}
+.panel-head p{margin:5px 0 0;color:rgba(255,255,255,.7);font-family:system-ui,sans-serif;font-weight:700}
+
+.now-playing{
+  padding:14px;
+  border-radius:20px;
+  border:1px solid var(--line);
+  background:rgba(0,0,0,.35);
+  margin-bottom:16px;
+}
+.now-playing small{color:var(--green)}
+.now-playing strong{display:block;font-size:20px;margin-top:4px}
+audio{width:100%;margin-top:10px}
+
+.track-list{display:grid;gap:12px}
+.track-card{
+  width:100%;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.07);
+  color:var(--white);
+  border-radius:20px;
+  padding:14px;
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:12px;
+  align-items:center;
+  text-align:left;
+  cursor:pointer;
+  transition:.2s transform,.2s background,.2s border-color;
+}
+.track-card:hover{transform:translateX(4px);border-color:var(--green);background:rgba(57,255,20,.11)}
+.track-num{
+  width:42px;height:42px;border-radius:50%;
+  display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--green),var(--cyan));
+  color:#030303;
+}
+.track-meta strong{display:block;font-size:17px}
+.track-meta span{font-family:system-ui,sans-serif;font-weight:800;color:rgba(255,255,255,.72);font-size:13px}
+.track-play{color:var(--yellow);font-size:22px}
+
+.alive-banner{
+  max-width:1180px;
+  margin:18px auto 0;
+  border-radius:22px;
+  padding:14px 16px;
+  border:1px solid var(--line);
+  background:rgba(0,0,0,.42);
+  color:rgba(255,255,255,.82);
+  font-family:system-ui,sans-serif;
+  font-weight:800;
+}
+
+/* Casino */
+.casino-grid{
+  max-width:1180px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:.92fr 1.08fr;
+  gap:22px;
+}
+
+.casino-panel{padding:24px;min-height:640px}
+.casino-title h1{
+  margin:0;
+  font-size:clamp(46px,8vw,104px);
+  line-height:.86;
+  text-shadow:4px 4px 0 var(--red), -2px -2px 0 var(--green);
+}
+.casino-title p{font-family:system-ui,sans-serif;font-weight:900;color:rgba(255,255,255,.8);font-size:18px}
+
+.chips{display:flex;flex-wrap:wrap;gap:12px;margin:22px 0}
+.chip{
+  width:74px;height:74px;border-radius:50%;
+  display:grid;place-items:center;
+  border:7px dashed rgba(255,255,255,.65);
+  background:radial-gradient(circle, rgba(255,255,255,.2), rgba(0,0,0,.35));
+  box-shadow:0 12px 28px rgba(0,0,0,.4);
+  cursor:pointer;
+  color:#fff;
+}
+.chip:nth-child(1){outline:4px solid var(--green)}
+.chip:nth-child(2){outline:4px solid var(--red)}
+.chip:nth-child(3){outline:4px solid var(--cyan)}
+.chip:nth-child(4){outline:4px solid var(--yellow);color:var(--yellow)}
+
+.casino-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:24px}
+.stat{
+  padding:14px;border:1px solid var(--line);border-radius:18px;background:rgba(0,0,0,.35)
+}
+.stat small{font-family:system-ui,sans-serif;color:rgba(255,255,255,.65);font-weight:900}
+.stat strong{display:block;font-size:26px;color:var(--green)}
+
+.game-panel{padding:20px;min-height:640px}
+.blackjack-table{
+  min-height:420px;
+  border-radius:28px;
+  border:3px solid rgba(57,255,20,.35);
+  background:
+    radial-gradient(circle at 50% 10%, rgba(57,255,20,.22), transparent 38%),
+    linear-gradient(160deg, rgba(0,100,30,.9), rgba(0,30,16,.95));
+  padding:20px;
+  box-shadow:inset 0 0 80px rgba(0,0,0,.55);
+}
+
+.hand-zone{margin-bottom:18px}
+.hand-zone h3{margin:0 0 10px;font-size:22px;text-transform:uppercase}
+.cards{display:flex;gap:10px;min-height:120px;flex-wrap:wrap}
+.card{
+  width:78px;height:112px;border-radius:12px;background:#fff;color:#050505;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  box-shadow:0 12px 25px rgba(0,0,0,.38);
+  font-size:22px;
+  transform:rotate(var(--rot,0deg));
+}
+.card.red-card{color:#df0036}
+.card.back{
+  color:transparent;
+  background:
+    linear-gradient(45deg, rgba(255,255,255,.2) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(255,255,255,.2) 25%, transparent 25%),
+    linear-gradient(135deg, var(--red), var(--green));
+  background-size:18px 18px,18px 18px,100% 100%;
+}
+.score-pill{display:inline-flex;align-items:center;gap:8px;padding:7px 10px;border-radius:999px;background:rgba(0,0,0,.38);border:1px solid var(--line);font-family:system-ui,sans-serif;font-weight:900;color:var(--yellow)}
+.game-message{
+  margin:16px 0;
+  border-radius:18px;
+  padding:14px;
+  background:rgba(0,0,0,.42);
+  border:1px solid rgba(255,255,255,.16);
+  font-family:system-ui,sans-serif;
+  font-weight:900;
+}
+.game-controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.game-controls button{
+  cursor:pointer;
+  border:2px solid rgba(255,255,255,.22);
+  color:#fff;
+  padding:12px 16px;
+  border-radius:999px;
+  background:linear-gradient(135deg, rgba(255,23,68,.8), rgba(124,77,255,.8));
+}
+.game-controls button.primary{background:linear-gradient(135deg, var(--green), var(--cyan));color:#050505}
+.game-controls button:disabled{opacity:.4;cursor:not-allowed}
+
+@media (max-width:860px){
+  .topbar,.floor-grid,.casino-grid{display:block}
+  .nav-pills{justify-content:flex-start;margin-top:14px}
+  .track-panel,.casino-panel,.game-panel{margin-top:18px;min-height:auto}
+  .floor-hero{min-height:520px}
+  .casino-stats{grid-template-columns:1fr}
+}

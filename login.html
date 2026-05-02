@@ -1,101 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Login | HYPHSWORLD</title>
-<meta name="description" content="Join HYPHSWORLD. Save points, rank up, unlock levels.">
-<link rel="stylesheet" href="styles.css">
-<style>
-.login-shell{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 0}
-.login-card{width:min(520px,92vw);padding:28px}
-.form-grid{display:grid;gap:14px;margin-top:18px}
-.field{display:grid;gap:8px}
-.field label{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#f1d28a}
-.field input{min-height:54px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:#111;color:#fff;padding:0 14px}
-.login-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}
-.small-copy{color:#bdbdbd;font-size:14px;line-height:1.6}
-.status{margin-top:16px;color:#f1d28a;font-weight:900}
-</style>
-</head>
-<body>
-<header class="site-header">
-<div class="wrap nav">
-<a href="index.html" class="brand">
-<div><div class="brand-top">AMS WEST PRESENTS</div><div class="brand-main">LOGIN</div></div>
-</a>
-<nav class="nav-links">
-<a href="index.html">Home</a>
-<a href="vault-gate.html">Vault</a>
-<a href="app-player.html">Player</a>
-</nav>
-</div>
-</header>
-
-<main class="login-shell">
-<section class="feature-card login-card">
-<p class="eyebrow">HYPHSWORLD ID</p>
-<h1><span class="headline-top">JOIN</span><span class="headline-bottom">THE WORLD</span></h1>
-<p class="small-copy">Save Cool Points, keep your rank, unlock future rewards, and move faster through the site.</p>
-
-<div class="form-grid">
-<div class="field">
-<label for="username">Username</label>
-<input id="username" type="text" placeholder="Enter username">
-</div>
-
-<div class="field">
-<label for="email">Email</label>
-<input id="email" type="email" placeholder="Enter email">
-</div>
-
-<div class="field">
-<label for="password">Password</label>
-<input id="password" type="password" placeholder="Enter password">
-</div>
-</div>
-
-<div class="login-row">
-<button id="joinBtn" class="btn btn-gold" type="button">JOIN NOW</button>
-<button id="loginBtn" class="btn btn-dark" type="button">LOGIN</button>
-</div>
-
-<p class="status" id="status">Ready.</p>
-</section>
-</main>
-
-<script>
-(function(){
-const $=id=>document.getElementById(id);
-const status=$("status");
-
-function saveUser(){
- const user={
-   username:$("username").value.trim(),
-   email:$("email").value.trim(),
-   password:$("password").value.trim(),
-   joined:new Date().toISOString()
- };
- if(!user.username){status.textContent="ENTER USERNAME";return;}
- localStorage.setItem("hyph_user",JSON.stringify(user));
- if(!localStorage.getItem("hyphsworld_points")){
-   localStorage.setItem("hyphsworld_points","100");
- }
- status.textContent="WELCOME "+user.username.toUpperCase();
- setTimeout(()=>location.href="index.html",900);
-}
-
-function loginUser(){
- const raw=localStorage.getItem("hyph_user");
- if(!raw){status.textContent="NO ACCOUNT FOUND";return;}
- const user=JSON.parse(raw);
- status.textContent="WELCOME BACK "+user.username.toUpperCase();
- setTimeout(()=>location.href="index.html",900);
-}
-
-$("joinBtn").onclick=saveUser;
-$("loginBtn").onclick=loginUser;
-})();
-</script>
-</body>
-</html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>HYPHSWORLD | Vault Access Terminal</title><meta name="description" content="HYPHSWORLD Vault Access Terminal with restored biometric scanner."/>
+<link rel="stylesheet" href="login.css?v=fun-scanner"/></head>
+<body><main class="login-shell"><section class="terminal-card" id="terminalCard">
+<div class="terminal-topline"><span class="signal-dot"></span><span>AMS WEST SECURE SIGNAL</span><strong id="terminalStatus">Locked</strong></div>
+<header class="login-hero"><p class="eyebrow">AMS WEST PRESENTS</p><h1>HYPHSWORLD</h1><h2>Vault Access Terminal</h2><p class="lead">Enter the access code. Run the high-tech scan. Clear the biometric rails. Transport to the Vault Floor.</p></header>
+<section class="terminal-grid"><div class="left-stack">
+<section class="character-grid"><article class="character-card duck-card"><span class="character-pill">Duck Sauce</span><div class="character-image-wrap"><img src="duck-sauce.png" alt="Duck Sauce"/></div><p>“Don’t guess too loud. The terminal got ears.”</p></article><article class="character-card buck-card"><span class="character-pill">BuckTheBodyguard</span><div class="character-image-wrap"><img src="buck-the-bodyguard.png" alt="BuckTheBodyguard"/></div><p>“Access first. Flex later.”</p></article></section>
+<form class="access-form" id="accessForm" autocomplete="off"><label for="accessCode">Secret Access Code</label><div class="code-row"><input id="accessCode" name="accessCode" type="password" placeholder="ENTER CODE" autocomplete="off" spellcheck="false" required/><button class="show-button" type="button" id="toggleCode">Show</button></div><button class="run-button" type="submit"><span>Run Body Scan</span><b>→</b></button><p class="access-message" id="accessMessage" role="status" aria-live="polite">Terminal standing by.</p></form></div>
+<section class="scanner-panel"><div class="scanner-top"><span>Biometric Scanner</span><b id="scannerMode">Standby</b></div><div class="scanner-stage" id="scanStage">
+<div class="hud-corner corner-tl"></div><div class="hud-corner corner-tr"></div><div class="hud-corner corner-bl"></div><div class="hud-corner corner-br"></div><div class="scanner-grid"></div><div class="vertical-rails"><span></span><span></span></div><div class="scanner-bars"><span></span><span></span><span></span></div><div class="body-silhouette"><div class="head"></div><div class="torso"></div><div class="arm arm-left"></div><div class="arm arm-right"></div><div class="leg leg-left"></div><div class="leg leg-right"></div></div><div class="biometric-ring ring-one"></div><div class="biometric-ring ring-two"></div><div class="scan-beam"></div><div class="smoke-burst"><span></span><span></span><span></span><span></span></div><div class="transport-rings"><span></span><span></span><span></span></div><div class="scanner-readouts"><span id="scanReadout">SCAN READY</span><span id="scanLineA">DNA: WAITING</span><span id="scanLineB">BRAND: LOCKED</span><span id="scanLineC">DUCK: TALKING</span></div></div>
+<div class="mini-console"><span>Status <b id="statusText">Locked</b></span><span>Mode <b id="modeText">Code Check</b></span><span>Destination <b>Vault Floor</b></span></div></section></section>
+<nav class="mini-nav"><a href="index.html">Back Home</a><a href="app-player.html">Full Player</a><a href="merch.html">Merch</a></nav></section></main><script src="auth-client.js" defer></script><script src="login.js?v=fun-scanner" defer></script></body></html>

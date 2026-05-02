@@ -9,10 +9,17 @@
   <meta property="og:description" content="Real music. Direct access. Duck Sauce watching. Buck at the door." />
   <meta property="og:image" content="album-art.jpg" />
   <meta name="theme-color" content="#00ff66" />
+  <!-- Referrer policy added to mitigate YouTube Error 153 -->
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="homepage-upgrades.css" />
 </head>
 <body class="home-page">
+  <!-- Simple client-side login section. Stores username in localStorage and retrieves saved points -->
+  <div id="login-section" style="background:#0f1e2b; color:#a9ff87; padding: 10px; text-align:center;">
+    <span id="login-status" style="margin-left:20px;">Checking session...</span>
+    <a href="auth.html" id="auth-link" style="margin-left:12px; color:#45ff36; font-weight:700;">Create ID / Login</a>
+  </div>
   <header class="site-header">
     <a class="brand-lockup" href="index.html" aria-label="HYPHSWORLD home">
       <span>AMS WEST PRESENTS</span>
@@ -25,7 +32,7 @@
       <a href="app-player.html">Full Player</a>
       <a href="shop.html">Merch</a>
       <a href="#connect">Connect</a>
-      <a class="nav-cta" href="vault.html">Create ID</a>
+      <a class="nav-cta" href="auth.html">Create ID</a>
     </nav>
   </header>
 
@@ -39,7 +46,7 @@
 
     <section class="hero-shell" id="top">
       <div class="hero-video-card">
-        <video id="hero-video" class="hero-video" autoplay muted loop playsinline preload="auto" poster="album-art.jpg" data-hero-sources="hyphsworld-hero.mp4|delta-work.mp4|bank-bank.mp4|01-show-preview.mp4|01-show-teaser.mp4|videos/hyphsworld-hero.mp4|video/hyphsworld-hero.mp4|assets/hyphsworld-hero.mp4"></video>
+        <video id="hero-video" class="hero-video" autoplay muted loop playsinline preload="auto" poster="album-art.jpg" data-hero-sources="hyphsworld-hero.mp4"></video>
         <div class="hero-video-tint"></div>
         <div class="hero-scan-line"></div>
         <div class="hero-content">
@@ -180,7 +187,10 @@
           <p>Trailers, interviews, motion covers, and show drops can rotate here.</p>
         </div>
         <div class="video-slot">
-          <video src="01-show-teaser.mp4" controls playsinline poster="album-art.jpg"></video>
+          <iframe src="https://www.youtube.com/embed/4jvPUvhXnBA?si=xcAaqs7WezNUJeS7"
+                  referrerpolicy="strict-origin-when-cross-origin"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen></iframe>
         </div>
       </div>
     </section>
@@ -207,5 +217,28 @@
   </footer>
 
   <script src="index-player.js"></script>
+
+  <!-- Login and points-saving script -->
+  <script>
+  document.addEventListener("DOMContentLoaded", async function () {
+    var statusEl = document.getElementById("login-status");
+    var authLink = document.getElementById("auth-link");
+    if (!window.HWAuth) {
+      statusEl.textContent = "Auth unavailable";
+      return;
+    }
+    var session = await HWAuth.getSession();
+    if (session && session.email) {
+      statusEl.textContent = "Logged in as " + session.email;
+      authLink.textContent = "Manage Account";
+      authLink.href = "auth.html";
+    } else {
+      statusEl.textContent = "Not logged in";
+      authLink.textContent = "Create ID / Login";
+      authLink.href = "auth.html";
+    }
+  });
+</script>
+<script src="auth-client.js"></script>
 </body>
 </html>

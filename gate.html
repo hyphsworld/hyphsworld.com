@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vault Access Gate</title>
+  <link rel="stylesheet" href="gate.css">
+</head>
+<body>
+
+<div class="gate-container">
+
+  <!-- HUD Overlay -->
+  <div class="hud"></div>
+
+  <!-- Scan Pad -->
+  <div class="scan-pad" id="scanPad">
+    <div class="scan-bar"></div>
+    <div class="scan-text">TAP TO SCAN</div>
+  </div>
+
+  <!-- Status -->
+  <div class="status" id="statusText">AWAITING INPUT</div>
+
+</div>
+
+<audio id="scanSound" src="scan.mp3"></audio>
+<audio id="grantedSound" src="granted.mp3"></audio>
+<audio id="transportSound" src="transport.mp3"></audio>
+
+<script src="gate.js"></script>
+
+</body>
+</html>

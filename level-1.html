@@ -5,147 +5,148 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <title>Level 1 | Quarantine Mixtape | HYPHSWORLD</title>
-  <meta name="description" content="Level 1 | Quarantine Mixtape | HYPHSWORLD. Official Vault floor player by Hyph Life and AMS WEST." />
+  <meta name="description" content="HYPHSWORLD Vault Level 1: Quarantine Mixtape, Hidden Casino access, and saved Cool Points." />
 
   <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="level-1.css" />
+
+  <style>
+    :root{
+      --bg:#070707; --ink:#fff; --muted:#c7d1cf; --green:#39ff7a; --red:#ff275d;
+      --yellow:#ffe45c; --cyan:#1ffcff; --purple:#b84dff; --line:rgba(255,255,255,.16);
+      --shadow:0 0 28px rgba(57,255,122,.18);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;color:var(--ink);font-family:Arial,Helvetica,sans-serif;background:
+      radial-gradient(circle at 12% 12%, rgba(57,255,122,.22), transparent 28%),
+      radial-gradient(circle at 88% 8%, rgba(255,39,93,.20), transparent 30%),
+      radial-gradient(circle at 50% 100%, rgba(184,77,255,.20), transparent 35%),var(--bg);overflow-x:hidden}
+    a{color:inherit;text-decoration:none}.wrap{width:min(1180px,calc(100% - 28px));margin:0 auto}
+    .topbar{position:sticky;top:0;z-index:20;backdrop-filter:blur(18px);background:rgba(0,0,0,.72);border-bottom:1px solid var(--line)}
+    .nav{min-height:74px;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;padding:14px 0}
+    .brand{display:flex;flex-direction:column;line-height:1;font-weight:1000;letter-spacing:.04em;text-transform:uppercase}
+    .brand small{font-size:.7rem;color:var(--green)}.brand span{font-size:1.35rem}
+    .links{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .pill,button.pill{border:1px solid var(--line);border-radius:999px;padding:10px 14px;background:linear-gradient(135deg,rgba(57,255,122,.16),rgba(255,39,93,.14));color:#fff;font-weight:900;cursor:pointer;transition:.2s ease}
+    .pill:hover,button.pill:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+    .hero{padding:42px 0 24px;display:grid;grid-template-columns:1.15fr .85fr;gap:22px;align-items:stretch}
+    .card{border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.03));border-radius:28px;box-shadow:var(--shadow);overflow:hidden}
+    .hero-main{padding:30px;position:relative}
+    .kicker{display:inline-flex;align-items:center;gap:8px;color:#071007;background:linear-gradient(90deg,var(--green),var(--yellow),var(--cyan));border-radius:999px;padding:8px 12px;font-weight:1000;text-transform:uppercase;letter-spacing:.08em;font-size:.78rem}
+    h1{margin:18px 0 10px;font-size:clamp(2.5rem,8vw,6rem);line-height:.9;letter-spacing:-.07em;text-transform:uppercase}
+    .sub{max-width:720px;color:var(--muted);font-size:1.05rem;line-height:1.55}
+    .status-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:22px}
+    .stat{padding:16px;border-radius:22px;background:rgba(0,0,0,.36);border:1px solid var(--line)}
+    .stat b{display:block;font-size:1.6rem;color:var(--green)}.stat span{color:var(--muted);font-weight:800;text-transform:uppercase;font-size:.72rem}
+    .side{padding:24px;display:flex;flex-direction:column;justify-content:space-between;gap:18px}
+    .duckbox{min-height:210px;border-radius:24px;border:1px dashed rgba(57,255,122,.55);background:linear-gradient(135deg,rgba(57,255,122,.16),rgba(255,39,93,.10)),rgba(0,0,0,.35);padding:20px;position:relative;overflow:hidden}
+    .duckbox:before{content:"DUCK";position:absolute;right:-18px;bottom:-22px;font-size:5rem;font-weight:1000;opacity:.08;transform:rotate(-8deg)}
+    .duckbox h2{margin:0 0 8px;font-size:1.45rem}.duckbox p{margin:0;color:var(--muted);line-height:1.45}
+    .section{padding:18px 0 54px}.section-title{display:flex;align-items:end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+    .section-title h2{margin:0;text-transform:uppercase;font-size:clamp(1.8rem,4vw,3.4rem);letter-spacing:-.05em}
+    .grid{display:grid;grid-template-columns:1.15fr .85fr;gap:18px}.player,.machine{padding:22px}
+    .track-card{border-radius:24px;border:1px solid var(--line);padding:18px;background:rgba(0,0,0,.35);margin-bottom:12px}
+    .track-card small{color:var(--green);font-weight:1000;text-transform:uppercase;letter-spacing:.08em}.track-card h3{margin:7px 0 4px;font-size:1.3rem}.track-card p{margin:0;color:var(--muted)}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+    .machine{background:radial-gradient(circle at top left,rgba(255,228,92,.18),transparent 35%),linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.03))}
+    .slot{min-height:130px;display:grid;place-items:center;border-radius:24px;border:2px solid rgba(255,255,255,.18);background:rgba(0,0,0,.45);margin:16px 0;font-size:2.5rem;letter-spacing:.18em;font-weight:1000;color:var(--yellow);text-shadow:0 0 14px rgba(255,228,92,.45)}
+    .note{color:var(--muted);line-height:1.5;margin:0}
+    .casino{margin-top:18px;padding:24px;display:grid;grid-template-columns:1fr auto;align-items:center;gap:16px;background:linear-gradient(120deg,rgba(57,255,122,.18),rgba(31,252,255,.10),rgba(255,39,93,.15))}
+    .casino h2{margin:0 0 6px;text-transform:uppercase}.casino p{margin:0;color:var(--muted)}
+    .toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%) translateY(120px);background:#0b0b0b;border:1px solid var(--green);color:#fff;padding:13px 16px;border-radius:999px;box-shadow:0 0 22px rgba(57,255,122,.35);z-index:50;font-weight:900;transition:.25s ease}
+    .toast.show{transform:translateX(-50%) translateY(0)}
+    @media(max-width:820px){.hero,.grid{grid-template-columns:1fr}.status-grid{grid-template-columns:1fr}.casino{grid-template-columns:1fr}.nav{align-items:flex-start}}
+  </style>
 </head>
 
-<body class="level-one-page">
-  <div class="level-bg-grid" aria-hidden="true"></div>
-
-  <header class="level-header">
-    <a class="level-brand" href="index.html" aria-label="Back to HYPHSWORLD homepage">
-      <span>AMS WEST PRESENTS</span>
-      <strong>HYPHSWORLD</strong>
-    </a>
-
-    <nav class="level-nav" aria-label="Main navigation">
-      <a href="index.html">Home</a>
-      <a href="vault.html">Vault Gate</a>
-      <a href="level-1.html" aria-current="page">Level 1</a>
-      <a href="level-2.html">Level 2</a>
-      <a href="app-player.html">Full Player</a>
-      <a href="merch.html">Merch</a>
-    </nav>
+<body data-hw-page="level-1">
+  <header class="topbar">
+    <div class="wrap nav">
+      <a class="brand" href="index.html"><small>AMS WEST PRESENTS</small><span>HYPHSWORLD</span></a>
+      <nav class="links" aria-label="Main navigation">
+        <a class="pill" href="index.html">Home</a>
+        <a class="pill" href="vault.html">Vault</a>
+        <a class="pill" href="casino.html">Casino</a>
+        <a class="pill" href="level-2.html">Level 2</a>
+        <a class="pill" href="login.html" id="hw-login-link">Create ID</a>
+      </nav>
+    </div>
   </header>
 
-  <main class="level-main">
-    <section class="arrival-hero">
-      <div class="arrival-copy">
-        <p class="eyebrow">LEVEL 1 // QUARANTINE MIXTAPE</p>
+  <main>
+    <section class="wrap hero">
+      <div class="card hero-main">
+        <span class="kicker">ACCESS GRANTED // FLOOR 01</span>
         <h1>Quarantine Mixtape</h1>
-        <p class="lead">Welcome to the first floor of the Vault. This is the official Quarantine Mixtape zone with the correct 6-track order, artwork, and live player.</p>
-
-        <div class="hero-actions">
-          <a class="primary-btn" href="#floor-player">Enter Floor</a>
-          <a class="secondary-btn" href="vault.html">Back To Gate</a>
+        <p class="sub">Level 1 is live. Run the tape, build Cool Points, and step into the Hidden Casino. Points now save on this browser, so your score follows you across Level 1, Level 2, and Casino.</p>
+        <div class="status-grid">
+          <div class="stat"><b>01</b><span>Floor</span></div>
+          <div class="stat"><b>Unlocked</b><span>Status</span></div>
+          <div class="stat"><b class="js-cool-points">0</b><span>Cool Points Saved</span></div>
+        </div>
+        <div class="actions">
+          <button class="pill" type="button" data-point-add="5" data-point-reason="Level 1 check-in">Claim Level 1 Points</button>
+          <a class="pill" href="casino.html">Enter Casino</a>
+          <a class="pill" href="level-2.html">Go Level 2</a>
         </div>
       </div>
 
-      <aside class="level-status">
-        <article>
-          <span>ACCESS</span>
-          <strong>ACTIVE</strong>
-          <p>The official floor map is now wired into this room.</p>
-        </article>
-
-        <article>
-          <span>DUCK SAUCE</span>
-          <strong>“No placeholders.”</strong>
-          <p>“This one got the real list. Let the music talk.”</p>
-        </article>
-
-        <article>
-          <span>BUCK</span>
-          <strong>SECURITY ONLINE</strong>
-          <p>Floor routing stays clean. No broken transport doors.</p>
-        </article>
+      <aside class="card side">
+        <div class="duckbox">
+          <h2>Duck & Buck</h2>
+          <p>Duck brings the chaos. Buck keeps the floor secure. Don’t let Duck borrow your points unless you like learning lessons.</p>
+        </div>
+        <div>
+          <p class="note"><strong>ID:</strong> <span id="hw-player-name">Guest</span></p>
+          <p class="note">Saved locally with your HYPHSWORLD ID. No backend needed.</p>
+        </div>
       </aside>
     </section>
 
-    <section class="mixtape-section" id="floor-player">
-      <div class="section-divider">
-        <span></span>
-        <strong>OFFICIAL PLAYER</strong>
-        <span></span>
+    <section class="wrap section">
+      <div class="section-title"><h2>Mixtape Floor</h2><span class="kicker">QUARANTINE PLAYER</span></div>
+      <div class="grid">
+        <div class="card player">
+          <div class="track-card"><small>Track 01</small><h3>Im a Beast</h3><p>Quarantine Mixtape — Ready.</p></div>
+          <div class="track-card"><small>Floor Rule</small><h3>Level 1 shows Level 2 info next</h3><p>Homepage teases Level 1. Level 1 can now properly push visitors to Level 2.</p></div>
+          <div class="actions">
+            <button class="pill" type="button" data-point-add="10" data-point-reason="Quarantine Mixtape play">Play / Earn +10</button>
+            <button class="pill" type="button" data-point-add="3" data-point-reason="Duck Sauce bonus">Duck Bonus +3</button>
+          </div>
+        </div>
+
+        <div class="card machine">
+          <span class="kicker">COOL POINTS MACHINE</span>
+          <h2>Duck Sauce Slot</h2>
+          <p class="note">Spin once, earn points, and don’t let Duck finesse you out the bonus.</p>
+          <div class="slot" id="slot-display">777</div>
+          <button class="pill" type="button" id="slot-spin">Spin For Points</button>
+          <p class="note" id="slot-note">Duck Sauce: “Pull it. I dare you.”</p>
+        </div>
       </div>
 
-      <div class="mixtape-grid">
-        <article class="cover-card">
-          <p class="card-kicker">OFFICIAL ARTWORK</p>
-          <div class="cover-frame">
-            <img id="quarantine-cover" src="quarantine-mixtape.jpg" alt="The Quarantine Mixtape artwork" />
-            <div id="coverFallback" class="cover-fallback" hidden>
-              <span>HYPH LIFE</span>
-              <strong>THE QUARANTINE MIXTAPE</strong>
-              <em>AMS WEST</em>
-            </div>
-          </div>
-        </article>
-
-        <article class="player-card">
-          <div class="now-playing-card">
-            <span id="quarantine-chip" class="track-chip">TRACK 01</span>
-            <h2 id="quarantine-title">Quarantine Mixtape</h2>
-            <p id="quarantine-meta">Pick a track below.</p>
-            <audio id="quarantine-audio" preload="metadata"></audio>
-          </div>
-
-          <div class="progress-wrap" aria-label="Track progress">
-            <span id="quarantine-current">0:00</span>
-            <input id="quarantine-progress" type="range" min="0" max="100" value="0" aria-label="Audio progress" />
-            <span id="quarantine-duration">0:00</span>
-          </div>
-
-          <div class="player-controls" aria-label="Player controls">
-            <button id="quarantine-play" type="button">Play</button>
-            <button id="quarantine-pause" type="button">Pause</button>
-            <button id="quarantine-prev" type="button">Prev</button>
-            <button id="quarantine-next" type="button">Next</button>
-          </div>
-
-          <p id="quarantine-status" class="status-line">Choose a track.</p>
-          <div id="quarantine-track-list" class="quarantine-track-list" aria-label="Quarantine Mixtape tracks"></div>
-        </article>
+      <div class="card casino">
+        <div><span class="kicker">BACK ROOM OPEN</span><h2>Hidden Casino</h2><p>The casino is open from Level 1. Bring your saved Cool Points and keep traffic moving.</p></div>
+        <a class="pill" href="casino.html">Enter Casino</a>
       </div>
-    </section>
-
-    <section class="order-section">
-      <div class="section-divider">
-        <span></span>
-        <strong>OFFICIAL ORDER LISTING</strong>
-        <span></span>
-      </div>
-
-      <ol id="official-order-list" class="official-order-list"></ol>
-    </section>
-
-    <section class="level-two-door">
-      <div>
-        <p class="eyebrow">NEXT MOVE</p>
-        <h2>Level 2: HYPHSWORLD 5</h2>
-        <p>Next door is now wired with the official HYPHSWORLD 5 tracklist.</p>
-      </div>
-      <a class="locked-btn" href="level-2.html">ENTER LEVEL 2</a>
     </section>
   </main>
 
-  <div id="access-denied" class="access-denied-overlay" aria-hidden="true">
-    <div class="access-denied-card">
-      <p class="eyebrow">BUCK SAID HOLD UP</p>
-      <h2>Scan Required</h2>
-      <p>Level 1 requires Vault transport first. Run the Gate body scan, clear the access pad, then come back through the tunnel.</p>
-      <a class="primary-btn" href="vault.html">Run Vault Scan</a>
-    </div>
-  </div>
-
-  <footer class="level-footer">
-    <span>© <span id="year"></span> AMS WEST LLC</span>
-    <span>Level 1 — The Quarantine Mixtape</span>
-  </footer>
-
-  <script src="quarantine-tracks.js"></script>
-  <script src="quarantine-player.js"></script>
+  <div class="toast" id="hw-toast" role="status" aria-live="polite"></div>
+  <script src="cool-points.js"></script>
+  <script>
+    const spinButton = document.getElementById('slot-spin');
+    const slotDisplay = document.getElementById('slot-display');
+    const slotNote = document.getElementById('slot-note');
+    if (spinButton && window.HWPoints) {
+      spinButton.addEventListener('click', () => {
+        const rolls = ['777','01$','AMS','BUC','DUK','RCH','888'];
+        const result = rolls[Math.floor(Math.random() * rolls.length)];
+        const bonus = result === '777' ? 25 : result === '01$' ? 15 : 7;
+        slotDisplay.textContent = result;
+        window.HWPoints.add(bonus, `Duck Sauce Slot ${result}`);
+        slotNote.textContent = result === '777' ? 'Buck: “That one actually hit. Rare Duck W.”' : 'Duck Sauce: “See? I told you I knew the machine.”';
+      });
+    }
+  </script>
 </body>
 </html>

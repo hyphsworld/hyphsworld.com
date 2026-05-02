@@ -1,0 +1,377 @@
+/* HYPHSWORLD VAULT ACCESS FIX
+   Add this file AFTER styles.css on vault.html only.
+   Does not replace styles.css and does not touch homepage styles.
+*/
+
+:root {
+  --hw-black: #050505;
+  --hw-white: #ffffff;
+  --hw-muted: #c9ced8;
+  --hw-green: #45ff36;
+  --hw-green-2: #00ff88;
+  --hw-red: #ff2458;
+  --hw-yellow: #ffe45c;
+  --hw-pink: #ff4fd8;
+  --hw-blue: #42ccff;
+  --hw-purple: #8d5cff;
+  --hw-rainbow: linear-gradient(90deg, var(--hw-green), var(--hw-yellow), var(--hw-pink), var(--hw-blue), var(--hw-green));
+}
+
+.vault-main {
+  width: min(1180px, calc(100% - 24px));
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: clamp(18px, 4vw, 44px) 0 max(92px, env(safe-area-inset-bottom));
+}
+
+.vault-main > header,
+.vault-main .vault-header,
+.vault-main .gate-header {
+  position: relative;
+  margin: 0 0 18px;
+  padding: 16px;
+  border-radius: 24px;
+  border: 1px solid rgba(69, 255, 54, 0.22);
+  background: rgba(0, 0, 0, 0.62);
+  box-shadow: 0 0 26px rgba(69, 255, 54, 0.12);
+}
+
+.vault-main nav,
+.vault-main .main-nav {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.vault-main nav a,
+.vault-main .main-nav a {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 12px;
+  border-radius: 999px;
+  color: #050505;
+  background: var(--hw-rainbow);
+  border: 0;
+  font-weight: 1000;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.72);
+}
+
+.vault-main .vault-gate-card,
+.vault-main .access-card,
+.vault-main .gate-card,
+.vault-main .terminal-card,
+.vault-main > section,
+.vault-main > article {
+  position: relative;
+  overflow: hidden;
+  margin: 18px 0;
+  padding: clamp(20px, 4vw, 42px);
+  border-radius: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  background:
+    radial-gradient(circle at 13% 12%, rgba(69,255,54,0.19), transparent 32%),
+    radial-gradient(circle at 88% 22%, rgba(255,36,88,0.13), transparent 30%),
+    linear-gradient(145deg, rgba(0,0,0,0.9), rgba(9,14,12,0.86));
+  box-shadow:
+    0 0 34px rgba(69, 255, 54, 0.18),
+    0 18px 60px rgba(0, 0, 0, 0.42);
+}
+
+.vault-main .eyebrow,
+.vault-main small,
+.vault-main .kicker {
+  display: inline-flex;
+  width: fit-content;
+  margin: 0 0 10px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  color: var(--hw-green);
+  background: rgba(69, 255, 54, 0.10);
+  border: 1px solid rgba(69, 255, 54, 0.22);
+  font-size: 0.74rem;
+  font-weight: 1000;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.vault-main h1 {
+  margin: 10px 0 14px;
+  max-width: 980px;
+  font-size: clamp(2.8rem, 11vw, 7rem);
+  line-height: 0.82;
+  letter-spacing: -0.08em;
+  text-transform: uppercase;
+  background: var(--hw-rainbow);
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 9px 0 rgba(0,0,0,0.86));
+  animation: hwVaultRainbow 7s linear infinite;
+}
+
+.vault-main h2 {
+  margin: 12px 0 10px;
+  font-size: clamp(1.9rem, 7vw, 4.4rem);
+  line-height: 0.9;
+  letter-spacing: -0.06em;
+  text-transform: uppercase;
+}
+
+.vault-main h3 {
+  margin: 10px 0 8px;
+  font-size: clamp(1.45rem, 5vw, 3rem);
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+}
+
+.vault-main p {
+  max-width: 850px;
+  color: var(--hw-white);
+  font-size: clamp(1rem, 2.4vw, 1.18rem);
+  line-height: 1.48;
+}
+
+.vault-main .lead,
+.vault-main .subcopy,
+.vault-main .status-line {
+  color: var(--hw-muted);
+}
+
+.vault-main .mascot-row,
+.vault-main .guide-grid,
+.vault-main .character-grid,
+.vault-main .vault-gate-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.75fr);
+  gap: 18px;
+  align-items: stretch;
+}
+
+.vault-main .mascot,
+.vault-main .duck-card,
+.vault-main .buck-card,
+.vault-main .guard-card,
+.vault-main .control-console,
+.vault-main .access-pad,
+.vault-main .level-card {
+  border-radius: 26px;
+  padding: 18px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: inset 0 0 24px rgba(69,255,54,0.04);
+}
+
+.vault-main .duck-card,
+.vault-main .duck-copy {
+  border-color: rgba(255, 228, 92, 0.24);
+}
+
+.vault-main .buck-card,
+.vault-main .guard-card {
+  border-color: rgba(69, 255, 54, 0.26);
+}
+
+.vault-main .access-pad,
+.vault-main .control-console,
+.vault-main .console,
+.vault-main .status-panel {
+  display: grid;
+  gap: 8px;
+  margin: 18px 0;
+}
+
+.vault-main .access-pad strong,
+.vault-main .control-console strong,
+.vault-main .console strong,
+.vault-main .status-panel strong,
+.vault-main b {
+  color: var(--hw-green);
+  text-shadow: 0 0 16px rgba(69,255,54,0.35);
+}
+
+.vault-main form,
+.vault-main .vault-form {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.vault-main label {
+  color: var(--hw-green);
+  font-weight: 1000;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.82rem;
+}
+
+.vault-main input {
+  width: 100%;
+  min-height: 56px;
+  border-radius: 999px;
+  border: 2px solid rgba(69,255,54,0.55);
+  background: rgba(0,0,0,0.84);
+  color: #fff;
+  padding: 0 18px;
+  outline: none;
+  font-weight: 1000;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+}
+
+.vault-main input:focus {
+  border-color: var(--hw-yellow);
+  box-shadow: 0 0 0 4px rgba(69,255,54,0.13);
+}
+
+.vault-main button,
+.vault-main .btn,
+.vault-main input[type="submit"] {
+  min-height: 50px;
+  border: 0;
+  border-radius: 999px;
+  padding: 12px 16px;
+  color: #050505;
+  background: var(--hw-rainbow);
+  background-size: 220% 100%;
+  font-weight: 1000;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  box-shadow: 0 9px 0 rgba(0,0,0,0.74), 0 0 24px rgba(69,255,54,0.18);
+  animation: hwVaultRainbow 6s linear infinite;
+}
+
+.vault-main .scan-stage,
+.vault-main .transport-stage,
+.vault-main .gate-stage,
+.vault-main .scan-door,
+.vault-main .scan-bar-door {
+  position: relative;
+  min-height: 320px;
+  overflow: hidden;
+  border-radius: 30px;
+  border: 1px solid rgba(69,255,54,0.34);
+  background:
+    linear-gradient(rgba(69,255,54,0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(69,255,54,0.08) 1px, transparent 1px),
+    radial-gradient(circle at 50% 20%, rgba(69,255,54,0.13), transparent 42%),
+    rgba(0,0,0,0.68);
+  background-size: 28px 28px, 28px 28px, auto, auto;
+  box-shadow: inset 0 0 54px rgba(69,255,54,0.08);
+}
+
+.vault-main .scan-stage::before,
+.vault-main .transport-stage::before,
+.vault-main .gate-stage::before,
+.vault-main .scan-door::before,
+.vault-main .scan-bar-door::before {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: -18%;
+  height: 52px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, transparent, rgba(69,255,54,0.82), rgba(255,255,255,0.72), rgba(69,255,54,0.35), transparent);
+  box-shadow: 0 0 42px rgba(69,255,54,0.7);
+  animation: hwScanDown 2.35s ease-in-out infinite;
+}
+
+.vault-main .scan-stage::after,
+.vault-main .transport-stage::after,
+.vault-main .gate-stage::after,
+.vault-main .scan-door::after,
+.vault-main .scan-bar-door::after {
+  content: "SCAN READY • LEVEL 1 TRANSPORT STANDING BY";
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  color: var(--hw-green);
+  background: rgba(0,0,0,0.72);
+  border: 1px solid rgba(69,255,54,0.3);
+  text-align: center;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  font-weight: 1000;
+}
+
+@keyframes hwScanDown {
+  0% { top: -18%; opacity: 0.7; }
+  45% { opacity: 1; }
+  100% { top: 112%; opacity: 0.7; }
+}
+
+@keyframes hwVaultRainbow {
+  from { background-position: 0% 50%; }
+  to { background-position: 220% 50%; }
+}
+
+@media (max-width: 800px) {
+  .vault-main {
+    width: min(100% - 16px, 1180px);
+    padding-top: 12px;
+  }
+
+  .vault-main > header,
+  .vault-main .vault-header,
+  .vault-main .gate-header,
+  .vault-main .vault-gate-card,
+  .vault-main .access-card,
+  .vault-main .gate-card,
+  .vault-main .terminal-card,
+  .vault-main > section,
+  .vault-main > article {
+    border-radius: 24px;
+    padding: 18px;
+  }
+
+  .vault-main .mascot-row,
+  .vault-main .guide-grid,
+  .vault-main .character-grid,
+  .vault-main .vault-gate-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .vault-main h1 {
+    font-size: clamp(2.7rem, 15vw, 5rem);
+  }
+
+  .vault-main h2 {
+    font-size: clamp(1.8rem, 11vw, 3.6rem);
+  }
+
+  .vault-main nav a,
+  .vault-main .main-nav a {
+    font-size: 0.72rem;
+    padding: 8px 10px;
+  }
+
+  .vault-main .scan-stage,
+  .vault-main .transport-stage,
+  .vault-main .gate-stage,
+  .vault-main .scan-door,
+  .vault-main .scan-bar-door {
+    min-height: 270px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vault-main *,
+  .vault-main *::before,
+  .vault-main *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

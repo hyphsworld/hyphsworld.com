@@ -1,60 +1,54 @@
-// HYPHSWORLD LEVEL 1 PLAYER — OFFICIAL QUARANTINE TRACKLIST
-
 (() => {
   'use strict';
 
-  const ACCESS_KEYS = ['HW_LEVEL1_TRANSPORT_V6', 'hyphsworld_vault_access', 'HW_QUARANTINE_READY'];
+  const TRANSPORT_TOKEN_KEY = 'HW_LEVEL1_TRANSPORT_V6';
   const TRACKS = window.HW_QUARANTINE_TRACKS || [];
-  const COVERS = window.HW_QUARANTINE_COVER_SOURCES || ['quarantine-mixtape.jpg','the-quarantine-mixtape.jpg','the-quarantine.jpg','album-art.jpg'];
+  const COVER_SOURCES = window.HW_QUARANTINE_COVER_SOURCES || ['quarantine-mixtape.jpg', 'album-art.jpg'];
 
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
 
   const audio = $('#quarantine-audio');
-  const cover = $('#quarantine-cover');
-  const fallback = $('#coverFallback');
-  const title = $('#quarantine-title');
-  const meta = $('#quarantine-meta');
-  const chip = $('#quarantine-chip');
-  const status = $('#quarantine-status');
-  const list = $('#quarantine-track-list');
-  const order = $('#official-order-list');
-  const progress = $('#quarantine-progress');
-  const currentTime = $('#quarantine-current');
-  const duration = $('#quarantine-duration');
-  const play = $('#quarantine-play');
-  const pause = $('#quarantine-pause');
-  const next = $('#quarantine-next');
-  const prev = $('#quarantine-prev');
-  const main = $('.level-main');
+  const titleEl = $('#quarantine-title');
+  const metaEl = $('#quarantine-meta');
+  const chipEl = $('#quarantine-chip');
+  const statusEl = $('#quarantine-status');
+  const listEl = $('#quarantine-track-list');
+  const progressEl = $('#quarantine-progress');
+  const currentEl = $('#quarantine-current');
+  const durationEl = $('#quarantine-duration');
+  const playBtn = $('#quarantine-play');
+  const pauseBtn = $('#quarantine-pause');
+  const coverEl = $('#quarantine-cover');
   const denied = $('#access-denied');
-  const year = $('#year');
+  const main = $('.quarantine-main');
+  const yearEl = $('#year');
 
   let currentIndex = 0;
   let sourceIndex = 0;
-  let coverIndex = 0;
   let playRequested = false;
+  let coverIndex = 0;
 
-  if (year) year.textContent = String(new Date().getFullYear());
+  if (yearEl) yearEl.textContent = String(new Date().getFullYear());
 
   function hasTransportAccess() {
     try {
-      const v6 = JSON.parse(sessionStorage.getItem('HW_LEVEL1_TRANSPORT_V6') || '{}');
-      const age = Date.now() - Number(v6.grantedAt || 0);
-      if (v6.level === 'level-one' && age >= 0 && age <= 30 * 60 * 1000) return true;
+      const granted = sessionStorage.getItem('hyphsworld_vault_access') === 'granted';
+      const time = Number(sessionStorage.getItem('hyphsworld_vault_access_time') || 0);
+      if (granted && Date.now() - time < 4 * 60 * 60 * 1000) return true;
+    } catch (error) {}
+    try {
+      const raw = sessionStorage.getItem(TRANSPORT_TOKEN_KEY);
+      if (!raw) return false;
 
-      const legacy = JSON.parse(sessionStorage.getItem('hyphsworld_vault_access') || '{}');
-      if (legacy.master || legacy.level1) return true;
+      const token = JSON.parse(raw);
+      const age = Date.now() - Number(token.grantedAt || 0);
+      const thirtyMinutes = 30 * 60 * 1000;
 
-      if (sessionStorage.getItem('HW_QUARANTINE_READY') === 'true') return true;
-
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('transport') === 'granted') return true;
-    } catch {
-      return new URLSearchParams(window.location.search).get('transport') === 'granted';
+      return token.level === 'level-one' && token.route === 'quarantine-mixtape' && age >= 0 && age <= thirtyMinutes;
+    } catch (error) {
+      return false;
     }
-
-    return false;
   }
 
   function showDenied() {
@@ -66,117 +60,96 @@
   }
 
   function setStatus(text) {
-    if (status) status.textContent = text;
+    if (statusEl) statusEl.textContent = text;
   }
 
   function formatTime(seconds) {
     if (!Number.isFinite(seconds) || seconds < 0) return '0:00';
-    return `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
+    const minutes = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60).toString().padStart(2, '0');
+    return `${minutes}:${secs}`;
   }
 
-  function render() {
-    if (order) {
-      order.innerHTML = TRACKS.map((track) => `
-        <li><b>${track.number}</b><span><strong>${track.title}</strong><em>${track.artist}${track.meta ? ` — ${track.meta}` : ''}</em></span></li>
-      `).join('');
+  function renderTracks() {
+    if (!listEl) return;
+
+    if (!TRACKS.length) {
+      listEl.innerHTML = `
+        <article class="locked-warning">
+          <strong>Track list not loaded.</strong>
+          <p>Add your Quarantine Mixtape order in quarantine-tracks.js.</p>
+        </article>
+      `;
+      return;
     }
 
-    if (list) {
-      list.innerHTML = TRACKS.map((track, index) => `
-        <button class="track-row" type="button" data-q-index="${index}" aria-label="Play ${track.title}">
-          <b>${track.number}</b>
-          <span><strong>${track.title}</strong><em>${track.artist}${track.meta ? ` — ${track.meta}` : ''}</em></span>
-          <i>Play</i>
-        </button>
-      `).join('');
+    listEl.innerHTML = TRACKS.map((track, index) => `
+      <button class="track-row" type="button" data-q-index="${index}">
+        <b>${track.number || String(index + 1).padStart(2, '0')}</b>
+        <span><strong>${track.title}</strong><br>${track.artist || 'Hyph Life'}</span>
+        <span class="btn btn-soft">Play</span>
+      </button>
+    `).join('');
 
-      $$('[data-q-index]').forEach((button) => {
-        button.addEventListener('click', () => playTrack(Number(button.dataset.qIndex || 0)));
-      });
-    }
-  }
-
-  function updateCover(track) {
-    if (!cover) return;
-    const sources = (track && track.art) || COVERS;
-    coverIndex = 0;
-
-    cover.onerror = () => {
-      coverIndex += 1;
-      if (coverIndex < sources.length) {
-        cover.src = sources[coverIndex];
-      } else {
-        cover.hidden = true;
-        if (fallback) fallback.hidden = false;
-      }
-    };
-
-    if (fallback) fallback.hidden = true;
-    cover.hidden = false;
-    cover.src = sources[0];
+    $$('[data-q-index]').forEach((button) => {
+      button.addEventListener('click', () => playTrack(Number(button.dataset.qIndex || 0)));
+    });
   }
 
   function updateUI(index) {
     const track = TRACKS[index];
     if (!track) return;
-
     currentIndex = index;
     sourceIndex = 0;
-
-    if (chip) chip.textContent = `TRACK ${track.number}`;
-    if (title) title.textContent = track.title;
-    if (meta) meta.textContent = `${track.artist}${track.meta ? ` — ${track.meta}` : ''}`;
-
-    $$('[data-q-index]').forEach((button) => {
-      button.classList.toggle('is-active', Number(button.dataset.qIndex) === index);
-    });
-
+    if (chipEl) chipEl.textContent = `TRACK ${track.number || String(index + 1).padStart(2, '0')}`;
+    if (titleEl) titleEl.textContent = track.title;
+    if (metaEl) metaEl.textContent = `${track.artist || 'Hyph Life'} — ${track.meta || 'Quarantine Mixtape'}`;
+    $$('[data-q-index]').forEach((button) => button.classList.toggle('is-active', Number(button.dataset.qIndex) === index));
     updateCover(track);
   }
 
-  function loadSource(index, attempt = 0) {
+  function updateCover(track) {
+    if (!coverEl) return;
+    const artSources = track.art || COVER_SOURCES;
+    let index = 0;
+    coverEl.onerror = () => {
+      index += 1;
+      if (index < artSources.length) coverEl.src = artSources[index];
+    };
+    coverEl.src = artSources[0] || COVER_SOURCES[0];
+  }
+
+  function loadSource(index, sourceAttempt = 0) {
     const track = TRACKS[index];
     if (!audio || !track) return;
-
-    const source = (track.sources || [])[attempt];
+    const source = (track.sources || [])[sourceAttempt];
     if (!source) {
-      setStatus(`Duck Sauce: I cannot find the MP3 for ${track.title}. Check the filename or folder.`);
+      setStatus(`Duck Sauce: I cannot find the MP3 for ${track.title}. Check quarantine-tracks.js.`);
       return;
     }
-
-    sourceIndex = attempt;
+    sourceIndex = sourceAttempt;
     audio.src = source;
     audio.load();
-    setStatus(`Loaded ${track.title}. Tap Play if Safari blocks it.`);
+    setStatus(`Loaded ${track.title}. Tap play if Safari blocks it.`);
   }
 
   async function playTrack(index = currentIndex) {
     if (!TRACKS[index]) return;
-
     playRequested = true;
     updateUI(index);
     loadSource(index, 0);
-
     try {
       await audio.play();
       setStatus(`${TRACKS[index].title} playing. Level 1 active.`);
-    } catch {
-      setStatus('Safari blocked autoplay. Tap Play again. Duck blamed the phone.');
+    } catch (error) {
+      setStatus('Browser blocked autoplay. Tap Play again. Duck blamed the phone.');
     }
   }
 
   function pauseTrack() {
     if (!audio) return;
     audio.pause();
-    setStatus('Paused. Level 1 still open.');
-  }
-
-  function nextTrack() {
-    playTrack(currentIndex + 1 < TRACKS.length ? currentIndex + 1 : 0);
-  }
-
-  function prevTrack() {
-    playTrack(currentIndex - 1 >= 0 ? currentIndex - 1 : TRACKS.length - 1);
+    setStatus('Paused. Transport room still open.');
   }
 
   function initAudio() {
@@ -185,42 +158,51 @@
     audio.addEventListener('error', () => {
       const track = TRACKS[currentIndex];
       const nextSource = sourceIndex + 1;
-
       if (track && nextSource < (track.sources || []).length) {
         loadSource(currentIndex, nextSource);
-        if (playRequested) {
-          audio.play().catch(() => setStatus('Tap Play again. Browser blocked the fallback source.'));
-        }
+        if (playRequested) playTrack(currentIndex);
       } else {
-        setStatus('MP3 not found after root/assets/audio/audio/music fallback paths. Rename/upload the file or update quarantine-tracks.js.');
+        setStatus('MP3 not found after all fallback paths. Rename/upload the file or update quarantine-tracks.js.');
       }
     });
 
     audio.addEventListener('timeupdate', () => {
-      if (!audio.duration || !progress) return;
-      progress.value = String((audio.currentTime / audio.duration) * 100);
-      if (currentTime) currentTime.textContent = formatTime(audio.currentTime);
-      if (duration) duration.textContent = formatTime(audio.duration);
+      if (!audio.duration || !progressEl) return;
+      progressEl.value = String((audio.currentTime / audio.duration) * 100);
+      if (currentEl) currentEl.textContent = formatTime(audio.currentTime);
+      if (durationEl) durationEl.textContent = formatTime(audio.duration);
     });
 
     audio.addEventListener('loadedmetadata', () => {
-      if (duration) duration.textContent = formatTime(audio.duration);
+      if (durationEl) durationEl.textContent = formatTime(audio.duration);
     });
 
-    audio.addEventListener('ended', nextTrack);
+    audio.addEventListener('ended', () => {
+      const next = currentIndex + 1;
+      if (next < TRACKS.length) playTrack(next);
+      else setStatus('Mixtape run complete. Duck Sauce said run it back.');
+    });
 
-    if (progress) {
-      progress.addEventListener('input', () => {
-        if (audio.duration) audio.currentTime = (Number(progress.value) / 100) * audio.duration;
+    if (progressEl) {
+      progressEl.addEventListener('input', () => {
+        if (!audio.duration) return;
+        audio.currentTime = (Number(progressEl.value) / 100) * audio.duration;
       });
     }
   }
 
-  function bindControls() {
-    if (play) play.addEventListener('click', () => playTrack(currentIndex));
-    if (pause) pause.addEventListener('click', pauseTrack);
-    if (next) next.addEventListener('click', nextTrack);
-    if (prev) prev.addEventListener('click', prevTrack);
+  function initButtons() {
+    if (playBtn) playBtn.addEventListener('click', () => playTrack(currentIndex));
+    if (pauseBtn) pauseBtn.addEventListener('click', pauseTrack);
+  }
+
+  function initCoverFallback() {
+    if (!coverEl) return;
+    coverEl.onerror = () => {
+      coverIndex += 1;
+      if (coverIndex < COVER_SOURCES.length) coverEl.src = COVER_SOURCES[coverIndex];
+    };
+    coverEl.src = COVER_SOURCES[0];
   }
 
   function init() {
@@ -230,7 +212,8 @@
     }
 
     if (main) main.removeAttribute('aria-hidden');
-    render();
+    initCoverFallback();
+    renderTracks();
 
     if (TRACKS.length) {
       updateUI(0);
@@ -238,7 +221,7 @@
     }
 
     initAudio();
-    bindControls();
+    initButtons();
   }
 
   init();

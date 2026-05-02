@@ -1,379 +1,275 @@
-// HYPHSWORLD PHASE A — GATE 2.0
-// Full replacement for vault.js
-
 (() => {
   "use strict";
 
-  const ACCESS_HASHES = {
-  "master": "651d8948587739f3c0aa840fd250b5b547b98a83a9b84aa24800ff1293dc8ed9",
-  "level1": "651d8948587739f3c0aa840fd250b5b547b98a83a9b84aa24800ff1293dc8ed9",
-  "level2": "651d8948587739f3c0aa840fd250b5b547b98a83a9b84aa24800ff1293dc8ed9"
-};
-  const STORAGE_KEY = "hyphsworld_vault_access";
+  const ACCEPTED_HASHES = new Set([
+    "651d8948587739f3c0aa840fd250b5b547b98a83a9b84aa24800ff1293dc8ed9"
+  ]);
 
-  const PASS_STEPS = [
-    { wait: 160, progress: 8, text: "Scanner warming up...", log: "Duck Sauce: scanner on. Stand still." },
-    { wait: 560, progress: 24, text: "Body scan active...", log: "Reading body signature..." },
-    { wait: 620, progress: 46, text: "Checking access code...", log: "BuckTheBodyguard: credentials in review." },
-    { wait: 620, progress: 68, text: "Clearing Vault terminal...", log: "AMS WEST access layer matched." },
-    { wait: 700, progress: 100, text: "Access granted. Gate opening...", log: "ACCESS GRANTED — scan-bar door opening.", pass: true }
+  const DESTINATION = "quarantine-mixtape.html";
+  const DESTINATION_ROUTE = "quarantine-mixtape";
+  const LEGACY_ACCESS_KEY = "hyphsworld_vault_access";
+  const LEGACY_ACCESS_TIME_KEY = "hyphsworld_vault_access_time";
+  const LEGACY_POINTS_KEY = "coolPoints";
+  const POINTS_TOTAL_KEY = "hyphsworld.coolPoints.total";
+  const TRANSPORT_READY_KEY = "HW_LEVEL1_TRANSPORT_READY";
+  const TRANSPORT_V6_KEY = "HW_LEVEL1_TRANSPORT_V6";
+
+  const duckLines = [
+    "“Aye the pad moving now. Don’t freeze up.”",
+    "“If it start smoking, that means it like you.”",
+    "“Buck too serious. I would’ve let you in off vibes.”",
+    "“Type the code clean. This ain’t a microwave.”"
   ];
 
-  const FAIL_STEPS = [
-    { wait: 140, progress: 18, text: "Scanner warming up...", log: "Duck Sauce: wait... that code looking suspicious." },
-    { wait: 620, progress: 52, text: "Checking credentials...", log: "Vault credentials not matching." },
-    { wait: 720, progress: 100, text: "Access denied.", log: "ACCESS DENIED — Buck said try again.", fail: true }
+  const buckLines = [
+    "“Code first. Scan second. No shortcuts.”",
+    "“Stand still. The scan bar is active.”",
+    "“Access depends on clearance, not confidence.”",
+    "“I see everything touching this gate.”"
   ];
 
-  function onReady(fn) {
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", fn);
-    } else {
-      fn();
-    }
+  const passSteps = [
+    { delay: 0, progress: 12, status: "SCANNING", title: "Body Scan", message: "Buck: “Scanner live. Do not move.”", log: "SCAN BAR ACTIVE", visual: "scanning" },
+    { delay: 850, progress: 34, status: "SCANNING", title: "Body Scan", message: "Duck Sauce: “The lights dancing now.”", log: "BODY TARGET LOCKED", visual: "scanning" },
+    { delay: 1700, progress: 61, status: "VERIFYING", title: "Code Check", message: "Buck: “Code hash is being verified.”", log: "CODE CHECK RUNNING", visual: "scanning" },
+    { delay: 2450, progress: 82, status: "APPROVED", title: "Access Granted", message: "Duck Sauce: “Aight, you in. Don’t act regular.”", log: "ACCESS GRANTED", visual: "granted" },
+    { delay: 3300, progress: 100, status: "TRANSPORT", title: "Transport", message: "Level 1 portal opening. Quarantine Mixtape player ready.", log: "TRANSPORT TUNNEL ONLINE", visual: "transporting" }
+  ];
+
+  const failSteps = [
+    { delay: 0, progress: 18, status: "SCANNING", title: "Body Scan", message: "Buck: “Checking it now.”", log: "SCAN STARTED", visual: "scanning" },
+    { delay: 850, progress: 46, status: "VERIFYING", title: "Code Check", message: "Duck Sauce: “That code got fake shoes on.”", log: "HASH NOT ACCEPTED", visual: "scanning" },
+    { delay: 1600, progress: 0, status: "DENIED", title: "Access Denied", message: "Buck: “Denied. Back up from the rope.”", log: "ACCESS DENIED", visual: "" }
+  ];
+
+  function $(id) {
+    return document.getElementById(id);
   }
 
-  function sleep(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+  function setText(id, value) {
+    const el = $(id);
+    if (el) el.textContent = value;
   }
 
-  async function sha256Upper(value) {
-    const clean = String(value || "").trim().toUpperCase();
-    const bytes = new TextEncoder().encode(clean);
-    const hashBuffer = await crypto.subtle.digest("SHA-256", bytes);
-    return Array.from(new Uint8Array(hashBuffer))
-      .map((byte) => byte.toString(16).padStart(2, "0"))
-      .join("");
+  function setStatus(status, pad, message) {
+    setText("gateStatus", status);
+    setText("padStatus", pad);
+    setText("consoleMessage", message);
   }
 
-  function getParts() {
-    return {
-      overlay: document.getElementById("bodyScanOverlay"),
-      message: document.getElementById("scanMessage"),
-      bar: document.getElementById("scanProgressBar"),
-      log: document.getElementById("scanLog"),
-      close: document.getElementById("scanClose"),
-      actions: document.getElementById("transportActions"),
-      manualLink: document.getElementById("manualEnterLink")
-    };
+  function rotateChatter() {
+    const duck = duckLines[Math.floor(Math.random() * duckLines.length)];
+    const buck = buckLines[Math.floor(Math.random() * buckLines.length)];
+
+    setText("duckLine", duck);
+    setText("buckLine", buck);
   }
 
-  function injectFallbackStyles() {
-    if (document.getElementById("hyphsworldPhaseAFallbackStyles")) return;
-
-    const style = document.createElement("style");
-    style.id = "hyphsworldPhaseAFallbackStyles";
-    style.textContent = `
-      #bodyScanOverlay.is-open {
-        position: fixed !important;
-        inset: 0 !important;
-        z-index: 2147483000 !important;
-        display: flex !important;
-        opacity: 1 !important;
-        visibility: visible !important;
-        pointer-events: auto !important;
-      }
-      body.vault-scan-lock {
-        overflow: hidden !important;
-      }
-    `;
-    document.head.appendChild(style);
+  async function sha256(text) {
+    const encoded = new TextEncoder().encode(text.trim().toUpperCase());
+    const digest = await crypto.subtle.digest("SHA-256", encoded);
+    return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
   }
 
-  function readAccess() {
-    try {
-      return JSON.parse(sessionStorage.getItem(STORAGE_KEY) || "{}");
-    } catch {
-      return {};
-    }
-  }
+  function openOverlay() {
+    const overlay = $("scanOverlay");
+    const visual = $("scanVisual");
 
-  function saveAccess(level) {
-    const current = readAccess();
-    current[level] = true;
-    current.updatedAt = new Date().toISOString();
-
-    if (level === "master") {
-      current.master = true;
-      current.level1 = true;
+    if (overlay) {
+      overlay.classList.add("is-active");
+      overlay.setAttribute("aria-hidden", "false");
     }
 
-    try {
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(current));
-    } catch (error) {
-      console.warn("Session storage unavailable:", error);
-    }
-  }
-
-
-  function grantLevelOneTransport() {
-    try {
-      sessionStorage.setItem('HW_LEVEL1_TRANSPORT_V6', JSON.stringify({
-        level: 'level-one',
-        route: 'quarantine-mixtape',
-        grantedAt: Date.now()
-      }));
-    } catch (error) {
-      console.warn('Transport token unavailable:', error);
-    }
-  }
-
-  function addLog(text, state = "") {
-    const { log } = getParts();
-    if (!log) return;
-
-    const item = document.createElement("li");
-    item.textContent = text;
-
-    if (state) {
-      item.classList.add(state);
+    if (visual) {
+      visual.className = "scan-visual";
     }
 
-    log.appendChild(item);
-  }
-
-  function resetOverlay() {
-    const { overlay, message, bar, log, actions } = getParts();
-    if (!overlay) {
-      return false;
-    }
-
-    injectFallbackStyles();
-
-    overlay.classList.remove(
-      "is-open",
-      "is-scanning",
-      "is-granted",
-      "is-door-opening",
-      "is-smoke",
-      "is-disintegrating",
-      "is-transporting",
-      "is-arriving"
-    );
-
-    overlay.classList.add("is-open");
-    overlay.setAttribute("aria-hidden", "false");
-    document.body.classList.add("vault-scan-lock");
-
-    if (message) message.textContent = "Scanner warming up...";
-    if (bar) bar.style.width = "0%";
-    if (log) log.innerHTML = "";
-    if (actions) actions.hidden = true;
-
-    overlay.getBoundingClientRect();
-    return true;
+    setText("scanTitle", "Body Scan");
+    setText("scanMessage", "Scanner warming up...");
+    if ($("progressBar")) $("progressBar").style.width = "0%";
+    if ($("scanLog")) $("scanLog").innerHTML = "";
+    if ($("manualEnter")) $("manualEnter").hidden = true;
   }
 
   function closeOverlay() {
-    const { overlay, actions } = getParts();
-    if (!overlay) return;
-
-    overlay.classList.remove(
-      "is-open",
-      "is-scanning",
-      "is-granted",
-      "is-door-opening",
-      "is-smoke",
-      "is-disintegrating",
-      "is-transporting",
-      "is-arriving"
-    );
-
-    overlay.setAttribute("aria-hidden", "true");
-    document.body.classList.remove("vault-scan-lock");
-
-    if (actions) actions.hidden = true;
-  }
-
-  async function playSteps(steps) {
-    const { overlay, message, bar } = getParts();
-    if (!overlay) return;
-
-    overlay.classList.add("is-scanning");
-
-    for (const step of steps) {
-      await sleep(step.wait);
-
-      if (message) message.textContent = step.text;
-      if (bar) bar.style.width = `${step.progress}%`;
-
-      if (step.log) {
-        addLog(step.log, step.pass ? "pass" : step.fail ? "fail" : "");
-      }
+    const overlay = $("scanOverlay");
+    if (overlay) {
+      overlay.classList.remove("is-active");
+      overlay.setAttribute("aria-hidden", "true");
     }
-
-    overlay.classList.remove("is-scanning");
   }
 
-  function resolveDestination(destination) {
-    const clean = String(destination || "").trim();
-    if (!clean || clean === "#" || clean === "/") return "level-1.html";
-    return clean;
+  function addLog(text) {
+    const log = $("scanLog");
+    if (!log) return;
+
+    const li = document.createElement("li");
+    li.textContent = text;
+    log.appendChild(li);
   }
 
-  async function playGateSequence(destination) {
-    const finalDestination = resolveDestination(destination);
-    const { overlay, message, actions, manualLink } = getParts();
+  function runSteps(steps) {
+    const visual = $("scanVisual");
 
-    if (!overlay) {
-      window.location.href = finalDestination;
+    steps.forEach((step) => {
+      setTimeout(() => {
+        setStatus(step.status, step.visual ? "ACTIVE" : "LOCKED", step.message);
+        setText("scanTitle", step.title);
+        setText("scanMessage", step.message);
+
+        if ($("progressBar")) $("progressBar").style.width = `${step.progress}%`;
+
+        if (visual) {
+          visual.classList.remove("scanning", "granted", "transporting");
+          if (step.visual) visual.classList.add(step.visual);
+        }
+
+        addLog(step.log);
+      }, step.delay);
+    });
+
+    const last = steps[steps.length - 1] ? steps[steps.length - 1].delay : 0;
+    return new Promise((resolve) => setTimeout(resolve, last + 650));
+  }
+
+  function safeNumber(value) {
+    const parsed = Number.parseInt(value, 10);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
+  }
+
+  function addCoolPoints(amount) {
+    try {
+      const legacyCurrent = safeNumber(localStorage.getItem(LEGACY_POINTS_KEY));
+      const totalCurrent = safeNumber(localStorage.getItem(POINTS_TOTAL_KEY));
+      const next = Math.max(legacyCurrent, totalCurrent) + amount;
+      localStorage.setItem(LEGACY_POINTS_KEY, String(next));
+      localStorage.setItem(POINTS_TOTAL_KEY, String(next));
+    } catch (error) {}
+  }
+
+  function grantTransport() {
+    const grantedAt = Date.now();
+    const nonce = Math.random().toString(36).slice(2);
+
+    try {
+      sessionStorage.setItem(LEGACY_ACCESS_KEY, "granted");
+      sessionStorage.setItem(LEGACY_ACCESS_TIME_KEY, String(grantedAt));
+      sessionStorage.setItem(TRANSPORT_READY_KEY, JSON.stringify({
+        level: "level-one",
+        route: DESTINATION,
+        href: DESTINATION,
+        grantedAt,
+        nonce
+      }));
+      sessionStorage.setItem(TRANSPORT_V6_KEY, JSON.stringify({
+        level: "level-one",
+        route: DESTINATION_ROUTE,
+        href: DESTINATION,
+        grantedAt,
+        nonce
+      }));
+    } catch (error) {}
+  }
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+
+    const input = $("accessCode");
+    const button = document.querySelector(".scan-button");
+
+    if (!input) return;
+
+    const code = input.value.trim();
+
+    if (!code) {
+      setStatus("STANDBY", "MOVING", "Duck Sauce: “Type the code first. I can’t scan blank air.”");
+      input.focus();
       return;
     }
 
-    if (manualLink) {
-      manualLink.href = finalDestination;
+    if (button) button.disabled = true;
+
+    openOverlay();
+    setStatus("SCANNING", "ACTIVE", "Buck is running the scanner. Duck is touching buttons he should not touch.");
+
+    let passed = false;
+
+    try {
+      const hash = await sha256(code);
+      passed = ACCEPTED_HASHES.has(hash);
+    } catch (error) {
+      passed = false;
     }
 
-    overlay.classList.add("is-granted");
-
-    if (message) {
-      message.textContent = "Access granted. Opening scan-bar door...";
-    }
-
-    await sleep(820);
-
-    overlay.classList.add("is-door-opening");
-
-    if (message) {
-      message.textContent = "Scan-bar door opening...";
-    }
-
-    await sleep(920);
-
-    overlay.classList.add("is-smoke");
-
-    if (message) {
-      message.textContent = "Smoke burst detected. Transport preparing...";
-    }
-
-    await sleep(760);
-
-    overlay.classList.add("is-disintegrating");
-
-    if (message) {
-      message.textContent = "Body signature dissolving...";
-    }
-
-    await sleep(1120);
-
-    overlay.classList.add("is-transporting");
-
-    if (message) {
-      message.textContent = "Transport tunnel open...";
-    }
-
-    await sleep(1380);
-
-    overlay.classList.add("is-arriving");
-
-    if (message) {
-      message.textContent = "Transport complete. Welcome to Level 1.";
-    }
-
-    await sleep(900);
-
-    if (actions) {
-      actions.hidden = false;
-    }
-
-    await sleep(650);
-
-    window.location.href = finalDestination;
-  }
-
-  async function handleScan(button) {
-    if (!button || button.disabled) return;
-
-    const level = button.dataset.accessLevel || "master";
-    const inputId = button.dataset.inputId || "";
-    const destination = resolveDestination(button.dataset.destination || "level-1.html");
-    const input = inputId ? document.getElementById(inputId) : null;
-    const typed = input ? input.value : "";
-
-    const ready = resetOverlay();
-    if (!ready) return;
-
-    button.disabled = true;
-
-    const expectedHash = ACCESS_HASHES[level] || ACCESS_HASHES.master;
-    const typedHash = await sha256Upper(typed);
-    const passed = Boolean(String(typed).trim()) && typedHash === expectedHash;
+    input.value = "";
 
     if (!passed) {
-      await playSteps(FAIL_STEPS);
-      await sleep(950);
-      closeOverlay();
-      button.disabled = false;
-
-      if (input) {
+      await runSteps(failSteps);
+      setTimeout(() => {
+        closeOverlay();
+        setStatus("DENIED", "MOVING", "Buck denied the gate. Try the correct code.");
+        if (button) button.disabled = false;
         input.focus();
-        input.select();
-      }
-
+      }, 900);
       return;
     }
 
-    saveAccess(level);
-    grantLevelOneTransport();
-    await playSteps(PASS_STEPS);
-    await playGateSequence(destination);
+    grantTransport();
+    addCoolPoints(50);
+
+    await runSteps(passSteps);
+
+    const manual = $("manualEnter");
+    if (manual) {
+      manual.href = DESTINATION;
+      manual.hidden = false;
+    }
+
+    setTimeout(() => {
+      window.location.href = DESTINATION;
+    }, 900);
   }
 
-  function bindEvents() {
-    document.querySelectorAll("[data-scan-trigger]").forEach((button) => {
-      button.addEventListener("click", () => handleScan(button));
-    });
+  function bind() {
+    const form = $("gateForm");
+    const clear = $("clearCode");
+    const close = $("closeOverlay");
+    const manual = $("manualEnter");
 
-    document.querySelectorAll("[data-clear-input]").forEach((button) => {
-      button.addEventListener("click", () => {
-        const target = document.getElementById(button.dataset.clearInput);
-        if (target) {
-          target.value = "";
-          target.focus();
+    if (manual) manual.href = DESTINATION;
+    if (form) form.addEventListener("submit", handleSubmit);
+
+    if (clear) {
+      clear.addEventListener("click", () => {
+        const input = $("accessCode");
+        if (input) {
+          input.value = "";
+          input.focus();
         }
-      });
-    });
-
-    document.querySelectorAll(".vault-code-input").forEach((input) => {
-      input.addEventListener("keydown", (event) => {
-        if (event.key !== "Enter") return;
-
-        event.preventDefault();
-
-        const card = input.closest(".access-card");
-        const button = card ? card.querySelector("[data-scan-trigger]") : null;
-
-        if (button) {
-          handleScan(button);
-        }
-      });
-    });
-
-    const { overlay, close } = getParts();
-
-    if (close) {
-      close.addEventListener("click", closeOverlay);
-    }
-
-    if (overlay) {
-      overlay.addEventListener("click", (event) => {
-        if (event.target === overlay) {
-          closeOverlay();
-        }
+        setStatus("STANDBY", "MOVING", "Terminal cleared. Pad still live.");
       });
     }
+
+    if (close) close.addEventListener("click", closeOverlay);
 
     document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") {
-        closeOverlay();
-      }
+      if (event.key === "Escape") closeOverlay();
     });
+
+    const overlay = $("scanOverlay");
+    if (overlay) {
+      overlay.addEventListener("click", (event) => {
+        if (event.target === overlay) closeOverlay();
+      });
+    }
+
+    rotateChatter();
+    setInterval(rotateChatter, 4200);
   }
 
-  onReady(() => {
-    injectFallbackStyles();
-    bindEvents();
-    window.HYPHSWORLD_PHASE_A_GATE_READY = true;
-    console.info("HYPHSWORLD Phase A Gate 2.0 loaded.");
+  document.addEventListener("DOMContentLoaded", () => {
+    bind();
+    setStatus("STANDBY", "MOVING", "Pad is live. Enter code and run the scan.");
+    window.HYPHSWORLD_ACCESS_PAD_LIVE = true;
   });
 })();

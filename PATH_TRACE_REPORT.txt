@@ -1,0 +1,195 @@
+HYPHSWORLD PATH TRACE + CLEANUP REPORT
+Base file: hyphsworld.com-newest.zip
+
+I did not modify the source zip. This is a new cleaned repo copy.
+
+Original root file count: 134
+Cleaned root file count: 37
+Files removed from live root: 98
+Original unzipped size: 200.0 MB
+Cleaned unzipped size: 72.9 MB
+
+LIVE PATHS KEPT
+- index.html
+- vault.html
+- level-1.html
+- quarantine-mixtape.html
+- app-player.html
+- shop.html
+- merch.html
+- CNAME
+
+HERO MP4 TRACE
+- Live hero path: hyphsworld-hero.mp4
+- Featured video path: 01-show-teaser.mp4
+- Removed/ignored old fallback hero paths: delta-work.mp4, bank-bank.mp4, 01-show-preview.mp4, video/hyphsworld-hero.mp4, videos/hyphsworld-hero.mp4, assets/hyphsworld-hero.mp4
+
+HOMEPAGE + FULL PLAYER MP3 TRACE
+- HAM -> ham.mp3
+- KIKI -> kiki.mp3
+- ON GOD -> on-god.mp3
+- TIME -> time.mp3
+- 25/8 -> 25-8.mp3
+
+LEVEL 1 / QUARANTINE MIXTAPE TRACE
+- da-vault-freestyle.mp3
+- 50-cent-shit.mp3
+- bout-that.mp3
+- free-hyph.mp3
+- gotta-go-remix.mp3
+- quarantine-mixtape.jpg
+- bout-that-art.jpg
+- gotta-go-remix.jpg
+
+FIXES MADE
+- index.html now uses only hyphsworld-hero.mp4 for the hero MP4.
+- index-player.js now uses only real root MP3 filenames.
+- quarantine-tracks.js now uses only real root MP3 filenames.
+- quarantine cover fallback was cleaned to existing files only.
+- duck-sauce.png was added so the homepage image path resolves cleanly.
+- CNAME was kept even though it is not referenced by HTML, because GitHub Pages needs it for hyphsworld.com.
+
+REMOVED HTML PAGES
+- about.html
+- add-login-to-home.html
+- booking.html
+- contact.html
+- login.html
+- music.html
+- player.html
+- point-store.html
+- socials.html
+- vault-gate.html
+- videos.html
+- visuals.html
+
+REMOVED CSS/JS
+- app-player.css
+- app-player.js
+- cool-points.css
+- cool-points.js
+- duck-helper.css
+- duck-sauce.css
+- duck-sauce.js
+- engagement.css
+- engagement.js
+- homepage.js
+- hypes-unlock.css
+- hypes-unlock.js
+- login.js
+- player.css
+- player.js
+- script.js
+- shop.css
+- shop.js
+- site.js
+- vault-access.css
+- vault-access.js
+- vault-gate.css
+- vault-gate.js
+- vault-lock.js
+
+REMOVED MEDIA
+- 01-show-preview.mp4
+- :audio:kiki.mp3
+- :audio:on-god.mp3
+- :audio:time.mp3
+- :audio:young-tez-25-8.mp3
+- ams-logo.jpg
+- bananaz.mp3
+- black-hoodie.jpg
+- blue-tee.jpg
+- delta-work.mp4
+- ham.jpg
+- hyph-life-portrait-1.jpg
+- hyph-portrait-1.jpg
+- hyph-portrait-2.jpg
+- im-a-beast.mp3
+- jay-z-shit.mp3
+- kiki-art.jpg
+- kiki.png
+- money-is-the-root.jpg
+- money-is-the-root.mp3
+- mula.mp3
+- no-trace-snip.mp3
+- on-god-art.jpg
+- on-god.jpg
+- pink-tee.jpg
+- player-cover.jpg
+- red-tee.jpg
+- rojas-1.jpg
+- rojas-2.jpg
+- rojas-3.jpg
+- rojas-awards.jpg
+- share-my-money.mp3
+- still-ballin.mp3
+- time-art.jpg
+- whats-hannin.mp3
+- wikked-wayz.mp3
+- with-me.mp3
+- young-tez-25-8.jpg
+- young-tez-25-8.mp3
+- youngin-remix.jpg
+- youngin-remix.mp3
+- zaid-1.jpg
+- zaid-2.jpg
+- zaid-award.jpg
+
+REMOVED README/TXT
+- 404_AFTER_BODYSCAN_README.txt
+- BODYSCAN_VISUAL_FIX_README.txt
+- CINEMATIC_VAULT_README.txt
+- HYPHSWORLD_01_SHOW_PREVIEW_README.txt
+- PHASE_A_GATE_2_README.txt
+- README_FULL_SITE_DUCK_GUIDE_BAKED.txt
+- README_FULL_SITE_UPLOAD.txt
+- README_LEVEL_UP_DUCK_BUCK.txt
+- README_PHASE2_UPLOAD.txt
+- README_SCAN_BAR_VAULT.txt
+- README_SPOTLIGHT_25_8_FIX.txt
+- README_UPLOAD.txt
+- TRANSPORT_TERMINAL_FIX_README.txt
+- UPLOAD-README.txt
+- UPLOAD_README.txt
+- UPLOAD_README_VAULT_ACCESS.txt
+- analytics-readme.txt
+- text.txt
+
+FINAL CLEAN FILE LIST
+- 01-show-teaser.mp4
+- 25-8.jpg
+- 25-8.mp3
+- 50-cent-shit.mp3
+- CNAME
+- album-art.jpg
+- app-player.html
+- bout-that-art.jpg
+- bout-that.mp3
+- buck-thebodyguard.jpg
+- da-vault-freestyle.mp3
+- duck-helper.js
+- duck-sauce.jpg
+- duck-sauce.png
+- free-hyph.mp3
+- gotta-go-remix.jpg
+- gotta-go-remix.mp3
+- ham.mp3
+- homepage-upgrades.css
+- hyphsworld-hero.mp4
+- index-player.js
+- index.html
+- kiki.mp3
+- level-1.css
+- level-1.html
+- merch.html
+- on-god.mp3
+- quarantine-mixtape.html
+- quarantine-mixtape.jpg
+- quarantine-player.js
+- quarantine-tracks.js
+- shop.html
+- styles.css
+- time.mp3
+- vault.css
+- vault.html
+- vault.js
