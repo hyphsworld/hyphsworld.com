@@ -1,8 +1,16 @@
 (function(){
+  function hasAuthClient() {
+    return !!(window.HWAuth && typeof window.HWAuth.getSession === 'function');
+  }
+
   async function hasSession() {
-    if (!window.HWAuth || typeof window.HWAuth.getSession !== 'function') return null;
-    const session = await window.HWAuth.getSession();
-    return !!(session && session.userId);
+    if (!hasAuthClient()) return null;
+    try {
+      const session = await window.HWAuth.getSession();
+      return !!(session && session.userId);
+    } catch (_) {
+      return false;
+    }
   }
 
   function hasLegacyVaultAccess() {
@@ -13,7 +21,7 @@
 
   (async function run(){
     const authed = await hasSession();
-    if (authed === false) {
+    if (hasAuthClient() && authed === false) {
       const current = (location.pathname.split('/').pop() || 'vault.html');
       location.replace('auth.html?next=' + encodeURIComponent(current));
       return;
