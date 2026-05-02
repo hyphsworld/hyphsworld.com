@@ -275,6 +275,12 @@
     tryHero(0);
   }
 
+
+  document.addEventListener('hyph:points-sync', (event) => {
+    const synced = event && event.detail ? event.detail.points : 0;
+    setPoints(synced);
+  });
+
   function init() {
     cleanLegacyPoints();
     setPoints(0);

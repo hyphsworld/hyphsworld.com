@@ -230,6 +230,12 @@
   <!-- Login and points-saving script -->
   <script>
   // Retrieve username on page load and update points display
+  function emitPointsSync(pointsValue) {
+    document.dispatchEvent(new CustomEvent('hyph:points-sync', {
+      detail: { points: String(pointsValue || 0) }
+    }));
+  }
+
   document.addEventListener('DOMContentLoaded', function() {
     var storedUsername = localStorage.getItem('username');
     var loginSection = document.getElementById('login-section');
@@ -257,9 +263,13 @@
         if (pointsElement) pointsElement.textContent = savedPoints;
       }
       document.getElementById('login-status').textContent = 'Logged in as ' + storedUsername;
-      syncWidget(savedPoints !== null ? savedPoints : (pointsElement ? pointsElement.textContent : 0));
+      var initialPoints = savedPoints !== null ? savedPoints : (pointsElement ? pointsElement.textContent : 0);
+      syncWidget(initialPoints);
+      emitPointsSync(initialPoints);
     } else {
-      syncWidget(pointsElement ? pointsElement.textContent : 0);
+      var guestPoints = pointsElement ? pointsElement.textContent : 0;
+      syncWidget(guestPoints);
+      emitPointsSync(guestPoints);
     }
     setLoginVisibility();
 
@@ -285,9 +295,7 @@
         // Show saved points
         document.getElementById('cool-points').textContent = localStorage.getItem(username + '_points');
       }
-      document.dispatchEvent(new CustomEvent('hyph:points-updated', {
-        detail: { points: document.getElementById('cool-points').textContent || '0' }
-      }));
+      emitPointsSync(document.getElementById('cool-points').textContent || '0');
       var loginSection = document.getElementById('login-section');
       if (loginSection) loginSection.style.display = 'none';
     }
