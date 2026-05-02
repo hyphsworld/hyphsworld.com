@@ -8,10 +8,6 @@
   const ACCESS_WINDOW = 1000 * 60 * 60 * 4;
   const TRANSPORT_WINDOW = 1000 * 60 * 30;
 
-  function pageName() {
-    return location.pathname.split('/').pop() || 'vault.html';
-  }
-
   function isFresh(timeValue, windowMs) {
     const time = Number(timeValue || 0);
     return Number.isFinite(time) && time > 0 && Date.now() - time >= 0 && Date.now() - time < windowMs;
@@ -45,29 +41,29 @@
     return isLevelOne && isQuarantineRoute && isFresh(token.grantedAt, TRANSPORT_WINDOW);
   }
 
-  async function hasSession() {
-    if (!window.HWAuth || typeof window.HWAuth.getSession !== 'function') return false;
-    try {
-      const session = await window.HWAuth.getSession();
-      return !!(session && session.userId);
-    } catch (error) {
-      return false;
+  function showScanRequiredMessage() {
+    const denied = document.getElementById('access-denied');
+    const main = document.querySelector('.quarantine-main');
+
+    if (main) main.setAttribute('aria-hidden', 'true');
+
+    if (denied) {
+      denied.classList.add('is-active');
+      denied.setAttribute('aria-hidden', 'false');
     }
   }
 
-  (async function run() {
-    const current = pageName();
-
+  function run() {
     if (hasLegacyVaultAccess() || hasLevelOneTransport()) {
       return;
     }
 
-    const authed = await hasSession();
-    if (!authed) {
-      location.replace('login.html?from=' + encodeURIComponent(current));
-      return;
-    }
+    showScanRequiredMessage();
+  }
 
-    location.replace('login.html?from=' + encodeURIComponent(current));
-  })();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', run);
+  } else {
+    run();
+  }
 })();
