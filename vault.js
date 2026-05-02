@@ -5,9 +5,14 @@
     "651d8948587739f3c0aa840fd250b5b547b98a83a9b84aa24800ff1293dc8ed9"
   ]);
 
-  const DESTINATION = "level-1.html";
-  const COOL_POINTS_KEY = "coolPoints";
-  const TRANSPORT_KEY = "HW_LEVEL1_TRANSPORT_READY";
+  const DESTINATION = "quarantine-mixtape.html";
+  const DESTINATION_ROUTE = "quarantine-mixtape";
+  const LEGACY_ACCESS_KEY = "hyphsworld_vault_access";
+  const LEGACY_ACCESS_TIME_KEY = "hyphsworld_vault_access_time";
+  const LEGACY_POINTS_KEY = "coolPoints";
+  const POINTS_TOTAL_KEY = "hyphsworld.coolPoints.total";
+  const TRANSPORT_READY_KEY = "HW_LEVEL1_TRANSPORT_READY";
+  const TRANSPORT_V6_KEY = "HW_LEVEL1_TRANSPORT_V6";
 
   const duckLines = [
     "“Aye the pad moving now. Don’t freeze up.”",
@@ -28,7 +33,7 @@
     { delay: 850, progress: 34, status: "SCANNING", title: "Body Scan", message: "Duck Sauce: “The lights dancing now.”", log: "BODY TARGET LOCKED", visual: "scanning" },
     { delay: 1700, progress: 61, status: "VERIFYING", title: "Code Check", message: "Buck: “Code hash is being verified.”", log: "CODE CHECK RUNNING", visual: "scanning" },
     { delay: 2450, progress: 82, status: "APPROVED", title: "Access Granted", message: "Duck Sauce: “Aight, you in. Don’t act regular.”", log: "ACCESS GRANTED", visual: "granted" },
-    { delay: 3300, progress: 100, status: "TRANSPORT", title: "Transport", message: "Level 1 portal opening. Quarantine Mixtape floor ready.", log: "TRANSPORT TUNNEL ONLINE", visual: "transporting" }
+    { delay: 3300, progress: 100, status: "TRANSPORT", title: "Transport", message: "Level 1 portal opening. Quarantine Mixtape player ready.", log: "TRANSPORT TUNNEL ONLINE", visual: "transporting" }
   ];
 
   const failSteps = [
@@ -127,19 +132,41 @@
     return new Promise((resolve) => setTimeout(resolve, last + 650));
   }
 
+  function safeNumber(value) {
+    const parsed = Number.parseInt(value, 10);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
+  }
+
   function addCoolPoints(amount) {
     try {
-      const current = Number(localStorage.getItem(COOL_POINTS_KEY) || 0);
-      localStorage.setItem(COOL_POINTS_KEY, String(current + amount));
+      const legacyCurrent = safeNumber(localStorage.getItem(LEGACY_POINTS_KEY));
+      const totalCurrent = safeNumber(localStorage.getItem(POINTS_TOTAL_KEY));
+      const next = Math.max(legacyCurrent, totalCurrent) + amount;
+      localStorage.setItem(LEGACY_POINTS_KEY, String(next));
+      localStorage.setItem(POINTS_TOTAL_KEY, String(next));
     } catch (error) {}
   }
 
   function grantTransport() {
+    const grantedAt = Date.now();
+    const nonce = Math.random().toString(36).slice(2);
+
     try {
-      sessionStorage.setItem(TRANSPORT_KEY, JSON.stringify({
+      sessionStorage.setItem(LEGACY_ACCESS_KEY, "granted");
+      sessionStorage.setItem(LEGACY_ACCESS_TIME_KEY, String(grantedAt));
+      sessionStorage.setItem(TRANSPORT_READY_KEY, JSON.stringify({
+        level: "level-one",
         route: DESTINATION,
-        grantedAt: Date.now(),
-        nonce: Math.random().toString(36).slice(2)
+        href: DESTINATION,
+        grantedAt,
+        nonce
+      }));
+      sessionStorage.setItem(TRANSPORT_V6_KEY, JSON.stringify({
+        level: "level-one",
+        route: DESTINATION_ROUTE,
+        href: DESTINATION,
+        grantedAt,
+        nonce
       }));
     } catch (error) {}
   }
@@ -193,7 +220,10 @@
     await runSteps(passSteps);
 
     const manual = $("manualEnter");
-    if (manual) manual.hidden = false;
+    if (manual) {
+      manual.href = DESTINATION;
+      manual.hidden = false;
+    }
 
     setTimeout(() => {
       window.location.href = DESTINATION;
@@ -204,7 +234,9 @@
     const form = $("gateForm");
     const clear = $("clearCode");
     const close = $("closeOverlay");
+    const manual = $("manualEnter");
 
+    if (manual) manual.href = DESTINATION;
     if (form) form.addEventListener("submit", handleSubmit);
 
     if (clear) {
