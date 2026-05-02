@@ -4,12 +4,12 @@
   }
 
   async function hasSession() {
-    if (!hasAuthClient()) return null;
     try {
       const session = await window.HWAuth.getSession();
       return !!(session && session.userId);
     } catch (_) {
-      return false;
+      // If the auth client isn't fully available, fall back to legacy access checks.
+      return null;
     }
   }
 
@@ -20,12 +20,15 @@
   }
 
   (async function run(){
-    const authed = await hasSession();
-    if (hasAuthClient() && authed === false) {
+    const authClientAvailable = hasAuthClient();
+    const authed = authClientAvailable ? await hasSession() : null;
+
+    if (authClientAvailable && authed === false) {
       const current = (location.pathname.split('/').pop() || 'vault.html');
       location.replace('auth.html?next=' + encodeURIComponent(current));
       return;
     }
+
     if (!hasLegacyVaultAccess()) {
       const current = (location.pathname.split('/').pop() || 'vault.html');
       location.replace('login.html?from=' + encodeURIComponent(current));
