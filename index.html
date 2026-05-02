@@ -27,6 +27,13 @@
       <span>AMS WEST PRESENTS</span>
       <strong>HYPHSWORLD</strong>
     </a>
+    <div id="user-points-widget" class="user-points-widget" aria-live="polite">
+      <span class="user-icon" aria-hidden="true">👤</span>
+      <div class="user-meta">
+        <strong id="widget-username">Guest</strong>
+        <span><b id="widget-points">0</b> pts</span>
+      </div>
+    </div>
     <nav class="main-nav" aria-label="Main navigation">
       <a href="#music">Music</a>
       <a href="#spotlight">Spotlight</a>
@@ -225,16 +232,44 @@
   // Retrieve username on page load and update points display
   document.addEventListener('DOMContentLoaded', function() {
     var storedUsername = localStorage.getItem('username');
+    var loginSection = document.getElementById('login-section');
+    var widgetName = document.getElementById('widget-username');
+    var widgetPoints = document.getElementById('widget-points');
+    var pointsElement = document.getElementById('cool-points');
+
+    function syncWidget(pointsValue) {
+      var activeUser = localStorage.getItem('username');
+      if (widgetName) widgetName.textContent = activeUser || 'Guest';
+      if (widgetPoints) widgetPoints.textContent = String(pointsValue || 0);
+    }
+
+    function setLoginVisibility() {
+      var activeUser = localStorage.getItem('username');
+      if (!loginSection) return;
+      loginSection.style.display = activeUser ? 'none' : 'block';
+    }
+
     if (storedUsername) {
       document.getElementById('username').value = storedUsername;
       // Show saved points for this user
       var savedPoints = localStorage.getItem(storedUsername + '_points');
       if (savedPoints !== null) {
-        var pointsElement = document.getElementById('cool-points');
         if (pointsElement) pointsElement.textContent = savedPoints;
       }
       document.getElementById('login-status').textContent = 'Logged in as ' + storedUsername;
+      syncWidget(savedPoints !== null ? savedPoints : (pointsElement ? pointsElement.textContent : 0));
+    } else {
+      syncWidget(pointsElement ? pointsElement.textContent : 0);
     }
+    setLoginVisibility();
+
+    document.addEventListener('hyph:points-updated', function(event) {
+      var latest = event && event.detail ? event.detail.points : (pointsElement ? pointsElement.textContent : 0);
+      syncWidget(latest);
+      var activeUser = localStorage.getItem('username');
+      if (activeUser) localStorage.setItem(activeUser + '_points', String(latest));
+      setLoginVisibility();
+    });
   });
 
   // Handle login button click
@@ -250,6 +285,11 @@
         // Show saved points
         document.getElementById('cool-points').textContent = localStorage.getItem(username + '_points');
       }
+      document.dispatchEvent(new CustomEvent('hyph:points-updated', {
+        detail: { points: document.getElementById('cool-points').textContent || '0' }
+      }));
+      var loginSection = document.getElementById('login-section');
+      if (loginSection) loginSection.style.display = 'none';
     }
   });
 
@@ -259,6 +299,9 @@
     if (username) {
       localStorage.setItem(username + '_points', newPoints);
     }
+    document.dispatchEvent(new CustomEvent('hyph:points-updated', {
+      detail: { points: String(newPoints) }
+    }));
   }
 
   // Example: update points when clicking the "Run Vault Scan" button

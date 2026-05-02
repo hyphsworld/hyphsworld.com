@@ -89,6 +89,9 @@
   function setPoints(value) {
     coolPoints = Math.max(0, Number.parseInt(value, 10) || 0);
     if (pointsEl) pointsEl.textContent = String(coolPoints);
+    document.dispatchEvent(new CustomEvent('hyph:points-updated', {
+      detail: { points: coolPoints }
+    }));
   }
 
   function award(actionId, amount) {
