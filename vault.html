@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <title>Vault Access | HYPHSWORLD</title>
-  <meta name="description" content="Animated HYPHSWORLD Vault Access Pad with BuckTheBodyguard, Duck Sauce, scanner movement, code entry, and Level 1 transport." />
+  <meta name="description" content="Animated HYPHSWORLD Vault Access Pad with BuckTheBodyguard, Duck Sauce, scanner movement, code entry, arcade games, media player, and Level 1 transport." />
 
   <link rel="stylesheet" href="vault.css" />
+  <link rel="stylesheet" href="vault-gate-games.css" />
 </head>
 
 <body class="vault-page">
@@ -120,6 +121,74 @@
       </aside>
     </section>
 
+    <section class="gate-arcade" aria-label="Vault Gate arcade">
+      <div class="gate-arcade-card">
+        <div class="gate-arcade-head">
+          <div>
+            <p class="tagline">GATE LOBBY // PLAY WHILE BUCK WATCHES</p>
+            <h2>Duck Arcade</h2>
+            <p>Slot machine, Buck’s pick-a-card table, and a gate media player. Earn a few Cool Points while the scanner stays live.</p>
+          </div>
+          <div class="gate-credit-box">
+            <span>Cool Points</span>
+            <strong id="gateCredits">0</strong>
+          </div>
+        </div>
+
+        <div class="gate-game-grid">
+          <article class="gate-game-panel">
+            <p class="tagline">SLOT MACHINE</p>
+            <h3>Duck Sauce Slots</h3>
+            <p>Pull it once. Duck swears he knows the machine personally.</p>
+            <div class="gate-reels" aria-label="Duck Sauce slot reels">
+              <div class="gate-reel">🦆</div>
+              <div class="gate-reel">💎</div>
+              <div class="gate-reel">🎰</div>
+            </div>
+            <p class="gate-game-status" id="gateSlotStatus">Duck Sauce: “This one definitely about to hit.”</p>
+            <div class="gate-mini-actions">
+              <button class="gate-game-btn" id="gateSpinBtn" type="button">Spin Slots</button>
+            </div>
+          </article>
+
+          <article class="gate-game-panel">
+            <p class="tagline">CARD GAME</p>
+            <h3>Buck’s 3 Cards</h3>
+            <p>Find the 01 card. Buck marked it. Duck moved it. Nobody admits anything.</p>
+            <div class="gate-card-row" aria-label="Buck card game">
+              <button class="gate-card" type="button" aria-label="Pick card 1">?</button>
+              <button class="gate-card" type="button" aria-label="Pick card 2">?</button>
+              <button class="gate-card" type="button" aria-label="Pick card 3">?</button>
+            </div>
+            <p class="gate-game-status" id="gateCardStatus">Pick a card and try to catch the 01.</p>
+            <div class="gate-mini-actions">
+              <button class="gate-game-btn" id="gateResetCards" type="button">Reset Cards</button>
+            </div>
+          </article>
+
+          <article class="gate-game-panel">
+            <p class="tagline">MEDIA PLAYER</p>
+            <h3>Gate Radio</h3>
+            <p>Keep the lobby moving before transport. Same tap-safe audio behavior for Safari.</p>
+            <div class="gate-player-screen">
+              <span class="gate-player-title" id="gatePlayerTitle">HAM</span>
+              <p class="gate-player-meta" id="gatePlayerMeta">Hyph Life — prod by 1ManBand</p>
+              <input class="gate-player-progress" id="gatePlayerProgress" type="range" min="0" max="100" value="0" aria-label="Gate player progress" />
+              <p class="gate-game-status" id="gatePlayerStatus">Gate radio loaded.</p>
+              <audio id="gateAudio" preload="metadata"></audio>
+            </div>
+            <div class="gate-mini-actions">
+              <button class="gate-game-btn" id="gatePlayBtn" type="button">Play</button>
+              <button class="gate-track-btn" id="gatePauseBtn" type="button">Pause</button>
+              <button class="gate-track-btn is-active" type="button" data-gate-track="ham">HAM</button>
+              <button class="gate-track-btn" type="button" data-gate-track="time">TIME</button>
+              <button class="gate-track-btn" type="button" data-gate-track="tez">25/8</button>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
     <section class="access-console">
       <div class="console-divider">
         <span></span>
@@ -213,11 +282,12 @@
 
         <ul id="scanLog" class="scan-log"></ul>
 
-        <a id="manualEnter" class="manual-enter" href="level-1.html" hidden>Enter Level 1</a>
+        <a id="manualEnter" class="manual-enter" href="quarantine-mixtape.html" hidden>Enter Level 1</a>
       </div>
     </div>
   </section>
 
   <script src="vault.js" defer></script>
+  <script src="vault-gate-games.js" defer></script>
 </body>
 </html>
