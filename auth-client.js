@@ -26,22 +26,28 @@
     localStorage.removeItem(cfg.storageKey);
   }
 
+  function canUseLocalEmailAuth() {
+    return cfg.provider === 'disabled' || isMockAllowed();
+  }
+
   function notConfiguredError() {
-    return new Error('Auth provider not configured. Connect Supabase/Firebase to enable real accounts.');
+    return new Error('Auth provider not configured. Set AUTH_PROVIDER=mock for restricted local mock login or connect Supabase/Firebase for real accounts.');
   }
 
   async function signUpWithEmail(email, password) {
     if (!email || !password) throw new Error('Email and password are required.');
-    if (!isMockAllowed()) throw notConfiguredError();
-    const session = { email, userId: 'dev_' + btoa(email), createdAt: Date.now(), mode: 'mock' };
+    if (!canUseLocalEmailAuth()) throw notConfiguredError();
+    const mode = cfg.provider === 'disabled' ? 'local' : 'mock';
+    const session = { email, userId: 'dev_' + btoa(email), createdAt: Date.now(), mode };
     writeSession(session);
     return session;
   }
 
   async function signInWithEmail(email, password) {
     if (!email || !password) throw new Error('Email and password are required.');
-    if (!isMockAllowed()) throw notConfiguredError();
-    const session = { email, userId: 'dev_' + btoa(email), createdAt: Date.now(), mode: 'mock' };
+    if (!canUseLocalEmailAuth()) throw notConfiguredError();
+    const mode = cfg.provider === 'disabled' ? 'local' : 'mock';
+    const session = { email, userId: 'dev_' + btoa(email), createdAt: Date.now(), mode };
     writeSession(session);
     return session;
   }
