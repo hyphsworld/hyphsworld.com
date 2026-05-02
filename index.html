@@ -230,6 +230,12 @@
   <!-- Login and points-saving script -->
   <script>
   // Retrieve username on page load and update points display
+  function emitPointsSync(pointsValue) {
+    document.dispatchEvent(new CustomEvent('hyph:points-sync', {
+      detail: { points: String(pointsValue || 0) }
+    }));
+  }
+
   document.addEventListener('DOMContentLoaded', function() {
     var storedUsername = localStorage.getItem('username');
     var loginSection = document.getElementById('login-section');
@@ -241,12 +247,6 @@
       var activeUser = localStorage.getItem('username');
       if (widgetName) widgetName.textContent = activeUser || 'Guest';
       if (widgetPoints) widgetPoints.textContent = String(pointsValue || 0);
-    }
-
-    function emitPointsSync(pointsValue) {
-      document.dispatchEvent(new CustomEvent('hyph:points-sync', {
-        detail: { points: String(pointsValue || 0) }
-      }));
     }
 
     function setLoginVisibility() {
