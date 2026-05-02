@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Level 2 | HYPHSWORLD 5 | HYPHSWORLD</title>
+  <meta name="description" content="HYPHSWORLD Vault Level 2: HYPHSWORLD 5 floor with saved Cool Points and premium access energy." />
+
+  <link rel="stylesheet" href="styles.css" />
+
+  <style>
+    :root{--bg:#060607;--ink:#fff;--muted:#ccd6d2;--green:#39ff7a;--red:#ff275d;--yellow:#ffe45c;--cyan:#1ffcff;--purple:#b84dff;--line:rgba(255,255,255,.16);--shadow:0 0 30px rgba(184,77,255,.22)}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;color:var(--ink);font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,rgba(0,0,0,.35),rgba(0,0,0,.9)),radial-gradient(circle at 15% 20%,rgba(184,77,255,.28),transparent 26%),radial-gradient(circle at 80% 12%,rgba(31,252,255,.18),transparent 30%),radial-gradient(circle at 50% 100%,rgba(255,39,93,.19),transparent 38%),var(--bg);overflow-x:hidden}
+    a{color:inherit;text-decoration:none}.wrap{width:min(1180px,calc(100% - 28px));margin:0 auto}
+    .topbar{position:sticky;top:0;z-index:20;backdrop-filter:blur(18px);background:rgba(0,0,0,.74);border-bottom:1px solid var(--line)}
+    .nav{min-height:74px;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;padding:14px 0}
+    .brand{display:flex;flex-direction:column;line-height:1;font-weight:1000;letter-spacing:.04em;text-transform:uppercase}.brand small{font-size:.7rem;color:var(--cyan)}.brand span{font-size:1.35rem}
+    .links{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .pill,button.pill{border:1px solid var(--line);border-radius:999px;padding:10px 14px;background:linear-gradient(135deg,rgba(184,77,255,.20),rgba(57,255,122,.16),rgba(255,39,93,.14));color:#fff;font-weight:900;cursor:pointer;transition:.2s ease}
+    .pill:hover,button.pill:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+    .hero{padding:42px 0 24px;display:grid;grid-template-columns:1fr;gap:18px}
+    .card{border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.03));border-radius:28px;box-shadow:var(--shadow);overflow:hidden}
+    .hero-main{padding:32px;min-height:420px;position:relative;display:flex;flex-direction:column;justify-content:center}
+    .hero-main:after{content:"05";position:absolute;right:20px;bottom:-40px;font-size:16rem;line-height:1;font-weight:1000;opacity:.065;pointer-events:none}
+    .kicker{display:inline-flex;width:max-content;align-items:center;gap:8px;color:#070707;background:linear-gradient(90deg,var(--purple),var(--cyan),var(--green),var(--yellow));border-radius:999px;padding:8px 12px;font-weight:1000;text-transform:uppercase;letter-spacing:.08em;font-size:.78rem}
+    h1{position:relative;z-index:1;margin:18px 0 10px;font-size:clamp(3rem,9vw,7rem);line-height:.88;letter-spacing:-.075em;text-transform:uppercase}
+    .sub{position:relative;z-index:1;max-width:780px;color:var(--muted);font-size:1.05rem;line-height:1.55}
+    .status-grid{position:relative;z-index:1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:22px}
+    .stat{padding:16px;border-radius:22px;background:rgba(0,0,0,.38);border:1px solid var(--line)}.stat b{display:block;font-size:1.6rem;color:var(--cyan)}.stat span{color:var(--muted);font-weight:800;text-transform:uppercase;font-size:.72rem}
+    .section{padding:18px 0 54px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+    .feature{padding:22px;min-height:260px;display:flex;flex-direction:column;justify-content:space-between}.feature h2{margin:12px 0 8px;font-size:1.5rem}.feature p{margin:0 0 8px;color:var(--muted);line-height:1.5}
+    .cover-zone{min-height:160px;border-radius:22px;border:1px dashed rgba(31,252,255,.45);background:radial-gradient(circle at 20% 20%,rgba(57,255,122,.25),transparent 30%),radial-gradient(circle at 80% 30%,rgba(255,39,93,.20),transparent 32%),rgba(0,0,0,.42);display:grid;place-items:center;font-size:2.4rem;font-weight:1000;letter-spacing:-.06em;text-align:center;text-transform:uppercase}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+    .toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%) translateY(120px);background:#0b0b0b;border:1px solid var(--cyan);color:#fff;padding:13px 16px;border-radius:999px;box-shadow:0 0 22px rgba(31,252,255,.35);z-index:50;font-weight:900;transition:.25s ease}.toast.show{transform:translateX(-50%) translateY(0)}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}.status-grid{grid-template-columns:1fr 1fr}.hero-main:after{font-size:9rem}}@media(max-width:560px){.status-grid{grid-template-columns:1fr}.hero-main{padding:24px}}
+  </style>
+</head>
+
+<body data-hw-page="level-2">
+  <header class="topbar">
+    <div class="wrap nav">
+      <a class="brand" href="index.html"><small>AMS WEST PRESENTS</small><span>HYPHSWORLD</span></a>
+      <nav class="links" aria-label="Main navigation">
+        <a class="pill" href="index.html">Home</a>
+        <a class="pill" href="vault.html">Vault</a>
+        <a class="pill" href="level-1.html">Level 1</a>
+        <a class="pill" href="casino.html">Casino</a>
+        <a class="pill" href="login.html" id="hw-login-link">Create ID</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="wrap hero">
+      <div class="card hero-main">
+        <span class="kicker">ACCESS GRANTED // FLOOR 02</span>
+        <h1>HYPHSWORLD 5</h1>
+        <p class="sub">Level 2 is no longer blank. This is the premium floor for HYPHSWORLD 5 pressure: music, motion, rollout energy, and saved Cool Points that carry across the Vault.</p>
+        <div class="status-grid">
+          <div class="stat"><b>02</b><span>Floor</span></div>
+          <div class="stat"><b>Live</b><span>Status</span></div>
+          <div class="stat"><b>H5</b><span>Drop Zone</span></div>
+          <div class="stat"><b class="js-cool-points">0</b><span>Cool Points Saved</span></div>
+        </div>
+        <div class="actions">
+          <button class="pill" type="button" data-point-add="10" data-point-reason="Level 2 check-in">Claim Level 2 Points</button>
+          <a class="pill" href="level-1.html">Back To Level 1</a>
+          <a class="pill" href="casino.html">Enter Casino</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap section">
+      <div class="grid">
+        <article class="card feature">
+          <div><span class="kicker">Featured Drop</span><h2>HYPHSWORLD 5</h2><p>Current pressure. Premium floor. Built for return traffic, hidden drops, and rollout moments.</p></div>
+          <div class="cover-zone">HYPHSWORLD<br>5</div>
+          <div class="actions"><button class="pill" type="button" data-point-add="8" data-point-reason="HYPHSWORLD 5 preview">Preview +8</button></div>
+        </article>
+
+        <article class="card feature">
+          <div><span class="kicker">Duck Sauce</span><h2>Level 2 Commentary</h2><p>Duck Sauce says this floor is premium because he personally stood near the wiring and made it “expensive.” Buck does not confirm this.</p></div>
+          <div class="actions"><button class="pill" type="button" data-point-add="5" data-point-reason="Duck Sauce Level 2 bonus">Duck Bonus +5</button></div>
+        </article>
+
+        <article class="card feature">
+          <div><span class="kicker">Saved ID</span><h2>Your Vault Progress</h2><p>ID: <strong id="hw-player-name">Guest</strong></p><p>Your points save locally on this browser. Same device, same browser, same score.</p></div>
+          <div class="actions"><button class="pill" type="button" data-point-spend="20" data-point-reason="Level 2 VIP tease">Spend 20 VIP Tease</button></div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="hw-toast" role="status" aria-live="polite"></div>
+  <script src="cool-points.js"></script>
+</body>
+</html>
