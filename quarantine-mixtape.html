@@ -8,6 +8,30 @@
   <meta name="theme-color" content="#00ff66" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="homepage-upgrades.css" />
+  <style>
+    .level-two-gate-card{
+      margin-top:24px;
+      border:1px solid rgba(255,255,255,.18);
+      border-radius:28px;
+      padding:22px;
+      background:
+        radial-gradient(circle at 15% 18%, rgba(57,255,122,.20), transparent 30%),
+        radial-gradient(circle at 85% 20%, rgba(31,252,255,.18), transparent 32%),
+        linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.035));
+      box-shadow:0 0 28px rgba(57,255,122,.16);
+    }
+    .level-two-gate-card h2{margin:8px 0 8px;font-size:clamp(2rem,6vw,4rem);line-height:.9;letter-spacing:-.055em;text-transform:uppercase}
+    .level-two-gate-card p{color:#d9efe5;line-height:1.55}
+    .level-two-gate-form{display:grid;gap:12px;margin-top:16px}
+    .level-two-gate-form label{font-weight:1000;text-transform:uppercase;letter-spacing:.08em;font-size:.78rem;color:#39ff7a}
+    .level-two-input-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .level-two-input-row input{flex:1;min-width:210px;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:14px 16px;background:#050505;color:#fff;font-weight:900;outline:none;box-shadow:inset 0 0 18px rgba(31,252,255,.08)}
+    .level-two-input-row button{border:0;border-radius:999px;padding:14px 18px;font-weight:1000;cursor:pointer;color:#050505;background:linear-gradient(90deg,#39ff7a,#1ffcff,#ffe45c)}
+    .level-two-input-row .clear-level-two{background:linear-gradient(90deg,#ff275d,#b84dff);color:#fff}
+    .level-two-status{margin-top:12px;padding:12px 14px;border-radius:18px;background:rgba(0,0,0,.38);border:1px solid rgba(255,255,255,.12);font-weight:900;color:#fff}
+    .level-two-unlocking .level-two-gate-card{animation:falconPulse .8s infinite alternate}.level-two-granted .level-two-gate-card{box-shadow:0 0 44px rgba(57,255,122,.42)}
+    @keyframes falconPulse{from{filter:saturate(1)}to{filter:saturate(1.8) brightness(1.08)}}
+  </style>
 </head>
 <body>
   <header class="site-header">
@@ -23,8 +47,8 @@
   <main class="quarantine-main">
     <section class="ticker" aria-label="Quarantine ticker">
       <div class="ticker-track">
-        <span>LEVEL 1 OPEN</span><b>✦</b><span>QUARANTINE MIXTAPE</span><b>✦</b><span>HIDDEN ERA</span><b>✦</b><span>DUCK SAUCE TRANSPORT COMPLETE</span><b>✦</b><span>BUCK CLEARED THE DOOR</span><b>✦</b>
-        <span>LEVEL 1 OPEN</span><b>✦</b><span>QUARANTINE MIXTAPE</span><b>✦</b><span>HIDDEN ERA</span><b>✦</b><span>DUCK SAUCE TRANSPORT COMPLETE</span><b>✦</b><span>BUCK CLEARED THE DOOR</span><b>✦</b>
+        <span>LEVEL 1 OPEN</span><b>✦</b><span>QUARANTINE MIXTAPE</span><b>✦</b><span>HIDDEN ERA</span><b>✦</b><span>DUCK SAUCE TRANSPORT COMPLETE</span><b>✦</b><span>FALCON CODE OPENS LEVEL 2</span><b>✦</b>
+        <span>LEVEL 1 OPEN</span><b>✦</b><span>QUARANTINE MIXTAPE</span><b>✦</b><span>HIDDEN ERA</span><b>✦</b><span>DUCK SAUCE TRANSPORT COMPLETE</span><b>✦</b><span>FALCON CODE OPENS LEVEL 2</span><b>✦</b>
       </div>
     </section>
 
@@ -63,6 +87,21 @@
           <p id="quarantine-status" class="status-line">Transport complete. Choose a track.</p>
           <div id="quarantine-track-list" class="quarantine-track-list"></div>
         </section>
+
+        <section id="level2-gate" class="level-two-gate-card" aria-label="Level 2 Falcon access gate">
+          <p class="eyebrow">Level 2 Code Terminal</p>
+          <h2>Falcon Lane</h2>
+          <p>Level 2 stays hidden until this terminal clears. Enter the Level 2 code and the HYPHSWORLD 5 floor opens with the cold Falcon route.</p>
+          <form id="level2GateForm" class="level-two-gate-form">
+            <label for="level2AccessCode">Level 2 access code</label>
+            <div class="level-two-input-row">
+              <input id="level2AccessCode" type="password" autocomplete="off" placeholder="ENTER LEVEL 2 CODE" />
+              <button id="level2UnlockButton" type="submit">Open Level 2</button>
+              <button id="level2ClearCode" class="clear-level-two" type="button">Clear</button>
+            </div>
+          </form>
+          <div id="level2GateStatus" class="level-two-status">Buck: Level 2 is locked. Duck Sauce: “Falcon lane cold until the right code hit.”</div>
+        </section>
       </div>
     </section>
   </main>
@@ -83,6 +122,7 @@
 
   <script src="quarantine-tracks.js"></script>
   <script src="quarantine-player.js"></script>
+  <script src="level-2-access.js"></script>
   <script src="vault-guard.js" defer></script>
 </body>
 </html>
