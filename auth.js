@@ -1,6 +1,6 @@
 (function(){
   const msgEl = document.getElementById('message');
-  const next = new URLSearchParams(location.search).get('next') || 'index.html';
+  const next = new URLSearchParams(location.search).get('next') || 'account.html';
 
   function show(text, type='') {
     msgEl.textContent = text;
@@ -8,7 +8,10 @@
   }
 
   HWAuth.getSession().then((s)=>{
-    if (s) location.href = next;
+    if (s) {
+      show('Already logged in. Opening account management…','success');
+      setTimeout(()=>location.href = 'account.html', 350);
+    }
   });
 
   document.getElementById('signupForm').addEventListener('submit', async (e)=>{
@@ -17,7 +20,7 @@
       const email = document.getElementById('signupEmail').value.trim();
       const password = document.getElementById('signupPassword').value;
       await HWAuth.signUpWithEmail(email, password);
-      show('Account created. Redirecting…','success');
+      show('Account created. Duck Sauce said welcome way too loud. Redirecting…','success');
       setTimeout(()=>location.href = next, 400);
     } catch (err) {
       show(err.message || 'Sign up failed','error');
@@ -30,7 +33,7 @@
       const email = document.getElementById('signinEmail').value.trim();
       const password = document.getElementById('signinPassword').value;
       await HWAuth.signInWithEmail(email, password);
-      show('Signed in. Redirecting…','success');
+      show('Signed in. Buck opened the clipboard. Redirecting…','success');
       setTimeout(()=>location.href = next, 400);
     } catch (err) {
       show(err.message || 'Sign in failed','error');
