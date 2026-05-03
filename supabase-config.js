@@ -1,19 +1,15 @@
 /*
   HYPHSWORLD Supabase Front-End Config
 
-  Project URL is connected.
-  Paste your Supabase anon public key below.
-
-  Supabase Dashboard:
-  Project Settings → Data API → Project URL
-  Project Settings → API Keys → anon public
+  Project URL and browser-safe publishable key are connected.
 
   IMPORTANT:
-  Use only the anon public key here.
-  Never paste the service_role key into a public website file.
+  This file is for public browser config only.
+  Never paste a service_role key, database password, access token,
+  or Postgres connection string into this public website file.
 */
 window.HW_SUPABASE_CONFIG = {
   url: "https://yuhxtdkhsltaqiagrtys.supabase.co",
-  anonKey: "PASTE_SUPABASE_ANON_PUBLIC_KEY_HERE",
+  anonKey: "sb_publishable_oYdN-75W3b7k3m1zLukI-A_BKWVDD5e",
   profileTable: "hw_profiles"
 };
