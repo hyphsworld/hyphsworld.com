@@ -15,10 +15,11 @@
   <link rel="stylesheet" href="homepage-upgrades.css" />
 </head>
 <body class="home-page">
-  <!-- Simple client-side login section. Stores username in localStorage and retrieves saved points -->
+  <!-- Simple client-side login section. Stores account session in localStorage. -->
   <div id="login-section" style="background:#0f1e2b; color:#a9ff87; padding: 10px; text-align:center;">
     <span id="login-status" style="margin-left:20px;">Checking session...</span>
     <a href="auth.html" id="auth-link" style="margin-left:12px; color:#45ff36; font-weight:700;">Create ID / Login</a>
+    <button id="home-logout" type="button" hidden style="margin-left:10px; border:0; border-radius:999px; padding:7px 11px; background:#ff275d; color:#fff; font-weight:800; cursor:pointer;">Logout</button>
   </div>
   <header class="site-header">
     <a class="brand-lockup" href="index.html" aria-label="HYPHSWORLD home">
@@ -32,7 +33,7 @@
       <a href="app-player.html">Full Player</a>
       <a href="shop.html">Merch</a>
       <a href="#connect">Connect</a>
-      <a class="nav-cta" href="auth.html">Create ID</a>
+      <a class="nav-cta" id="nav-account-link" href="auth.html">Create ID</a>
     </nav>
   </header>
 
@@ -205,7 +206,7 @@
         <div class="button-row compact-actions">
           <a class="btn btn-primary" href="mailto:tone@amsenterprisecorp.com">Email AMS WEST</a>
           <a class="btn btn-hot" href="shop.html">Merch</a>
-          <a class="btn btn-soft" href="vault.html">Create ID</a>
+          <a class="btn btn-soft" href="account.html">Manage ID</a>
         </div>
       </div>
     </section>
@@ -217,28 +218,54 @@
   </footer>
 
   <script src="index-player.js"></script>
-
-  <!-- Login and points-saving script -->
+  <script src="auth-client.js"></script>
   <script>
   document.addEventListener("DOMContentLoaded", async function () {
     var statusEl = document.getElementById("login-status");
     var authLink = document.getElementById("auth-link");
+    var navAccountLink = document.getElementById("nav-account-link");
+    var logoutButton = document.getElementById("home-logout");
+
     if (!window.HWAuth) {
       statusEl.textContent = "Auth unavailable";
       return;
     }
+
     var session = await HWAuth.getSession();
     if (session && session.email) {
       statusEl.textContent = "Logged in as " + session.email;
       authLink.textContent = "Manage Account";
-      authLink.href = "auth.html";
+      authLink.href = "account.html";
+      if (navAccountLink) {
+        navAccountLink.textContent = "Manage ID";
+        navAccountLink.href = "account.html";
+      }
+      if (logoutButton) logoutButton.hidden = false;
     } else {
       statusEl.textContent = "Not logged in";
       authLink.textContent = "Create ID / Login";
       authLink.href = "auth.html";
+      if (navAccountLink) {
+        navAccountLink.textContent = "Create ID";
+        navAccountLink.href = "auth.html";
+      }
+      if (logoutButton) logoutButton.hidden = true;
+    }
+
+    if (logoutButton) {
+      logoutButton.addEventListener("click", async function () {
+        await HWAuth.signOut();
+        statusEl.textContent = "Logged out. Duck Sauce said he handled paperwork. He did not.";
+        logoutButton.hidden = true;
+        authLink.textContent = "Create ID / Login";
+        authLink.href = "auth.html";
+        if (navAccountLink) {
+          navAccountLink.textContent = "Create ID";
+          navAccountLink.href = "auth.html";
+        }
+      });
     }
   });
-</script>
-<script src="auth-client.js"></script>
+  </script>
 </body>
 </html>
