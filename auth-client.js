@@ -6,7 +6,7 @@
   const LOCAL_SESSION = 'hw_auth_session_v1';
   const LOCAL_USERS = 'hw_mock_users_v1';
   const POINTS_KEY = 'hyphsworld.coolPoints.total';
-  const PROFILE_TABLE = 'hw_profiles';
+  const PROFILE_TABLE = 'profiles';
 
   let cfgPromise = null;
   let clientPromise = null;
@@ -35,6 +35,10 @@
 
   function displayFromEmail(email) {
     return String(email || '').split('@')[0] || 'HYPHSWORLD Guest';
+  }
+
+  function usernameFromEmail(email) {
+    return displayFromEmail(email).replace(/[^a-z0-9_]/gi, '_').slice(0, 30) || 'hyphsworld_guest';
   }
 
   function num(value) {
@@ -104,30 +108,59 @@
     const sb = await getClient();
     if (!sb || !user) return null;
     const c = await getConfig();
-    const { data } = await sb.from(c.table).select('*').eq('id', user.id).maybeSingle();
+    const { data, error } = await sb.from(c.table).select('*').eq('id', user.id).maybeSingle();
+    if (error && error.code !== 'PGRST116') console.warn('HYPHSWORLD profile fetch warning:', error.message);
     return data || null;
   }
 
-  async function upsertRow(user, updates) {
+  async function upsertRow(user, updates = {}) {
     const sb = await getClient();
     if (!sb || !user) return null;
     const c = await getConfig();
     const meta = user.user_metadata || {};
+    const nextPoints = Math.max(0, parseInt(updates.points ?? updates.coolPoints ?? localPoints(), 10) || 0);
+
     const row = {
       id: user.id,
-      email: user.email || '',
+      username: String(updates.username || meta.username || usernameFromEmail(user.email)).slice(0, 30),
       display_name: String(updates.displayName || updates.display_name || meta.displayName || displayFromEmail(user.email)).slice(0, 40),
       duck_status: String(updates.duckStatus || updates.duck_status || meta.duckStatus || 'Duck Sauce is watching this account.').slice(0, 90),
       buck_clearance: String(updates.buckClearance || updates.buck_clearance || meta.buckClearance || 'Lobby clearance only').slice(0, 90),
-      cool_points: Math.max(0, parseInt(updates.coolPoints ?? updates.cool_points ?? localPoints(), 10) || 0),
+      points: nextPoints,
       updated_at: new Date().toISOString()
     };
+
+    if (updates.lifetimePoints || updates.lifetime_points) row.lifetime_points = Math.max(nextPoints, parseInt(updates.lifetimePoints || updates.lifetime_points, 10) || 0);
     if (updates.level1Unlocked || updates.level_1_unlocked) {
       row.level_1_unlocked = true;
       row.vault_access_granted_at = new Date().toISOString();
     }
-    const { data } = await sb.from(c.table).upsert(row, { onConflict: 'id' }).select().maybeSingle();
+    if (updates.level2Unlocked || updates.level_2_unlocked) row.level_2_unlocked = true;
+
+    const { data, error } = await sb.from(c.table).upsert(row, { onConflict: 'id' }).select().maybeSingle();
+    if (error) throw new Error(error.message || 'Profile save failed.');
     return data || row;
+  }
+
+  async function addLedger(user, amount, reason) {
+    const sb = await getClient();
+    if (!sb || !user || !amount) return;
+    try {
+      await sb.from('points_ledger').insert({
+        user_id: user.id,
+        amount,
+        reason: reason || 'site_action',
+        metadata: { source: 'hyphsworld_frontend' }
+      });
+    } catch (error) {}
+  }
+
+  async function addVaultUnlock(user, levelKey) {
+    const sb = await getClient();
+    if (!sb || !user) return;
+    try {
+      await sb.from('vault_unlocks').insert({ user_id: user.id, level_key: levelKey || 'level_1' });
+    } catch (error) {}
   }
 
   function sessionFromUser(user) {
@@ -143,10 +176,10 @@
     const { data, error } = await sb.auth.signUp({
       email,
       password,
-      options: { data: { displayName, duckStatus: 'Duck Sauce has not fined this account yet.', buckClearance: 'Lobby clearance only', coolPoints: localPoints() } }
+      options: { data: { displayName, username: usernameFromEmail(email), duckStatus: 'Duck Sauce has not fined this account yet.', buckClearance: 'Lobby clearance only', points: localPoints() } }
     });
     if (error) throw new Error(error.message || 'Sign up failed.');
-    if (data && data.user) await upsertRow(data.user, { displayName, coolPoints: localPoints() });
+    if (data && data.user) await upsertRow(data.user, { displayName, points: localPoints() });
     const session = data && data.user ? sessionFromUser(data.user) : { email, userId: '', provider: 'supabase' };
     saveLocalSession(session);
     return session;
@@ -160,7 +193,7 @@
     if (error) throw new Error(error.message || 'Invalid credentials.');
     if (!data || !data.user) throw new Error('No user returned.');
     const row = await upsertRow(data.user, { displayName: data.user.user_metadata?.displayName || displayFromEmail(email) });
-    if (row && Number.isFinite(Number(row.cool_points))) saveLocalPoints(row.cool_points);
+    if (row && Number.isFinite(Number(row.points))) saveLocalPoints(row.points);
     const session = sessionFromUser(data.user);
     saveLocalSession(session);
     return session;
@@ -189,17 +222,20 @@
       if (!data || !data.user) return null;
       const user = data.user;
       const row = (await rowFor(user)) || (await upsertRow(user, { displayName: user.user_metadata?.displayName || displayFromEmail(user.email) }));
-      const points = num(row?.cool_points ?? user.user_metadata?.coolPoints ?? localPoints());
+      const points = num(row?.points ?? user.user_metadata?.points ?? localPoints());
       saveLocalPoints(points);
       return {
         email: user.email || '',
         userId: user.id || '',
         provider: 'supabase',
         displayName: row?.display_name || user.user_metadata?.displayName || displayFromEmail(user.email),
+        username: row?.username || user.user_metadata?.username || usernameFromEmail(user.email),
         duckStatus: row?.duck_status || user.user_metadata?.duckStatus || 'Duck Sauce is watching this account from a folding chair.',
         buckClearance: row?.buck_clearance || user.user_metadata?.buckClearance || 'Lobby clearance only',
         coolPoints: points,
-        level1Unlocked: Boolean(row?.level_1_unlocked)
+        lifetimePoints: num(row?.lifetime_points ?? points),
+        level1Unlocked: Boolean(row?.level_1_unlocked),
+        level2Unlocked: Boolean(row?.level_2_unlocked)
       };
     }
     const session = localSession();
@@ -227,7 +263,7 @@
         displayName: String(updates.displayName || displayFromEmail(data.user.email)).trim().slice(0, 40),
         duckStatus: String(updates.duckStatus || 'Duck Sauce has no official notes.').trim().slice(0, 90),
         buckClearance: String(updates.buckClearance || 'Lobby clearance only').trim().slice(0, 90),
-        coolPoints: localPoints()
+        points: localPoints()
       };
       await sb.auth.updateUser({ data: clean });
       await upsertRow(data.user, clean);
@@ -254,15 +290,17 @@
     return num(user?.coolPoints ?? localPoints());
   }
 
-  async function setPoints(value) {
+  async function setPoints(value, reason) {
     const next = Math.max(0, parseInt(value, 10) || 0);
     saveLocalPoints(next);
     const sb = await getClient();
     if (sb) {
       const { data } = await sb.auth.getUser();
       if (data && data.user) {
-        await sb.auth.updateUser({ data: { coolPoints: next } });
-        await upsertRow(data.user, { coolPoints: next });
+        const current = await rowFor(data.user);
+        const lifetime = Math.max(num(current?.lifetime_points), next);
+        await sb.auth.updateUser({ data: { points: next } });
+        await upsertRow(data.user, { points: next, lifetimePoints: lifetime });
       }
     } else {
       const session = localSession();
@@ -274,15 +312,33 @@
     return next;
   }
 
-  async function addPoints(amount) {
-    return setPoints((await getPoints()) + (parseInt(amount, 10) || 0));
-  }
-
-  async function grantVaultAccess() {
+  async function addPoints(amount, reason) {
+    const n = parseInt(amount, 10) || 0;
     const sb = await getClient();
     if (sb) {
       const { data } = await sb.auth.getUser();
-      if (data && data.user) await upsertRow(data.user, { level1Unlocked: true, coolPoints: localPoints() });
+      if (data && data.user) {
+        const current = await rowFor(data.user);
+        const currentPoints = num(current?.points ?? localPoints());
+        const currentLifetime = num(current?.lifetime_points ?? currentPoints);
+        const next = Math.max(0, currentPoints + n);
+        saveLocalPoints(next);
+        await upsertRow(data.user, { points: next, lifetimePoints: Math.max(currentLifetime, next) });
+        await addLedger(data.user, n, reason || 'site_action');
+        return next;
+      }
+    }
+    return setPoints((await getPoints()) + n, reason);
+  }
+
+  async function grantVaultAccess(levelKey) {
+    const sb = await getClient();
+    if (sb) {
+      const { data } = await sb.auth.getUser();
+      if (data && data.user) {
+        await upsertRow(data.user, { level1Unlocked: true, points: localPoints() });
+        await addVaultUnlock(data.user, levelKey || 'level_1');
+      }
     } else {
       const session = localSession();
       if (session?.email) {
