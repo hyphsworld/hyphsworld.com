@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage Account | HYPHSWORLD</title>
+  <meta name="description" content="Manage your HYPHSWORLD ID, Duck Sauce notes, Buck clearance, Cool Points, and logout." />
+  <link rel="stylesheet" href="auth.css" />
+</head>
+<body class="account-page">
+  <main class="auth-shell account-shell">
+    <section class="card account-card">
+      <div class="account-head">
+        <div>
+          <p class="mini-kicker">AMS WEST ID OFFICE</p>
+          <h1>Manage Account</h1>
+          <p class="sub">Buck checks the account. Duck Sauce adds unnecessary notes.</p>
+        </div>
+        <div class="account-points">
+          <span>Cool Points</span>
+          <strong id="accountCoolPoints">0</strong>
+        </div>
+      </div>
+
+      <div id="message" class="message" role="status" aria-live="polite"></div>
+
+      <section id="accountPanel" class="account-grid" hidden>
+        <form id="profileForm" class="panel account-panel">
+          <h2>ID Settings</h2>
+          <label>Display Name
+            <input id="displayName" type="text" maxlength="40" placeholder="Example: Hyph Life" />
+          </label>
+          <label>Duck Sauce Account Note
+            <input id="duckStatus" type="text" maxlength="90" placeholder="Example: Duck owes me points" />
+          </label>
+          <label>Buck Clearance
+            <select id="buckClearance">
+              <option>Lobby clearance only</option>
+              <option>Vault regular — no foolishness</option>
+              <option>Level 1 cleared, Buck still watching</option>
+              <option>VIP rope maybe, depends on shoes</option>
+              <option>Duck Sauce tried to vouch — denied</option>
+            </select>
+          </label>
+          <button type="submit">Save Account</button>
+        </form>
+
+        <article class="panel account-panel">
+          <h2>Account Status</h2>
+          <div class="status-stack">
+            <p><strong>Email:</strong> <span id="accountEmail">—</span></p>
+            <p><strong>Name:</strong> <span id="accountName">—</span></p>
+            <p><strong>Duck Note:</strong> <span id="accountDuck">—</span></p>
+            <p><strong>Buck:</strong> <span id="accountBuck">—</span></p>
+          </div>
+          <div class="fun-managements">
+            <button type="button" data-funny-action="duckFine">Duck Fine Me</button>
+            <button type="button" data-funny-action="buckAudit">Buck Audit</button>
+            <button type="button" data-funny-action="cleanShoes">Clean My Shoes For VIP</button>
+            <button type="button" data-funny-action="resetPoints">Reset Cool Points</button>
+          </div>
+        </article>
+      </section>
+
+      <section id="loggedOutPanel" class="panel account-panel" hidden>
+        <h2>No ID Active</h2>
+        <p class="sub">Duck Sauce said you walked in with no badge. Buck is pointing at the login button.</p>
+        <a class="auth-pill" href="auth.html?next=account.html">Create ID / Login</a>
+      </section>
+
+      <div class="actions account-actions">
+        <a href="index.html">Back Home</a>
+        <a href="vault.html">Vault</a>
+        <a href="auth.html?next=account.html">Create/Login</a>
+        <button id="logoutBtn" type="button">Logout</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="auth-client.js"></script>
+  <script src="cool-points.js"></script>
+  <script src="account.js"></script>
+</body>
+</html>
