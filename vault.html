@@ -4,11 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Vault Access | HYPHSWORLD</title>
-  <meta name="description" content="Animated HYPHSWORLD Vault Access Pad with BuckTheBodyguard, Duck Sauce, scanner movement, code entry, arcade games, media player, and Level 1 transport." />
+  <title>Lobby | HYPHSWORLD</title>
+  <meta name="description" content="Animated HYPHSWORLD Lobby access pad with BuckTheBodyguard, Duck Sauce, scanner movement, code entry, arcade games, media player, and Level 1 transport." />
 
   <link rel="stylesheet" href="vault.css" />
   <link rel="stylesheet" href="vault-gate-games.css" />
+  <link rel="stylesheet" href="vault-mobile-fix.css" />
 </head>
 
 <body class="vault-page">
@@ -25,7 +26,7 @@
 
     <nav class="vault-nav" aria-label="Main navigation">
       <a href="index.html">Home</a>
-      <a href="vault.html" aria-current="page">Vault</a>
+      <a href="vault.html" aria-current="page">Lobby</a>
       <a href="app-player.html">Full Player</a>
       <a href="merch.html">Merch</a>
     </nav>
@@ -35,7 +36,7 @@
     <section class="vault-stage">
       <article class="vault-intro">
         <p class="tagline">LIVE ACCESS TERMINAL // LEVEL 1 ROUTE</p>
-        <h1>Vault Gate</h1>
+        <h1>LOBBY</h1>
         <p class="lead">
           Scan pad is live. Enter code, let Buck clear the door, and let Duck Sauce talk too much before transport.
         </p>
@@ -62,7 +63,7 @@
       <aside class="live-pad">
         <div class="pad-topper">
           <span class="live-dot"></span>
-          <strong>ACCESS PAD // LIVE</strong>
+          <strong>LOBBY PAD // LIVE</strong>
           <span class="live-dot"></span>
         </div>
 
@@ -124,7 +125,7 @@
     <section class="access-console">
       <div class="console-divider">
         <span></span>
-        <strong>CONTROL CONSOLE</strong>
+        <strong>LOBBY CONTROL CONSOLE</strong>
         <span></span>
       </div>
 
@@ -154,11 +155,11 @@
       </div>
     </section>
 
-    <section class="gate-arcade" aria-label="Vault Gate arcade">
+    <section class="gate-arcade" aria-label="Lobby arcade">
       <div class="gate-arcade-card">
         <div class="gate-arcade-head">
           <div>
-            <p class="tagline">GATE LOBBY // PLAY WHILE BUCK WATCHES</p>
+            <p class="tagline">LOBBY // PLAY WHILE BUCK WATCHES</p>
             <h2>Duck Arcade</h2>
             <p>Slot machine, Buck’s pick-a-card table, and a gate media player. Earn a few Cool Points while the scanner stays live.</p>
           </div>
@@ -287,6 +288,8 @@
     </div>
   </section>
 
+  <script src="auth-client.js" defer></script>
+  <script src="cool-points.js" defer></script>
   <script src="vault.js" defer></script>
   <script src="vault-gate-games.js" defer></script>
 </body>
