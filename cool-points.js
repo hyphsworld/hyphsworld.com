@@ -1,7 +1,7 @@
 /*
   HYPHSWORLD Cool Points
-  Supabase-ready point system. Logged-in accounts sync through HWAuth/Supabase.
-  Guests stay browser-local so the site keeps working.
+  Account-first point system. Logged-in accounts sync through HWAuth/Supabase.
+  Guests stay browser-local so the site keeps working before login.
 */
 (function () {
   'use strict';
@@ -12,6 +12,8 @@
 
   let points = 0;
   let hydrated = false;
+  let hydrating = false;
+  let sessionActive = false;
 
   function safeGet(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
   function safeSet(key, value) { try { localStorage.setItem(key, String(value)); } catch (e) {} }
@@ -44,6 +46,7 @@
     const profile = {
       name: getProfileName(),
       points,
+      accountBacked: sessionActive,
       updatedAt: new Date().toISOString()
     };
     safeSet(PROFILE_KEY, JSON.stringify(profile));
@@ -81,24 +84,43 @@
     return points;
   }
 
-  async function hydrate() {
-    if (hydrated) return points;
-    hydrated = true;
+  async function getAuthSession() {
+    try {
+      if (window.HWAuth && typeof window.HWAuth.getSession === 'function') {
+        return await window.HWAuth.getSession();
+      }
+    } catch (error) {}
+    return null;
+  }
 
-    points = migrateOldPoints();
-
+  async function getAccountPoints() {
     try {
       if (window.HWAuth && typeof window.HWAuth.getPoints === 'function') {
-        const session = await window.HWAuth.getSession();
-        if (session) {
-          points = await window.HWAuth.getPoints();
-        }
+        return numberFrom(await window.HWAuth.getPoints());
       }
-    } catch (error) {
-      points = migrateOldPoints();
+    } catch (error) {}
+    return null;
+  }
+
+  async function hydrate(force) {
+    if (hydrated && !force) return points;
+    if (hydrating) return points;
+    hydrating = true;
+
+    const localStart = migrateOldPoints();
+    const session = await getAuthSession();
+    sessionActive = Boolean(session);
+
+    if (sessionActive) {
+      const accountPoints = await getAccountPoints();
+      if (accountPoints !== null) setLocal(accountPoints);
+      else setLocal(localStart);
+    } else {
+      setLocal(localStart);
     }
 
-    setLocal(points);
+    hydrated = true;
+    hydrating = false;
     return points;
   }
 
@@ -106,16 +128,19 @@
     const n = numberFrom(amount);
     if (!n) return points;
 
+    const session = await getAuthSession();
+    sessionActive = Boolean(session);
+
+    if (sessionActive && window.HWAuth && typeof window.HWAuth.addPoints === 'function') {
+      try {
+        const next = await window.HWAuth.addPoints(n, reason || '');
+        setLocal(next);
+        toast(`+${n} Cool Points${reason ? ' — ' + reason : ''}`);
+        return points;
+      } catch (error) {}
+    }
+
     points += n;
-    setLocal(points);
-
-    try {
-      if (window.HWAuth && typeof window.HWAuth.addPoints === 'function') {
-        const session = await window.HWAuth.getSession();
-        if (session) points = await window.HWAuth.addPoints(n, reason || '');
-      }
-    } catch (error) {}
-
     setLocal(points);
     toast(`+${n} Cool Points${reason ? ' — ' + reason : ''}`);
     return points;
@@ -125,39 +150,51 @@
     const n = numberFrom(amount);
     if (!n) return points;
 
+    await hydrate(true);
+
     if (points < n) {
       toast(`Need ${n} Cool Points. Current: ${points}`);
       return points;
     }
 
-    points -= n;
-    setLocal(points);
+    const next = points - n;
+    const session = await getAuthSession();
+    sessionActive = Boolean(session);
 
-    try {
-      if (window.HWAuth && typeof window.HWAuth.setPoints === 'function') {
-        const session = await window.HWAuth.getSession();
-        if (session) points = await window.HWAuth.setPoints(points);
-      }
-    } catch (error) {}
+    if (sessionActive && window.HWAuth && typeof window.HWAuth.setPoints === 'function') {
+      try {
+        const saved = await window.HWAuth.setPoints(next, reason || 'spend');
+        setLocal(saved);
+        toast(`-${n} Cool Points spent${reason ? ' — ' + reason : ''}`);
+        return points;
+      } catch (error) {}
+    }
 
-    setLocal(points);
+    setLocal(next);
     toast(`-${n} Cool Points spent${reason ? ' — ' + reason : ''}`);
     return points;
   }
 
   async function set(value) {
     const next = Math.max(0, parseInt(value, 10) || 0);
+    const session = await getAuthSession();
+    sessionActive = Boolean(session);
+
+    if (sessionActive && window.HWAuth && typeof window.HWAuth.setPoints === 'function') {
+      try {
+        const saved = await window.HWAuth.setPoints(next, 'set_points');
+        setLocal(saved);
+        return points;
+      } catch (error) {}
+    }
+
     setLocal(next);
-
-    try {
-      if (window.HWAuth && typeof window.HWAuth.setPoints === 'function') {
-        const session = await window.HWAuth.getSession();
-        if (session) points = await window.HWAuth.setPoints(next);
-      }
-    } catch (error) {}
-
-    setLocal(points);
     return points;
+  }
+
+  async function refresh() {
+    hydrated = false;
+    return hydrate(true);
   }
 
   document.addEventListener('click', (event) => {
@@ -174,6 +211,7 @@
   window.HWPoints = {
     get: () => points,
     hydrate,
+    refresh,
     add,
     spend,
     set,
@@ -184,9 +222,9 @@
   };
 
   document.addEventListener('DOMContentLoaded', () => {
-    hydrate().then(render);
+    hydrate(true).then(render);
   });
 
-  points = migrateOldPoints();
+  points = numberFrom(safeGet(TOTAL_KEY));
   render();
 })();
