@@ -1,16 +1,17 @@
 (() => {
   'use strict';
 
-  const LEVEL_TWO_HASHES = new Set([
-    '50673d02ac6324d4cfa82c941caed56709489e70bd5402e1e3520c25d1100b8e'
-  ]);
-
   const LEVEL_TWO_TOKEN_KEY = 'HW_LEVEL2_ACCESS_V1';
   const LEVEL_TWO_LEGACY_KEY = 'hyphsworld_level2_access';
   const LEVEL_TWO_LEGACY_TIME_KEY = 'hyphsworld_level2_access_time';
   const LEVEL_TWO_WINDOW = 1000 * 60 * 60 * 4;
   const DESTINATION = 'level-2.html';
   const REDUCED_MOTION = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const SUPABASE_CONFIG_FILE = 'supabase-config.js';
+  const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+  const VERIFY_FUNCTION = 'verify-vault-code';
+
+  let supabaseClientPromise = null;
 
   const $ = (id) => document.getElementById(id);
 
@@ -19,18 +20,95 @@
     if (el) el.textContent = value;
   }
 
-  async function sha256(text) {
-    const encoded = new TextEncoder().encode(String(text || '').trim().toUpperCase());
-    const digest = await crypto.subtle.digest('SHA-256', encoded);
-    return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, '0')).join('');
-  }
-
   function isFresh(timeValue) {
     const time = Number(timeValue || 0);
     return Number.isFinite(time) && time > 0 && Date.now() - time >= 0 && Date.now() - time < LEVEL_TWO_WINDOW;
   }
 
-  function hasLevelTwoAccess() {
+  function loadScript(src) {
+    return new Promise((resolve, reject) => {
+      const existing = Array.from(document.scripts).find((script) => script.src && script.src.includes(src));
+      if (existing) {
+        if (existing.dataset.loaded === 'true') return resolve();
+        existing.addEventListener('load', resolve, { once: true });
+        existing.addEventListener('error', () => reject(new Error('Could not load ' + src)), { once: true });
+        setTimeout(resolve, 250);
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = src;
+      script.async = false;
+      script.onload = () => {
+        script.dataset.loaded = 'true';
+        resolve();
+      };
+      script.onerror = () => reject(new Error('Could not load ' + src));
+      document.head.appendChild(script);
+    });
+  }
+
+  function configReady(config) {
+    const url = String(config?.url || '').trim();
+    const anonKey = String(config?.anonKey || config?.anon_key || '').trim();
+    return Boolean(url && anonKey && !/PASTE_|YOUR_|PROJECT_URL|ANON_PUBLIC_KEY/i.test(url + anonKey));
+  }
+
+  async function getSupabaseClient() {
+    if (supabaseClientPromise) return supabaseClientPromise;
+
+    supabaseClientPromise = (async () => {
+      if (!window.HW_SUPABASE_CONFIG) await loadScript(SUPABASE_CONFIG_FILE);
+
+      const config = window.HW_SUPABASE_CONFIG || {};
+      if (!configReady(config)) throw new Error('Supabase is not configured.');
+
+      if (!window.supabase || !window.supabase.createClient) await loadScript(SUPABASE_CDN);
+      if (!window.supabase || !window.supabase.createClient) throw new Error('Supabase client did not load.');
+
+      return window.supabase.createClient(config.url, config.anonKey, {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true
+        }
+      });
+    })();
+
+    return supabaseClientPromise;
+  }
+
+  async function verifyLevelTwoCode(code) {
+    const sb = await getSupabaseClient();
+    const { data: sessionData } = await sb.auth.getSession();
+
+    if (!sessionData?.session?.access_token) {
+      return { granted: false, error: 'LOGIN_REQUIRED' };
+    }
+
+    const { data, error } = await sb.functions.invoke(VERIFY_FUNCTION, {
+      body: { code }
+    });
+
+    if (error) return { granted: false, error: error.message || 'VERIFY_FAILED' };
+    if (!data || data.levelKey !== 'level_2') return { granted: false, error: data?.error || 'LEVEL_TWO_REQUIRED' };
+
+    return data;
+  }
+
+  async function hasAccountLevelTwoAccess() {
+    try {
+      if (!window.HWAuth || typeof window.HWAuth.getCurrentUser !== 'function') return false;
+      const user = await window.HWAuth.getCurrentUser();
+      return Boolean(user && user.level2Unlocked);
+    } catch (error) {
+      return false;
+    }
+  }
+
+  async function hasLevelTwoAccess() {
+    if (await hasAccountLevelTwoAccess()) return true;
+
     try {
       if (sessionStorage.getItem(LEVEL_TWO_LEGACY_KEY) === 'granted' && isFresh(sessionStorage.getItem(LEVEL_TWO_LEGACY_TIME_KEY))) {
         return true;
@@ -42,19 +120,20 @@
       if (!raw) return false;
       const token = JSON.parse(raw);
       const route = String(token.route || token.href || '').toLowerCase();
-      return token.level === 'level-two' && (route.includes('level-2') || route.includes('floor2')) && isFresh(token.grantedAt);
+      const level = String(token.level || '').toLowerCase();
+      return (level === 'level_2' || level === 'level-two') && (route.includes('level-2') || route.includes('floor2')) && isFresh(token.grantedAt);
     } catch (error) {
       return false;
     }
   }
 
-  function grantLevelTwoAccess() {
+  function grantLevelTwoAccess(result) {
     const grantedAt = Date.now();
     const nonce = Math.random().toString(36).slice(2);
     const token = {
-      level: 'level-two',
-      route: 'level-2',
-      href: DESTINATION,
+      level: 'level_2',
+      route: result?.route || 'level-2',
+      href: result?.destination || DESTINATION,
       grantedAt,
       nonce
     };
@@ -63,7 +142,24 @@
       sessionStorage.setItem(LEVEL_TWO_LEGACY_KEY, 'granted');
       sessionStorage.setItem(LEVEL_TWO_LEGACY_TIME_KEY, String(grantedAt));
       sessionStorage.setItem(LEVEL_TWO_TOKEN_KEY, JSON.stringify(token));
+      sessionStorage.removeItem('HW_LEVEL2_ARRIVAL_SEEN');
     } catch (error) {}
+
+    return token.href;
+  }
+
+  function friendlyError(error) {
+    const text = String(error || '').toUpperCase();
+    if (text.includes('LOGIN_REQUIRED') || text.includes('JWT') || text.includes('SESSION')) {
+      return 'Buck needs you logged in before Falcon lane can verify Level 2 clearance.';
+    }
+    if (text.includes('LEVEL_TWO_REQUIRED')) {
+      return 'That code is real, but it is not the Level 2 Falcon code.';
+    }
+    if (text.includes('DENIED') || text.includes('FORBIDDEN')) {
+      return 'ACCESS DENIED. Buck: Wrong Level 2 code. Back up from the premium rope.';
+    }
+    return 'Falcon server did not clear it. Refresh and try again.';
   }
 
   function ensureTransportOverlay() {
@@ -86,7 +182,7 @@
         <h2 id="falconTransportTitle">FALCON LANE SCANNING</h2>
         <div class="falcon-stage-meter" aria-hidden="true"><span id="falconStageMeter"></span></div>
         <ul class="falcon-checklist" aria-label="Level 2 access checklist">
-          <li id="falconCheckOne">Buck verifying code hash…</li>
+          <li id="falconCheckOne">Buck verifying code server-side…</li>
           <li id="falconCheckTwo">Duck Sauce warming the tunnel…</li>
           <li id="falconCheckThree">HYPHSWORLD 5 gate standing by…</li>
         </ul>
@@ -124,10 +220,10 @@
       {
         delay: 220,
         pct: '28%',
-        title: 'BODY SCAN ACTIVE',
-        line: 'Buck: Hold still, P. The Level 2 scanner reading jewelry, points, and pressure.',
+        title: 'SERVER CHECK ACTIVE',
+        line: 'Buck: Hold still, P. Falcon lane is checking your login and code off-site.',
         el: checkOne,
-        text: 'Code hash verified.'
+        text: 'Server-side Level 2 verification cleared.'
       },
       {
         delay: 980,
@@ -197,7 +293,7 @@
     gate.insertBefore(stage, form || null);
   }
 
-  function bindLevelOneGate() {
+  async function bindLevelOneGate() {
     const form = $('level2GateForm');
     const input = $('level2AccessCode');
     const clear = $('level2ClearCode');
@@ -207,8 +303,8 @@
 
     if (!form || !input) return;
 
-    if (hasLevelTwoAccess()) {
-      setText('level2GateStatus', 'FALCON clearance already active. Level 2 door is ready.');
+    if (await hasLevelTwoAccess()) {
+      setText('level2GateStatus', 'FALCON clearance already active on this account. Level 2 door is ready.');
     }
 
     form.addEventListener('submit', async (event) => {
@@ -223,32 +319,25 @@
 
       if (button) button.disabled = true;
       document.body.classList.add('level-two-unlocking');
-      setText('level2GateStatus', 'Running Level 2 code scan… Buck is checking the FALCON lane.');
+      setText('level2GateStatus', 'Running Level 2 server scan… Buck is checking the FALCON lane.');
 
-      let passed = false;
-      try {
-        const hash = await sha256(code);
-        passed = LEVEL_TWO_HASHES.has(hash);
-      } catch (error) {
-        passed = false;
-      }
-
+      const result = await verifyLevelTwoCode(code).catch((error) => ({ granted: false, error: error?.message || 'VERIFY_FAILED' }));
       input.value = '';
 
       window.setTimeout(() => {
-        if (!passed) {
+        if (!result.granted) {
           document.body.classList.remove('level-two-unlocking');
-          setText('level2GateStatus', 'ACCESS DENIED. Buck: Wrong Level 2 code. Back up from the premium rope.');
+          setText('level2GateStatus', friendlyError(result.error));
           if (button) button.disabled = false;
           input.focus();
           return;
         }
 
-        grantLevelTwoAccess();
-        setText('level2GateStatus', 'ACCESS GRANTED. FALCON cleared. Transporting to HYPHSWORLD 5…');
+        const destination = grantLevelTwoAccess(result);
+        setText('level2GateStatus', 'ACCESS GRANTED. FALCON cleared server-side. Transporting to HYPHSWORLD 5…');
         document.body.classList.add('level-two-granted');
         runTransportSequence(() => {
-          window.location.href = DESTINATION;
+          window.location.href = destination;
         });
       }, 780);
     });
@@ -360,11 +449,7 @@
         animation: falconBeam 2.4s ease-in-out infinite;
         mix-blend-mode: screen;
       }
-      .falcon-mini-hud {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-      }
+      .falcon-mini-hud { display: flex; flex-wrap: wrap; gap: 8px; }
       .falcon-mini-hud span {
         border: 1px solid rgba(255,255,255,.14);
         border-radius: 999px;
@@ -561,11 +646,7 @@
         color: #050505;
         background: linear-gradient(90deg, rgba(57,255,122,.96), rgba(31,252,255,.92));
       }
-      .falcon-line {
-        margin: 0;
-        color: #fff;
-        font-weight: 1000;
-      }
+      .falcon-line { margin: 0; color: #fff; font-weight: 1000; }
       .level-two-flash-out .level-two-transport-overlay:after {
         content: "";
         position: absolute;
@@ -573,9 +654,7 @@
         background: #fff;
         animation: falconWhiteOut .42s ease forwards;
       }
-      .level-two-arrival main {
-        animation: levelTwoArrive .72s ease-out both;
-      }
+      .level-two-arrival main { animation: levelTwoArrive .72s ease-out both; }
       .level-two-arrival-badge {
         position: fixed;
         left: 50%;
@@ -615,6 +694,12 @@
       }
     `;
     document.head.appendChild(style);
+  }
+
+  function removeLevelTwoLocked() {
+    document.body.classList.remove('level-two-locked');
+    const lock = document.getElementById('levelTwoLockScreen');
+    if (lock) lock.remove();
   }
 
   function showLevelTwoLocked() {
@@ -659,14 +744,15 @@
     window.setTimeout(() => badge.remove(), 4200);
   }
 
-  function init() {
+  async function init() {
     injectGuardStyles();
-    bindLevelOneGate();
+    await bindLevelOneGate();
 
     if (shouldGuardLevelTwoPage()) {
-      if (!hasLevelTwoAccess()) {
+      if (!(await hasLevelTwoAccess())) {
         showLevelTwoLocked();
       } else {
+        removeLevelTwoLocked();
         showArrivalMoment();
       }
     }
