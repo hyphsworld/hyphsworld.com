@@ -35,10 +35,33 @@
     if (!token) return false;
 
     const route = String(token.route || token.href || token.destination || '').toLowerCase();
-    const isLevelOne = token.level === 'level-one' || route.includes('level-1') || route.includes('quarantine-mixtape');
+    const level = String(token.level || '').toLowerCase();
+    const isLevelOne = level === 'level_1' || level === 'level-one' || route.includes('level-1') || route.includes('quarantine-mixtape');
     const isQuarantineRoute = route.includes('quarantine-mixtape') || route.includes('level-1');
 
     return isLevelOne && isQuarantineRoute && isFresh(token.grantedAt, TRANSPORT_WINDOW);
+  }
+
+  async function hasAccountLevelOneAccess() {
+    try {
+      if (!window.HWAuth || typeof window.HWAuth.getCurrentUser !== 'function') return false;
+      const user = await window.HWAuth.getCurrentUser();
+      return Boolean(user && user.level1Unlocked);
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function allowPage() {
+    const denied = document.getElementById('access-denied');
+    const main = document.querySelector('.quarantine-main');
+
+    if (main) main.removeAttribute('aria-hidden');
+
+    if (denied) {
+      denied.classList.remove('is-active');
+      denied.setAttribute('aria-hidden', 'true');
+    }
   }
 
   function showScanRequiredMessage() {
@@ -53,8 +76,14 @@
     }
   }
 
-  function run() {
+  async function run() {
     if (hasLegacyVaultAccess() || hasLevelOneTransport()) {
+      allowPage();
+      return;
+    }
+
+    if (await hasAccountLevelOneAccess()) {
+      allowPage();
       return;
     }
 
