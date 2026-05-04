@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terms & Conditions | HYPHSWORLD</title>
+  <meta name="description" content="HYPHSWORLD terms and conditions, parental advisory notice, entertainment disclaimer, merch policy, and user account rules for AMS WEST LLC." />
+  <meta property="og:title" content="Terms & Conditions | HYPHSWORLD" />
+  <meta property="og:description" content="Terms, parental advisory notice, direct support rules, merch policies, and community conduct for HYPHSWORLD." />
+  <meta property="og:image" content="album-art.jpg" />
+  <meta name="theme-color" content="#39ff14" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="homepage-upgrades.css" />
+  <style>
+    body.terms-page {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 12% 8%, rgba(57,255,20,0.34), transparent 30%),
+        radial-gradient(circle at 86% 12%, rgba(255,57,210,0.32), transparent 32%),
+        radial-gradient(circle at 48% 92%, rgba(0,217,255,0.22), transparent 36%),
+        linear-gradient(180deg, #080013 0%, #21003f 42%, #001b12 76%, #050014 100%);
+      color: #fff;
+    }
+
+    .terms-wrap {
+      width: min(1040px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: clamp(26px, 6vw, 64px) 0;
+    }
+
+    .terms-hero,
+    .terms-card,
+    .advisory-card {
+      border: 1px solid rgba(168,85,255,0.42);
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 12% 16%, rgba(57,255,20,0.20), transparent 30%),
+        radial-gradient(circle at 88% 12%, rgba(255,57,210,0.18), transparent 34%),
+        rgba(9,0,21,0.84);
+      box-shadow: 0 18px 44px rgba(0,0,0,0.34), 0 0 32px rgba(255,57,210,0.18);
+    }
+
+    .terms-hero {
+      position: relative;
+      overflow: hidden;
+      padding: clamp(24px, 6vw, 54px);
+      margin-bottom: 18px;
+    }
+
+    .terms-hero::after {
+      content: "HYPHSWORLD TERMS";
+      position: absolute;
+      right: -18px;
+      bottom: -2px;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(255,236,61,0.22);
+      text-stroke: 1px rgba(255,236,61,0.22);
+      font-size: clamp(3rem, 12vw, 8rem);
+      font-weight: 1000;
+      letter-spacing: -0.09em;
+      transform: rotate(-5deg);
+      pointer-events: none;
+    }
+
+    .terms-hero h1 {
+      position: relative;
+      z-index: 1;
+      margin: 0 0 12px;
+      font-size: clamp(2.8rem, 12vw, 7rem);
+      line-height: 0.84;
+      letter-spacing: -0.085em;
+      text-transform: uppercase;
+    }
+
+    .terms-hero p,
+    .terms-card p,
+    .terms-card li,
+    .advisory-card p {
+      color: #f4eaff;
+      font-size: clamp(1rem, 2.4vw, 1.18rem);
+      line-height: 1.58;
+    }
+
+    .terms-grid {
+      display: grid;
+      grid-template-columns: 0.78fr 1.22fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .advisory-card,
+    .terms-card {
+      padding: clamp(20px, 4vw, 32px);
+    }
+
+    .parental-label {
+      display: grid;
+      place-items: center;
+      min-height: 190px;
+      margin-bottom: 18px;
+      border: 4px solid #fff;
+      background: #000;
+      color: #fff;
+      text-align: center;
+      text-transform: uppercase;
+      box-shadow: 0 0 26px rgba(255,236,61,0.22), 0 0 36px rgba(255,57,210,0.22);
+    }
+
+    .parental-label strong {
+      display: block;
+      font-size: clamp(2.3rem, 9vw, 5rem);
+      line-height: 0.80;
+      letter-spacing: -0.08em;
+      border-bottom: 4px solid #fff;
+      padding: 10px 14px 12px;
+      width: 100%;
+    }
+
+    .parental-label span {
+      display: block;
+      width: 100%;
+      padding: 12px 14px;
+      font-size: clamp(1.15rem, 4vw, 2.1rem);
+      font-weight: 1000;
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+    }
+
+    .terms-card h2,
+    .advisory-card h2 {
+      margin: 0 0 10px;
+      color: #fff;
+      font-size: clamp(1.7rem, 5vw, 3rem);
+      line-height: 0.92;
+      letter-spacing: -0.06em;
+      text-transform: uppercase;
+    }
+
+    .terms-card section + section {
+      margin-top: 22px;
+      padding-top: 22px;
+      border-top: 1px solid rgba(255,236,61,0.18);
+    }
+
+    .terms-card a,
+    .advisory-card a {
+      color: #ffec3d;
+      font-weight: 1000;
+    }
+
+    .terms-note {
+      display: inline-flex;
+      width: fit-content;
+      border-radius: 999px;
+      padding: 8px 12px;
+      margin-bottom: 10px;
+      color: #050014;
+      background: linear-gradient(90deg, #39ff14, #ffec3d, #ff39d2, #00d9ff);
+      font-size: 0.76rem;
+      font-weight: 1000;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .terms-footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    @media (max-width: 860px) {
+      .terms-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body class="terms-page">
+  <header class="site-header">
+    <a class="brand-lockup" href="index.html" aria-label="HYPHSWORLD home">
+      <span>AMS WEST PRESENTS</span>
+      <strong>HYPHSWORLD</strong>
+    </a>
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="vault.html">Vault</a>
+      <a href="games.html">Games</a>
+      <a href="leaderboard.html">Leaderboards</a>
+      <a href="app-player.html">Player</a>
+      <a href="shop.html">Merch</a>
+    </nav>
+  </header>
+
+  <main class="terms-wrap">
+    <section class="terms-hero">
+      <span class="terms-note">Official Site Notice</span>
+      <h1>Terms &<br />Conditions.</h1>
+      <p>Welcome to HYPHSWORLD, operated by AMS WEST LLC. By using this website, listening to music, entering the Vault, playing games, creating an ID, buying merch, or interacting with any HYPHSWORLD feature, you agree to these terms.</p>
+    </section>
+
+    <div class="terms-grid">
+      <aside class="advisory-card" id="parental-advisory">
+        <div class="parental-label" aria-label="Parental Advisory Explicit Content">
+          <strong>Parental<br />Advisory</strong>
+          <span>Explicit Content</span>
+        </div>
+        <h2>Parental Advisory</h2>
+        <p>HYPHSWORLD music, videos, animations, skits, Vault content, and game dialogue may include explicit language, mature themes, street comedy, fictional violence, cannabis references, and adult-oriented entertainment.</p>
+        <p>This site is intended for mature audiences. Parents and guardians should review content before allowing minors to access it.</p>
+      </aside>
+
+      <article class="terms-card">
+        <section>
+          <h2>1. Entertainment Content</h2>
+          <p>HYPHSWORLD includes music, animation, comedy, fictional characters, parody, merchandise, games, and promotional content. Some scenes and dialogue are fictional, exaggerated, or comedic and should not be treated as real-world instructions, threats, legal advice, financial advice, or professional advice.</p>
+        </section>
+
+        <section>
+          <h2>2. Accounts & Cool Points</h2>
+          <p>Cool Points, leaderboard names, game scores, Vault activity, and account features are for fan engagement and entertainment. Logged-in user points are designed to stay attached to the account unless the account is deleted or the system must correct abuse, fraud, technical errors, or leaderboard manipulation.</p>
+        </section>
+
+        <section>
+          <h2>3. Vault Access</h2>
+          <p>Vault access, codes, unlocks, and digital experiences are promotional entertainment features. Codes may change, expire, or be restricted. Do not share private codes publicly unless AMS WEST officially announces them.</p>
+        </section>
+
+        <section>
+          <h2>4. Merch & Payments</h2>
+          <p>Merch purchases, direct support links, Cash App links, PayPal links, bundles, and custom orders are handled through the payment options shown on the site. Please confirm size, color, shipping details, and custom order details before paying. For order questions, contact <a href="mailto:tone@amsenterprisecorp.com">tone@amsenterprisecorp.com</a>.</p>
+        </section>
+
+        <section>
+          <h2>5. User Conduct</h2>
+          <p>Do not abuse the site, attempt to break login systems, scrape private data, harass users, manipulate leaderboards, exploit Vault codes, upload malicious files, or interfere with HYPHSWORLD services. AMS WEST may restrict access for misuse.</p>
+        </section>
+
+        <section>
+          <h2>6. Intellectual Property</h2>
+          <p>HYPHSWORLD names, logos, music, artwork, character concepts, animations, site design, Vault concepts, Duck Sauce-related branding, and AMS WEST materials belong to their respective owners and may not be copied, resold, reuploaded, or used commercially without permission.</p>
+        </section>
+
+        <section>
+          <h2>7. No Guarantee</h2>
+          <p>The website is provided as-is. Features may change as the platform grows. AMS WEST is not responsible for temporary downtime, browser issues, third-party payment outages, file loading problems, or external links leaving the site.</p>
+        </section>
+
+        <section>
+          <h2>8. Contact</h2>
+          <p>For business, booking, merch, support, legal, or takedown questions, email <a href="mailto:tone@amsenterprisecorp.com">tone@amsenterprisecorp.com</a>.</p>
+          <div class="terms-footer-links">
+            <a class="btn btn-primary" href="index.html">Back Home</a>
+            <a class="btn btn-hot" href="shop.html">Merch</a>
+            <a class="btn btn-soft" href="vault.html">Vault</a>
+          </div>
+        </section>
+      </article>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <span>© <span id="year"></span> AMS WEST LLC</span>
+    <span>HYPHSWORLD • Terms & Parental Advisory</span>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = String(new Date().getFullYear());
+  </script>
+</body>
+</html>
