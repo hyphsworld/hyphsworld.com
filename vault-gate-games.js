@@ -14,37 +14,37 @@
       title: 'WITH ME',
       meta: 'Hyph Life — prod by KMT',
       visible: true,
-      sources: ['with-me.mp3', 'WITH ME.mp3', 'With Me.mp3']
+      sources: ['01_WITH_ME.MP3', '01_WITH_ME.mp3', 'with-me.mp3', 'WITH ME.mp3', 'With Me.mp3']
     },
     covidDose: {
       title: 'COVID DOSE',
       meta: 'BooGotGluu — Lobby Music',
       visible: true,
-      sources: ['covid-dose.mp3', 'COVID DOSE.mp3', 'Covid Dose.mp3']
+      sources: ['02_COVID_DOSE.MP3', '02_COVID_DOSE.mp3', 'covid-dose.mp3', 'COVID DOSE.mp3', 'Covid Dose.mp3']
     },
     newkie: {
       title: 'NEWKIE',
       meta: 'Hyph Life — prod by KMT',
       visible: true,
-      sources: ['newkie.mp3', 'NEWKIE.mp3', 'Newkie.mp3']
+      sources: ['03_NEWKIE.MP3', '03_NEWKIE.mp3', 'newkie.mp3', 'NEWKIE.mp3', 'Newkie.mp3']
     },
     etg: {
       title: 'ETG',
       meta: 'BooGotGluu & Hyph Life',
       visible: true,
-      sources: ['etg.mp3', 'ETG.mp3']
+      sources: ['04_ETG.MP3', '04_ETG.mp3', 'etg.mp3', 'ETG.mp3']
     },
     on: {
       title: 'ON',
       meta: 'Hyph Life & KMT',
       visible: true,
-      sources: ['on.mp3', 'ON.mp3', 'On.mp3']
+      sources: ['05_ON.MP3', '05_ON.mp3', 'on.mp3', 'ON.mp3', 'On.mp3']
     },
     bounceOut: {
       title: 'BOUNCE OUT',
       meta: 'Hidden Track 06 — Level 1 unlock route',
       visible: false,
-      sources: ['bounce-out.mp3', 'BOUNCE OUT.mp3', 'Bounce Out.mp3']
+      sources: ['06_BOUNCE_OUT.MP3', '06_BOUNCE_OUT.mp3', 'bounce-out.mp3', 'BOUNCE OUT.mp3', 'Bounce Out.mp3']
     }
   };
 
