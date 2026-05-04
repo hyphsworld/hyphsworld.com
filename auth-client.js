@@ -7,6 +7,7 @@
   const LOCAL_USERS = 'hw_mock_users_v1';
   const POINTS_KEY = 'hyphsworld.coolPoints.total';
   const PROFILE_TABLE = 'profiles';
+  const AUTH_REDIRECT_URL = 'https://hyphsworld.com/login.html';
 
   let cfgPromise = null;
   let clientPromise = null;
@@ -176,7 +177,16 @@
     const { data, error } = await sb.auth.signUp({
       email,
       password,
-      options: { data: { displayName, username: usernameFromEmail(email), duckStatus: 'Duck Sauce has not fined this account yet.', buckClearance: 'Lobby clearance only', points: localPoints() } }
+      options: {
+        emailRedirectTo: AUTH_REDIRECT_URL,
+        data: {
+          displayName,
+          username: usernameFromEmail(email),
+          duckStatus: 'Duck Sauce has not fined this account yet.',
+          buckClearance: 'Lobby clearance only',
+          points: localPoints()
+        }
+      }
     });
     if (error) throw new Error(error.message || 'Sign up failed.');
     if (data && data.user) await upsertRow(data.user, { displayName, points: localPoints() });
