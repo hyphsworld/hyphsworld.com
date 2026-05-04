@@ -7,6 +7,17 @@
   <meta name="description" content="Manage your HYPHSWORLD ID, Duck Sauce notes, Buck clearance, Cool Points, and logout." />
   <link rel="stylesheet" href="auth.css" />
   <script src="site-analytics.js" defer></script>
+  <style>
+    .hw-user-chip{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 12px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(0,0,0,.35);font-weight:900;box-shadow:0 0 18px rgba(57,255,122,.16);margin-top:12px}
+    .hw-user-icon{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:999px;background:linear-gradient(135deg,#39ff7a,#1ffcff,#ff4fd8);color:#050505;font-size:1rem}
+    .hw-user-points{padding:5px 8px;border-radius:999px;background:#39ff7a;color:#050505;font-size:.78rem;font-weight:1000}
+    .avatar-picker{border:1px solid rgba(255,255,255,.18);border-radius:18px;padding:12px;margin:10px 0;background:rgba(0,0,0,.18)}
+    .avatar-picker legend{font-weight:900;padding:0 8px}
+    .avatar-choice-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+    .avatar-choice-row label{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;border-radius:18px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.28);cursor:pointer;font-weight:900}
+    .avatar-choice-row input{width:auto;margin:0;accent-color:#39ff7a}
+    @media(max-width:640px){.avatar-choice-row{grid-template-columns:1fr}.hw-user-chip{border-radius:18px}}
+  </style>
 </head>
 <body class="account-page">
   <main class="auth-shell account-shell">
@@ -16,6 +27,9 @@
           <p class="mini-kicker">AMS WEST ID OFFICE</p>
           <h1>Manage Account</h1>
           <p class="sub">Buck checks the account. Duck Sauce adds unnecessary notes.</p>
+          <div class="hw-user-chip" data-user-widget aria-label="User profile widget">
+            <span class="hw-user-icon" aria-hidden="true">🧢</span><span class="hw-user-name">Guest</span><span class="hw-user-points">0 CP</span>
+          </div>
         </div>
         <div class="account-points">
           <span>Cool Points</span>
@@ -31,6 +45,13 @@
           <label>Display Name
             <input id="displayName" type="text" maxlength="40" placeholder="Example: Hyph Life" />
           </label>
+          <fieldset class="avatar-picker">
+            <legend>Avatar Icon</legend>
+            <div class="avatar-choice-row">
+              <label><input type="radio" name="avatarType" value="boy" id="avatarBoy" checked /> 🧢 Boy</label>
+              <label><input type="radio" name="avatarType" value="girl" id="avatarGirl" /> 💅 Girl</label>
+            </div>
+          </fieldset>
           <label>Duck Sauce Account Note
             <input id="duckStatus" type="text" maxlength="90" placeholder="Example: Duck owes me points" />
           </label>
@@ -51,6 +72,7 @@
           <div class="status-stack">
             <p><strong>Email:</strong> <span id="accountEmail">—</span></p>
             <p><strong>Name:</strong> <span id="accountName">—</span></p>
+            <p><strong>Avatar:</strong> <span id="accountAvatar">🧢 Boy</span></p>
             <p><strong>Duck Note:</strong> <span id="accountDuck">—</span></p>
             <p><strong>Buck:</strong> <span id="accountBuck">—</span></p>
           </div>
@@ -80,6 +102,7 @@
 
   <script src="auth-client.js"></script>
   <script src="cool-points.js"></script>
+  <script src="user-widget.js"></script>
   <script src="account.js"></script>
 </body>
 </html>
