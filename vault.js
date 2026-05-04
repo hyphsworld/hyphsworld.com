@@ -12,18 +12,17 @@
 
   loadLobbyWidgets();
 
-  const ACCEPTED_HASHES = new Set([
-    "651d8948587739f3c0aa840fd250b5b547b98a83a9b84aa24800ff1293dc8ed9"
-  ]);
-
-  const DESTINATION = "quarantine-mixtape.html";
-  const DESTINATION_ROUTE = "quarantine-mixtape";
+  const DEFAULT_DESTINATION = "quarantine-mixtape.html";
+  const DEFAULT_ROUTE = "quarantine-mixtape";
   const LEGACY_ACCESS_KEY = "hyphsworld_vault_access";
   const LEGACY_ACCESS_TIME_KEY = "hyphsworld_vault_access_time";
-  const LEGACY_POINTS_KEY = "coolPoints";
-  const POINTS_TOTAL_KEY = "hyphsworld.coolPoints.total";
   const TRANSPORT_READY_KEY = "HW_LEVEL1_TRANSPORT_READY";
   const TRANSPORT_V6_KEY = "HW_LEVEL1_TRANSPORT_V6";
+  const SUPABASE_CONFIG_FILE = "supabase-config.js";
+  const SUPABASE_CDN = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
+  const VERIFY_FUNCTION = "verify-vault-code";
+
+  let supabaseClientPromise = null;
 
   const duckLines = [
     "“Aye the pad moving now. Don’t freeze up.”",
@@ -42,14 +41,14 @@
   const passSteps = [
     { delay: 0, progress: 12, status: "SCANNING", title: "Body Scan", message: "Buck: “Scanner live. Do not move.”", log: "SCAN BAR ACTIVE", visual: "scanning" },
     { delay: 850, progress: 34, status: "SCANNING", title: "Body Scan", message: "Duck Sauce: “The lights dancing now.”", log: "BODY TARGET LOCKED", visual: "scanning" },
-    { delay: 1700, progress: 61, status: "VERIFYING", title: "Code Check", message: "Buck: “Code hash is being verified.”", log: "CODE CHECK RUNNING", visual: "scanning" },
+    { delay: 1700, progress: 61, status: "VERIFYING", title: "Code Check", message: "Buck: “Code is being verified off-site.”", log: "SUPABASE CHECK RUNNING", visual: "scanning" },
     { delay: 2450, progress: 82, status: "APPROVED", title: "Access Granted", message: "Duck Sauce: “Aight, you in. Don’t act regular.”", log: "ACCESS GRANTED", visual: "granted" },
-    { delay: 3300, progress: 100, status: "TRANSPORT", title: "Transport", message: "Level 1 portal opening. Quarantine Mixtape player ready.", log: "TRANSPORT TUNNEL ONLINE", visual: "transporting" }
+    { delay: 3300, progress: 100, status: "TRANSPORT", title: "Transport", message: "Portal opening. Player route ready.", log: "TRANSPORT TUNNEL ONLINE", visual: "transporting" }
   ];
 
   const failSteps = [
     { delay: 0, progress: 18, status: "SCANNING", title: "Body Scan", message: "Buck: “Checking it now.”", log: "SCAN STARTED", visual: "scanning" },
-    { delay: 850, progress: 46, status: "VERIFYING", title: "Code Check", message: "Duck Sauce: “That code got fake shoes on.”", log: "HASH NOT ACCEPTED", visual: "scanning" },
+    { delay: 850, progress: 46, status: "VERIFYING", title: "Code Check", message: "Duck Sauce: “That code got fake shoes on.”", log: "SERVER CHECK DENIED", visual: "scanning" },
     { delay: 1600, progress: 0, status: "DENIED", title: "Access Denied", message: "Buck: “Denied. Back up from the rope.”", log: "ACCESS DENIED", visual: "" }
   ];
 
@@ -68,18 +67,91 @@
     setText("consoleMessage", message);
   }
 
+  function loadScript(src) {
+    return new Promise((resolve, reject) => {
+      const existing = Array.from(document.scripts).find((script) => script.src && script.src.includes(src));
+      if (existing) {
+        if (existing.dataset.loaded === "true") return resolve();
+        existing.addEventListener("load", resolve, { once: true });
+        existing.addEventListener("error", () => reject(new Error("Could not load " + src)), { once: true });
+        setTimeout(resolve, 250);
+        return;
+      }
+
+      const script = document.createElement("script");
+      script.src = src;
+      script.async = false;
+      script.onload = () => {
+        script.dataset.loaded = "true";
+        resolve();
+      };
+      script.onerror = () => reject(new Error("Could not load " + src));
+      document.head.appendChild(script);
+    });
+  }
+
+  function configReady(config) {
+    const url = String(config?.url || "").trim();
+    const anonKey = String(config?.anonKey || config?.anon_key || "").trim();
+    return Boolean(url && anonKey && !/PASTE_|YOUR_|PROJECT_URL|ANON_PUBLIC_KEY/i.test(url + anonKey));
+  }
+
+  async function getSupabaseClient() {
+    if (supabaseClientPromise) return supabaseClientPromise;
+
+    supabaseClientPromise = (async () => {
+      if (!window.HW_SUPABASE_CONFIG) {
+        await loadScript(SUPABASE_CONFIG_FILE);
+      }
+
+      const config = window.HW_SUPABASE_CONFIG || {};
+      if (!configReady(config)) throw new Error("Supabase is not configured.");
+
+      if (!window.supabase || !window.supabase.createClient) {
+        await loadScript(SUPABASE_CDN);
+      }
+
+      if (!window.supabase || !window.supabase.createClient) {
+        throw new Error("Supabase client did not load.");
+      }
+
+      return window.supabase.createClient(config.url, config.anonKey, {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true
+        }
+      });
+    })();
+
+    return supabaseClientPromise;
+  }
+
+  async function verifyVaultCode(code) {
+    const sb = await getSupabaseClient();
+    const { data: sessionData } = await sb.auth.getSession();
+
+    if (!sessionData?.session?.access_token) {
+      return { granted: false, error: "LOGIN_REQUIRED" };
+    }
+
+    const { data, error } = await sb.functions.invoke(VERIFY_FUNCTION, {
+      body: { code }
+    });
+
+    if (error) {
+      return { granted: false, error: error.message || "VERIFY_FAILED" };
+    }
+
+    return data || { granted: false, error: "EMPTY_RESPONSE" };
+  }
+
   function rotateChatter() {
     const duck = duckLines[Math.floor(Math.random() * duckLines.length)];
     const buck = buckLines[Math.floor(Math.random() * buckLines.length)];
 
     setText("duckLine", duck);
     setText("buckLine", buck);
-  }
-
-  async function sha256(text) {
-    const encoded = new TextEncoder().encode(text.trim().toUpperCase());
-    const digest = await crypto.subtle.digest("SHA-256", encoded);
-    return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
   }
 
   function openOverlay() {
@@ -143,43 +215,44 @@
     return new Promise((resolve) => setTimeout(resolve, last + 650));
   }
 
-  function safeNumber(value) {
-    const parsed = Number.parseInt(value, 10);
-    return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
-  }
-
-  function addCoolPoints(amount) {
-    try {
-      const legacyCurrent = safeNumber(localStorage.getItem(LEGACY_POINTS_KEY));
-      const totalCurrent = safeNumber(localStorage.getItem(POINTS_TOTAL_KEY));
-      const next = Math.max(legacyCurrent, totalCurrent) + amount;
-      localStorage.setItem(LEGACY_POINTS_KEY, String(next));
-      localStorage.setItem(POINTS_TOTAL_KEY, String(next));
-    } catch (error) {}
-  }
-
-  function grantTransport() {
+  function grantTransport(result) {
     const grantedAt = Date.now();
     const nonce = Math.random().toString(36).slice(2);
+    const destination = result?.destination || DEFAULT_DESTINATION;
+    const route = result?.route || DEFAULT_ROUTE;
+    const level = result?.levelKey || "level_1";
 
     try {
       sessionStorage.setItem(LEGACY_ACCESS_KEY, "granted");
       sessionStorage.setItem(LEGACY_ACCESS_TIME_KEY, String(grantedAt));
       sessionStorage.setItem(TRANSPORT_READY_KEY, JSON.stringify({
-        level: "level-one",
-        route: DESTINATION,
-        href: DESTINATION,
+        level,
+        route: destination,
+        href: destination,
         grantedAt,
         nonce
       }));
       sessionStorage.setItem(TRANSPORT_V6_KEY, JSON.stringify({
-        level: "level-one",
-        route: DESTINATION_ROUTE,
-        href: DESTINATION,
+        level,
+        route,
+        href: destination,
         grantedAt,
         nonce
       }));
     } catch (error) {}
+
+    return destination;
+  }
+
+  function friendlyError(error) {
+    const text = String(error || "").toUpperCase();
+    if (text.includes("LOGIN_REQUIRED") || text.includes("JWT") || text.includes("SESSION")) {
+      return "Buck needs you logged in before the gate can verify clearance.";
+    }
+    if (text.includes("DENIED") || text.includes("FORBIDDEN")) {
+      return "Buck denied the gate. Try the correct code.";
+    }
+    return "Gate server did not clear it. Try again after refresh.";
   }
 
   async function handleSubmit(event) {
@@ -201,43 +274,45 @@
     if (button) button.disabled = true;
 
     openOverlay();
-    setStatus("SCANNING", "ACTIVE", "Buck is running the scanner. Duck is touching buttons he should not touch.");
+    setStatus("SCANNING", "ACTIVE", "Buck is running the scanner. Supabase is checking clearance.");
 
-    let passed = false;
+    let result = { granted: false, error: "VERIFY_FAILED" };
 
     try {
-      const hash = await sha256(code);
-      passed = ACCEPTED_HASHES.has(hash);
+      result = await verifyVaultCode(code);
     } catch (error) {
-      passed = false;
+      result = { granted: false, error: error?.message || "VERIFY_FAILED" };
     }
 
     input.value = "";
 
-    if (!passed) {
+    if (!result.granted) {
       await runSteps(failSteps);
       setTimeout(() => {
         closeOverlay();
-        setStatus("DENIED", "MOVING", "Buck denied the gate. Try the correct code.");
+        setStatus("DENIED", "MOVING", friendlyError(result.error));
         if (button) button.disabled = false;
         input.focus();
       }, 900);
       return;
     }
 
-    grantTransport();
-    addCoolPoints(50);
+    const destination = grantTransport(result);
+
+    if (window.HWAuth && typeof window.HWAuth.getCurrentUser === "function") {
+      try { await window.HWAuth.getCurrentUser(); } catch (error) {}
+    }
 
     await runSteps(passSteps);
 
     const manual = $("manualEnter");
     if (manual) {
-      manual.href = DESTINATION;
+      manual.href = destination;
       manual.hidden = false;
     }
 
     setTimeout(() => {
-      window.location.href = DESTINATION;
+      window.location.href = destination;
     }, 900);
   }
 
@@ -247,7 +322,7 @@
     const close = $("closeOverlay");
     const manual = $("manualEnter");
 
-    if (manual) manual.href = DESTINATION;
+    if (manual) manual.href = DEFAULT_DESTINATION;
     if (form) form.addEventListener("submit", handleSubmit);
 
     if (clear) {
