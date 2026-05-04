@@ -4,23 +4,23 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>HYPHSWORLD | AMS WEST</title>
-  <meta name="description" content="HYPHSWORLD by Hyph Life and AMS WEST. Music, Vault drops, Duck Sauce guide, artist spotlight, merch, and direct fan access." />
+  <meta name="description" content="HYPHSWORLD by Hyph Life and AMS WEST. Music, Vault drops, Duck Sauce guide, artist spotlight, merch, Cool Points, leaderboards, and direct fan access." />
   <meta property="og:title" content="HYPHSWORLD | AMS WEST" />
   <meta property="og:description" content="Real music. Direct access. Duck Sauce watching the lobby." />
   <meta property="og:image" content="album-art.jpg" />
   <meta name="theme-color" content="#00ff66" />
-  <!-- Referrer policy added to mitigate YouTube Error 153 -->
   <meta name="referrer" content="strict-origin-when-cross-origin" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="homepage-upgrades.css" />
+  <link rel="stylesheet" href="leaderboard-widgets.css" />
 </head>
 <body class="home-page">
-  <!-- Simple client-side login section. Stores account session in localStorage. -->
   <div id="login-section" style="background:#0f1e2b; color:#a9ff87; padding: 10px; text-align:center;">
     <span id="login-status" style="margin-left:20px;">Checking session...</span>
     <a href="auth.html" id="auth-link" style="margin-left:12px; color:#45ff36; font-weight:700;">Create ID / Login</a>
     <button id="home-logout" type="button" hidden style="margin-left:10px; border:0; border-radius:999px; padding:7px 11px; background:#ff275d; color:#fff; font-weight:800; cursor:pointer;">Logout</button>
   </div>
+
   <header class="site-header">
     <a class="brand-lockup" href="index.html" aria-label="HYPHSWORLD home">
       <span>AMS WEST PRESENTS</span>
@@ -30,6 +30,7 @@
       <a href="#music">Music</a>
       <a href="#spotlight">Spotlight</a>
       <a href="vault.html">Vault</a>
+      <a href="leaderboard.html">Leaderboards</a>
       <a href="app-player.html">Full Player</a>
       <a href="shop.html">Merch</a>
       <a href="#connect">Connect</a>
@@ -40,8 +41,8 @@
   <main>
     <section class="ticker" aria-label="HYPHSWORLD ticker">
       <div class="ticker-track">
-        <span>WELCOME 2 HYPHSWORLD</span><b>✦</b><span>DUCK SAUCE GOT INSTRUCTIONS</span><b>✦</b><span>VAULT TRANSPORT READY</span><b>✦</b><span>QUARANTINE MIXTAPE ON LEVEL 1</span><b>✦</b><span>COOL POINTS START CLEAN</span><b>✦</b><span>FALCON LANE OPENS LEVEL 2</span><b>✦</b>
-        <span>WELCOME 2 HYPHSWORLD</span><b>✦</b><span>DUCK SAUCE GOT INSTRUCTIONS</span><b>✦</b><span>VAULT TRANSPORT READY</span><b>✦</b><span>QUARANTINE MIXTAPE ON LEVEL 1</span><b>✦</b><span>COOL POINTS START CLEAN</span><b>✦</b><span>FALCON LANE OPENS LEVEL 2</span><b>✦</b>
+        <span>WELCOME 2 HYPHSWORLD</span><b>✦</b><span>DUCK SAUCE GOT INSTRUCTIONS</span><b>✦</b><span>VAULT TRANSPORT READY</span><b>✦</b><span>QUARANTINE MIXTAPE ON LEVEL 1</span><b>✦</b><span>COOL POINTS HIT THE LEADERBOARD</span><b>✦</b><span>NO PUBLIC CODES UNTIL TONE SAYS SO</span><b>✦</b>
+        <span>WELCOME 2 HYPHSWORLD</span><b>✦</b><span>DUCK SAUCE GOT INSTRUCTIONS</span><b>✦</b><span>VAULT TRANSPORT READY</span><b>✦</b><span>QUARANTINE MIXTAPE ON LEVEL 1</span><b>✦</b><span>COOL POINTS HIT THE LEADERBOARD</span><b>✦</b><span>NO PUBLIC CODES UNTIL TONE SAYS SO</span><b>✦</b>
       </div>
     </section>
 
@@ -57,6 +58,7 @@
           <div class="button-row compact-actions">
             <button class="btn btn-primary" type="button" data-track-id="ham">Play HAM</button>
             <a class="btn btn-hot" href="vault.html">Enter Vault</a>
+            <a class="btn btn-soft" href="leaderboard.html">Leaderboards</a>
             <a class="btn btn-soft" href="app-player.html">Full Player</a>
           </div>
           <div class="hero-video-status" id="hero-video-status">MP4 hero loading…</div>
@@ -94,7 +96,7 @@
         <div class="section-title">
           <p class="eyebrow">HYPHSWORLD Radio</p>
           <h2>Homepage Player</h2>
-          <p>Session-only Cool Points. No fake saved score. Every visitor starts clean.</p>
+          <p>Logged-in Cool Points can climb and stay attached to the account. Guest sessions still stay local.</p>
         </div>
 
         <div class="player-grid">
@@ -130,6 +132,44 @@
       </div>
     </section>
 
+    <section class="hw-mini-widgets" data-hw-mini-widgets aria-label="HYPHSWORLD live widgets">
+      <article class="hw-mini-widget" data-hw-widget="top-player">
+        <span>Top Player</span>
+        <strong>Loading</strong>
+        <p>Highest Cool Points total right now.</p>
+      </article>
+      <article class="hw-mini-widget" data-hw-widget="total-players">
+        <span>Ranked Players</span>
+        <strong>0</strong>
+        <p>Public-safe players on the board.</p>
+      </article>
+      <article class="hw-mini-widget" data-hw-widget="latest-unlock">
+        <span>Latest Unlock</span>
+        <strong>Pending</strong>
+        <p>Newest Vault movement from Supabase.</p>
+      </article>
+    </section>
+
+    <section class="hw-leaderboard-wrap" data-hw-leaderboard data-default-mode="points" data-limit="5" aria-label="Homepage leaderboard preview">
+      <article class="hw-leaderboard-card">
+        <div class="hw-leaderboard-head">
+          <div>
+            <span class="hw-leaderboard-kicker">LIVE BOARD</span>
+            <h2>Cool Points Race</h2>
+            <p>Top players update from Supabase. No emails, no private data — just the public leaderboard energy.</p>
+          </div>
+          <div class="hw-leaderboard-actions">
+            <button class="hw-board-btn is-active" type="button" data-hw-board-mode="points">Cool Points</button>
+            <button class="hw-board-btn" type="button" data-hw-board-mode="games">Games</button>
+            <a class="hw-board-btn" href="leaderboard.html">Full Board</a>
+          </div>
+        </div>
+        <div class="hw-leaderboard-list" data-hw-leaderboard-list>
+          <div class="hw-leaderboard-empty">Loading leaderboard...</div>
+        </div>
+      </article>
+    </section>
+
     <section id="spotlight" class="section-pad">
       <div class="phone-shell section-card spotlight-section">
         <div class="section-title">
@@ -162,7 +202,7 @@
         <div class="section-title">
           <p class="eyebrow">The Vault</p>
           <h2>Level 1 is waiting.</h2>
-          <p>Homepage only teases the first floor. Level 2 stays out the lobby until Falcon clears.</p>
+          <p>Homepage only teases the first floor. Higher levels stay off the public ticker until you choose.</p>
         </div>
         <article class="level-card level-one-only">
           <span class="lock-badge">LEVEL 1</span>
@@ -215,12 +255,16 @@
 
   <script src="index-player.js"></script>
   <script src="auth-client.js"></script>
+  <script src="leaderboard-widgets.js"></script>
   <script>
   document.addEventListener("DOMContentLoaded", async function () {
     var statusEl = document.getElementById("login-status");
     var authLink = document.getElementById("auth-link");
     var navAccountLink = document.getElementById("nav-account-link");
     var logoutButton = document.getElementById("home-logout");
+    var year = document.getElementById("year");
+
+    if (year) year.textContent = new Date().getFullYear();
 
     if (!window.HWAuth) {
       statusEl.textContent = "Auth unavailable";
