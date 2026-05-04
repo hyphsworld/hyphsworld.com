@@ -5,11 +5,103 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <title>Lobby | HYPHSWORLD</title>
-  <meta name="description" content="Animated HYPHSWORLD Lobby access pad with BuckTheBodyguard, Duck Sauce, scanner movement, code entry, arcade games, media player, and Level 1 transport." />
+  <meta name="description" content="Animated HYPHSWORLD Lobby access pad with BuckTheBodyguard, Duck Sauce, scanner movement, code entry, arcade games, media player, lobby video, and Level 1 transport." />
 
   <link rel="stylesheet" href="vault.css" />
   <link rel="stylesheet" href="vault-gate-games.css" />
   <link rel="stylesheet" href="vault-mobile-fix.css" />
+
+  <style>
+    .lobby-video-section{
+      width:min(1180px,calc(100% - 28px));
+      margin:26px auto 0;
+    }
+    .lobby-video-card{
+      position:relative;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.18);
+      border-radius:30px;
+      background:
+        radial-gradient(circle at 18% 18%,rgba(57,255,122,.22),transparent 30%),
+        radial-gradient(circle at 82% 20%,rgba(184,77,255,.28),transparent 34%),
+        linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.035));
+      box-shadow:0 0 34px rgba(184,77,255,.20), inset 0 0 38px rgba(31,252,255,.05);
+    }
+    .lobby-video-head{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:18px;
+      flex-wrap:wrap;
+      padding:24px 24px 14px;
+    }
+    .lobby-video-head h2{
+      margin:8px 0 6px;
+      font-size:clamp(2rem,6vw,4.7rem);
+      line-height:.88;
+      letter-spacing:-.06em;
+      text-transform:uppercase;
+    }
+    .lobby-video-head p{
+      max-width:680px;
+      margin:0;
+      color:#d8efe6;
+      line-height:1.45;
+      font-weight:750;
+    }
+    .lobby-video-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:9px 12px;
+      border-radius:999px;
+      color:#070707;
+      background:linear-gradient(90deg,#39ff7a,#1ffcff,#ffe45c,#ff4fd8);
+      font-size:.78rem;
+      font-weight:1000;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      box-shadow:0 0 22px rgba(31,252,255,.18);
+    }
+    .lobby-video-shell{
+      position:relative;
+      margin:0 24px 24px;
+      border-radius:24px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.18);
+      background:#050505;
+      box-shadow:0 0 28px rgba(0,0,0,.45);
+    }
+    .lobby-video-shell video{
+      display:block;
+      width:100%;
+      aspect-ratio:16/9;
+      object-fit:cover;
+      background:#000;
+    }
+    .lobby-video-strip{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      padding:13px 16px;
+      background:rgba(0,0,0,.72);
+      border-top:1px solid rgba(255,255,255,.12);
+      color:#fff;
+      font-weight:900;
+    }
+    .lobby-video-strip small{
+      color:#9fffd0;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      font-weight:1000;
+    }
+    @media(max-width:640px){
+      .lobby-video-head{padding:18px 18px 12px;}
+      .lobby-video-shell{margin:0 14px 18px;}
+    }
+  </style>
 </head>
 
 <body class="vault-page">
@@ -153,6 +245,29 @@
           </div>
         </form>
       </div>
+    </section>
+
+    <section class="lobby-video-section" aria-label="Lobby video preview">
+      <article class="lobby-video-card">
+        <div class="lobby-video-head">
+          <div>
+            <span class="lobby-video-badge">LOBBY MP4 // 01 SHOW PREVIEW</span>
+            <h2>Lobby Screen</h2>
+            <p>The Lobby now has its own MP4 screen before the arcade and player. Upload the video as <strong>lobby-preview.mp4</strong> in the repo root so it loads live.</p>
+          </div>
+        </div>
+
+        <div class="lobby-video-shell">
+          <video id="lobbyPreviewVideo" controls playsinline preload="metadata" poster="hyphsworld-5-cover.png">
+            <source src="lobby-preview.mp4" type="video/mp4" />
+            Your browser does not support the HYPHSWORLD Lobby video.
+          </video>
+          <div class="lobby-video-strip">
+            <small>NOW SHOWING</small>
+            <span>01 Show Preview // HYPHSWORLD Lobby</span>
+          </div>
+        </div>
+      </article>
     </section>
 
     <section class="gate-arcade" aria-label="Lobby arcade">
