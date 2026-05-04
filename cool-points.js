@@ -6,6 +6,17 @@
 (function () {
   'use strict';
 
+  function loadSharedAnalytics() {
+    if (window.__HYPHSWORLD_ANALYTICS_BOOTSTRAP__) return;
+    window.__HYPHSWORLD_ANALYTICS_BOOTSTRAP__ = true;
+    const script = document.createElement('script');
+    script.src = 'site-analytics.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  }
+
+  loadSharedAnalytics();
+
   const TOTAL_KEY = 'hyphsworld.coolPoints.total';
   const PROFILE_KEY = 'hyphsworld.coolPoints.profile';
   const OLD_KEYS = ['coolPoints', 'hyphsCoolPoints', 'hwCoolPoints', 'hyphsworldPoints', 'hyphsworld.coolpoints'];
