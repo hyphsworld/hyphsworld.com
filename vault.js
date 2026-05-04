@@ -1,6 +1,17 @@
 (() => {
   "use strict";
 
+  function loadLobbyWidgets() {
+    if (window.__HYPHSWORLD_LOBBY_WIDGETS_BOOTSTRAP__) return;
+    window.__HYPHSWORLD_LOBBY_WIDGETS_BOOTSTRAP__ = true;
+    const script = document.createElement("script");
+    script.src = "lobby-widgets.js";
+    script.defer = true;
+    document.body.appendChild(script);
+  }
+
+  loadLobbyWidgets();
+
   const ACCEPTED_HASHES = new Set([
     "651d8948587739f3c0aa840fd250b5b547b98a83a9b84aa24800ff1293dc8ed9"
   ]);
