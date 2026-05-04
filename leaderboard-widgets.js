@@ -4,6 +4,7 @@
   const CONFIG_FILE = "supabase-config.js";
   const CDN = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
   const DEFAULT_LIMIT = 8;
+  const REFRESH_MS = 45000;
 
   let clientPromise = null;
 
@@ -15,6 +16,7 @@
         setTimeout(resolve, 200);
         return;
       }
+
       const script = document.createElement("script");
       script.src = src;
       script.async = false;
@@ -45,32 +47,53 @@
 
   async function getClient() {
     if (clientPromise) return clientPromise;
+
     clientPromise = (async () => {
       if (!window.HW_SUPABASE_CONFIG) await loadScript(CONFIG_FILE);
+
       const config = window.HW_SUPABASE_CONFIG || {};
       if (!isConfigReady(config)) throw new Error("Supabase config missing.");
+
       if (!window.supabase || !window.supabase.createClient) await loadScript(CDN);
       if (!window.supabase || !window.supabase.createClient) throw new Error("Supabase client unavailable.");
+
       return window.supabase.createClient(config.url, config.anonKey, {
-        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true
+        }
       });
     })();
+
     return clientPromise;
   }
 
   function renderEmpty(target, message) {
+    if (!target) return;
     target.innerHTML = `<div class="hw-leaderboard-empty">${safeText(message, "No leaderboard data yet.")}</div>`;
   }
 
+  function playerName(row) {
+    return safeText(row.display_name || row.player_name || row.username, "HYPHSWORLD Player");
+  }
+
   function renderRows(target, rows, mode) {
+    if (!target) return;
+
     if (!rows || !rows.length) {
-      renderEmpty(target, mode === "games" ? "No game scores yet. First player to run it owns the board." : "No Cool Points yet. Login, play, unlock, and the board wakes up.");
+      renderEmpty(
+        target,
+        mode === "games"
+          ? "No game scores yet. First player to run it owns the board."
+          : "No Cool Points yet. Login, play, unlock, and the board wakes up."
+      );
       return;
     }
 
     target.innerHTML = rows.map((row, index) => {
       const rank = index + 1;
-      const name = safeText(row.player_name, "HYPHSWORLD Player");
+      const name = playerName(row);
       const icon = safeText(row.avatar_icon, "🧢");
       const score = mode === "games" ? row.score : row.points;
       const label = mode === "games" ? safeText(row.game_key, "game score") : "cool points";
@@ -98,10 +121,11 @@
     const sb = await getClient();
     const { data, error } = await sb
       .from("cool_points_leaderboard")
-      .select("user_id,player_name,username,avatar_icon,points,lifetime_points,level_1_unlocked,level_2_unlocked,updated_at")
+      .select("user_id,display_name,username,avatar_icon,points,lifetime_points,level_1_unlocked,level_2_unlocked,updated_at")
       .order("points", { ascending: false })
       .order("lifetime_points", { ascending: false })
       .limit(limit);
+
     if (error) throw error;
     return data || [];
   }
@@ -110,9 +134,10 @@
     const sb = await getClient();
     const { data, error } = await sb
       .from("game_leaderboard")
-      .select("id,user_id,player_name,avatar_icon,game_key,score,points_delta,created_at")
+      .select("id,user_id,display_name,avatar_icon,game_key,score,points_delta,created_at")
       .order("score", { ascending: false })
       .limit(limit);
+
     if (error) throw error;
     return data || [];
   }
@@ -125,12 +150,17 @@
 
     async function refresh(nextMode) {
       mode = nextMode || mode;
-      buttons.forEach((button) => button.classList.toggle("is-active", button.getAttribute("data-hw-board-mode") === mode));
+      buttons.forEach((button) => {
+        button.classList.toggle("is-active", button.getAttribute("data-hw-board-mode") === mode);
+      });
+
       renderEmpty(list, "Loading leaderboard...");
+
       try {
         const rows = mode === "games" ? await fetchGames(limit) : await fetchPoints(limit);
         renderRows(list, rows, mode);
       } catch (error) {
+        console.warn("HYPHSWORLD leaderboard warning:", error?.message || error);
         renderEmpty(list, "Leaderboard is warming up. Refresh after Supabase finishes answering.");
       }
     }
@@ -140,7 +170,7 @@
     });
 
     await refresh(mode);
-    setInterval(() => refresh(mode), 45000);
+    setInterval(() => refresh(mode), REFRESH_MS);
   }
 
   async function hydrateMiniWidgets(root) {
@@ -150,14 +180,38 @@
 
     try {
       const sb = await getClient();
-      const { data: topRows } = await sb.from("cool_points_leaderboard").select("player_name,points").order("points", { ascending: false }).limit(1);
-      const { data: playerRows } = await sb.from("cool_points_leaderboard").select("user_id").limit(500);
-      const { data: unlockRows } = await sb.from("vault_unlocks").select("level_key,unlocked_at").order("unlocked_at", { ascending: false }).limit(1);
+      const { data: topRows } = await sb
+        .from("cool_points_leaderboard")
+        .select("display_name,username,points")
+        .order("points", { ascending: false })
+        .limit(1);
 
-      if (topPlayer) topPlayer.textContent = topRows && topRows[0] ? `${safeText(topRows[0].player_name, "Player")} • ${formatNumber(topRows[0].points)}` : "Waiting";
+      const { data: playerRows } = await sb
+        .from("cool_points_leaderboard")
+        .select("user_id")
+        .limit(500);
+
+      const { data: unlockRows } = await sb
+        .from("vault_unlocks")
+        .select("level_key,unlocked_at")
+        .order("unlocked_at", { ascending: false })
+        .limit(1);
+
+      if (topPlayer) {
+        topPlayer.textContent = topRows && topRows[0]
+          ? `${playerName(topRows[0])} • ${formatNumber(topRows[0].points)}`
+          : "Waiting";
+      }
+
       if (totalPlayers) totalPlayers.textContent = formatNumber((playerRows || []).length);
-      if (latestUnlock) latestUnlock.textContent = unlockRows && unlockRows[0] ? safeText(unlockRows[0].level_key, "Vault") : "None yet";
+
+      if (latestUnlock) {
+        latestUnlock.textContent = unlockRows && unlockRows[0]
+          ? safeText(unlockRows[0].level_key, "Vault")
+          : "None yet";
+      }
     } catch (error) {
+      console.warn("HYPHSWORLD mini widget warning:", error?.message || error);
       if (topPlayer) topPlayer.textContent = "Loading";
       if (totalPlayers) totalPlayers.textContent = "0";
       if (latestUnlock) latestUnlock.textContent = "Pending";
