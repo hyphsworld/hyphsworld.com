@@ -29,6 +29,45 @@ body {
   overflow-x: hidden;
 }
 
+body.shop-page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -3;
+  pointer-events: none;
+  background:
+    linear-gradient(115deg, rgba(0,0,0,0.70), rgba(0,0,0,0.26), rgba(0,0,0,0.80)),
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.035) 0 1px, transparent 1px 74px),
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0 1px, transparent 1px 62px),
+    radial-gradient(circle at 12% 20%, rgba(69,255,54,0.30), transparent 24%),
+    radial-gradient(circle at 78% 16%, rgba(255,79,216,0.25), transparent 28%),
+    radial-gradient(circle at 46% 88%, rgba(53,215,255,0.22), transparent 34%),
+    #050505;
+}
+
+body.shop-page::after {
+  content: "HYPHSWORLD  AMS WEST  RICHMOND  VAULT  DUCK SAUCE  01  LOBBY MUSIC  LEVEL 2";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8vw;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255,255,255,0.09);
+  text-stroke: 1px rgba(255,255,255,0.09);
+  font-size: clamp(3.4rem, 13vw, 11rem);
+  font-weight: 1000;
+  line-height: 0.86;
+  letter-spacing: -0.09em;
+  text-align: center;
+  text-transform: uppercase;
+  transform: rotate(-7deg);
+  opacity: 0.85;
+}
+
 a { color: inherit; text-decoration: none; }
 img { max-width: 100%; display: block; }
 
@@ -128,6 +167,34 @@ img { max-width: 100%; display: block; }
   padding: clamp(20px, 5vw, 48px) 0;
 }
 
+.graffiti-zone {
+  position: relative;
+  overflow: hidden;
+}
+.graffiti-tags {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+.graffiti-tags span {
+  position: absolute;
+  display: inline-flex;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255,255,255,0.20);
+  text-stroke: 1px rgba(255,255,255,0.20);
+  font-size: clamp(2.6rem, 9vw, 7.8rem);
+  font-weight: 1000;
+  letter-spacing: -0.08em;
+  text-transform: uppercase;
+  opacity: 0.56;
+  filter: drop-shadow(0 0 12px rgba(69,255,54,0.20));
+}
+.graffiti-tags span:nth-child(1) { left: 4%; top: 8%; transform: rotate(-10deg); color: rgba(69,255,54,0.10); }
+.graffiti-tags span:nth-child(2) { right: 5%; top: 30%; transform: rotate(8deg); color: rgba(255,79,216,0.10); }
+.graffiti-tags span:nth-child(3) { left: 13%; bottom: 5%; transform: rotate(5deg); color: rgba(53,215,255,0.10); }
+.graffiti-tags span:nth-child(4) { right: 12%; bottom: 18%; transform: rotate(-7deg); color: rgba(255,228,92,0.10); }
+
 .hero-card,
 .support-card {
   position: relative;
@@ -139,6 +206,19 @@ img { max-width: 100%; display: block; }
     radial-gradient(circle at 86% 12%, rgba(255,79,216,0.14), transparent 30%),
     rgba(0,0,0,0.74);
   box-shadow: 0 0 34px rgba(69,255,54,0.18), 0 22px 70px rgba(0,0,0,0.42);
+}
+.hero-card::before,
+.support-card::before {
+  content: "HYPH ✦ AMS ✦ WEST ✦ VAULT ✦ STORE ✦";
+  position: absolute;
+  inset: auto -12px 8px auto;
+  color: rgba(255,255,255,0.06);
+  font-size: clamp(2.5rem, 8vw, 6rem);
+  font-weight: 1000;
+  letter-spacing: -0.08em;
+  text-transform: uppercase;
+  transform: rotate(-5deg);
+  pointer-events: none;
 }
 .hero-card {
   display: grid;
@@ -176,7 +256,8 @@ img { max-width: 100%; display: block; }
 .section-head p,
 .support-card p,
 .lane-card p,
-.mascot-card p {
+.mascot-card p,
+.product-card p {
   color: var(--muted);
   font-size: clamp(1rem, 2.5vw, 1.22rem);
   line-height: 1.55;
@@ -247,11 +328,115 @@ img { max-width: 100%; display: block; }
 }
 .section-head p { max-width: 780px; margin: 0; }
 
+.product-wall-section {
+  position: relative;
+}
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.product-card {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 30px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.035)),
+    rgba(0,0,0,0.74);
+  box-shadow: 0 18px 46px rgba(0,0,0,0.34), 0 0 26px rgba(69,255,54,0.12);
+}
+.product-card::before {
+  content: "DROP WALL";
+  position: absolute;
+  right: -8px;
+  top: 12px;
+  z-index: 2;
+  color: rgba(255,255,255,0.13);
+  font-size: 2.6rem;
+  font-weight: 1000;
+  letter-spacing: -0.08em;
+  transform: rotate(10deg);
+  pointer-events: none;
+}
+.product-image-frame {
+  position: relative;
+  min-height: 270px;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background:
+    radial-gradient(circle at 20% 16%, rgba(69,255,54,0.25), transparent 32%),
+    radial-gradient(circle at 82% 28%, rgba(255,79,216,0.21), transparent 34%),
+    repeating-linear-gradient(135deg, rgba(255,255,255,0.055) 0 1px, transparent 1px 18px),
+    #080808;
+}
+.product-image-frame::after {
+  content: "HYPHSWORLD";
+  position: absolute;
+  left: 12px;
+  bottom: 10px;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255,255,255,0.22);
+  text-stroke: 1px rgba(255,255,255,0.22);
+  font-weight: 1000;
+  font-size: 2.2rem;
+  line-height: 0.85;
+  letter-spacing: -0.08em;
+  opacity: 0.62;
+}
+.product-image-frame img {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 310px);
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 22px;
+  border: 1px solid rgba(255,255,255,0.16);
+  box-shadow: 0 22px 46px rgba(0,0,0,0.38), 0 0 22px rgba(53,215,255,0.16);
+}
+.product-copy {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  gap: 12px;
+  padding: 20px;
+}
+.product-copy h3 {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(1.7rem, 5vw, 2.7rem);
+  line-height: 0.92;
+  letter-spacing: -0.07em;
+  text-transform: uppercase;
+}
+.product-copy p { margin: 0; }
+.product-copy strong { color: var(--yellow); }
+.premium-product .product-image-frame {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(255,228,92,0.27), transparent 32%),
+    radial-gradient(circle at 80% 24%, rgba(157,109,255,0.24), transparent 34%),
+    repeating-linear-gradient(135deg, rgba(255,255,255,0.055) 0 1px, transparent 1px 18px),
+    #080808;
+}
+.poster-product .product-image-frame {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(255,39,93,0.28), transparent 32%),
+    radial-gradient(circle at 80% 24%, rgba(53,215,255,0.24), transparent 34%),
+    repeating-linear-gradient(135deg, rgba(255,255,255,0.055) 0 1px, transparent 1px 18px),
+    #080808;
+}
+
 .lane-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
 }
+.store-lanes { margin-top: 18px; }
 .lane-card {
   position: relative;
   overflow: hidden;
@@ -332,7 +517,8 @@ img { max-width: 100%; display: block; }
     grid-template-columns: 1fr;
   }
   .support-actions { justify-content: flex-start; }
-  .lane-grid { grid-template-columns: 1fr; }
+  .lane-grid,
+  .product-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 620px) {
@@ -355,6 +541,8 @@ img { max-width: 100%; display: block; }
   .hero-actions,
   .support-actions { width: 100%; }
   .mascot-card img { width: min(180px, 62vw); max-height: 180px; }
+  .product-image-frame { min-height: 230px; }
+  .product-image-frame img { width: min(100%, 260px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
