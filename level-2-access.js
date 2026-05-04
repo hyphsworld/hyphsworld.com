@@ -10,6 +10,7 @@
   const LEVEL_TWO_LEGACY_TIME_KEY = 'hyphsworld_level2_access_time';
   const LEVEL_TWO_WINDOW = 1000 * 60 * 60 * 4;
   const DESTINATION = 'level-2.html';
+  const REDUCED_MOTION = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const $ = (id) => document.getElementById(id);
 
@@ -65,11 +66,144 @@
     } catch (error) {}
   }
 
+  function ensureTransportOverlay() {
+    let overlay = $('levelTwoTransportOverlay');
+    if (overlay) return overlay;
+
+    overlay = document.createElement('div');
+    overlay.id = 'levelTwoTransportOverlay';
+    overlay.className = 'level-two-transport-overlay';
+    overlay.setAttribute('aria-hidden', 'true');
+    overlay.innerHTML = `
+      <div class="falcon-warp-grid" aria-hidden="true"></div>
+      <div class="falcon-smoke falcon-smoke-one" aria-hidden="true"></div>
+      <div class="falcon-smoke falcon-smoke-two" aria-hidden="true"></div>
+      <div class="falcon-lock-ring" aria-hidden="true">
+        <span></span><span></span><span></span><span></span>
+      </div>
+      <section class="falcon-transport-card" role="status" aria-live="polite">
+        <p class="falcon-eyebrow">AMS WEST VAULT SYSTEM</p>
+        <h2 id="falconTransportTitle">FALCON LANE SCANNING</h2>
+        <div class="falcon-stage-meter" aria-hidden="true"><span id="falconStageMeter"></span></div>
+        <ul class="falcon-checklist" aria-label="Level 2 access checklist">
+          <li id="falconCheckOne">Buck verifying code hash…</li>
+          <li id="falconCheckTwo">Duck Sauce warming the tunnel…</li>
+          <li id="falconCheckThree">HYPHSWORLD 5 gate standing by…</li>
+        </ul>
+        <p id="falconTransportLine" class="falcon-line">Do not refresh. The floor is opening.</p>
+      </section>
+    `;
+    document.body.appendChild(overlay);
+    return overlay;
+  }
+
+  function runTransportSequence(onComplete) {
+    const overlay = ensureTransportOverlay();
+    const title = $('falconTransportTitle');
+    const line = $('falconTransportLine');
+    const meter = $('falconStageMeter');
+    const checkOne = $('falconCheckOne');
+    const checkTwo = $('falconCheckTwo');
+    const checkThree = $('falconCheckThree');
+
+    overlay.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('level-two-transporting');
+
+    const fastFinish = () => {
+      if (typeof onComplete === 'function') onComplete();
+    };
+
+    if (REDUCED_MOTION) {
+      if (title) title.textContent = 'ACCESS GRANTED';
+      if (line) line.textContent = 'Opening Level 2 now…';
+      window.setTimeout(fastFinish, 450);
+      return;
+    }
+
+    const stages = [
+      {
+        delay: 220,
+        pct: '28%',
+        title: 'BODY SCAN ACTIVE',
+        line: 'Buck: Hold still, P. The Level 2 scanner reading jewelry, points, and pressure.',
+        el: checkOne,
+        text: 'Code hash verified.'
+      },
+      {
+        delay: 980,
+        pct: '63%',
+        title: 'FALCON TUNNEL OPEN',
+        line: 'Duck Sauce: I charged the tunnel up. Nobody touch nothing shiny.',
+        el: checkTwo,
+        text: 'Falcon tunnel charged.'
+      },
+      {
+        delay: 1720,
+        pct: '100%',
+        title: 'ACCESS GRANTED',
+        line: 'Transport locked. Dropping you inside HYPHSWORLD 5…',
+        el: checkThree,
+        text: 'Level 2 floor unlocked.'
+      },
+      {
+        delay: 2520,
+        pct: '100%',
+        title: 'TELEPORTING',
+        line: '3… 2… 1… Welcome to the premium floor.',
+        complete: true
+      }
+    ];
+
+    stages.forEach((stage) => {
+      window.setTimeout(() => {
+        if (meter) meter.style.width = stage.pct;
+        if (title) title.textContent = stage.title;
+        if (line) line.textContent = stage.line;
+        if (stage.el) {
+          stage.el.textContent = stage.text;
+          stage.el.classList.add('is-complete');
+        }
+        if (stage.complete) {
+          document.body.classList.add('level-two-flash-out');
+          window.setTimeout(fastFinish, 460);
+        }
+      }, stage.delay);
+    });
+  }
+
+  function enhanceLevelTwoGate() {
+    const gate = $('level2-gate');
+    if (!gate || gate.dataset.falconEnhanced === 'true') return;
+    gate.dataset.falconEnhanced = 'true';
+
+    const stage = document.createElement('div');
+    stage.className = 'falcon-gate-stage';
+    stage.setAttribute('aria-hidden', 'true');
+    stage.innerHTML = `
+      <div class="falcon-door-shell">
+        <div class="falcon-door-left"></div>
+        <div class="falcon-door-right"></div>
+        <div class="falcon-core">02</div>
+        <div class="falcon-scan-beam"></div>
+      </div>
+      <div class="falcon-mini-hud">
+        <span>VAULT CAM ONLINE</span>
+        <span>BUCK: WATCHING</span>
+        <span>DUCK: TALKING</span>
+      </div>
+    `;
+
+    const form = $('level2GateForm');
+    gate.insertBefore(stage, form || null);
+  }
+
   function bindLevelOneGate() {
     const form = $('level2GateForm');
     const input = $('level2AccessCode');
     const clear = $('level2ClearCode');
     const button = $('level2UnlockButton');
+
+    enhanceLevelTwoGate();
 
     if (!form || !input) return;
 
@@ -113,11 +247,10 @@
         grantLevelTwoAccess();
         setText('level2GateStatus', 'ACCESS GRANTED. FALCON cleared. Transporting to HYPHSWORLD 5…');
         document.body.classList.add('level-two-granted');
-
-        window.setTimeout(() => {
+        runTransportSequence(() => {
           window.location.href = DESTINATION;
-        }, 850);
-      }, 900);
+        });
+      }, 780);
     });
 
     if (clear) {
@@ -134,6 +267,118 @@
     const style = document.createElement('style');
     style.id = 'level2GuardStyles';
     style.textContent = `
+      .level-two-gate-card {
+        position: relative;
+        overflow: hidden;
+        isolation: isolate;
+        border: 1px solid rgba(31,252,255,.42) !important;
+        background:
+          linear-gradient(115deg, rgba(0,0,0,.78), rgba(11,5,23,.82)),
+          radial-gradient(circle at 15% 12%, rgba(57,255,122,.28), transparent 30%),
+          radial-gradient(circle at 85% 18%, rgba(31,252,255,.25), transparent 32%),
+          radial-gradient(circle at 50% 110%, rgba(255,39,93,.24), transparent 42%) !important;
+        box-shadow: 0 0 34px rgba(31,252,255,.20), 0 0 58px rgba(57,255,122,.12) !important;
+      }
+      .level-two-gate-card:before {
+        content: "";
+        position: absolute;
+        inset: -40%;
+        z-index: -1;
+        background: conic-gradient(from 0deg, transparent, rgba(57,255,122,.18), transparent, rgba(255,39,93,.16), transparent, rgba(31,252,255,.18), transparent);
+        animation: falconAuraSpin 8s linear infinite;
+        opacity: .72;
+      }
+      .level-two-gate-card:after {
+        content: "FALCON // LEVEL 02 // AMS WEST // HYPHSWORLD 5";
+        position: absolute;
+        left: 18px;
+        right: 18px;
+        bottom: 10px;
+        color: rgba(255,255,255,.24);
+        font-size: .68rem;
+        font-weight: 1000;
+        letter-spacing: .18em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-transform: uppercase;
+      }
+      .falcon-gate-stage {
+        position: relative;
+        display: grid;
+        gap: 12px;
+        margin: 18px 0;
+        padding: 16px;
+        border: 1px solid rgba(255,255,255,.14);
+        border-radius: 24px;
+        background: rgba(0,0,0,.42);
+        box-shadow: inset 0 0 24px rgba(31,252,255,.08);
+      }
+      .falcon-door-shell {
+        position: relative;
+        min-height: 162px;
+        border-radius: 22px;
+        overflow: hidden;
+        border: 1px solid rgba(31,252,255,.24);
+        background:
+          repeating-linear-gradient(90deg, rgba(255,255,255,.04) 0 1px, transparent 1px 18px),
+          linear-gradient(135deg, rgba(57,255,122,.10), rgba(184,77,255,.12), rgba(255,39,93,.10));
+      }
+      .falcon-door-left,
+      .falcon-door-right {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 50%;
+        background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(0,0,0,.62));
+        border: 1px solid rgba(255,255,255,.10);
+        transition: transform .75s cubic-bezier(.2,.8,.2,1);
+      }
+      .falcon-door-left { left: 0; border-right-color: rgba(57,255,122,.38); }
+      .falcon-door-right { right: 0; border-left-color: rgba(31,252,255,.38); }
+      .falcon-core {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 86px;
+        height: 86px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        color: #050505;
+        font-weight: 1000;
+        font-size: 2.2rem;
+        background: linear-gradient(135deg, #39ff7a, #1ffcff, #ffe45c, #ff275d);
+        box-shadow: 0 0 36px rgba(57,255,122,.44);
+        animation: falconCorePulse 1.4s infinite alternate;
+      }
+      .falcon-scan-beam {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, transparent, rgba(57,255,122,.36), rgba(31,252,255,.36), transparent);
+        transform: translateX(-120%);
+        animation: falconBeam 2.4s ease-in-out infinite;
+        mix-blend-mode: screen;
+      }
+      .falcon-mini-hud {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .falcon-mini-hud span {
+        border: 1px solid rgba(255,255,255,.14);
+        border-radius: 999px;
+        padding: 7px 10px;
+        background: rgba(0,0,0,.36);
+        color: #dfffee;
+        font-size: .68rem;
+        font-weight: 1000;
+        letter-spacing: .08em;
+      }
+      .level-two-unlocking .falcon-door-shell { box-shadow: 0 0 26px rgba(31,252,255,.24); }
+      .level-two-granted .falcon-door-left { transform: translateX(-86%); }
+      .level-two-granted .falcon-door-right { transform: translateX(86%); }
+      .level-two-granted .falcon-core { animation: falconCoreBlast .55s ease-in-out infinite alternate; }
       .level-two-locked main,
       .level-two-locked [data-floor="floor2"] { display: none !important; }
       .level-two-lock-screen {
@@ -186,6 +431,188 @@
         font-weight: 900;
         background: linear-gradient(135deg, rgba(57,255,122,.2), rgba(255,39,93,.14));
       }
+      .level-two-transport-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        color: #fff;
+        background:
+          radial-gradient(circle at 50% 50%, rgba(57,255,122,.24), transparent 16%),
+          radial-gradient(circle at 20% 18%, rgba(255,39,93,.26), transparent 28%),
+          radial-gradient(circle at 82% 20%, rgba(31,252,255,.22), transparent 30%),
+          linear-gradient(180deg, rgba(0,0,0,.78), rgba(0,0,0,.98));
+        transition: opacity .24s ease, visibility .24s ease;
+        overflow: hidden;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      .level-two-transporting .level-two-transport-overlay {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+      }
+      .falcon-warp-grid {
+        position: absolute;
+        inset: -40%;
+        background:
+          repeating-linear-gradient(0deg, rgba(255,255,255,.045) 0 1px, transparent 1px 34px),
+          repeating-linear-gradient(90deg, rgba(31,252,255,.05) 0 1px, transparent 1px 34px);
+        transform: perspective(620px) rotateX(64deg) translateY(22%);
+        animation: falconWarpGrid 1.15s linear infinite;
+      }
+      .falcon-smoke {
+        position: absolute;
+        width: 52vmin;
+        height: 52vmin;
+        border-radius: 50%;
+        filter: blur(34px);
+        opacity: .24;
+        animation: falconSmokeDrift 3.2s ease-in-out infinite alternate;
+      }
+      .falcon-smoke-one { left: -12vmin; bottom: -10vmin; background: #39ff7a; }
+      .falcon-smoke-two { right: -16vmin; top: -12vmin; background: #ff275d; animation-delay: -.9s; }
+      .falcon-lock-ring {
+        position: absolute;
+        width: min(76vmin, 620px);
+        height: min(76vmin, 620px);
+        border-radius: 50%;
+        border: 1px solid rgba(255,255,255,.14);
+        animation: falconRingSpin 4s linear infinite;
+        box-shadow: inset 0 0 52px rgba(31,252,255,.12), 0 0 56px rgba(57,255,122,.16);
+      }
+      .falcon-lock-ring span {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #39ff7a, #1ffcff, #ffe45c);
+        box-shadow: 0 0 22px rgba(57,255,122,.85);
+      }
+      .falcon-lock-ring span:nth-child(1){top:-10px;left:50%}
+      .falcon-lock-ring span:nth-child(2){right:-10px;top:50%}
+      .falcon-lock-ring span:nth-child(3){bottom:-10px;left:50%}
+      .falcon-lock-ring span:nth-child(4){left:-10px;top:50%}
+      .falcon-transport-card {
+        position: relative;
+        width: min(680px, 100%);
+        border: 1px solid rgba(255,255,255,.20);
+        border-radius: 34px;
+        padding: clamp(22px, 5vw, 36px);
+        background: linear-gradient(180deg, rgba(0,0,0,.72), rgba(0,0,0,.50));
+        backdrop-filter: blur(20px);
+        box-shadow: 0 0 52px rgba(57,255,122,.24), 0 0 80px rgba(31,252,255,.12);
+        text-align: left;
+      }
+      .falcon-eyebrow {
+        display: inline-flex;
+        margin: 0 0 12px;
+        color: #050505;
+        background: linear-gradient(90deg, #39ff7a, #1ffcff, #ffe45c, #ff275d);
+        border-radius: 999px;
+        padding: 8px 12px;
+        font-weight: 1000;
+        letter-spacing: .09em;
+        font-size: .74rem;
+      }
+      .falcon-transport-card h2 {
+        margin: 0 0 14px;
+        font-size: clamp(2rem, 9vw, 4.8rem);
+        line-height: .88;
+        letter-spacing: -.065em;
+        text-transform: uppercase;
+      }
+      .falcon-stage-meter {
+        height: 12px;
+        border: 1px solid rgba(255,255,255,.16);
+        border-radius: 999px;
+        overflow: hidden;
+        background: rgba(0,0,0,.54);
+        box-shadow: inset 0 0 18px rgba(31,252,255,.08);
+      }
+      .falcon-stage-meter span {
+        display: block;
+        width: 6%;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, #39ff7a, #1ffcff, #ffe45c, #ff275d);
+        transition: width .45s ease;
+      }
+      .falcon-checklist {
+        list-style: none;
+        padding: 0;
+        margin: 18px 0;
+        display: grid;
+        gap: 10px;
+      }
+      .falcon-checklist li {
+        padding: 11px 13px;
+        border: 1px solid rgba(255,255,255,.12);
+        border-radius: 16px;
+        background: rgba(255,255,255,.055);
+        color: #d9efe5;
+        font-weight: 900;
+      }
+      .falcon-checklist li.is-complete {
+        color: #050505;
+        background: linear-gradient(90deg, rgba(57,255,122,.96), rgba(31,252,255,.92));
+      }
+      .falcon-line {
+        margin: 0;
+        color: #fff;
+        font-weight: 1000;
+      }
+      .level-two-flash-out .level-two-transport-overlay:after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: #fff;
+        animation: falconWhiteOut .42s ease forwards;
+      }
+      .level-two-arrival main {
+        animation: levelTwoArrive .72s ease-out both;
+      }
+      .level-two-arrival-badge {
+        position: fixed;
+        left: 50%;
+        top: 92px;
+        transform: translateX(-50%);
+        z-index: 60;
+        width: min(640px, calc(100% - 28px));
+        border: 1px solid rgba(57,255,122,.35);
+        border-radius: 22px;
+        padding: 14px 16px;
+        color: #fff;
+        background: linear-gradient(135deg, rgba(0,0,0,.88), rgba(57,255,122,.20), rgba(255,39,93,.16));
+        box-shadow: 0 0 34px rgba(57,255,122,.22);
+        font-weight: 1000;
+        text-align: center;
+        animation: levelTwoBadge 3.8s ease forwards;
+      }
+      @keyframes falconAuraSpin { to { transform: rotate(360deg); } }
+      @keyframes falconCorePulse { from { transform: translate(-50%, -50%) scale(1); } to { transform: translate(-50%, -50%) scale(1.08); } }
+      @keyframes falconCoreBlast { from { filter: brightness(1); } to { filter: brightness(1.75); box-shadow: 0 0 62px rgba(57,255,122,.8); } }
+      @keyframes falconBeam { 0% { transform: translateX(-120%); } 52% { transform: translateX(120%); } 100% { transform: translateX(120%); } }
+      @keyframes falconWarpGrid { from { background-position: 0 0, 0 0; } to { background-position: 0 34px, 34px 0; } }
+      @keyframes falconSmokeDrift { from { transform: translate3d(0,0,0) scale(1); } to { transform: translate3d(8vmin,-4vmin,0) scale(1.18); } }
+      @keyframes falconRingSpin { to { transform: rotate(360deg); } }
+      @keyframes falconWhiteOut { 0% { opacity: 0; } 50% { opacity: .88; } 100% { opacity: 0; } }
+      @keyframes levelTwoArrive { from { opacity: 0; transform: scale(.985) translateY(18px); filter: blur(8px) saturate(1.8); } to { opacity: 1; transform: scale(1) translateY(0); filter: blur(0) saturate(1); } }
+      @keyframes levelTwoBadge { 0% { opacity: 0; transform: translateX(-50%) translateY(-18px) scale(.96); } 14%, 78% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); } 100% { opacity: 0; transform: translateX(-50%) translateY(-12px) scale(.98); pointer-events: none; } }
+      @media (prefers-reduced-motion: reduce) {
+        .level-two-gate-card:before,
+        .falcon-core,
+        .falcon-scan-beam,
+        .falcon-warp-grid,
+        .falcon-smoke,
+        .falcon-lock-ring,
+        .level-two-arrival main,
+        .level-two-arrival-badge { animation: none !important; }
+      }
     `;
     document.head.appendChild(style);
   }
@@ -220,11 +647,28 @@
     return page === 'level-2' || Boolean(floor);
   }
 
+  function showArrivalMoment() {
+    if (sessionStorage.getItem('HW_LEVEL2_ARRIVAL_SEEN') === 'true') return;
+    try { sessionStorage.setItem('HW_LEVEL2_ARRIVAL_SEEN', 'true'); } catch (error) {}
+
+    document.body.classList.add('level-two-arrival');
+    const badge = document.createElement('div');
+    badge.className = 'level-two-arrival-badge';
+    badge.textContent = 'ACCESS GRANTED — FALCON TRANSPORT COMPLETE — WELCOME TO HYPHSWORLD 5';
+    document.body.appendChild(badge);
+    window.setTimeout(() => badge.remove(), 4200);
+  }
+
   function init() {
+    injectGuardStyles();
     bindLevelOneGate();
 
-    if (shouldGuardLevelTwoPage() && !hasLevelTwoAccess()) {
-      showLevelTwoLocked();
+    if (shouldGuardLevelTwoPage()) {
+      if (!hasLevelTwoAccess()) {
+        showLevelTwoLocked();
+      } else {
+        showArrivalMoment();
+      }
     }
   }
 
