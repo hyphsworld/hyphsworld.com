@@ -18,6 +18,7 @@
   function safeText(value, fallback) { return String(value || fallback || "").replace(/[<>]/g, "").trim(); }
   function rand(max) { return Math.floor(Math.random() * max); }
   function roomCode() { return Math.random().toString(36).replace(/[^a-z0-9]/gi, "").slice(2, 8).toUpperCase(); }
+  function readableError(error) { return error && error.message ? error.message : String(error || "Unknown error"); }
 
   function loadScript(src) {
     return new Promise((resolve, reject) => {
@@ -171,13 +172,6 @@
   }
 
   function setStatus(message) { setText("dominosStatus", message); }
-  function addLocalLog(message) {
-    const log = $("dominoLog");
-    if (!log) return;
-    const p = document.createElement("p");
-    p.textContent = message;
-    log.prepend(p);
-  }
 
   async function requireUser() {
     if (!window.HWAuth) throw new Error("Auth unavailable.");
@@ -202,7 +196,7 @@
       .limit(10);
 
     if (error) {
-      list.innerHTML = `<div class="hw-leaderboard-empty">Could not load tables.</div>`;
+      list.innerHTML = `<div class="hw-leaderboard-empty">Could not load tables: ${safeText(error.message, "Supabase error")}</div>`;
       return;
     }
 
@@ -225,32 +219,26 @@
 
   async function createRoom(event) {
     event.preventDefault();
-    const user = await requireUser();
+    await requireUser();
     const sb = await getClient();
     const input = $("roomName");
     const code = safeText(input && input.value ? input.value : roomCode(), "01TABLE").replace(/\s+/g, "").slice(0, 10).toUpperCase() || roomCode();
-    const initial = createInitialState(user.userId);
 
-    setStatus("Creating table...");
+    setStatus("Creating table through Supabase...");
 
-    const { data: room, error: roomError } = await sb
-      .from("game_rooms")
-      .insert({ room_code: code, game_type: "dominos", host_id: user.userId, status: "waiting", max_players: 2, current_turn_user_id: user.userId })
-      .select("id,room_code,status,host_id")
-      .single();
+    const { data, error } = await sb.rpc("create_domino_room", { requested_code: code });
 
-    if (roomError) {
-      setStatus("Room code may already exist. Try another name.");
+    if (error || !data || data.ok === false) {
+      const message = error ? readableError(error) : safeText(data && data.error, "Room create failed.");
+      console.warn("01 Domino Room create warning:", message);
+      setStatus(`Table did not create: ${message}`);
       return;
     }
 
-    await sb.from("game_players").insert({ room_id: room.id, user_id: user.userId, seat_number: 1, status: "ready", score: 0, bet: 0 });
-    await sb.from("game_state").insert({ room_id: room.id, state: initial, updated_by: user.userId });
-
-    activeRoom = room;
-    activeState = initial;
+    activeRoom = data.room;
+    activeState = data.state;
     if (input) input.value = "";
-    setStatus("Table created. Share the room code or wait for player two.");
+    setStatus(`Table created: ${activeRoom.room_code}. Share the room code or wait for player two.`);
     renderState();
     startRefresh();
     await listRooms();
@@ -280,7 +268,8 @@
     const already = (players || []).find((p) => p.user_id === user.userId);
     if (!already) {
       if ((players || []).length >= 2) return setStatus("That table is full.");
-      await sb.from("game_players").insert({ room_id: room.id, user_id: user.userId, seat_number: (players || []).length + 1, status: "ready", score: 0, bet: 0 });
+      const { error: joinError } = await sb.from("game_players").insert({ room_id: room.id, user_id: user.userId, seat_number: (players || []).length + 1, status: "ready", score: 0, bet: 0 });
+      if (joinError) return setStatus(`Join failed: ${joinError.message}`);
     }
 
     const { data: stateRow } = await sb.from("game_state").select("state").eq("room_id", room.id).maybeSingle();
@@ -295,13 +284,15 @@
     setStatus("Joined table. Play when it is your turn.");
     renderState();
     startRefresh();
+    await listRooms();
   }
 
   async function saveState(nextState) {
     if (!activeRoom || !currentUser) return;
     const sb = await getClient();
     activeState = nextState;
-    await sb.from("game_state").upsert({ room_id: activeRoom.id, state: nextState, updated_by: currentUser.userId }, { onConflict: "room_id" });
+    const { error: stateError } = await sb.from("game_state").upsert({ room_id: activeRoom.id, state: nextState, updated_by: currentUser.userId }, { onConflict: "room_id" });
+    if (stateError) return setStatus(`Save failed: ${stateError.message}`);
     await sb.from("game_rooms").update({ status: nextState.status, current_turn_user_id: nextState.turnUserId, updated_at: new Date().toISOString() }).eq("id", activeRoom.id);
     renderState();
   }
@@ -325,7 +316,7 @@
     const board = $("boardTiles");
     const hand = $("playerHand");
     const log = $("dominoLog");
-    if (!activeRoom || !activeState || !currentUser) return;
+    if (!activeRoom || !activeState || !currentUser || !board || !hand || !log) return;
 
     setText("activeRoomCode", activeRoom.room_code || "ROOM");
     setText("activeTurn", activeState.turnUserId === currentUser.userId ? "Your Turn" : "Opponent");
@@ -366,7 +357,8 @@
 
     const sb = await getClient();
     const score = Math.max(1, 100 - myHand.length + ((activeState.board || []).length * 5));
-    await sb.from("game_scores").insert({ user_id: currentUser.userId, game_key: "01_dominos", score, points_delta: WIN_POINTS, metadata: { room_code: activeRoom.room_code, source: "01_domino_room" } });
+    const { error: scoreError } = await sb.from("game_scores").insert({ user_id: currentUser.userId, game_key: "01_dominos", score, points_delta: WIN_POINTS, metadata: { room_code: activeRoom.room_code, source: "01_domino_room" } });
+    if (scoreError) return setStatus(`Score save failed: ${scoreError.message}`);
 
     if (window.HWAuth && typeof window.HWAuth.addPoints === "function") {
       try { await window.HWAuth.addPoints(WIN_POINTS, "01_dominos_win"); } catch (error) {}
@@ -391,9 +383,9 @@
     if (refreshTimer) clearInterval(refreshTimer);
     setText("activeRoomCode", "None");
     setText("activeTurn", "Waiting");
-    $("boardTiles").innerHTML = `<span class="hw-leaderboard-empty">Join or create a room to start.</span>`;
-    $("playerHand").innerHTML = "";
-    $("dominoLog").innerHTML = `<p>Duck Sauce: “Somebody slap a bone on the table.”</p>`;
+    if ($("boardTiles")) $("boardTiles").innerHTML = `<span class="hw-leaderboard-empty">Join or create a room to start.</span>`;
+    if ($("playerHand")) $("playerHand").innerHTML = "";
+    if ($("dominoLog")) $("dominoLog").innerHTML = `<p>Duck Sauce: “Somebody slap a bone on the table.”</p>`;
     setStatus("Left table view. Open tables are still listed.");
   }
 
