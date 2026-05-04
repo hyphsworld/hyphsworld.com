@@ -10,7 +10,17 @@
     document.body.appendChild(script);
   }
 
+  function loadLobbyMultiplayer() {
+    if (window.__HYPHSWORLD_LOBBY_MULTIPLAYER_BOOTSTRAP__) return;
+    window.__HYPHSWORLD_LOBBY_MULTIPLAYER_BOOTSTRAP__ = true;
+    const script = document.createElement("script");
+    script.src = "lobby-multiplayer.js";
+    script.defer = true;
+    document.body.appendChild(script);
+  }
+
   loadLobbyWidgets();
+  loadLobbyMultiplayer();
 
   const DEFAULT_DESTINATION = "quarantine-mixtape.html";
   const DEFAULT_ROUTE = "quarantine-mixtape";
@@ -28,14 +38,18 @@
     "“Aye the pad moving now. Don’t freeze up.”",
     "“If it start smoking, that means it like you.”",
     "“Buck too serious. I would’ve let you in off vibes.”",
-    "“Type the code clean. This ain’t a microwave.”"
+    "“Type the code clean. This ain’t a microwave.”",
+    "“I ran off with the points but Buck got receipts.”",
+    "“Room code lit. Tell the squad pull up.”"
   ];
 
   const buckLines = [
     "“Code first. Scan second. No shortcuts.”",
     "“Stand still. The scan bar is active.”",
     "“Access depends on clearance, not confidence.”",
-    "“I see everything touching this gate.”"
+    "“I see everything touching this gate.”",
+    "“Duck can run, but Supabase logs it.”",
+    "“Lobby rooms are active. No fake motion.”"
   ];
 
   const passSteps = [
