@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Games | HYPHSWORLD</title>
-  <meta name="description" content="HYPHSWORLD Games Lobby with 01 Domino Room, Cool Points, live widgets, and Supabase leaderboards." />
+  <meta name="description" content="HYPHSWORLD Table Games Lobby with Dice, Dominoes, Blackjack, Poker, Cool Points, live widgets, and Supabase leaderboards." />
   <meta name="theme-color" content="#00ff66" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="homepage-upgrades.css" />
@@ -31,19 +31,20 @@
   <main>
     <section class="ticker" aria-label="HYPHSWORLD games ticker">
       <div class="ticker-track">
-        <span>01 DOMINO ROOM IS OPEN</span><b>✦</b><span>LOG IN TO PLAY FOR COOL POINTS</span><b>✦</b><span>WINNERS HIT THE LEADERBOARD</span><b>✦</b><span>DUCK SAUCE CLAIMS HE INVENTED DOMINOS</span><b>✦</b>
-        <span>01 DOMINO ROOM IS OPEN</span><b>✦</b><span>LOG IN TO PLAY FOR COOL POINTS</span><b>✦</b><span>WINNERS HIT THE LEADERBOARD</span><b>✦</b><span>DUCK SAUCE CLAIMS HE INVENTED DOMINOS</span><b>✦</b>
+        <span>DICE TABLE LIVE</span><b>✦</b><span>DOMINOES LIVE</span><b>✦</b><span>BLACKJACK TABLE LIVE</span><b>✦</b><span>POKER ROOM BETA</span><b>✦</b><span>WINNERS HIT THE LEADERBOARD</span><b>✦</b>
+        <span>DICE TABLE LIVE</span><b>✦</b><span>DOMINOES LIVE</span><b>✦</b><span>BLACKJACK TABLE LIVE</span><b>✦</b><span>POKER ROOM BETA</span><b>✦</b><span>WINNERS HIT THE LEADERBOARD</span><b>✦</b>
       </div>
     </section>
 
     <section class="games-hero">
-      <p class="eyebrow">HYPHSWORLD // GAME FLOOR</p>
-      <h1>Games Lobby</h1>
-      <p>Play, win Cool Points, and climb the live board. First flagship table: <strong>01 Domino Room</strong>.</p>
+      <p class="eyebrow">HYPHSWORLD // TABLE GAMES FLOOR</p>
+      <h1>Table Games</h1>
+      <p>Dice, Dominoes, Blackjack, and Poker now sit on the Games floor. Login, create a table, win Cool Points, and climb the live board.</p>
       <div class="games-actions">
-        <a class="games-btn primary" href="dominos.html">Enter 01 Domino Room</a>
-        <a class="games-btn" href="leaderboard.html">View Leaderboards</a>
-        <a class="games-btn ghost" href="auth.html">Login / Create ID</a>
+        <a class="games-btn primary" href="table-game.html?game=dice">Play Dice</a>
+        <a class="games-btn" href="dominos.html">Play Dominoes</a>
+        <a class="games-btn" href="table-game.html?game=blackjack">Play Blackjack</a>
+        <a class="games-btn ghost" href="table-game.html?game=poker">Poker Beta</a>
       </div>
     </section>
 
@@ -65,9 +66,21 @@
       </article>
     </section>
 
-    <section class="game-card-grid" aria-label="Playable HYPHSWORLD games">
+    <section class="game-card-grid" aria-label="Playable HYPHSWORLD table games">
       <article class="game-card live">
-        <span class="game-badge">LIVE BETA</span>
+        <span class="game-badge">LIVE</span>
+        <h2>Dice Table</h2>
+        <p>Fast table. Roll dice, beat the table, submit score, and stack Cool Points.</p>
+        <ul>
+          <li>Quick play</li>
+          <li>Best roll wins</li>
+          <li>Leaderboard connected</li>
+        </ul>
+        <a class="games-btn primary" href="table-game.html?game=dice">Play Dice</a>
+      </article>
+
+      <article class="game-card live">
+        <span class="game-badge">LIVE</span>
         <h2>01 Domino Room</h2>
         <p>Two-player rooms, turn-based table, Supabase state, score submit, and Cool Points winner bonus.</p>
         <ul>
@@ -75,21 +88,31 @@
           <li>Draw from the boneyard</li>
           <li>Winner writes to game leaderboard</li>
         </ul>
-        <a class="games-btn primary" href="dominos.html">Play Dominos</a>
+        <a class="games-btn primary" href="dominos.html">Play Dominoes</a>
       </article>
 
-      <article class="game-card coming">
-        <span class="game-badge">NEXT</span>
+      <article class="game-card live">
+        <span class="game-badge">LIVE</span>
         <h2>Blackjack Table</h2>
-        <p>Casino-friendly table for Cool Points challenges after dominos gets stable.</p>
-        <button class="games-btn ghost" type="button" disabled>Coming Next</button>
+        <p>Hit, stand, dealer hand, and Cool Points score submission.</p>
+        <ul>
+          <li>Dealer mode</li>
+          <li>21 target</li>
+          <li>Win bonus</li>
+        </ul>
+        <a class="games-btn primary" href="table-game.html?game=blackjack">Play Blackjack</a>
       </article>
 
-      <article class="game-card coming">
-        <span class="game-badge">SOON</span>
-        <h2>Duck Trivia Battle</h2>
-        <p>Fast questions, 01 Universe facts, and code-hunt clues when you want to activate campaigns.</p>
-        <button class="games-btn ghost" type="button" disabled>Coming Soon</button>
+      <article class="game-card live">
+        <span class="game-badge">BETA</span>
+        <h2>Poker Room</h2>
+        <p>Room shell is live for poker. Full hand ranking and betting rounds come next.</p>
+        <ul>
+          <li>6-player table shell</li>
+          <li>Score submit beta</li>
+          <li>Leaderboard connected</li>
+        </ul>
+        <a class="games-btn primary" href="table-game.html?game=poker">Open Poker Beta</a>
       </article>
     </section>
 
@@ -99,7 +122,7 @@
           <div>
             <span class="hw-leaderboard-kicker">GAME BOARD</span>
             <h2>Game Rankings</h2>
-            <p>Domino wins and future game scores feed this board. Cool Points board is one tap away.</p>
+            <p>Dice, Dominoes, Blackjack, Poker, and future table scores feed this board. Cool Points board is one tap away.</p>
           </div>
           <div class="hw-leaderboard-actions">
             <button class="hw-board-btn is-active" type="button" data-hw-board-mode="games">Game Scores</button>
@@ -116,7 +139,7 @@
 
   <footer class="site-footer">
     <span>© <span id="year"></span> AMS WEST LLC</span>
-    <span>Games powered by HYPHSWORLD Cool Points</span>
+    <span>Table Games powered by HYPHSWORLD Cool Points</span>
   </footer>
 
   <script src="auth-client.js"></script>
