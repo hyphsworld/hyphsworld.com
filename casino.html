@@ -4,87 +4,166 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Casino | HYPHSWORLD</title>
-  <meta name="description" content="HYPHSWORLD hidden casino floor with live blackjack." />
+  <meta name="description" content="HYPHSWORLD hidden casino floor with blackjack, Duck Sauce slots, spin wheel, and Cool Points." />
   <link rel="stylesheet" href="vault-floors.css" />
   <script src="site-analytics.js" defer></script>
 </head>
 <body>
-  <main class="vault-shell">
+  <main class="vault-shell casino-shell">
     <header class="topbar">
-      <a class="brand-lockup" href="vault.html">
+      <a class="brand-lockup" href="vault.html" aria-label="Back to Vault Gate">
         <small>AMS WEST PRESENTS</small>
         <strong>HYPHSWORLD</strong>
       </a>
-      <nav class="nav-pills">
+      <nav class="nav-pills" aria-label="Vault navigation">
         <a class="nav-pill" href="vault.html">Vault Gate</a>
         <a class="nav-pill" href="floor1.html">Level 1</a>
         <a class="nav-pill" href="floor2.html">Level 2</a>
       </nav>
     </header>
 
-    <section class="casino-grid">
-      <aside class="casino-panel">
+    <section class="casino-stage" aria-labelledby="casinoTitle">
+      <aside class="casino-panel casino-lobby-panel">
         <div class="scanline"></div>
+        <div class="casino-orbit casino-orbit-one"></div>
+        <div class="casino-orbit casino-orbit-two"></div>
+
         <div class="floor-tag-row">
           <span class="tag green">CASINO LIVE</span>
           <span class="tag red">BLACKJACK OPEN</span>
-          <span class="tag cyan">NO BLANK PAGE</span>
+          <span class="tag cyan">SLOTS ACTIVE</span>
+          <span class="tag yellow">SPIN WHEEL</span>
         </div>
 
         <div class="casino-title">
-          <h1>HIDDEN<br>CASINO</h1>
-          <p>Duck & Buck got the table open. Fun brand energy, live chips, blackjack, and Cool Points.</p>
+          <h1 id="casinoTitle">HIDDEN<br>CASINO</h1>
+          <p>Duck & Buck opened the fun floor. Play blackjack, pull the Duck Sauce slots, or spin for bonus Cool Points.</p>
         </div>
 
-        <div class="chips" aria-label="Chip rack">
-          <button class="chip" data-bet="5">$5</button>
-          <button class="chip" data-bet="10">$10</button>
-          <button class="chip" data-bet="25">$25</button>
-          <button class="chip" data-bet="50">$50</button>
-        </div>
-
-        <div class="casino-stats">
+        <div class="casino-stats casino-bankroll" aria-label="Casino stats">
           <div class="stat"><small>BALANCE</small><strong id="balance">500</strong></div>
           <div class="stat"><small>BET</small><strong id="bet">25</strong></div>
           <div class="stat"><small>STREAK</small><strong id="streak">0</strong></div>
         </div>
 
-        <div class="alive-banner">
-          BuckTheBodyguard: “Keep it fun. Keep it moving. Don’t let the floor go dry.”
+        <div class="chips" aria-label="Chip rack">
+          <button class="chip" data-bet="5">5</button>
+          <button class="chip" data-bet="10">10</button>
+          <button class="chip" data-bet="25">25</button>
+          <button class="chip" data-bet="50">50</button>
+        </div>
+
+        <div class="casino-announcer" id="casinoAnnouncer">
+          Duck Sauce: “Casino floor live, P. Don’t let Buck see you pressing buttons with no strategy.”
+        </div>
+
+        <div class="casino-game-tabs" role="tablist" aria-label="Casino games">
+          <button class="game-tab active" type="button" data-game="blackjack" role="tab" aria-selected="true">Blackjack</button>
+          <button class="game-tab" type="button" data-game="slots" role="tab" aria-selected="false">Duck Slots</button>
+          <button class="game-tab" type="button" data-game="wheel" role="tab" aria-selected="false">Spin Wheel</button>
         </div>
       </aside>
 
-      <section class="game-panel">
-        <div class="panel-head">
+      <section class="game-panel casino-game-panel">
+        <div class="panel-head casino-game-head">
           <div>
-            <h3>Blackjack Table</h3>
-            <p>Beat the dealer without going over 21.</p>
+            <h3 id="activeGameTitle">Blackjack Table</h3>
+            <p id="activeGameSubtext">Beat the dealer without going over 21.</p>
           </div>
           <span class="tag yellow">COOL POINTS</span>
         </div>
 
-        <div class="blackjack-table">
-          <div class="hand-zone">
-            <h3>Dealer <span class="score-pill">Score: <span id="dealerScore">0</span></span></h3>
-            <div class="cards" id="dealerCards"></div>
-          </div>
+        <section class="game-view active" id="blackjackGame" data-game-view="blackjack" aria-label="Blackjack game">
+          <div class="blackjack-table">
+            <div class="felt-glow"></div>
+            <div class="hand-zone dealer-zone">
+              <h3>Dealer <span class="score-pill">Score: <span id="dealerScore">0</span></span></h3>
+              <div class="cards" id="dealerCards"></div>
+            </div>
 
-          <div class="hand-zone">
-            <h3>You <span class="score-pill">Score: <span id="playerScore">0</span></span></h3>
-            <div class="cards" id="playerCards"></div>
-          </div>
+            <div class="table-divider">
+              <span>HYPHSWORLD BLACKJACK</span>
+            </div>
 
-          <div class="game-message" id="message">
-            Tap Deal. Duck Sauce is watching the table way too close.
-          </div>
+            <div class="hand-zone player-zone">
+              <h3>You <span class="score-pill">Score: <span id="playerScore">0</span></span></h3>
+              <div class="cards" id="playerCards"></div>
+            </div>
 
-          <div class="game-controls">
-            <button class="primary" id="dealBtn">Deal</button>
-            <button id="hitBtn" disabled>Hit</button>
-            <button id="standBtn" disabled>Stand</button>
-            <button id="resetBtn">Reset Points</button>
+            <div class="game-message" id="message">
+              Tap Deal. Duck Sauce is watching the table way too close.
+            </div>
+
+            <div class="game-controls">
+              <button class="primary" id="dealBtn" type="button">Deal</button>
+              <button id="hitBtn" type="button" disabled>Hit</button>
+              <button id="standBtn" type="button" disabled>Stand</button>
+              <button id="resetBtn" type="button">Reset Casino Points</button>
+            </div>
           </div>
-        </div>
+        </section>
+
+        <section class="game-view" id="slotsGame" data-game-view="slots" aria-label="Duck Sauce Slots game">
+          <div class="slots-machine">
+            <div class="slots-topper">
+              <span>DUCK SAUCE SLOTS</span>
+              <strong>Pull 4 Pressure</strong>
+            </div>
+
+            <div class="slot-reels" id="slotReels" aria-live="polite">
+              <div class="slot-reel"><span>🦆</span><small>DUCK</small></div>
+              <div class="slot-reel"><span>💎</span><small>ICE</small></div>
+              <div class="slot-reel"><span>🔑</span><small>KEY</small></div>
+            </div>
+
+            <div class="slot-payline"></div>
+
+            <div class="game-message" id="slotsMessage">
+              Match symbols to win. Three Ducks is a jackpot. Buck is watching the machine.
+            </div>
+
+            <div class="slot-symbol-map">
+              <span>🦆 Duck Sauce</span>
+              <span>💎 Diamonds</span>
+              <span>🔑 Vault Key</span>
+              <span>🦅 Falcon</span>
+              <span>🎧 Lobby Music</span>
+              <span>🛡️ Buck</span>
+            </div>
+
+            <div class="game-controls">
+              <button class="primary" id="spinSlotsBtn" type="button">Spin Slots</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="game-view" id="wheelGame" data-game-view="wheel" aria-label="Spin wheel game">
+          <div class="wheel-room">
+            <div class="wheel-pointer">▼</div>
+            <div class="vault-wheel" id="vaultWheel" aria-hidden="true">
+              <span>+25</span>
+              <span>ROAST</span>
+              <span>+100</span>
+              <span>CLUE</span>
+              <span>MISS</span>
+              <span>+50</span>
+            </div>
+
+            <div class="game-message" id="wheelMessage">
+              Spin the Vault Wheel for bonus Cool Points, clues, or Duck Sauce disrespect.
+            </div>
+
+            <div class="wheel-prizes">
+              <div><small>Best Hit</small><strong>+100</strong></div>
+              <div><small>Clue Hit</small><strong>Vault Tip</strong></div>
+              <div><small>Duck Hit</small><strong>Roast</strong></div>
+            </div>
+
+            <div class="game-controls">
+              <button class="primary" id="spinWheelBtn" type="button">Spin Wheel</button>
+            </div>
+          </div>
+        </section>
       </section>
     </section>
   </main>
