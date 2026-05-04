@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Leaderboards | HYPHSWORLD</title>
+  <meta name="description" content="HYPHSWORLD live leaderboards for Cool Points, Vault unlocks, and game scores." />
+  <meta name="theme-color" content="#00ff66" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="homepage-upgrades.css" />
+  <link rel="stylesheet" href="leaderboard-widgets.css" />
+  <style>
+    body.leaderboard-page{
+      min-height:100vh;
+      color:#fff;
+      background:
+        radial-gradient(circle at 15% 10%,rgba(57,255,122,.18),transparent 34%),
+        radial-gradient(circle at 82% 14%,rgba(255,79,216,.20),transparent 36%),
+        radial-gradient(circle at 50% 100%,rgba(31,252,255,.16),transparent 36%),
+        #050507;
+    }
+    .leaderboard-hero{
+      width:min(1180px,calc(100% - 28px));
+      margin:34px auto 10px;
+      padding:30px;
+      border:1px solid rgba(255,255,255,.16);
+      border-radius:34px;
+      background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.035));
+      box-shadow:0 0 42px rgba(31,252,255,.10),0 0 42px rgba(255,79,216,.10);
+    }
+    .leaderboard-hero h1{
+      margin:8px 0 10px;
+      font-size:clamp(2.4rem,8vw,6.5rem);
+      line-height:.84;
+      letter-spacing:-.07em;
+      text-transform:uppercase;
+    }
+    .leaderboard-hero p{
+      max-width:780px;
+      margin:0;
+      color:#d8efe6;
+      font-weight:800;
+      line-height:1.45;
+      font-size:1.02rem;
+    }
+    .leaderboard-note{
+      width:min(1180px,calc(100% - 28px));
+      margin:14px auto 28px;
+      padding:14px 17px;
+      border-radius:20px;
+      border:1px dashed rgba(255,255,255,.22);
+      color:#9fffd0;
+      background:rgba(0,0,0,.28);
+      font-weight:850;
+    }
+  </style>
+</head>
+<body class="leaderboard-page">
+  <header class="site-header">
+    <a class="brand-lockup" href="index.html" aria-label="HYPHSWORLD home">
+      <span>AMS WEST PRESENTS</span>
+      <strong>HYPHSWORLD</strong>
+    </a>
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="vault.html">Vault</a>
+      <a href="leaderboard.html" aria-current="page">Leaderboards</a>
+      <a href="app-player.html">Full Player</a>
+      <a href="shop.html">Merch</a>
+      <a class="nav-cta" href="auth.html">Create ID</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="ticker" aria-label="HYPHSWORLD ticker">
+      <div class="ticker-track">
+        <span>LIVE LEADERBOARDS</span><b>✦</b><span>COOL POINTS COUNT WHEN YOU LOG IN</span><b>✦</b><span>VAULT UNLOCKS HIT THE BOARD</span><b>✦</b><span>GAME SCORES COMING NEXT</span><b>✦</b><span>DUCK SAUCE WATCHING THE RANKINGS</span><b>✦</b>
+        <span>LIVE LEADERBOARDS</span><b>✦</b><span>COOL POINTS COUNT WHEN YOU LOG IN</span><b>✦</b><span>VAULT UNLOCKS HIT THE BOARD</span><b>✦</b><span>GAME SCORES COMING NEXT</span><b>✦</b><span>DUCK SAUCE WATCHING THE RANKINGS</span><b>✦</b>
+      </div>
+    </section>
+
+    <section class="leaderboard-hero">
+      <p class="eyebrow">HYPHSWORLD // LIVE RANKINGS</p>
+      <h1>Leaderboards</h1>
+      <p>Cool Points, Vault movement, and game scores now have a real home. No emails shown, no private data shown — just player names, avatars, levels, and scores.</p>
+    </section>
+
+    <section class="hw-mini-widgets" data-hw-mini-widgets aria-label="HYPHSWORLD live stats">
+      <article class="hw-mini-widget" data-hw-widget="top-player">
+        <span>Top Player</span>
+        <strong>Loading</strong>
+        <p>Highest Cool Points total right now.</p>
+      </article>
+      <article class="hw-mini-widget" data-hw-widget="total-players">
+        <span>Ranked Players</span>
+        <strong>0</strong>
+        <p>Players showing on the public-safe board.</p>
+      </article>
+      <article class="hw-mini-widget" data-hw-widget="latest-unlock">
+        <span>Latest Unlock</span>
+        <strong>Pending</strong>
+        <p>Newest Vault movement from Supabase.</p>
+      </article>
+    </section>
+
+    <section class="hw-leaderboard-wrap" data-hw-leaderboard data-default-mode="points" data-limit="10" aria-label="HYPHSWORLD leaderboard">
+      <article class="hw-leaderboard-card">
+        <div class="hw-leaderboard-head">
+          <div>
+            <span class="hw-leaderboard-kicker">LIVE SUPABASE BOARD</span>
+            <h2>Top Rankings</h2>
+            <p>Switch between Cool Points and game scores. Game rows will populate as soon as multiplayer/single-player scores start writing into Supabase.</p>
+          </div>
+          <div class="hw-leaderboard-actions">
+            <button class="hw-board-btn is-active" type="button" data-hw-board-mode="points">Cool Points</button>
+            <button class="hw-board-btn" type="button" data-hw-board-mode="games">Game Scores</button>
+          </div>
+        </div>
+        <div class="hw-leaderboard-list" data-hw-leaderboard-list>
+          <div class="hw-leaderboard-empty">Loading leaderboard...</div>
+        </div>
+      </article>
+    </section>
+
+    <p class="leaderboard-note">Codes stay private. The ticker can tease access whenever you decide, but the board only shows public-safe player stats.</p>
+  </main>
+
+  <footer class="site-footer">
+    <span>© <span id="year"></span> AMS WEST LLC</span>
+    <span>HYPHSWORLD • Richmond, CA</span>
+  </footer>
+
+  <script src="auth-client.js"></script>
+  <script src="leaderboard-widgets.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var year = document.getElementById("year");
+      if (year) year.textContent = new Date().getFullYear();
+    });
+  </script>
+</body>
+</html>
