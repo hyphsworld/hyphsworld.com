@@ -30,10 +30,10 @@
       'Shoes refreshed. Buck moved the rope one inch to the left.',
       'Duck sprayed too much cleaner. VIP chances somehow improved.'
     ],
-    resetPoints: [
-      'Cool Points reset. Duck looked guilty for no reason.',
-      'Points wiped clean on this browser. Buck made Duck empty his pockets.',
-      'Score reset complete. Duck Sauce said it was character development.'
+    protectedPoints: [
+      'Cool Points are locked to the ID. Buck says they only leave if the account gets deleted.',
+      'Duck tried to reset the points. Buck slapped the clipboard shut. Protected.',
+      'Points protected. Logout, refresh, private tab — still yours when the ID is active.'
     ]
   };
 
@@ -85,9 +85,21 @@
     if (el) el.textContent = value || '—';
   }
 
+  function setBodyState(state) {
+    document.body.classList.remove('is-loading-account', 'is-logged-in', 'is-logged-out');
+    document.body.classList.add(state);
+  }
+
   function setLoggedOutView() {
-    if (accountPanel) accountPanel.hidden = true;
-    if (loggedOutPanel) loggedOutPanel.hidden = false;
+    setBodyState('is-logged-out');
+    if (accountPanel) {
+      accountPanel.hidden = true;
+      accountPanel.classList.add('hw-force-hidden');
+    }
+    if (loggedOutPanel) {
+      loggedOutPanel.hidden = false;
+      loggedOutPanel.classList.remove('hw-force-hidden');
+    }
     if (logoutBtn) logoutBtn.disabled = true;
     renderPoints();
     setAvatarChoice(localStorage.getItem('hyphsworld.avatarType') || 'boy');
@@ -95,11 +107,33 @@
     show('No active ID. Buck says login before touching account management.', 'error');
   }
 
+  function setLoggedInView() {
+    setBodyState('is-logged-in');
+    if (accountPanel) {
+      accountPanel.hidden = false;
+      accountPanel.classList.remove('hw-force-hidden');
+    }
+    if (loggedOutPanel) {
+      loggedOutPanel.hidden = true;
+      loggedOutPanel.classList.add('hw-force-hidden');
+    }
+    if (logoutBtn) logoutBtn.disabled = false;
+  }
+
   async function renderUser() {
+    setBodyState('is-loading-account');
+
     if (!window.HWAuth) {
       show('Auth unavailable. Check auth-client.js.', 'error');
+      setLoggedOutView();
       return;
     }
+
+    try {
+      if (window.HWPoints && typeof window.HWPoints.refresh === 'function') {
+        await window.HWPoints.refresh();
+      }
+    } catch (error) {}
 
     const user = await HWAuth.getCurrentUser();
     if (!user) {
@@ -107,9 +141,7 @@
       return;
     }
 
-    if (accountPanel) accountPanel.hidden = false;
-    if (loggedOutPanel) loggedOutPanel.hidden = true;
-    if (logoutBtn) logoutBtn.disabled = false;
+    setLoggedInView();
 
     if (displayNameInput) displayNameInput.value = user.displayName || '';
     if (duckStatusInput) duckStatusInput.value = user.duckStatus || '';
@@ -122,7 +154,7 @@
     setText('accountBuck', user.buckClearance);
     renderPoints();
     if (window.HWUserWidget) window.HWUserWidget.refresh();
-    show('Account loaded. Duck Sauce is pretending he works here.', 'success');
+    show('Account loaded. Cool Points are locked to this ID.', 'success');
   }
 
   function bindProfileForm() {
@@ -146,7 +178,7 @@
         await renderUser();
         if (window.HWPoints) window.HWPoints.render();
         if (window.HWUserWidget) window.HWUserWidget.refresh();
-        show('Account saved. Buck stamped it. Duck tried to stamp it too but missed the paper.', 'success');
+        show('Account saved. Buck stamped it. Points stayed protected.', 'success');
       } catch (error) {
         show(error.message || 'Account save failed.', 'error');
       }
@@ -176,17 +208,15 @@
       if (!button) return;
       const action = button.dataset.funnyAction;
 
-      if (action === 'resetPoints') {
-        if (window.HWPoints) window.HWPoints.set(0);
-        else {
-          try { localStorage.setItem('hyphsworld.coolPoints.total', '0'); } catch (error) {}
-        }
+      if (action === 'resetPoints' || action === 'protectedPoints') {
+        show(pick(funnyLines.protectedPoints), 'warn');
         renderPoints();
         if (window.HWUserWidget) window.HWUserWidget.refresh();
+        return;
       }
 
       const lines = funnyLines[action] || ['Duck Sauce pressed a button. Nothing official happened.'];
-      show(pick(lines), action === 'resetPoints' ? 'error' : 'success');
+      show(pick(lines), 'success');
     });
   }
 
@@ -195,7 +225,7 @@
     logoutBtn.addEventListener('click', async () => {
       try {
         await HWAuth.signOut();
-        show('Logged out. Duck Sauce said “tell them I was professional.” He was not.', 'success');
+        show('Logged out. Cool Points stay saved to the ID.', 'success');
         window.setTimeout(() => {
           window.location.href = 'index.html';
         }, 550);
@@ -205,6 +235,7 @@
     });
   }
 
+  setBodyState('is-loading-account');
   bindProfileForm();
   bindAvatarPreview();
   bindFunnyManagements();
