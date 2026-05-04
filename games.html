@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Games | HYPHSWORLD</title>
+  <meta name="description" content="HYPHSWORLD Games Lobby with 01 Domino Room, Cool Points, live widgets, and Supabase leaderboards." />
+  <meta name="theme-color" content="#00ff66" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="homepage-upgrades.css" />
+  <link rel="stylesheet" href="leaderboard-widgets.css" />
+  <link rel="stylesheet" href="games.css" />
+</head>
+<body class="games-page">
+  <header class="site-header">
+    <a class="brand-lockup" href="index.html" aria-label="HYPHSWORLD home">
+      <span>AMS WEST PRESENTS</span>
+      <strong>HYPHSWORLD</strong>
+    </a>
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="vault.html">Vault</a>
+      <a href="games.html" aria-current="page">Games</a>
+      <a href="leaderboard.html">Leaderboards</a>
+      <a href="app-player.html">Full Player</a>
+      <a href="shop.html">Merch</a>
+      <a class="nav-cta" href="auth.html" id="gamesAuthLink">Create ID</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="ticker" aria-label="HYPHSWORLD games ticker">
+      <div class="ticker-track">
+        <span>01 DOMINO ROOM IS OPEN</span><b>✦</b><span>LOG IN TO PLAY FOR COOL POINTS</span><b>✦</b><span>WINNERS HIT THE LEADERBOARD</span><b>✦</b><span>DUCK SAUCE CLAIMS HE INVENTED DOMINOS</span><b>✦</b>
+        <span>01 DOMINO ROOM IS OPEN</span><b>✦</b><span>LOG IN TO PLAY FOR COOL POINTS</span><b>✦</b><span>WINNERS HIT THE LEADERBOARD</span><b>✦</b><span>DUCK SAUCE CLAIMS HE INVENTED DOMINOS</span><b>✦</b>
+      </div>
+    </section>
+
+    <section class="games-hero">
+      <p class="eyebrow">HYPHSWORLD // GAME FLOOR</p>
+      <h1>Games Lobby</h1>
+      <p>Play, win Cool Points, and climb the live board. First flagship table: <strong>01 Domino Room</strong>.</p>
+      <div class="games-actions">
+        <a class="games-btn primary" href="dominos.html">Enter 01 Domino Room</a>
+        <a class="games-btn" href="leaderboard.html">View Leaderboards</a>
+        <a class="games-btn ghost" href="auth.html">Login / Create ID</a>
+      </div>
+    </section>
+
+    <section class="hw-mini-widgets" data-hw-mini-widgets aria-label="HYPHSWORLD live game widgets">
+      <article class="hw-mini-widget" data-hw-widget="top-player">
+        <span>Top Player</span>
+        <strong>Loading</strong>
+        <p>Highest Cool Points total right now.</p>
+      </article>
+      <article class="hw-mini-widget" data-hw-widget="total-players">
+        <span>Ranked Players</span>
+        <strong>0</strong>
+        <p>Players currently showing on the board.</p>
+      </article>
+      <article class="hw-mini-widget" data-hw-widget="latest-unlock">
+        <span>Latest Unlock</span>
+        <strong>Pending</strong>
+        <p>Newest Vault movement from Supabase.</p>
+      </article>
+    </section>
+
+    <section class="game-card-grid" aria-label="Playable HYPHSWORLD games">
+      <article class="game-card live">
+        <span class="game-badge">LIVE BETA</span>
+        <h2>01 Domino Room</h2>
+        <p>Two-player rooms, turn-based table, Supabase state, score submit, and Cool Points winner bonus.</p>
+        <ul>
+          <li>2 players per room</li>
+          <li>Draw from the boneyard</li>
+          <li>Winner writes to game leaderboard</li>
+        </ul>
+        <a class="games-btn primary" href="dominos.html">Play Dominos</a>
+      </article>
+
+      <article class="game-card coming">
+        <span class="game-badge">NEXT</span>
+        <h2>Blackjack Table</h2>
+        <p>Casino-friendly table for Cool Points challenges after dominos gets stable.</p>
+        <button class="games-btn ghost" type="button" disabled>Coming Next</button>
+      </article>
+
+      <article class="game-card coming">
+        <span class="game-badge">SOON</span>
+        <h2>Duck Trivia Battle</h2>
+        <p>Fast questions, 01 Universe facts, and code-hunt clues when you want to activate campaigns.</p>
+        <button class="games-btn ghost" type="button" disabled>Coming Soon</button>
+      </article>
+    </section>
+
+    <section class="hw-leaderboard-wrap" data-hw-leaderboard data-default-mode="games" data-limit="8" aria-label="Games leaderboard preview">
+      <article class="hw-leaderboard-card">
+        <div class="hw-leaderboard-head">
+          <div>
+            <span class="hw-leaderboard-kicker">GAME BOARD</span>
+            <h2>Game Rankings</h2>
+            <p>Domino wins and future game scores feed this board. Cool Points board is one tap away.</p>
+          </div>
+          <div class="hw-leaderboard-actions">
+            <button class="hw-board-btn is-active" type="button" data-hw-board-mode="games">Game Scores</button>
+            <button class="hw-board-btn" type="button" data-hw-board-mode="points">Cool Points</button>
+            <a class="hw-board-btn" href="leaderboard.html">Full Board</a>
+          </div>
+        </div>
+        <div class="hw-leaderboard-list" data-hw-leaderboard-list>
+          <div class="hw-leaderboard-empty">Loading game board...</div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span>© <span id="year"></span> AMS WEST LLC</span>
+    <span>Games powered by HYPHSWORLD Cool Points</span>
+  </footer>
+
+  <script src="auth-client.js"></script>
+  <script src="leaderboard-widgets.js"></script>
+  <script src="games.js"></script>
+</body>
+</html>
