@@ -14,3 +14,12 @@ window.HW_SUPABASE_CONFIG = {
   anonKey: "sb_publishable_oYdN-75W3b7k3m1zLukI-A_BKWVDD5e",
   profileTable: "profiles"
 };
+
+(function () {
+  if (window.__HYPHSWORLD_ANALYTICS_BOOTSTRAP__) return;
+  window.__HYPHSWORLD_ANALYTICS_BOOTSTRAP__ = true;
+  var script = document.createElement('script');
+  script.src = 'site-analytics.js';
+  script.defer = true;
+  document.head.appendChild(script);
+})();
