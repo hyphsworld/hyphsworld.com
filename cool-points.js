@@ -1,7 +1,8 @@
 /*
   HYPHSWORLD Cool Points
-  Account-first point system. Logged-in accounts sync through HWAuth/Supabase.
-  Guests stay browser-local so the site keeps working before login.
+  Account-first point system.
+  - Logged-in users sync permanently through HWAuth/Supabase.
+  - Guests do not keep permanent points. Refresh/private tab/cache clear returns guests to 0.
 */
 (function () {
   'use strict';
@@ -19,6 +20,7 @@
 
   const TOTAL_KEY = 'hyphsworld.coolPoints.total';
   const PROFILE_KEY = 'hyphsworld.coolPoints.profile';
+  const GUEST_SESSION_KEY = 'hyphsworld.coolPoints.guestSession';
   const OLD_KEYS = ['coolPoints', 'hyphsCoolPoints', 'hwCoolPoints', 'hyphsworldPoints', 'hyphsworld.coolpoints'];
 
   let points = 0;
@@ -28,6 +30,10 @@
 
   function safeGet(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
   function safeSet(key, value) { try { localStorage.setItem(key, String(value)); } catch (e) {} }
+  function safeRemove(key) { try { localStorage.removeItem(key); } catch (e) {} }
+  function safeSessionGet(key) { try { return sessionStorage.getItem(key); } catch (e) { return null; } }
+  function safeSessionSet(key, value) { try { sessionStorage.setItem(key, String(value)); } catch (e) {} }
+
   function numberFrom(value) {
     const parsed = parseInt(value, 10);
     return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
@@ -43,14 +49,9 @@
     return saved && saved.trim() ? saved.trim() : 'Guest';
   }
 
-  function migrateOldPoints() {
-    let current = numberFrom(safeGet(TOTAL_KEY));
-    OLD_KEYS.forEach((key) => {
-      const oldValue = numberFrom(safeGet(key));
-      if (oldValue > current) current = oldValue;
-    });
-    safeSet(TOTAL_KEY, current);
-    return current;
+  function clearGuestPersistentPoints() {
+    safeRemove(TOTAL_KEY);
+    OLD_KEYS.forEach(safeRemove);
   }
 
   function saveProfile() {
@@ -58,6 +59,7 @@
       name: getProfileName(),
       points,
       accountBacked: sessionActive,
+      note: sessionActive ? 'Supabase account-backed points' : 'Guest points are temporary only',
       updatedAt: new Date().toISOString()
     };
     safeSet(PROFILE_KEY, JSON.stringify(profile));
@@ -85,12 +87,20 @@
     const loginLink = document.getElementById('hw-login-link');
     if (loginLink && playerName !== 'Guest') loginLink.textContent = playerName;
 
+    document.querySelectorAll('[data-points-mode]').forEach((el) => {
+      el.textContent = sessionActive ? 'Account saved' : 'Guest preview';
+    });
+
     saveProfile();
   }
 
-  function setLocal(value) {
+  function setDisplay(value) {
     points = Math.max(0, parseInt(value, 10) || 0);
-    safeSet(TOTAL_KEY, points);
+    if (sessionActive) safeSet(TOTAL_KEY, points);
+    else {
+      clearGuestPersistentPoints();
+      safeSessionSet(GUEST_SESSION_KEY, points);
+    }
     render();
     return points;
   }
@@ -118,16 +128,16 @@
     if (hydrating) return points;
     hydrating = true;
 
-    const localStart = migrateOldPoints();
     const session = await getAuthSession();
     sessionActive = Boolean(session);
 
     if (sessionActive) {
       const accountPoints = await getAccountPoints();
-      if (accountPoints !== null) setLocal(accountPoints);
-      else setLocal(localStart);
+      setDisplay(accountPoints !== null ? accountPoints : numberFrom(safeGet(TOTAL_KEY)));
     } else {
-      setLocal(localStart);
+      sessionActive = false;
+      clearGuestPersistentPoints();
+      setDisplay(numberFrom(safeSessionGet(GUEST_SESSION_KEY)));
     }
 
     hydrated = true;
@@ -145,15 +155,17 @@
     if (sessionActive && window.HWAuth && typeof window.HWAuth.addPoints === 'function') {
       try {
         const next = await window.HWAuth.addPoints(n, reason || '');
-        setLocal(next);
+        setDisplay(next);
         toast(`+${n} Cool Points${reason ? ' — ' + reason : ''}`);
         return points;
       } catch (error) {}
     }
 
+    sessionActive = false;
+    clearGuestPersistentPoints();
     points += n;
-    setLocal(points);
-    toast(`+${n} Cool Points${reason ? ' — ' + reason : ''}`);
+    setDisplay(points);
+    toast(`+${n} temporary guest points — create ID to keep points`);
     return points;
   }
 
@@ -175,14 +187,15 @@
     if (sessionActive && window.HWAuth && typeof window.HWAuth.setPoints === 'function') {
       try {
         const saved = await window.HWAuth.setPoints(next, reason || 'spend');
-        setLocal(saved);
+        setDisplay(saved);
         toast(`-${n} Cool Points spent${reason ? ' — ' + reason : ''}`);
         return points;
       } catch (error) {}
     }
 
-    setLocal(next);
-    toast(`-${n} Cool Points spent${reason ? ' — ' + reason : ''}`);
+    sessionActive = false;
+    setDisplay(next);
+    toast(`-${n} temporary guest points spent${reason ? ' — ' + reason : ''}`);
     return points;
   }
 
@@ -194,12 +207,13 @@
     if (sessionActive && window.HWAuth && typeof window.HWAuth.setPoints === 'function') {
       try {
         const saved = await window.HWAuth.setPoints(next, 'set_points');
-        setLocal(saved);
+        setDisplay(saved);
         return points;
       } catch (error) {}
     }
 
-    setLocal(next);
+    sessionActive = false;
+    setDisplay(next);
     return points;
   }
 
@@ -227,6 +241,7 @@
     spend,
     set,
     render,
+    isAccountBacked: () => sessionActive,
     profile: () => {
       try { return JSON.parse(safeGet(PROFILE_KEY) || '{}'); } catch (e) { return {}; }
     }
@@ -236,6 +251,7 @@
     hydrate(true).then(render);
   });
 
-  points = numberFrom(safeGet(TOTAL_KEY));
+  points = numberFrom(safeSessionGet(GUEST_SESSION_KEY));
+  clearGuestPersistentPoints();
   render();
 })();
