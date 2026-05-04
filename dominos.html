@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>01 Domino Room | HYPHSWORLD</title>
+  <meta name="description" content="01 Domino Room multiplayer beta for HYPHSWORLD Cool Points and game leaderboards." />
+  <meta name="theme-color" content="#00ff66" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="homepage-upgrades.css" />
+  <link rel="stylesheet" href="leaderboard-widgets.css" />
+  <link rel="stylesheet" href="games.css" />
+</head>
+<body class="dominos-page">
+  <header class="site-header">
+    <a class="brand-lockup" href="index.html" aria-label="HYPHSWORLD home">
+      <span>AMS WEST PRESENTS</span>
+      <strong>HYPHSWORLD</strong>
+    </a>
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="vault.html">Vault</a>
+      <a href="games.html">Games</a>
+      <a href="leaderboard.html">Leaderboards</a>
+      <a href="app-player.html">Full Player</a>
+      <a href="shop.html">Merch</a>
+      <a class="nav-cta" href="auth.html" id="dominosAuthLink">Create ID</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="ticker" aria-label="01 Domino Room ticker">
+      <div class="ticker-track">
+        <span>01 DOMINO ROOM</span><b>✦</b><span>CREATE A TABLE</span><b>✦</b><span>JOIN A ROOM</span><b>✦</b><span>WINNER GETS COOL POINTS</span><b>✦</b><span>GAME SCORES HIT THE BOARD</span><b>✦</b>
+        <span>01 DOMINO ROOM</span><b>✦</b><span>CREATE A TABLE</span><b>✦</b><span>JOIN A ROOM</span><b>✦</b><span>WINNER GETS COOL POINTS</span><b>✦</b><span>GAME SCORES HIT THE BOARD</span><b>✦</b>
+      </div>
+    </section>
+
+    <section class="dominos-hero">
+      <p class="eyebrow">HYPHSWORLD // LIVE BETA</p>
+      <h1>01 Domino Room</h1>
+      <p>Two-player room beta. Create or join a table, play tiles from your hand, draw from the boneyard, and submit the win to Supabase.</p>
+      <div class="dominos-actions">
+        <a class="games-btn" href="games.html">Games Lobby</a>
+        <a class="games-btn" href="leaderboard.html">Leaderboards</a>
+        <button class="games-btn primary" type="button" id="refreshRooms">Refresh Tables</button>
+      </div>
+    </section>
+
+    <section class="dominos-app" aria-label="01 Domino Room application">
+      <aside class="dominos-panel">
+        <h2>Tables</h2>
+        <p class="dominos-status" id="dominosStatus">Checking login...</p>
+
+        <form class="dominos-form" id="createRoomForm">
+          <label for="roomName">Create Table</label>
+          <input id="roomName" type="text" maxlength="18" placeholder="01 TABLE" autocomplete="off" />
+          <button class="games-btn primary" type="submit">Create Room</button>
+        </form>
+
+        <form class="dominos-form" id="joinRoomForm">
+          <label for="roomCodeInput">Join By Room Code</label>
+          <input id="roomCodeInput" type="text" maxlength="12" placeholder="ROOM CODE" autocomplete="off" />
+          <button class="games-btn" type="submit">Join Code</button>
+        </form>
+
+        <div class="room-list" id="roomList">
+          <div class="hw-leaderboard-empty">Loading open tables...</div>
+        </div>
+      </aside>
+
+      <section class="dominos-table">
+        <h2>Table Board</h2>
+        <div class="dominos-scoreboard">
+          <article class="score-card">
+            <span>Room</span>
+            <strong id="activeRoomCode">None</strong>
+          </article>
+          <article class="score-card">
+            <span>Turn</span>
+            <strong id="activeTurn">Waiting</strong>
+          </article>
+        </div>
+
+        <div class="table-label"><span>Board</span><button class="games-btn ghost" type="button" id="drawTileBtn">Draw Tile</button></div>
+        <div class="bone-yard" id="boardTiles">
+          <span class="hw-leaderboard-empty">Join or create a room to start.</span>
+        </div>
+
+        <div class="table-label"><span>Your Hand</span><button class="games-btn primary" type="button" id="submitWinBtn">Submit Win</button></div>
+        <div class="player-hand" id="playerHand"></div>
+
+        <div class="table-label"><span>Room Log</span><button class="games-btn ghost" type="button" id="leaveRoomBtn">Leave View</button></div>
+        <div class="domino-log" id="dominoLog">
+          <p>Duck Sauce: “Somebody slap a bone on the table.”</p>
+        </div>
+      </section>
+    </section>
+
+    <section class="hw-leaderboard-wrap" data-hw-leaderboard data-default-mode="games" data-limit="5" aria-label="Domino leaderboard preview">
+      <article class="hw-leaderboard-card">
+        <div class="hw-leaderboard-head">
+          <div>
+            <span class="hw-leaderboard-kicker">DOMINO RESULTS</span>
+            <h2>Game Board</h2>
+            <p>Submitted wins and future game scores show here after Supabase records them.</p>
+          </div>
+          <div class="hw-leaderboard-actions">
+            <button class="hw-board-btn is-active" type="button" data-hw-board-mode="games">Game Scores</button>
+            <button class="hw-board-btn" type="button" data-hw-board-mode="points">Cool Points</button>
+          </div>
+        </div>
+        <div class="hw-leaderboard-list" data-hw-leaderboard-list>
+          <div class="hw-leaderboard-empty">Loading game board...</div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span>© <span id="year"></span> AMS WEST LLC</span>
+    <span>01 Domino Room • Live Beta</span>
+  </footer>
+
+  <script src="auth-client.js"></script>
+  <script src="leaderboard-widgets.js"></script>
+  <script src="dominos.js"></script>
+</body>
+</html>
