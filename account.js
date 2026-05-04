@@ -11,6 +11,8 @@
   const displayNameInput = document.getElementById('displayName');
   const duckStatusInput = document.getElementById('duckStatus');
   const buckClearanceInput = document.getElementById('buckClearance');
+  const avatarBoyInput = document.getElementById('avatarBoy');
+  const avatarGirlInput = document.getElementById('avatarGirl');
 
   const funnyLines = {
     duckFine: [
@@ -34,6 +36,26 @@
       'Score reset complete. Duck Sauce said it was character development.'
     ]
   };
+
+  function avatarIcon(type) {
+    return String(type || '').toLowerCase() === 'girl' ? '💅' : '🧢';
+  }
+
+  function avatarLabel(type) {
+    const clean = String(type || '').toLowerCase() === 'girl' ? 'girl' : 'boy';
+    return avatarIcon(clean) + ' ' + clean.charAt(0).toUpperCase() + clean.slice(1);
+  }
+
+  function selectedAvatarType() {
+    return avatarGirlInput && avatarGirlInput.checked ? 'girl' : 'boy';
+  }
+
+  function setAvatarChoice(type) {
+    const clean = String(type || '').toLowerCase() === 'girl' ? 'girl' : 'boy';
+    if (avatarBoyInput) avatarBoyInput.checked = clean === 'boy';
+    if (avatarGirlInput) avatarGirlInput.checked = clean === 'girl';
+    setText('accountAvatar', avatarLabel(clean));
+  }
 
   function show(text, type) {
     if (!msgEl) return;
@@ -68,6 +90,8 @@
     if (loggedOutPanel) loggedOutPanel.hidden = false;
     if (logoutBtn) logoutBtn.disabled = true;
     renderPoints();
+    setAvatarChoice(localStorage.getItem('hyphsworld.avatarType') || 'boy');
+    if (window.HWUserWidget) window.HWUserWidget.refresh();
     show('No active ID. Buck says login before touching account management.', 'error');
   }
 
@@ -90,12 +114,14 @@
     if (displayNameInput) displayNameInput.value = user.displayName || '';
     if (duckStatusInput) duckStatusInput.value = user.duckStatus || '';
     if (buckClearanceInput) buckClearanceInput.value = user.buckClearance || 'Lobby clearance only';
+    setAvatarChoice(user.avatarType || 'boy');
 
     setText('accountEmail', user.email);
     setText('accountName', user.displayName);
     setText('accountDuck', user.duckStatus);
     setText('accountBuck', user.buckClearance);
     renderPoints();
+    if (window.HWUserWidget) window.HWUserWidget.refresh();
     show('Account loaded. Duck Sauce is pretending he works here.', 'success');
   }
 
@@ -107,19 +133,40 @@
         const user = await HWAuth.updateProfile({
           displayName: displayNameInput ? displayNameInput.value : '',
           duckStatus: duckStatusInput ? duckStatusInput.value : '',
-          buckClearance: buckClearanceInput ? buckClearanceInput.value : ''
+          buckClearance: buckClearanceInput ? buckClearanceInput.value : '',
+          avatarType: selectedAvatarType()
         });
 
         try {
           localStorage.setItem('hyphsworld.playerName', user.displayName || 'Guest');
+          localStorage.setItem('hyphsworld.avatarType', user.avatarType || selectedAvatarType());
+          localStorage.setItem('hyphsworld.avatarIcon', user.avatarIcon || avatarIcon(selectedAvatarType()));
         } catch (error) {}
 
         await renderUser();
         if (window.HWPoints) window.HWPoints.render();
+        if (window.HWUserWidget) window.HWUserWidget.refresh();
         show('Account saved. Buck stamped it. Duck tried to stamp it too but missed the paper.', 'success');
       } catch (error) {
         show(error.message || 'Account save failed.', 'error');
       }
+    });
+  }
+
+  function bindAvatarPreview() {
+    [avatarBoyInput, avatarGirlInput].forEach((input) => {
+      if (!input) return;
+      input.addEventListener('change', () => {
+        setAvatarChoice(selectedAvatarType());
+        if (window.HWUserWidget) {
+          window.HWUserWidget.render({
+            displayName: displayNameInput ? displayNameInput.value || 'Guest' : 'Guest',
+            avatarType: selectedAvatarType(),
+            avatarIcon: avatarIcon(selectedAvatarType()),
+            coolPoints: getPoints()
+          });
+        }
+      });
     });
   }
 
@@ -135,6 +182,7 @@
           try { localStorage.setItem('hyphsworld.coolPoints.total', '0'); } catch (error) {}
         }
         renderPoints();
+        if (window.HWUserWidget) window.HWUserWidget.refresh();
       }
 
       const lines = funnyLines[action] || ['Duck Sauce pressed a button. Nothing official happened.'];
@@ -158,6 +206,7 @@
   }
 
   bindProfileForm();
+  bindAvatarPreview();
   bindFunnyManagements();
   bindLogout();
   renderUser();
