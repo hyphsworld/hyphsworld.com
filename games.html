@@ -3,9 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>Games | HYPHSWORLD</title>
-  <meta name="description" content="HYPHSWORLD Table Games Lobby with Dice, Dominoes, Blackjack, Poker, Cool Points, live widgets, and Supabase leaderboards." />
+  <meta name="description" content="HYPHSWORLD Games Lobby with Casino Arcade, Crash, Plinko, Mines, Dice, Dominoes, Blackjack, Poker, Cool Points, live widgets, and Supabase leaderboards." />
   <meta name="theme-color" content="#00ff66" />
+
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="homepage-upgrades.css" />
   <link rel="stylesheet" href="leaderboard-widgets.css" />
@@ -21,6 +23,7 @@
       <a href="index.html">Home</a>
       <a href="vault.html">Vault</a>
       <a href="games.html" aria-current="page">Games</a>
+      <a href="casino-arcade.html">Casino Arcade</a>
       <a href="leaderboard.html">Leaderboards</a>
       <a href="app-player.html">Full Player</a>
       <a href="shop.html">Merch</a>
@@ -31,17 +34,18 @@
   <main>
     <section class="ticker" aria-label="HYPHSWORLD games ticker">
       <div class="ticker-track">
-        <span>DICE TABLE LIVE</span><b>✦</b><span>DOMINOES LIVE</span><b>✦</b><span>BLACKJACK TABLE LIVE</span><b>✦</b><span>POKER ROOM BETA</span><b>✦</b><span>WINNERS HIT THE LEADERBOARD</span><b>✦</b>
-        <span>DICE TABLE LIVE</span><b>✦</b><span>DOMINOES LIVE</span><b>✦</b><span>BLACKJACK TABLE LIVE</span><b>✦</b><span>POKER ROOM BETA</span><b>✦</b><span>WINNERS HIT THE LEADERBOARD</span><b>✦</b>
+        <span>CASINO ARCADE LIVE</span><b>✦</b><span>CRASH</span><b>✦</b><span>PLINKO</span><b>✦</b><span>MINES</span><b>✦</b><span>NEON SLOTS</span><b>✦</b><span>DICE TABLE LIVE</span><b>✦</b><span>DOMINOES LIVE</span><b>✦</b><span>BLACKJACK TABLE LIVE</span><b>✦</b><span>POKER ROOM BETA</span><b>✦</b><span>WINNERS HIT THE LEADERBOARD</span><b>✦</b>
+        <span>CASINO ARCADE LIVE</span><b>✦</b><span>CRASH</span><b>✦</b><span>PLINKO</span><b>✦</b><span>MINES</span><b>✦</b><span>NEON SLOTS</span><b>✦</b><span>DICE TABLE LIVE</span><b>✦</b><span>DOMINOES LIVE</span><b>✦</b><span>BLACKJACK TABLE LIVE</span><b>✦</b><span>POKER ROOM BETA</span><b>✦</b><span>WINNERS HIT THE LEADERBOARD</span><b>✦</b>
       </div>
     </section>
 
     <section class="games-hero">
-      <p class="eyebrow">HYPHSWORLD // TABLE GAMES FLOOR</p>
-      <h1>Table Games</h1>
-      <p>Dice, Dominoes, Blackjack, and Poker now sit on the Games floor. Login, create a table, win Cool Points, and climb the live board.</p>
+      <p class="eyebrow">HYPHSWORLD // GAMES FLOOR</p>
+      <h1>Games Lobby</h1>
+      <p>New Casino Arcade is installed beside the table games. Run the newer fast-play graphics floor for Crash, Plinko, Mines, Neon Slots, Scratchers, High-Low, and Roulette — then keep Dice, Dominoes, Blackjack, and Poker Beta available too.</p>
       <div class="games-actions">
-        <a class="games-btn primary" href="table-game.html?game=dice">Play Dice</a>
+        <a class="games-btn primary" href="casino-arcade.html">Open Casino Arcade</a>
+        <a class="games-btn" href="table-game.html?game=dice">Play Dice</a>
         <a class="games-btn" href="dominos.html">Play Dominoes</a>
         <a class="games-btn" href="table-game.html?game=blackjack">Play Blackjack</a>
         <a class="games-btn ghost" href="table-game.html?game=poker">Poker Beta</a>
@@ -66,7 +70,19 @@
       </article>
     </section>
 
-    <section class="game-card-grid" aria-label="Playable HYPHSWORLD table games">
+    <section class="game-card-grid" aria-label="Playable HYPHSWORLD games">
+      <article class="game-card live">
+        <span class="game-badge">NEW</span>
+        <h2>Casino Arcade</h2>
+        <p>Latest fast-play floor with animated modern graphics, glowing reels, crash graph, Plinko board, mines grid, scratcher card, High-Low, and Roulette.</p>
+        <ul>
+          <li>Crash, Plinko, Mines</li>
+          <li>Neon Slots, Scratchers, Roulette</li>
+          <li>Cool Points only — no real-money payout</li>
+        </ul>
+        <a class="games-btn primary" href="casino-arcade.html">Open Arcade</a>
+      </article>
+
       <article class="game-card live">
         <span class="game-badge">LIVE</span>
         <h2>Dice Table</h2>
@@ -122,11 +138,12 @@
           <div>
             <span class="hw-leaderboard-kicker">GAME BOARD</span>
             <h2>Game Rankings</h2>
-            <p>Dice, Dominoes, Blackjack, Poker, and future table scores feed this board. Cool Points board is one tap away.</p>
+            <p>Casino Arcade, Dice, Dominoes, Blackjack, Poker, and future scores feed this board. Cool Points board is one tap away.</p>
           </div>
           <div class="hw-leaderboard-actions">
             <button class="hw-board-btn is-active" type="button" data-hw-board-mode="games">Game Scores</button>
             <button class="hw-board-btn" type="button" data-hw-board-mode="points">Cool Points</button>
+            <a class="hw-board-btn" href="casino-arcade.html">Casino Arcade</a>
             <a class="hw-board-btn" href="leaderboard.html">Full Board</a>
           </div>
         </div>
@@ -139,7 +156,7 @@
 
   <footer class="site-footer">
     <span>© <span id="year"></span> AMS WEST LLC</span>
-    <span>Table Games powered by HYPHSWORLD Cool Points</span>
+    <span>Games powered by HYPHSWORLD Cool Points</span>
   </footer>
 
   <script src="auth-client.js"></script>
