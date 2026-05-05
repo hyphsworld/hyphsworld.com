@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Casino Arcade | HYPHSWORLD</title>
+  <meta name="description" content="HYPHSWORLD Casino Arcade with Crash, Plinko, Mines, Slots, Scratchers, High-Low, Roulette, Cool Points, and live leaderboard motion." />
+  <meta name="theme-color" content="#00ff66" />
+
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="homepage-upgrades.css" />
+  <link rel="stylesheet" href="leaderboard-widgets.css" />
+  <link rel="stylesheet" href="games.css" />
+  <link rel="stylesheet" href="casino-arcade.css" />
+</head>
+<body class="casino-page">
+  <header class="site-header">
+    <a class="brand-lockup" href="index.html" aria-label="HYPHSWORLD home">
+      <span>AMS WEST PRESENTS</span>
+      <strong>HYPHSWORLD</strong>
+    </a>
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="vault.html">Vault</a>
+      <a href="games.html">Games</a>
+      <a href="casino-arcade.html" aria-current="page">Casino Arcade</a>
+      <a href="leaderboard.html">Leaderboards</a>
+      <a href="app-player.html">Full Player</a>
+      <a href="shop.html">Merch</a>
+      <a class="nav-cta" href="auth.html" id="casinoAuthLink">Create ID</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="ticker casino-ticker" aria-label="HYPHSWORLD casino ticker">
+      <div class="ticker-track">
+        <span>NEW CASINO ARCADE LIVE</span><b>✦</b><span>CRASH</span><b>✦</b><span>PLINKO</span><b>✦</b><span>MINES</span><b>✦</b><span>NEON SLOTS</span><b>✦</b><span>SCRATCHERS</span><b>✦</b><span>HIGH-LOW</span><b>✦</b><span>ROULETTE</span><b>✦</b><span>COOL POINTS ONLY</span><b>✦</b>
+        <span>NEW CASINO ARCADE LIVE</span><b>✦</b><span>CRASH</span><b>✦</b><span>PLINKO</span><b>✦</b><span>MINES</span><b>✦</b><span>NEON SLOTS</span><b>✦</b><span>SCRATCHERS</span><b>✦</b><span>HIGH-LOW</span><b>✦</b><span>ROULETTE</span><b>✦</b><span>COOL POINTS ONLY</span><b>✦</b>
+      </div>
+    </section>
+
+    <section class="casino-hero">
+      <div class="casino-hero-copy">
+        <p class="eyebrow">HYPHSWORLD // NEXT-GEN CASINO ARCADE</p>
+        <h1>Casino Arcade</h1>
+        <p>Fast modern game floor with glowing arcade visuals. Crash, Plinko, Mines, Slots, Scratchers, High-Low, and Roulette are all Cool Points only.</p>
+        <div class="casino-pill-row" aria-label="Casino arcade status">
+          <span class="casino-pill hot">No Real Money</span>
+          <span class="casino-pill">Cool Points Stay</span>
+          <span class="casino-pill">Wins Add Points</span>
+          <span class="casino-pill">Mobile First</span>
+        </div>
+      </div>
+
+      <aside class="casino-score-card" aria-label="Player status">
+        <span>Player Status</span>
+        <strong id="casinoPlayerName">Checking...</strong>
+        <p id="casinoPlayerMode">Login to save scores to the leaderboard.</p>
+        <div class="casino-points-meter">
+          <span>Cool Points</span>
+          <strong id="casinoPoints">0</strong>
+        </div>
+      </aside>
+    </section>
+
+    <section class="casino-game-picker" aria-label="Casino arcade game picker">
+      <button class="casino-game-tile is-active" type="button" data-game="crash">
+        <span>🚀</span><strong>Crash</strong><small>Cash-out timing</small>
+      </button>
+      <button class="casino-game-tile" type="button" data-game="plinko">
+        <span>🟢</span><strong>Plinko</strong><small>Physics drop</small>
+      </button>
+      <button class="casino-game-tile" type="button" data-game="mines">
+        <span>💣</span><strong>Mines</strong><small>Safe tile chase</small>
+      </button>
+      <button class="casino-game-tile" type="button" data-game="slots">
+        <span>💎</span><strong>Neon Slots</strong><small>3-reel spin</small>
+      </button>
+      <button class="casino-game-tile" type="button" data-game="scratcher">
+        <span>🎟️</span><strong>Scratcher</strong><small>Reveal match</small>
+      </button>
+      <button class="casino-game-tile" type="button" data-game="hilo">
+        <span>🃏</span><strong>High-Low</strong><small>Card streak</small>
+      </button>
+      <button class="casino-game-tile" type="button" data-game="roulette">
+        <span>🎡</span><strong>Roulette</strong><small>Color spin</small>
+      </button>
+    </section>
+
+    <section class="casino-console" aria-label="Casino arcade console">
+      <div class="casino-stage-shell">
+        <div class="casino-stage-top">
+          <div>
+            <p class="eyebrow" id="casinoGameKicker">HYPHSWORLD ARCADE</p>
+            <h2 id="casinoGameTitle">Crash</h2>
+          </div>
+          <span class="casino-live-dot">LIVE</span>
+        </div>
+
+        <div class="casino-stage" id="casinoStage">
+          <div class="casino-loading">Loading arcade...</div>
+        </div>
+      </div>
+
+      <aside class="casino-control-panel">
+        <h2>Control Deck</h2>
+        <p id="casinoGameDescription">Pick a game and run the arcade.</p>
+
+        <label class="casino-field" for="casinoPowerInput">
+          <span>Entry Power</span>
+          <input id="casinoPowerInput" type="number" min="1" max="1000" step="5" value="25" inputmode="numeric" />
+          <small>Entry Power controls bonus size only. It does not subtract Cool Points.</small>
+        </label>
+
+        <div class="casino-dynamic-controls" id="casinoControls"></div>
+
+        <p class="casino-status" id="casinoStatus">Duck Sauce: “This floor is for points and flexing. Nobody cashing out real money in here.”</p>
+
+        <div class="casino-recent" id="casinoRecent">
+          <strong>Recent Arcade Hits</strong>
+          <div class="casino-recent-list" id="casinoRecentList">
+            <span>No hits yet.</span>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="hw-leaderboard-wrap" data-hw-leaderboard data-default-mode="games" data-limit="8" aria-label="Casino arcade leaderboard preview">
+      <article class="hw-leaderboard-card">
+        <div class="hw-leaderboard-head">
+          <div>
+            <span class="hw-leaderboard-kicker">CASINO ARCADE BOARD</span>
+            <h2>Game Scores</h2>
+            <p>Logged-in wins try to save into Supabase game scores and Cool Points. Guest play stays local.</p>
+          </div>
+          <div class="hw-leaderboard-actions">
+            <button class="hw-board-btn is-active" type="button" data-hw-board-mode="games">Game Scores</button>
+            <button class="hw-board-btn" type="button" data-hw-board-mode="points">Cool Points</button>
+            <a class="hw-board-btn" href="games.html">Games Lobby</a>
+          </div>
+        </div>
+        <div class="hw-leaderboard-list" data-hw-leaderboard-list>
+          <div class="hw-leaderboard-empty">Loading casino board...</div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span>© <span id="year"></span> AMS WEST LLC</span>
+    <span>Casino Arcade • Cool Points only • No real-money payout</span>
+  </footer>
+
+  <script src="auth-client.js"></script>
+  <script src="leaderboard-widgets.js"></script>
+  <script src="casino-arcade.js"></script>
+</body>
+</html>
