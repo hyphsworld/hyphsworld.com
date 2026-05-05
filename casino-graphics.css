@@ -491,13 +491,326 @@
 .wheel-prizes small{display:block;color:rgba(255,255,255,.65);font-family:system-ui,sans-serif;font-weight:900}
 .wheel-prizes strong{display:block;color:var(--green);font-size:18px}
 
+/* HYPHSWORLD SKATE / GRAFFITI REWARD LAYER — keeps brand colors, adds street-game energy */
+.casino-lobby-panel:after,
+.casino-game-panel:after{
+  content:"AMS WEST  ✦  SKATE FLOOR  ✦  DUCK SAUCE WAS HERE";
+  position:absolute;
+  left:18px;
+  right:18px;
+  bottom:12px;
+  z-index:1;
+  pointer-events:none;
+  opacity:.16;
+  color:#fff;
+  font-size:clamp(18px,4vw,42px);
+  line-height:.9;
+  letter-spacing:.06em;
+  transform:rotate(-3deg);
+  text-shadow:
+    3px 3px 0 var(--pink),
+    -3px -2px 0 var(--green),
+    0 0 18px rgba(0,229,255,.32);
+}
+
+.casino-title:before{
+  content:"NO MIDDLEMEN";
+  display:inline-grid;
+  place-items:center;
+  margin-bottom:12px;
+  padding:8px 12px;
+  border:2px solid rgba(255,255,255,.62);
+  border-radius:12px 22px 10px 20px;
+  color:#050505;
+  background:linear-gradient(135deg,var(--green),var(--yellow),var(--cyan));
+  box-shadow:6px 7px 0 rgba(255,43,214,.8),0 0 22px rgba(57,255,20,.28);
+  transform:rotate(-2deg);
+  font-size:13px;
+  letter-spacing:.12em;
+}
+
+.casino-title:after{
+  content:"🛹";
+  position:absolute;
+  right:28px;
+  top:94px;
+  z-index:4;
+  font-size:44px;
+  filter:drop-shadow(0 0 12px rgba(255,230,0,.35));
+  transform:rotate(-18deg);
+}
+
+.casino-bankroll{
+  position:relative;
+}
+
+.casino-bankroll:after{
+  content:"REWARD PROGRESS • 50 POINTS UNLOCKS HEAT";
+  display:block;
+  margin-top:14px;
+  padding:12px 14px;
+  border-radius:18px;
+  color:#050505;
+  font-size:13px;
+  font-weight:1000;
+  letter-spacing:.12em;
+  background:
+    linear-gradient(90deg,var(--green) 0 35%,var(--yellow) 35% 55%,var(--pink) 55% 72%,var(--cyan) 72% 100%);
+  box-shadow:0 12px 26px rgba(0,0,0,.35),0 0 24px rgba(57,255,20,.18);
+}
+
+.chips{
+  position:relative;
+  padding-bottom:72px;
+}
+
+.chips:after{
+  content:"";
+  position:absolute;
+  left:10px;
+  right:10px;
+  bottom:16px;
+  height:48px;
+  border-radius:12px 12px 28px 28px;
+  background:
+    linear-gradient(160deg, rgba(255,255,255,.16), transparent 42%),
+    linear-gradient(90deg, var(--pink), var(--green), var(--cyan));
+  clip-path:polygon(0 70%,18% 18%,78% 18%,100% 70%,100% 100%,0 100%);
+  box-shadow:0 16px 24px rgba(0,0,0,.36), inset 0 0 0 2px rgba(255,255,255,.22);
+  opacity:.82;
+}
+
+.chip{
+  position:relative;
+  overflow:hidden;
+}
+
+.chip:after{
+  content:"";
+  position:absolute;
+  inset:6px;
+  border-radius:50%;
+  border:2px dashed rgba(255,255,255,.62);
+  pointer-events:none;
+}
+
+.casino-announcer{
+  border-style:dashed;
+}
+
+.casino-announcer strong,
+.game-message strong{
+  color:var(--yellow);
+}
+
+.game-tab{
+  position:relative;
+  overflow:hidden;
+}
+
+.game-tab:before{
+  content:"";
+  position:absolute;
+  inset:auto -10px 6px;
+  height:6px;
+  background:linear-gradient(90deg,var(--pink),var(--green),var(--cyan),var(--yellow));
+  transform:skewX(-28deg);
+  opacity:.55;
+}
+
+.game-tab.active:after{
+  content:"UNLOCK PATH";
+  position:absolute;
+  top:-8px;
+  right:-8px;
+  padding:4px 7px;
+  border-radius:999px;
+  background:var(--pink);
+  color:#fff;
+  font-size:9px;
+  letter-spacing:.08em;
+  transform:rotate(9deg);
+  box-shadow:0 0 14px rgba(255,43,214,.42);
+}
+
+.slots-machine{
+  border-color:rgba(57,255,20,.58);
+}
+
+.slots-machine:after{
+  content:"HIDDEN TRACKS • BONUS CODES • COOL POINTS";
+  position:absolute;
+  left:20px;
+  right:20px;
+  bottom:14px;
+  z-index:1;
+  opacity:.14;
+  color:#fff;
+  font-size:clamp(20px,5vw,56px);
+  line-height:.8;
+  transform:rotate(-4deg);
+  text-shadow:4px 4px 0 var(--red),-4px -2px 0 var(--cyan);
+  pointer-events:none;
+}
+
+.slots-topper{
+  background:
+    linear-gradient(135deg,var(--green),var(--yellow) 42%,var(--pink) 72%,var(--cyan));
+}
+
+.slot-reels{
+  grid-template-columns:repeat(5,1fr);
+  border:3px solid rgba(57,255,20,.28);
+}
+
+.slot-reel{
+  position:relative;
+  min-height:118px;
+  background:
+    radial-gradient(circle at 50% 30%, rgba(255,255,255,.15), transparent 30%),
+    linear-gradient(180deg,#050505,#111 52%,#050505);
+  color:#fff;
+  border:2px solid rgba(255,255,255,.18);
+  box-shadow:0 18px 28px rgba(0,0,0,.38), inset 0 0 0 5px rgba(57,255,20,.06);
+}
+
+.slot-reel:before{
+  content:"";
+  position:absolute;
+  inset:8px;
+  border:1px solid rgba(255,230,0,.28);
+  border-radius:14px;
+  pointer-events:none;
+}
+
+.slot-reel span{
+  font-size:44px;
+}
+
+.slot-reel small{
+  color:var(--green);
+  text-shadow:0 0 10px rgba(57,255,20,.35);
+}
+
+.slot-symbol-map{
+  align-items:center;
+}
+
+.slot-symbol-map:before{
+  content:"REWARD MENU";
+  padding:8px 10px;
+  border-radius:999px;
+  color:#050505;
+  background:linear-gradient(135deg,var(--yellow),var(--green));
+  font-weight:1000;
+  font-size:12px;
+  letter-spacing:.12em;
+}
+
+.slot-symbol-map span:nth-child(1)::after{content:" = Duck bonus"}
+.slot-symbol-map span:nth-child(2)::after{content:" = +points"}
+.slot-symbol-map span:nth-child(3)::after{content:" = unlock code"}
+.slot-symbol-map span:nth-child(5)::after{content:" = hidden track"}
+
+.blackjack-table{
+  border-radius:34px;
+}
+
+.blackjack-table .game-message,
+.slots-machine .game-message,
+.wheel-room .game-message{
+  border:2px dashed rgba(255,255,255,.20);
+  background:
+    radial-gradient(circle at 8% 50%, rgba(57,255,20,.18), transparent 22%),
+    rgba(0,0,0,.48);
+  box-shadow:0 14px 26px rgba(0,0,0,.32);
+}
+
+.blackjack-table .game-controls,
+.slots-machine .game-controls,
+.wheel-room .game-controls{
+  border-radius:24px;
+  padding:12px;
+  background:rgba(0,0,0,.28);
+  border:1px solid rgba(255,255,255,.12);
+}
+
+.blackjack-table .game-controls button,
+.slots-machine .game-controls button,
+.wheel-room .game-controls button{
+  box-shadow:5px 6px 0 rgba(255,43,214,.45),0 0 20px rgba(57,255,20,.18);
+}
+
+.blackjack-table .game-controls button:hover,
+.slots-machine .game-controls button:hover,
+.wheel-room .game-controls button:hover{
+  transform:translateY(-2px) rotate(-1deg);
+}
+
+.panel-head:after{
+  content:"50 PTS = UNLOCK • 100 PTS = SECRET DROP";
+  display:block;
+  margin-top:10px;
+  color:#050505;
+  background:linear-gradient(135deg,var(--cyan),var(--green),var(--yellow));
+  border-radius:999px;
+  padding:8px 12px;
+  font-size:12px;
+  font-weight:1000;
+  letter-spacing:.1em;
+  box-shadow:0 10px 22px rgba(0,0,0,.28);
+}
+
+.casino-game-panel:before{
+  content:"";
+  position:absolute;
+  left:18px;
+  right:18px;
+  top:10px;
+  height:12px;
+  border-radius:999px;
+  background:repeating-linear-gradient(90deg,var(--green) 0 18px,var(--pink) 18px 36px,var(--cyan) 36px 54px,var(--yellow) 54px 72px);
+  opacity:.7;
+  transform:rotate(.6deg);
+}
+
+.wheel-room:after{
+  content:"SKATE PARK BONUS WHEEL";
+  position:absolute;
+  left:24px;
+  bottom:18px;
+  z-index:2;
+  color:#fff;
+  opacity:.18;
+  font-size:clamp(24px,5vw,60px);
+  transform:rotate(-5deg);
+  text-shadow:4px 4px 0 var(--pink),-3px -2px 0 var(--green);
+}
+
+.vault-wheel{
+  box-shadow:
+    0 24px 50px rgba(0,0,0,.45),
+    0 0 36px rgba(0,229,255,.25),
+    0 0 0 12px rgba(255,43,214,.12),
+    inset 0 0 0 14px rgba(0,0,0,.18);
+}
+
+.wheel-prizes div{
+  transform:rotate(var(--tag-rot, -1deg));
+}
+
+.wheel-prizes div:nth-child(2){--tag-rot:1deg}
+.wheel-prizes div:nth-child(3){--tag-rot:-2deg}
+
 @media (max-width:860px){
   .casino-stage{display:block;perspective:none}
   .casino-lobby-panel,.casino-game-panel{transform:none}
   .casino-game-tabs{grid-template-columns:1fr}
-  .slot-reels{gap:8px;padding:10px}
+  .slot-reels{gap:8px;padding:10px;grid-template-columns:repeat(3,1fr)}
   .slot-reel{min-height:118px}
   .slot-reel span{font-size:38px}
   .wheel-prizes{grid-template-columns:1fr}
   .blackjack-table,.slots-machine,.wheel-room{min-height:auto}
+  .casino-title:after{right:18px;top:70px;font-size:32px}
+  .chips{padding-bottom:58px}
 }
