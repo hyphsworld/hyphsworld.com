@@ -1,5 +1,6 @@
 /* HYPHSWORLD Casino Arcade — Duck Sauce Wheel Choice Event
-   Restores the roulette moment where users choose to help Duck Sauce or leave him.
+   Roulette choice moment: Help Duck or Leave Duck.
+   Help Duck really steals Cool Points from the visible/local balance, capped at zero.
 */
 (function(){
   "use strict";
@@ -7,32 +8,43 @@
   var LP = "hyphsworld.coolPoints.total";
   var RK = "hyphsworld.casinoArcade.recent";
   var $ = function(q, r){ return (r || document).querySelector(q); };
-  var $$ = function(q, r){ return Array.prototype.slice.call((r || document).querySelectorAll(q)); };
   var activeEvent = false;
   var wheelRot = 0;
 
-  function num(v){ var n = parseInt(v, 10); return Number.isFinite(n) && n > 0 ? n : 0; }
+  function num(v){ var n = parseInt(String(v || "").replace(/,/g, ""), 10); return Number.isFinite(n) && n > 0 ? n : 0; }
   function fmt(v){ return new Intl.NumberFormat("en-US").format(num(v)); }
   function power(){ var i = $("#casinoPowerInput"); return Math.max(1, Math.min(1000, num(i && i.value) || 25)); }
   function setStatus(text){ var s = $("#casinoStatus"); if(s) s.textContent = 'Duck Sauce: “' + text + '”'; }
+  function visiblePoints(){ var cp = $("#casinoPoints"); return cp ? num(cp.textContent) : 0; }
   function localPoints(){ try { return num(localStorage.getItem(LP)); } catch(e){ return 0; } }
-  function setLocalPoints(v){ try { localStorage.setItem(LP, String(Math.max(0, num(v)))); } catch(e){} }
-  function addLocalPoints(points){
-    points = Math.max(0, Math.round(points || 0));
-    if(!points) return;
-    var next = localPoints() + points;
-    setLocalPoints(next);
+  function currentPoints(){ return Math.max(localPoints(), visiblePoints()); }
+  function setPoints(v){
+    var next = Math.max(0, Math.round(v || 0));
+    try { localStorage.setItem(LP, String(next)); } catch(e){}
     var cp = $("#casinoPoints");
     if(cp) cp.textContent = fmt(next);
+  }
+  function addPoints(points){ points = Math.max(0, Math.round(points || 0)); if(points) setPoints(currentPoints() + points); }
+  function stealPoints(points){
+    points = Math.max(0, Math.round(points || 0));
+    var before = currentPoints();
+    var stolen = Math.min(before, points);
+    setPoints(before - stolen);
+    return stolen;
   }
   function safe(v){ return String(v || "").replace(/[<>]/g, "").trim(); }
   function recent(){ try { return JSON.parse(localStorage.getItem(RK) || "[]"); } catch(e){ return []; } }
   function saveRecent(g, p, r){
+    var sign = p < 0 ? "−" : "+";
+    var shown = Math.abs(Math.round(p || 0));
     var list = [{ g:g, p:p, r:r }].concat(recent()).slice(0,5);
     try { localStorage.setItem(RK, JSON.stringify(list)); } catch(e){}
     var box = $("#casinoRecentList");
     if(box){
-      box.innerHTML = list.length ? list.map(function(x){ return '<span>' + safe(x.g) + ' • +' + fmt(x.p) + ' • ' + safe(x.r) + '</span>'; }).join("") : '<span>No hits yet.</span>';
+      box.innerHTML = list.length ? list.map(function(x){
+        var sx = x.p < 0 ? "−" : "+";
+        return '<span>' + safe(x.g) + ' • ' + sx + fmt(Math.abs(x.p || 0)) + ' • ' + safe(x.r) + '</span>';
+      }).join("") : '<span>No hits yet.</span>';
     }
   }
 
@@ -71,7 +83,7 @@
     spinWheelVisual(result.toUpperCase() + "<br>" + (win ? "HIT" : "MISS"));
     var points = win ? power() * multiplier : 0;
     if(points){
-      addLocalPoints(points);
+      addPoints(points);
       saveRecent("Roulette", points, result + " hit");
       setStatus("Roulette hit +" + fmt(points) + " Cool Points. Duck watched that spin closely.");
     } else {
@@ -98,7 +110,7 @@
           <button type="button" data-duck-choice="help">Help Duck</button>\
           <button type="button" class="leave" data-duck-choice="leave">Leave Duck</button>\
         </div>\
-        <span class="duck-wheel-note">No point loss — story choice only</span>\
+        <span class="duck-wheel-note">Help Duck is risky — he might really take points</span>\
       </div>';
     stage.appendChild(choice);
   }
@@ -108,22 +120,20 @@
     if(overlay) overlay.remove();
     activeEvent = false;
     var base = power();
-    var points = 0;
-    var result = "";
     if(choice === "help"){
       var promised = base * 5 + 25;
-      points = 0;
-      result = "Duck IOU 33rd";
-      spinWheelVisual("DUCK<br>RAN OFF");
-      setStatus("You helped Duck Sauce and he ran off with the +" + fmt(promised) + " bonus. He said, ‘I’ll give it back on the 33rd.’ That day does not exist.");
+      var stolenTarget = Math.max(10, Math.floor(promised / 2));
+      var stolen = stealPoints(stolenTarget);
+      spinWheelVisual("DUCK<br>STOLE " + fmt(stolen));
+      setStatus("You helped Duck Sauce. He ran off with " + fmt(stolen) + " of your Cool Points and said, ‘I’ll give it back on the 33rd.’ That day does not exist.");
+      saveRecent("Duck Wheel", -stolen, "Duck stole it until the 33rd");
     } else {
-      points = Math.max(10, Math.floor(base / 2));
-      result = "left Duck";
+      var points = Math.max(10, Math.floor(base / 2));
       spinWheelVisual("LEFT<br>DUCK");
       setStatus("You left Duck spinning. He roasted you but still threw +" + fmt(points) + " petty points.");
+      addPoints(points);
+      saveRecent("Duck Wheel", points, "left Duck");
     }
-    addLocalPoints(points);
-    saveRecent("Duck Wheel", points, result);
   }
 
   function interceptRouletteClick(event){
@@ -133,11 +143,8 @@
     event.stopPropagation();
     event.stopImmediatePropagation();
 
-    if(Math.random() < 0.35){
-      showDuckChoice();
-    } else {
-      normalRoulette();
-    }
+    if(Math.random() < 0.35){ showDuckChoice(); }
+    else { normalRoulette(); }
   }
 
   function bind(){
