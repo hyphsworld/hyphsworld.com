@@ -111,10 +111,11 @@
     var points = 0;
     var result = "";
     if(choice === "help"){
-      points = base * 5 + 25;
-      result = "helped Duck";
-      spinWheelVisual("HELPED<br>DUCK");
-      setStatus("You helped Duck Sauce. He dropped +" + fmt(points) + " Cool Points and said you still owe him a favor.");
+      var promised = base * 5 + 25;
+      points = 0;
+      result = "Duck IOU 33rd";
+      spinWheelVisual("DUCK<br>RAN OFF");
+      setStatus("You helped Duck Sauce and he ran off with the +" + fmt(promised) + " bonus. He said, ‘I’ll give it back on the 33rd.’ That day does not exist.");
     } else {
       points = Math.max(10, Math.floor(base / 2));
       result = "left Duck";
