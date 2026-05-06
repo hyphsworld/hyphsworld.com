@@ -1,0 +1,213 @@
+/* HYPHSWORLD Daily Login HUD + Account Widget
+   Color-only overlay styling. Does not alter page layout. */
+
+.hw-daily-hud {
+  position: fixed;
+  right: 12px;
+  bottom: 14px;
+  z-index: 9999;
+  width: min(360px, calc(100vw - 24px));
+  color: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+  pointer-events: none;
+}
+
+.hw-daily-hud * { box-sizing: border-box; }
+
+.hw-daily-card {
+  pointer-events: auto;
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  border: 1px solid rgba(69, 255, 54, 0.55);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(69, 255, 54, 0.20), transparent 32%),
+    radial-gradient(circle at 100% 0%, rgba(255, 45, 214, 0.18), transparent 34%),
+    linear-gradient(135deg, rgba(5, 5, 8, 0.94), rgba(40, 12, 62, 0.92));
+  box-shadow:
+    0 0 28px rgba(69, 255, 54, 0.20),
+    0 18px 42px rgba(0, 0, 0, 0.50);
+  backdrop-filter: blur(16px);
+}
+
+.hw-daily-card::before {
+  content: "HYPH LIFE  AMS WEST  HYPHSWORLD  01";
+  position: absolute;
+  inset: auto -40px 18px -20px;
+  transform: rotate(-9deg);
+  color: rgba(255, 238, 0, 0.18);
+  -webkit-text-stroke: 1px rgba(255, 45, 214, 0.28);
+  text-shadow: 0 0 22px rgba(255, 238, 0, 0.22);
+  font-size: 2.2rem;
+  font-weight: 1000;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.hw-daily-inner {
+  position: relative;
+  z-index: 1;
+  padding: 14px;
+}
+
+.hw-daily-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.hw-daily-kicker {
+  display: block;
+  color: #45ff36;
+  font-size: 0.68rem;
+  font-weight: 1000;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.hw-daily-name {
+  display: block;
+  margin-top: 2px;
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 1000;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.hw-daily-avatar {
+  flex: 0 0 46px;
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #45ff36, #00ffee);
+  color: #030303;
+  font-size: 1.55rem;
+  box-shadow: 0 0 18px rgba(69, 255, 54, 0.28);
+}
+
+.hw-daily-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.hw-daily-stat {
+  min-height: 68px;
+  display: grid;
+  align-content: center;
+  gap: 3px;
+  border-radius: 16px;
+  padding: 9px 7px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  text-align: center;
+}
+
+.hw-daily-stat span {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.58rem;
+  font-weight: 1000;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hw-daily-stat strong {
+  color: #ffee00;
+  font-size: 1rem;
+  font-weight: 1000;
+  line-height: 1.05;
+  text-shadow: 0 0 14px rgba(255, 238, 0, 0.26);
+}
+
+.hw-daily-rank {
+  margin-top: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-radius: 16px;
+  padding: 10px 12px;
+  background: linear-gradient(90deg, rgba(255, 238, 0, 0.14), rgba(255, 45, 214, 0.13));
+  border: 1px solid rgba(255, 238, 0, 0.22);
+}
+
+.hw-daily-rank span {
+  color: rgba(255,255,255,0.72);
+  font-size: 0.68rem;
+  font-weight: 1000;
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+}
+
+.hw-daily-rank strong {
+  color: #ff2dd6;
+  font-weight: 1000;
+  text-align: right;
+  text-shadow: 0 0 14px rgba(255, 45, 214, 0.30);
+}
+
+.hw-daily-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.hw-daily-btn {
+  flex: 1;
+  min-height: 38px;
+  border: 0;
+  border-radius: 999px;
+  padding: 9px 10px;
+  color: #050505;
+  background: linear-gradient(135deg, #45ff36, #00ffee);
+  font-weight: 1000;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.hw-daily-btn.secondary {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.hw-daily-msg {
+  margin: 9px 2px 0;
+  color: rgba(255,255,255,0.78);
+  font-size: 0.78rem;
+  line-height: 1.3;
+}
+
+.hw-daily-hud.is-guest .hw-daily-avatar {
+  background: linear-gradient(135deg, #ffee00, #ff8a00);
+}
+
+.hw-daily-hud.is-collapsed .hw-daily-stats,
+.hw-daily-hud.is-collapsed .hw-daily-rank,
+.hw-daily-hud.is-collapsed .hw-daily-actions,
+.hw-daily-hud.is-collapsed .hw-daily-msg {
+  display: none;
+}
+
+@media (max-width: 560px) {
+  .hw-daily-hud {
+    right: 8px;
+    bottom: 8px;
+    width: min(338px, calc(100vw - 16px));
+  }
+
+  .hw-daily-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .hw-daily-card::before {
+    font-size: 1.7rem;
+  }
+}
