@@ -1,0 +1,215 @@
+/* HYPHSWORLD / AMS WEST — Custom Casino Icons + Wheel Badges */
+
+.five-reels,
+.slot-reels{
+  grid-template-columns:repeat(5, minmax(0, 1fr));
+}
+
+.slot-reel{
+  display:grid;
+  place-items:center;
+  align-content:center;
+  gap:8px;
+}
+
+.casino-icon{
+  --icon-size:74px;
+  position:relative;
+  width:var(--icon-size);
+  height:var(--icon-size);
+  border-radius:22px;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+  isolation:isolate;
+  border:2px solid rgba(255,255,255,.48);
+  box-shadow:
+    0 16px 28px rgba(0,0,0,.36),
+    inset 0 2px 0 rgba(255,255,255,.58),
+    inset 0 -10px 20px rgba(0,0,0,.18),
+    0 0 24px rgba(255,255,255,.12);
+}
+
+.casino-icon.mini{
+  --icon-size:34px;
+  border-radius:12px;
+  border-width:1px;
+}
+
+.casino-icon::before{
+  content:"";
+  position:absolute;
+  inset:6px 8px auto 8px;
+  height:34%;
+  border-radius:999px;
+  background:linear-gradient(180deg, rgba(255,255,255,.78), rgba(255,255,255,.08));
+  z-index:1;
+  pointer-events:none;
+}
+
+.casino-icon::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg, rgba(255,255,255,.30), transparent 28%, rgba(255,255,255,.10) 52%, transparent 72%);
+  z-index:1;
+  pointer-events:none;
+  mix-blend-mode:screen;
+}
+
+.icon-core{
+  position:relative;
+  z-index:2;
+  min-width:42px;
+  min-height:42px;
+  padding:0 8px;
+  border-radius:999px;
+  display:inline-grid;
+  place-items:center;
+  background:rgba(255,255,255,.42);
+  color:#050505;
+  font-size:14px;
+  font-weight:1000;
+  letter-spacing:.07em;
+  text-transform:uppercase;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.58),
+    0 7px 12px rgba(0,0,0,.16);
+}
+
+.casino-icon.mini .icon-core{
+  min-width:24px;
+  min-height:24px;
+  padding:0 5px;
+  font-size:9px;
+}
+
+.icon-duck{background:radial-gradient(circle at 28% 24%, rgba(255,255,255,.92), rgba(255,255,255,.14) 24%, transparent 34%), linear-gradient(135deg, #fff56a, #39ff14 44%, #00e5ff)}
+.icon-diamond{background:radial-gradient(circle at 28% 24%, rgba(255,255,255,.92), rgba(255,255,255,.14) 24%, transparent 34%), linear-gradient(135deg, #ffffff, #9ef7ff 38%, #00e5ff)}
+.icon-key{background:radial-gradient(circle at 28% 24%, rgba(255,255,255,.92), rgba(255,255,255,.14) 24%, transparent 34%), linear-gradient(135deg, #fff4a8, #ffe600 42%, #ff9d00)}
+.icon-falcon{background:radial-gradient(circle at 28% 24%, rgba(255,255,255,.92), rgba(255,255,255,.14) 24%, transparent 34%), linear-gradient(135deg, #f3dbff, #ff2bd6 44%, #7c4dff)}
+.icon-buck{background:radial-gradient(circle at 28% 24%, rgba(255,255,255,.92), rgba(255,255,255,.14) 24%, transparent 34%), linear-gradient(135deg, #ffd2da, #ff1744 46%, #5a0014)}
+.icon-track{background:radial-gradient(circle at 28% 24%, rgba(255,255,255,.92), rgba(255,255,255,.14) 24%, transparent 34%), linear-gradient(135deg, #bbffed, #39ff14 38%, #1d8f51)}
+.icon-ramp{background:radial-gradient(circle at 28% 24%, rgba(255,255,255,.92), rgba(255,255,255,.14) 24%, transparent 34%), linear-gradient(135deg, #d6ffe3, #39ff14 34%, #ffe600)}
+.icon-bay{background:radial-gradient(circle at 28% 24%, rgba(255,255,255,.92), rgba(255,255,255,.14) 24%, transparent 34%), linear-gradient(135deg, #dff7ff, #00e5ff 42%, #1976d2)}
+.icon-mic{background:radial-gradient(circle at 28% 24%, rgba(255,255,255,.92), rgba(255,255,255,.14) 24%, transparent 34%), linear-gradient(135deg, #ffd6f5, #ff2bd6 40%, #ff1744)}
+.icon-slap{background:radial-gradient(circle at 28% 24%, rgba(255,255,255,.92), rgba(255,255,255,.14) 24%, transparent 34%), linear-gradient(135deg, #e7fbff, #00e5ff 40%, #39ff14)}
+.icon-hyph{background:radial-gradient(circle at 28% 24%, rgba(255,255,255,.92), rgba(255,255,255,.14) 24%, transparent 34%), linear-gradient(135deg, #ffffff, #ffe600 36%, #39ff14)}
+.icon-crown{background:radial-gradient(circle at 28% 24%, rgba(255,255,255,.92), rgba(255,255,255,.14) 24%, transparent 34%), linear-gradient(135deg, #fff, #ffe600 40%, #ff2bd6)}
+
+.icon-diamond .icon-core{color:#003a46}
+.icon-key .icon-core{color:#4a2800}
+.icon-falcon .icon-core{color:#321057}
+.icon-buck .icon-core{color:#450012}
+.icon-track .icon-core{color:#08361d}
+.icon-ramp .icon-core{color:#113100}
+.icon-bay .icon-core{color:#003861}
+.icon-mic .icon-core{color:#4a003b}
+.icon-slap .icon-core{color:#003861}
+.icon-hyph .icon-core{color:#102400}
+.icon-crown .icon-core{color:#3a2400}
+
+.slot-reel small{
+  position:relative;
+  z-index:2;
+  font-size:12px;
+  letter-spacing:.12em;
+  font-weight:1000;
+  color:#fff;
+  text-shadow:0 0 12px rgba(0,0,0,.45);
+}
+
+.icon-map,
+.slot-symbol-map.icon-map{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  align-items:center;
+}
+
+.icon-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  padding:8px 12px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.30);
+  background:linear-gradient(145deg, rgba(255,255,255,.18), rgba(255,255,255,.05)), rgba(0,0,0,.32);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.26), 0 10px 20px rgba(0,0,0,.22);
+  font-family:system-ui,sans-serif;
+  font-weight:900;
+  color:#fff;
+}
+
+.icon-pill strong{
+  font-size:12px;
+  letter-spacing:.04em;
+}
+
+.vault-wheel > .wheel-badge{
+  position:absolute;
+  width:76px;
+  min-height:54px;
+  padding:7px 8px;
+  border-radius:16px;
+  display:grid;
+  place-items:center;
+  text-align:center;
+  color:#050505;
+  background:linear-gradient(145deg, rgba(255,255,255,.58), rgba(255,255,255,.10)), linear-gradient(135deg, var(--yellow), var(--green));
+  border:2px solid rgba(255,255,255,.62);
+  box-shadow:0 12px 22px rgba(0,0,0,.28), inset 0 2px 0 rgba(255,255,255,.62), 0 0 18px rgba(255,230,0,.26);
+  z-index:4;
+  line-height:.92;
+  text-shadow:none;
+}
+
+.vault-wheel > .wheel-badge i,
+.vault-wheel > .wheel-badge b{
+  display:block;
+  font-style:normal;
+  font-weight:1000;
+  letter-spacing:.03em;
+}
+
+.vault-wheel > .wheel-badge i{font-size:16px}
+.vault-wheel > .wheel-badge b{font-size:9px;margin-top:3px}
+
+.vault-wheel > .reward-p25{transform:rotate(30deg) translateY(-130px) rotate(-30deg);background:linear-gradient(145deg, rgba(255,255,255,.58), rgba(255,255,255,.10)), linear-gradient(135deg, var(--green), var(--cyan))}
+.vault-wheel > .reward-roast{transform:rotate(90deg) translateY(-130px) rotate(-90deg);background:linear-gradient(145deg, rgba(255,255,255,.58), rgba(255,255,255,.10)), linear-gradient(135deg, var(--pink), var(--red));color:#fff}
+.vault-wheel > .reward-p100{transform:rotate(150deg) translateY(-130px) rotate(-150deg);background:linear-gradient(145deg, rgba(255,255,255,.58), rgba(255,255,255,.10)), linear-gradient(135deg, var(--yellow), var(--green))}
+.vault-wheel > .reward-clue{transform:rotate(210deg) translateY(-130px) rotate(-210deg);background:linear-gradient(145deg, rgba(255,255,255,.58), rgba(255,255,255,.10)), linear-gradient(135deg, var(--cyan), var(--purple));color:#fff}
+.vault-wheel > .reward-miss{transform:rotate(270deg) translateY(-130px) rotate(-270deg);background:linear-gradient(145deg, rgba(255,255,255,.58), rgba(255,255,255,.10)), linear-gradient(135deg, #fff, #999)}
+.vault-wheel > .reward-p50{transform:rotate(330deg) translateY(-130px) rotate(-330deg);background:linear-gradient(145deg, rgba(255,255,255,.58), rgba(255,255,255,.10)), linear-gradient(135deg, var(--yellow), var(--pink));color:#fff}
+
+.wheel-prizes .casino-icon{
+  margin:0 auto 8px;
+}
+
+@media (max-width:860px){
+  .five-reels,
+  .slot-reels{
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+  }
+
+  .casino-icon{
+    --icon-size:58px;
+    border-radius:18px;
+  }
+
+  .icon-core{
+    min-width:32px;
+    min-height:32px;
+    font-size:12px;
+  }
+
+  .vault-wheel > .wheel-badge{
+    width:60px;
+    min-height:44px;
+    border-radius:13px;
+    padding:6px;
+  }
+
+  .vault-wheel > .wheel-badge i{font-size:12px}
+  .vault-wheel > .wheel-badge b{font-size:7px}
+}
