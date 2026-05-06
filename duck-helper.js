@@ -1,224 +1,70 @@
-(() => {
+(function(){
   "use strict";
-
-  const STORAGE_KEY = "hyphsworld_cool_points";
-  const DEFAULT_POINTS = 203;
-
-  const VALID_CODES = ["510", "HYPH", "DUCK", "AMS", "RICHMOND", "QUARANTINE", "WORLD5", "CASINO"];
-
-  const DUCK_INTRO = [
-    "💡 Aye… you made it to HYPHSWORLD.",
-    "💡 Don’t just stand there… press something.",
-    "💡 This ain’t no regular site.",
-    "💡 I’m Duck Sauce. I run around here when nobody looking."
-  ];
-
-  const DUCK_IDLE = [
-    "💡 You just scrolling? That’s crazy.",
-    "💡 Tap something… Cool Points don’t earn themselves.",
-    "💡 I know you see the Vault.",
-    "💡 Don’t act lost. I put buttons everywhere.",
-    "💡 Full Player got the real rotation."
-  ];
-
-  const DUCK_PLAY = [
-    "💡 Yeah… run that record.",
-    "💡 Music motion. Stop playing.",
-    "💡 That’s how you earn points.",
-    "💡 Speaker check. Don’t blame me if it slap."
-  ];
-
-  const DUCK_MERCH = [
-    "💡 Supporter lane. Boss motion.",
-    "💡 Merch tap? You might be important.",
-    "💡 Buy something before Buck starts judging.",
-    "💡 That cart looking lonely."
-  ];
-
-  const DUCK_SPOTLIGHT = [
-    "💡 Tap Spotlight. That’s the play.",
-    "💡 25/8 got the feature lane right now.",
-    "💡 Spotlight ain’t decoration. Run it.",
-    "💡 That’s the artist lane. Pay attention."
-  ];
-
-  const BUCK_LINES = [
-    "Code first.",
-    "Denied blood.",
-    "I need you leave.",
-    "Vault security active.",
-    "Access gotta be earned."
-  ];
-
-  const BUCK_VAULT = [
-    "Buck checking access. Code better be right.",
-    "Careful… Buck be trippin.",
-    "Code wrong and he sending you back outside.",
-    "Vault door don’t open off vibes."
-  ];
-
-  function rand(list) {
-    return list[Math.floor(Math.random() * list.length)];
+  var IMG="duck-sauce.png";
+  var KEY="duck_helper_pos";
+  function $(q){return document.querySelector(q)}
+  function state(){try{return JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){return {}}}
+  function save(o){try{localStorage.setItem(KEY,JSON.stringify(Object.assign(state(),o)))}catch(e){}}
+  function css(){
+    if($("#duckStyle"))return;
+    var s=document.createElement("style");
+    s.id="duckStyle";
+    s.textContent=".hw-duck-guide{display:none!important}.duckBox{position:fixed;left:16px;top:170px;width:82px;height:82px;z-index:2147483000;touch-action:none;user-select:none}.duckBox.off{display:none}.duckFace{width:82px;height:82px;border:0;background:transparent;padding:0;cursor:grab;filter:drop-shadow(0 12px 18px rgba(0,0,0,.45))}.duckFace img{width:100%;height:100%;object-fit:contain}.duckTalk{position:absolute;left:72px;top:-6px;width:min(78vw,310px);display:none;padding:12px 13px;border-radius:16px;background:rgba(5,8,6,.94);color:#fff;border:2px solid rgba(255,255,255,.18);box-shadow:0 18px 35px rgba(0,0,0,.4);font:800 14px/1.35 system-ui}.duckTalk.show{display:block}.duckTalk strong{display:block;color:#39ff14;font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px}.duckBtns{display:flex;gap:7px;margin-top:9px;flex-wrap:wrap}.duckBtns button,.duckReturn{border:0;border-radius:999px;padding:7px 9px;font:900 11px/1 system-ui;cursor:pointer}.duckBtns button:first-child,.duckReturn{color:#050505;background:linear-gradient(135deg,#39ff14,#ffe600,#ff2bd6,#00e5ff)}.duckBtns button:last-child{color:#fff;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18)}.duckReturn{position:fixed;left:14px;bottom:88px;z-index:2147482999;display:none;text-transform:uppercase}.duckReturn.on{display:block}@media(max-width:700px){.duckBox{width:70px;height:70px;top:auto;bottom:118px}.duckFace{width:70px;height:70px}.duckTalk{left:0;top:auto;bottom:78px;width:min(88vw,320px)}}";
+    document.head.appendChild(s);
   }
-
-  function getPoints() {
-    return Number(localStorage.getItem(STORAGE_KEY) || DEFAULT_POINTS);
+  function pageText(){
+    var p=location.pathname.toLowerCase();
+    if(p.indexOf("leaderboard")>-1)return"Leaderboard: see who is earning Cool Points and climbing the board.";
+    if(p.indexOf("casino")>-1)return"Casino Arcade: pick a game, read the controls, and use Cool Points only.";
+    if(p.indexOf("vault")>-1)return"Vault: unlock levels and hidden drops from here.";
+    if(p.indexOf("games")>-1)return"Games: pick a game and sign in so progress can stay with you.";
+    if(p.indexOf("app-player")>-1)return"Full Player: use this page for the clean music listening view.";
+    if(p.indexOf("shop")>-1)return"Merch: check the drops and AMS WEST items here.";
+    if(p.indexOf("auth")>-1||p.indexOf("account")>-1)return"Manage ID: sign in so points and rewards stay with your account.";
+    return"Tap Duck for help. Drag Duck anywhere. Hide Duck when you need the screen clear.";
   }
-
-  function setPoints(value) {
-    localStorage.setItem(STORAGE_KEY, String(value));
-    document.querySelectorAll("#coolPoints, #vaultPoints").forEach((el) => {
-      el.textContent = String(value);
-    });
+  function say(t,hold){var b=$("#duckTalk"),x=$("#duckText");if(!b||!x)return;x.textContent=t;b.classList.add("show");clearTimeout(b._t);if(!hold)b._t=setTimeout(function(){b.classList.remove("show")},6000)}
+  function hide(){var d=$("#duckBox"),r=$("#duckReturn");if(d)d.classList.add("off");if(r)r.classList.add("on");save({off:true})}
+  function show(){var d=$("#duckBox"),r=$("#duckReturn");if(d)d.classList.remove("off");if(r)r.classList.remove("on");save({off:false});say(pageText())}
+  function context(el){
+    var game=el.dataset&&el.dataset.game;
+    if(game==="crash")return"Crash: set Entry Power, choose a target, then launch. Clear the target to earn bonus progress.";
+    if(game==="plinko")return"Plinko: drop the ball. The board picks your bonus path.";
+    if(game==="mines")return"Mines: open safe tiles, then stop when you like the bonus.";
+    if(game==="slots")return"Slots: press Spin. Matching symbols and special icons push rewards.";
+    if(game==="scratcher")return"Scratcher: reveal all panels. Matching icons win a bonus.";
+    if(game==="hilo")return"High-Low: guess higher or lower. Correct calls build a streak.";
+    if(game==="roulette")return"Roulette: pick a color, then spin. Rare colors give bigger bonus progress.";
+    var t=[el.textContent,el.getAttribute("aria-label"),el.href,el.id,String(el.className||"")].filter(Boolean).join(" ").toLowerCase();
+    if(t.indexOf("leader")>-1)return"Leaderboard: this shows rankings and Cool Points activity.";
+    if(t.indexOf("casino")>-1||t.indexOf("arcade")>-1)return"Casino Arcade: select a game, set Entry Power, then press the game button.";
+    if(t.indexOf("vault")>-1)return"Vault: use access paths to reach hidden music and levels.";
+    if(t.indexOf("game")>-1)return"Games: choose a game and keep earning progress.";
+    if(t.indexOf("player")>-1||t.indexOf("music")>-1)return"Player: this is for music playback.";
+    if(t.indexOf("merch")>-1||t.indexOf("shop")>-1)return"Merch: check products and drops here.";
+    if(t.indexOf("manage")>-1||t.indexOf("login")>-1||t.indexOf("account")>-1||t.indexOf("id")>-1)return"Manage ID: sign in so points and rewards stay saved.";
+    if(t.indexOf("home")>-1)return"Home: main HYPHSWORLD landing page.";
+    return null;
   }
-
-  function pop(text) {
-    let el = document.querySelector(".hw-points-pop");
-    if (!el) {
-      el = document.createElement("div");
-      el.className = "hw-points-pop";
-      document.body.appendChild(el);
-    }
-
-    el.textContent = text;
-    el.classList.add("show");
-
-    clearTimeout(el._timer);
-    el._timer = setTimeout(() => el.classList.remove("show"), 1700);
+  function drag(box){
+    var down=false,moved=false,sx=0,sy=0,bx=0,by=0,st=state();
+    if(Number.isFinite(st.x)&&Number.isFinite(st.y)){box.style.left=st.x+"px";box.style.top=st.y+"px";box.style.bottom="auto"}
+    function start(e){var p=e.touches?e.touches[0]:e;down=true;moved=false;sx=p.clientX;sy=p.clientY;var r=box.getBoundingClientRect();bx=r.left;by=r.top;box.style.bottom="auto";e.preventDefault()}
+    function move(e){if(!down)return;var p=e.touches?e.touches[0]:e,dx=p.clientX-sx,dy=p.clientY-sy;if(Math.abs(dx)+Math.abs(dy)>6)moved=true;var x=Math.max(6,Math.min(innerWidth-box.offsetWidth-6,bx+dx)),y=Math.max(6,Math.min(innerHeight-box.offsetHeight-6,by+dy));box.style.left=x+"px";box.style.top=y+"px";e.preventDefault()}
+    function end(){if(!down)return;down=false;var r=box.getBoundingClientRect();save({x:Math.round(r.left),y:Math.round(r.top)});setTimeout(function(){moved=false},50)}
+    box.addEventListener("mousedown",start);box.addEventListener("touchstart",start,{passive:false});addEventListener("mousemove",move,{passive:false});addEventListener("touchmove",move,{passive:false});addEventListener("mouseup",end);addEventListener("touchend",end);$("#duckFace").addEventListener("click",function(){if(!moved)say(pageText(),true)})
   }
-
-  function addPoints(amount = 1, label = "") {
-    const next = getPoints() + amount;
-    setPoints(next);
-    pop(`+${amount} COOL POINTS${label ? " • " + label : ""}`);
+  function boot(){
+    css();
+    document.querySelectorAll(".hw-duck-guide").forEach(function(el){el.style.display="none"});
+    if($("#duckBox"))return;
+    var st=state();
+    var d=document.createElement("div");d.id="duckBox";d.className="duckBox"+(st.off?" off":"");
+    d.innerHTML="<button id='duckFace' class='duckFace' type='button'><img src='"+IMG+"' alt='Duck Sauce'></button><div id='duckTalk' class='duckTalk'><strong>Duck Sauce</strong><span id='duckText'></span><div class='duckBtns'><button id='duckHelp' type='button'>Page Help</button><button id='duckHide' type='button'>Hide Duck</button></div></div>";
+    var r=document.createElement("button");r.id="duckReturn";r.className="duckReturn"+(st.off?" on":"");r.type="button";r.textContent="Duck";
+    document.body.append(d,r);drag(d);$("#duckHelp").onclick=function(){say(pageText(),true)};$("#duckHide").onclick=hide;r.onclick=show;
+    document.addEventListener("click",function(e){var el=e.target.closest("a,button,[data-game],[role='tab']");if(!el||el.closest("#duckBox")||el.closest("#duckReturn"))return;var t=context(el);if(t)setTimeout(function(){say(t)},80)},true);
+    if(!st.off)setTimeout(function(){say(pageText())},700)
   }
-
-  function speak(text, type = "duck") {
-    const bubble = document.querySelector(".hw-speech");
-    if (!bubble) return;
-
-    bubble.dataset.type = type;
-    bubble.textContent = text;
-    bubble.classList.add("show");
-
-    clearTimeout(bubble._timer);
-    bubble._timer = setTimeout(() => bubble.classList.remove("show"), 3900);
-  }
-
-  function buildGuide() {
-    if (document.querySelector(".hw-duck-guide")) return;
-
-    const wrap = document.createElement("aside");
-    wrap.className = "hw-duck-guide";
-    wrap.innerHTML = `
-      <div class="hw-speech" role="status" aria-live="polite"></div>
-      <div class="hw-guide-row">
-        <button class="hw-guide-btn hw-duck-btn" type="button" aria-label="Talk to Duck Sauce">
-          <span class="hw-bulb" aria-hidden="true">💡</span>
-          <img src="duck-sauce.jpg" alt="Duck Sauce">
-        </button>
-        <button class="hw-guide-btn hw-buck-btn" type="button" aria-label="Talk to BuckTheBodyguard">
-          <img src="buck-thebodyguard.jpg" alt="BuckTheBodyguard" onerror="this.closest('button').style.display='none'">
-        </button>
-      </div>
-    `;
-
-    document.body.appendChild(wrap);
-
-    document.querySelector(".hw-duck-btn").addEventListener("click", () => {
-      speak(rand(DUCK_IDLE), "duck");
-      addPoints(2, "DUCK TAP");
-    });
-
-    const buckBtn = document.querySelector(".hw-buck-btn");
-    if (buckBtn) {
-      buckBtn.addEventListener("click", () => {
-        speak(rand(BUCK_LINES), "buck");
-        addPoints(1, "BUCK CHECK");
-      });
-    }
-  }
-
-  function wireSiteButtons() {
-    document.querySelectorAll("a, button").forEach((el) => {
-      if (el.dataset.hwGuideWired === "1") return;
-      if (el.closest(".hw-duck-guide")) return;
-
-      el.dataset.hwGuideWired = "1";
-
-      el.addEventListener("click", () => {
-        const text = (el.textContent || "").toLowerCase();
-        const href = (el.getAttribute("href") || "").toLowerCase();
-
-        if (text.includes("vault") || href.includes("vault")) {
-          speak(rand(BUCK_VAULT), "buck");
-          addPoints(1, "VAULT TAP");
-          return;
-        }
-
-        if (text.includes("spotlight") || href.includes("track=25-8") || href.includes("#spotlight")) {
-          speak(rand(DUCK_SPOTLIGHT), "duck");
-          addPoints(1, "SPOTLIGHT");
-          return;
-        }
-
-        if (text.includes("play") || href.includes("player")) {
-          speak(rand(DUCK_PLAY), "duck");
-          addPoints(1, "MUSIC TAP");
-          return;
-        }
-
-        if (text.includes("merch") || href.includes("shop") || href.includes("cash") || href.includes("py.pl")) {
-          speak(rand(DUCK_MERCH), "duck");
-          addPoints(3, "MERCH TAP");
-        }
-      });
-    });
-  }
-
-  function wireVaultForm() {
-    const form = document.getElementById("vaultForm");
-    const input = document.getElementById("vaultCode");
-
-    if (!form || !input || form.dataset.hwGuideVaultWired === "1") return;
-
-    form.dataset.hwGuideVaultWired = "1";
-
-    form.addEventListener("submit", () => {
-      const code = input.value.trim().toUpperCase();
-
-      if (VALID_CODES.includes(code)) {
-        speak("Access approved. Don’t embarrass me in here.", "buck");
-        addPoints(10, "CODE HIT");
-      } else {
-        speak("Denied blood. I need you leave.", "buck");
-      }
-    });
-  }
-
-  function idleTalk() {
-    setInterval(() => {
-      if (document.hidden) return;
-      const onVault = document.body.classList.contains("vault-page");
-      speak(onVault && Math.random() > 0.5 ? rand(BUCK_LINES) : rand(DUCK_IDLE), onVault ? "buck" : "duck");
-    }, 15000);
-  }
-
-  function init() {
-    buildGuide();
-    wireSiteButtons();
-    wireVaultForm();
-    setPoints(getPoints());
-
-    window.addEventListener("hyphsworld:addpoints", (event) => {
-      const amount = Number(event.detail?.amount || 1);
-      const label = event.detail?.label || "SITE";
-      addPoints(amount, label);
-    });
-
-    setTimeout(() => speak(rand(DUCK_INTRO), "duck"), 900);
-    idleTalk();
-  }
-
-  document.readyState === "loading" ? document.addEventListener("DOMContentLoaded", init) : init();
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot);else boot();
 })();
