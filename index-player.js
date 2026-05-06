@@ -1,6 +1,15 @@
 (() => {
   'use strict';
 
+  function loadHomepageStoreStyle() {
+    if (document.querySelector('link[data-homepage-store-style]')) return;
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'homepage-store-style.css?v=store-feed-home-20260506';
+    link.setAttribute('data-homepage-store-style', 'true');
+    document.head.appendChild(link);
+  }
+
   function loadSharedAnalytics() {
     if (window.__HYPHSWORLD_ANALYTICS_BOOTSTRAP__) return;
     window.__HYPHSWORLD_ANALYTICS_BOOTSTRAP__ = true;
@@ -10,6 +19,7 @@
     document.head.appendChild(script);
   }
 
+  loadHomepageStoreStyle();
   loadSharedAnalytics();
 
   const LEGACY_KEYS = [
