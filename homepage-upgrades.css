@@ -25,3 +25,217 @@
 }
 .hero-video-card.is-video-live .hero-video-status { color: var(--green); }
 .hero-video-card.is-video-missing .hero-video-status { color: var(--yellow); }
+
+/* Compact futuristic 3D cinematic homepage controls. No links removed. */
+.home-page .site-header {
+  background:
+    linear-gradient(135deg, rgba(4, 255, 112, 0.14), rgba(7, 8, 20, 0.86) 38%, rgba(255, 79, 216, 0.12)),
+    rgba(0, 0, 0, 0.78);
+  border-bottom: 1px solid rgba(31, 252, 255, 0.28);
+  box-shadow: 0 16px 38px rgba(0,0,0,.44), inset 0 -1px 0 rgba(255,255,255,.08);
+}
+.home-page .main-nav a,
+.home-page .btn {
+  position: relative;
+  overflow: hidden;
+  transform-style: preserve-3d;
+}
+.home-page .main-nav a::before,
+.home-page .btn::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(135deg, rgba(255,255,255,.22), transparent 36%, rgba(31,252,255,.10));
+  opacity: .78;
+}
+.home-page .main-nav a::after,
+.home-page .btn::after {
+  content: "";
+  position: absolute;
+  inset: -40% -70%;
+  pointer-events: none;
+  background: linear-gradient(115deg, transparent 42%, rgba(255,255,255,.34) 49%, transparent 56%);
+  transform: translateX(-80%);
+  opacity: .28;
+}
+.home-page .main-nav a:hover::after,
+.home-page .btn:hover::after {
+  transform: translateX(80%);
+  transition: transform .55s ease;
+}
+@media (max-width: 860px) {
+  .home-page #login-section {
+    padding: 7px 10px !important;
+    line-height: 1.2;
+    background:
+      linear-gradient(135deg, rgba(57,255,122,.34), rgba(12,8,24,.86) 48%, rgba(31,252,255,.22)) !important;
+    border-bottom: 1px solid rgba(255,79,216,.42);
+    box-shadow: 0 12px 32px rgba(0,0,0,.35);
+  }
+  .home-page #login-status {
+    display: block;
+    margin-left: 0 !important;
+    font-size: 0.82rem;
+    letter-spacing: 0.03em;
+  }
+  .home-page #auth-link {
+    display: inline-flex;
+    margin: 4px 4px 0 0 !important;
+    font-size: 0.92rem;
+    line-height: 1;
+    color: #ffe45c !important;
+    text-shadow: 0 0 14px rgba(255,228,92,.28);
+  }
+  .home-page #home-logout {
+    min-height: 30px;
+    margin-left: 6px !important;
+    padding: 5px 10px !important;
+    font-size: 0.82rem;
+    line-height: 1;
+    box-shadow: 0 8px 20px rgba(255,39,93,.25);
+  }
+  .home-page .site-header {
+    padding: 12px 12px 14px;
+    gap: 10px;
+    perspective: 900px;
+  }
+  .home-page .brand-lockup span {
+    font-size: 0.62rem;
+    letter-spacing: 0.20em;
+    color: #ffe45c;
+    text-shadow: 0 0 16px rgba(255,228,92,.35);
+  }
+  .home-page .brand-lockup strong {
+    font-size: clamp(1.85rem, 10vw, 3.25rem);
+    text-shadow: 0 0 26px rgba(31,252,255,.18), 0 12px 20px rgba(0,0,0,.34);
+  }
+  .home-page .main-nav {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 7px;
+    perspective: 720px;
+  }
+  .home-page .main-nav a {
+    min-width: 0;
+    min-height: 34px;
+    width: 100%;
+    padding: 6px 7px;
+    border-radius: 15px;
+    font-size: 0.58rem;
+    line-height: 1;
+    letter-spacing: 0.07em;
+    white-space: nowrap;
+    background:
+      linear-gradient(145deg, rgba(18,11,42,.90), rgba(9,18,32,.72)),
+      radial-gradient(circle at 30% 0%, rgba(31,252,255,.24), transparent 36%);
+    border: 1px solid rgba(31,252,255,.58);
+    box-shadow:
+      0 8px 0 rgba(3, 4, 12, .82),
+      0 12px 20px rgba(0,0,0,.30),
+      inset 0 1px 0 rgba(255,255,255,.20),
+      inset 0 -8px 18px rgba(0,0,0,.24);
+    transform: translateZ(0) rotateX(0deg);
+  }
+  .home-page .main-nav a:active {
+    transform: translateY(4px) rotateX(5deg);
+    box-shadow:
+      0 3px 0 rgba(3, 4, 12, .82),
+      0 8px 14px rgba(0,0,0,.25),
+      inset 0 1px 0 rgba(255,255,255,.20);
+  }
+  .home-page .main-nav .nav-cta {
+    min-height: 34px;
+    color: #030304;
+    border: 1px solid rgba(255,255,255,.72);
+    background: linear-gradient(105deg, #39ff7a, #ffe45c, #ff4fd8, #1ffcff);
+    box-shadow: 0 8px 0 rgba(21, 80, 44, .68), 0 0 22px rgba(57,255,122,.22);
+  }
+  .home-page .hero-shell,
+  .home-page .section-pad {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .home-page .button-row { gap: 7px; }
+  .home-page .button-row .btn,
+  .home-page .compact-actions .btn,
+  .home-page .player-controls .btn {
+    flex: 0 1 auto;
+    min-width: 92px;
+    min-height: 38px;
+    padding: 8px 11px;
+    font-size: 0.68rem;
+    line-height: 1;
+    letter-spacing: 0.04em;
+    border: 1px solid rgba(255,255,255,.14);
+    box-shadow:
+      0 7px 0 rgba(0,0,0,.55),
+      0 14px 22px rgba(0,0,0,.24),
+      inset 0 1px 0 rgba(255,255,255,.24);
+  }
+  .home-page .hero-sound-toggle {
+    min-height: 34px;
+    padding: 7px 10px;
+    font-size: 0.74rem;
+    border: 1px solid rgba(255,255,255,.55);
+    box-shadow: 0 8px 0 rgba(107,84,0,.65), 0 0 24px rgba(255,228,92,.20);
+  }
+}
+@media (max-width: 620px) {
+  .home-page .main-nav {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .home-page .main-nav a {
+    min-height: 31px;
+    padding: 5px 6px;
+    border-radius: 14px;
+    font-size: 0.54rem;
+    letter-spacing: 0.065em;
+  }
+  .home-page .main-nav a[href="leaderboard.html"] {
+    font-size: 0.49rem;
+    letter-spacing: 0.045em;
+  }
+  .home-page .main-nav .nav-cta { min-height: 31px; }
+  .home-page .hero-video-card {
+    min-height: 560px;
+    border-radius: 24px;
+  }
+  .home-page .hero-content { padding: 18px; }
+  .home-page .hero-content h1 { font-size: clamp(2.65rem, 15vw, 4.8rem); }
+  .home-page .lead {
+    font-size: 0.94rem;
+    margin-bottom: 14px;
+  }
+  .home-page .button-row .btn,
+  .home-page .compact-actions .btn,
+  .home-page .player-controls .btn {
+    min-width: 82px;
+    min-height: 35px;
+    padding: 7px 9px;
+    font-size: 0.62rem;
+  }
+  .home-page .hero-sound-toggle {
+    top: 10px;
+    right: 10px;
+    min-height: 31px;
+    padding: 6px 9px;
+    font-size: 0.68rem;
+  }
+}
+@media (max-width: 390px) {
+  .home-page .main-nav a {
+    font-size: 0.50rem;
+    letter-spacing: 0.045em;
+  }
+  .home-page .main-nav a[href="leaderboard.html"] { font-size: 0.46rem; }
+  .home-page .button-row .btn,
+  .home-page .compact-actions .btn,
+  .home-page .player-controls .btn {
+    min-width: 76px;
+    font-size: 0.58rem;
+  }
+}
