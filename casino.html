@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="vault-floors.css" />
   <link rel="stylesheet" href="casino-graphics.css" />
   <link rel="stylesheet" href="casino-glass.css" />
+  <link rel="stylesheet" href="casino-icons.css" />
   <script src="site-analytics.js" defer></script>
 </head>
 <body>
@@ -39,7 +40,7 @@
 
         <div class="casino-title">
           <h1 id="casinoTitle">HIDDEN<br>CASINO</h1>
-          <p>Duck & Buck opened the fun floor. Play blackjack, pull the Duck Sauce slots, or spin for bonus Cool Points.</p>
+          <p>Duck & Buck opened the fun floor. Play blackjack, pull the custom HYPHSWORLD slots, or spin for bonus Cool Points.</p>
         </div>
 
         <div class="casino-stats casino-bankroll" aria-label="Casino stats">
@@ -112,29 +113,29 @@
               <strong>Pull 4 Pressure</strong>
             </div>
 
-            <div class="slot-reels" id="slotReels" aria-live="polite">
-              <div class="slot-reel"><span>🦆</span><small>DUCK</small></div>
-              <div class="slot-reel"><span>💎</span><small>ICE</small></div>
-              <div class="slot-reel"><span>🔑</span><small>KEY</small></div>
-              <div class="slot-reel"><span>🛹</span><small>RAMP</small></div>
-              <div class="slot-reel"><span>🎧</span><small>TRACK</small></div>
+            <div class="slot-reels five-reels" id="slotReels" aria-live="polite">
+              <div class="slot-reel"><div class="casino-icon icon-duck"><span class="icon-core">DS</span></div><small>DUCK</small></div>
+              <div class="slot-reel"><div class="casino-icon icon-diamond"><span class="icon-core">ICE</span></div><small>ICE</small></div>
+              <div class="slot-reel"><div class="casino-icon icon-key"><span class="icon-core">KEY</span></div><small>KEY</small></div>
+              <div class="slot-reel"><div class="casino-icon icon-falcon"><span class="icon-core">FAL</span></div><small>FALCON</small></div>
+              <div class="slot-reel"><div class="casino-icon icon-track"><span class="icon-core">TRK</span></div><small>TRACK</small></div>
             </div>
 
             <div class="slot-payline"></div>
 
             <div class="game-message" id="slotsMessage">
-              Match symbols to win. Three Ducks is a jackpot. Buck is watching the machine.
+              Match symbols to win. Three Ducks is pressure. Four or five of a kind is major.
             </div>
 
-            <div class="slot-symbol-map">
-              <span>🦆 Duck Sauce</span>
-              <span>💎 Diamonds</span>
-              <span>🔑 Vault Key</span>
-              <span>🦅 Falcon</span>
-              <span>🎧 Lobby Music</span>
-              <span>🛡️ Buck</span>
-              <span>🛹 Skate Ramp</span>
-              <span>🔊 Bay Slap</span>
+            <div class="slot-symbol-map icon-map">
+              <span class="icon-pill"><div class="casino-icon icon-duck mini"><span class="icon-core">DS</span></div><strong>Duck Sauce</strong></span>
+              <span class="icon-pill"><div class="casino-icon icon-diamond mini"><span class="icon-core">ICE</span></div><strong>Diamonds</strong></span>
+              <span class="icon-pill"><div class="casino-icon icon-key mini"><span class="icon-core">KEY</span></div><strong>Vault Key</strong></span>
+              <span class="icon-pill"><div class="casino-icon icon-falcon mini"><span class="icon-core">FAL</span></div><strong>Falcon</strong></span>
+              <span class="icon-pill"><div class="casino-icon icon-buck mini"><span class="icon-core">BCK</span></div><strong>Buck Shield</strong></span>
+              <span class="icon-pill"><div class="casino-icon icon-track mini"><span class="icon-core">TRK</span></div><strong>Lobby Track</strong></span>
+              <span class="icon-pill"><div class="casino-icon icon-ramp mini"><span class="icon-core">RMP</span></div><strong>Skate Ramp</strong></span>
+              <span class="icon-pill"><div class="casino-icon icon-bay mini"><span class="icon-core">BAY</span></div><strong>Bay Slap</strong></span>
             </div>
 
             <div class="game-controls">
@@ -147,12 +148,12 @@
           <div class="wheel-room">
             <div class="wheel-pointer">▼</div>
             <div class="vault-wheel" id="vaultWheel" aria-hidden="true">
-              <span>+25</span>
-              <span>ROAST</span>
-              <span>+100</span>
-              <span>CLUE</span>
-              <span>MISS</span>
-              <span>+50</span>
+              <span class="wheel-badge reward-p25"><i>+25</i><b>POINTS</b></span>
+              <span class="wheel-badge reward-roast"><i>DUCK</i><b>ROAST</b></span>
+              <span class="wheel-badge reward-p100"><i>+100</i><b>MAJOR</b></span>
+              <span class="wheel-badge reward-clue"><i>CLUE</i><b>VAULT</b></span>
+              <span class="wheel-badge reward-miss"><i>MISS</i><b>RUN BACK</b></span>
+              <span class="wheel-badge reward-p50"><i>+50</i><b>BONUS</b></span>
             </div>
 
             <div class="game-message" id="wheelMessage">
@@ -160,9 +161,9 @@
             </div>
 
             <div class="wheel-prizes">
-              <div><small>Best Hit</small><strong>+100</strong></div>
-              <div><small>Clue Hit</small><strong>Vault Tip</strong></div>
-              <div><small>Duck Hit</small><strong>Roast</strong></div>
+              <div><div class="casino-icon icon-crown mini"><span class="icon-core">100</span></div><small>Best Hit</small><strong>+100</strong></div>
+              <div><div class="casino-icon icon-key mini"><span class="icon-core">KEY</span></div><small>Clue Hit</small><strong>Vault Tip</strong></div>
+              <div><div class="casino-icon icon-duck mini"><span class="icon-core">DS</span></div><small>Duck Hit</small><strong>Roast</strong></div>
             </div>
 
             <div class="game-controls">
@@ -174,7 +175,7 @@
     </section>
   </main>
 
-  <script src="casino-consumer.js?v=consumer-rewards-20260505"></script>
+  <script src="casino-consumer.js?v=casino-icons-20260506"></script>
   <script src="casino-duck-guide.js?v=duck-guide-20260505"></script>
 </body>
 </html>
