@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <title>Casino Arcade | HYPHSWORLD</title>
-  <meta name="description" content="HYPHSWORLD Casino Arcade with Crash, Plinko, Mines, Slots, Scratchers, High-Low, Roulette, Cool Points, and live leaderboard motion." />
+  <meta name="description" content="HYPHSWORLD Casino Arcade with Blackjack, Dominos, Crash, Plinko, Mines, Slots, Scratchers, High-Low, Roulette, Cool Points, and CPU play." />
   <meta name="theme-color" content="#00ff66" />
 
   <link rel="stylesheet" href="styles.css" />
@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="leaderboard-widgets.css" />
   <link rel="stylesheet" href="games.css" />
   <link rel="stylesheet" href="casino-arcade.css" />
-  <link rel="stylesheet" href="casino-table-games.css?v=visual-tables-20260505" />
+  <link rel="stylesheet" href="casino-table-games.css?v=all-games-engine-20260505" />
 </head>
 <body class="casino-page">
   <header class="site-header">
@@ -36,14 +36,14 @@
   <main>
     <section class="ticker casino-ticker" aria-label="HYPHSWORLD casino ticker">
       <div class="ticker-track">
-        <span>NEW CASINO ARCADE LIVE</span><b>✦</b><span>BLACKJACK CPU</span><b>✦</b><span>DOMINOS CPU</span><b>✦</b><span>CRASH CPU</span><b>✦</b><span>PLINKO CPU</span><b>✦</b><span>MINES CPU</span><b>✦</b><span>NEON SLOTS CPU</span><b>✦</b><span>SCRATCHERS CPU</span><b>✦</b><span>HIGH-LOW CPU</span><b>✦</b><span>ROULETTE CPU</span><b>✦</b><span>COOL POINTS ONLY</span><b>✦</b>
-        <span>NEW CASINO ARCADE LIVE</span><b>✦</b><span>BLACKJACK CPU</span><b>✦</b><span>DOMINOS CPU</span><b>✦</b><span>CRASH CPU</span><b>✦</b><span>PLINKO CPU</span><b>✦</b><span>MINES CPU</span><b>✦</b><span>NEON SLOTS CPU</span><b>✦</b><span>SCRATCHERS CPU</span><b>✦</b><span>HIGH-LOW CPU</span><b>✦</b><span>ROULETTE CPU</span><b>✦</b><span>COOL POINTS ONLY</span><b>✦</b>
+        <span>ALL-NEW CASINO ARCADE LIVE</span><b>✦</b><span>BLACKJACK CPU</span><b>✦</b><span>DOMINOS CPU</span><b>✦</b><span>CRASH CPU</span><b>✦</b><span>PLINKO CPU</span><b>✦</b><span>MINES CPU</span><b>✦</b><span>NEON SLOTS CPU</span><b>✦</b><span>SCRATCHERS CPU</span><b>✦</b><span>HIGH-LOW CPU</span><b>✦</b><span>ROULETTE CPU</span><b>✦</b><span>COOL POINTS ONLY</span><b>✦</b>
+        <span>ALL-NEW CASINO ARCADE LIVE</span><b>✦</b><span>BLACKJACK CPU</span><b>✦</b><span>DOMINOS CPU</span><b>✦</b><span>CRASH CPU</span><b>✦</b><span>PLINKO CPU</span><b>✦</b><span>MINES CPU</span><b>✦</b><span>NEON SLOTS CPU</span><b>✦</b><span>SCRATCHERS CPU</span><b>✦</b><span>HIGH-LOW CPU</span><b>✦</b><span>ROULETTE CPU</span><b>✦</b><span>COOL POINTS ONLY</span><b>✦</b>
       </div>
     </section>
 
     <section class="casino-hero">
       <div class="casino-hero-copy">
-        <p class="eyebrow">HYPHSWORLD // NEXT-GEN CASINO ARCADE</p>
+        <p class="eyebrow">HYPHSWORLD // ALL-NEW CPU GAME FLOOR</p>
         <h1>Casino Arcade</h1>
         <p>Fast modern game floor with visible tables and boards. Every game has solo CPU / house mode, so users can play immediately with no waiting.</p>
         <div class="casino-pill-row" aria-label="Casino arcade status">
@@ -66,13 +66,13 @@
     </section>
 
     <section class="casino-game-picker" aria-label="Casino arcade game picker">
-      <button class="casino-game-tile" type="button" data-game="blackjack">
+      <button class="casino-game-tile is-active" type="button" data-game="blackjack">
         <span>🂡</span><strong>Blackjack</strong><small>CPU dealer table</small>
       </button>
       <button class="casino-game-tile" type="button" data-game="dominos">
         <span>🁬</span><strong>Dominos</strong><small>CPU bones table</small>
       </button>
-      <button class="casino-game-tile is-active" type="button" data-game="crash">
+      <button class="casino-game-tile" type="button" data-game="crash">
         <span>🚀</span><strong>Crash</strong><small>CPU rocket run</small>
       </button>
       <button class="casino-game-tile" type="button" data-game="plinko">
@@ -82,7 +82,7 @@
         <span>💣</span><strong>Mines</strong><small>CPU hidden mines</small>
       </button>
       <button class="casino-game-tile" type="button" data-game="slots">
-        <span>💎</span><strong>Neon Slots</strong><small>CPU reel spin</small>
+        <span>💎</span><strong>Neon Slots</strong><small>CPU 5-reel spin</small>
       </button>
       <button class="casino-game-tile" type="button" data-game="scratcher">
         <span>🎟️</span><strong>Scratcher</strong><small>CPU reveal card</small>
@@ -100,7 +100,7 @@
         <div class="casino-stage-top">
           <div>
             <p class="eyebrow" id="casinoGameKicker">HYPHSWORLD ARCADE</p>
-            <h2 id="casinoGameTitle">Crash</h2>
+            <h2 id="casinoGameTitle">Blackjack</h2>
           </div>
           <span class="casino-live-dot">LIVE</span>
         </div>
@@ -122,7 +122,7 @@
 
         <div class="casino-dynamic-controls" id="casinoControls"></div>
 
-        <p class="casino-status" id="casinoStatus">Duck Sauce: “CPU Mode is ready. No waiting on another user — pick a game and play.”</p>
+        <p class="casino-status" id="casinoStatus">Duck Sauce: “All-new CPU arcade loaded. Pick any game and play now.”</p>
 
         <div class="casino-recent" id="casinoRecent">
           <strong>Recent Arcade Hits</strong>
@@ -161,9 +161,7 @@
 
   <script src="auth-client.js"></script>
   <script src="leaderboard-widgets.js"></script>
-  <script src="casino-arcade.js"></script>
-  <script src="casino-table-games.js?v=visual-tables-20260505"></script>
-  <script src="casino-cpu-mode.js?v=cpu-mode-20260505"></script>
+  <script src="casino-arcade.js?v=all-games-engine-20260505"></script>
   <script src="duck-helper.js?v=movable-duck-20260505"></script>
 </body>
 </html>
