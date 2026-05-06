@@ -1,0 +1,456 @@
+/* HYPHSWORLD / AMS WEST — Bright Gloss + Glass Casino Override */
+
+.casino-shell{
+  --glass-white:rgba(255,255,255,.22);
+  --glass-line:rgba(255,255,255,.42);
+  --glass-shine:rgba(255,255,255,.58);
+  --neon-green:0 0 34px rgba(57,255,20,.46);
+  --neon-cyan:0 0 34px rgba(0,229,255,.46);
+  --neon-pink:0 0 34px rgba(255,43,214,.44);
+  --neon-yellow:0 0 34px rgba(255,230,0,.46);
+  background:
+    radial-gradient(circle at 8% 8%, rgba(255,230,0,.36), transparent 22%),
+    radial-gradient(circle at 18% 22%, rgba(57,255,20,.34), transparent 28%),
+    radial-gradient(circle at 88% 12%, rgba(0,229,255,.38), transparent 30%),
+    radial-gradient(circle at 76% 72%, rgba(255,43,214,.36), transparent 32%),
+    radial-gradient(circle at 38% 102%, rgba(255,23,68,.30), transparent 38%),
+    linear-gradient(135deg, #030306 0%, #071018 32%, #0b0620 66%, #050505 100%);
+}
+
+.casino-shell:before{
+  opacity:1;
+  background:
+    linear-gradient(90deg, rgba(57,255,20,.09) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(0,229,255,.08) 1px, transparent 1px),
+    radial-gradient(circle, rgba(255,255,255,.18) 1px, transparent 1.4px);
+  background-size:38px 38px, 38px 38px, 18px 18px;
+}
+
+.casino-shell:after{
+  opacity:.95;
+  background:
+    conic-gradient(from 160deg, transparent, rgba(255,230,0,.24), transparent, rgba(0,229,255,.20), transparent, rgba(255,43,214,.22), transparent);
+  filter:blur(8px) saturate(1.35);
+}
+
+.casino-lobby-panel,
+.casino-game-panel,
+.blackjack-table,
+.slots-machine,
+.wheel-room,
+.casino-announcer,
+.game-message,
+.game-tab,
+.stat,
+.slot-reels,
+.slot-reel,
+.wheel-prizes div,
+.slot-symbol-map span{
+  backdrop-filter:blur(20px) saturate(1.65);
+  -webkit-backdrop-filter:blur(20px) saturate(1.65);
+}
+
+.casino-lobby-panel,
+.casino-game-panel{
+  border:2px solid var(--glass-line);
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.22), rgba(255,255,255,.06) 28%, rgba(0,0,0,.34) 58%),
+    linear-gradient(135deg, rgba(255,43,214,.20), rgba(0,229,255,.13), rgba(57,255,20,.15)),
+    rgba(4,8,12,.68);
+  box-shadow:
+    0 32px 100px rgba(0,0,0,.62),
+    0 0 42px rgba(57,255,20,.16),
+    0 0 42px rgba(0,229,255,.12),
+    inset 0 2px 0 rgba(255,255,255,.45),
+    inset 0 -24px 50px rgba(0,0,0,.18);
+}
+
+.casino-lobby-panel:before,
+.casino-game-panel:before,
+.blackjack-table:before,
+.slots-machine:before,
+.wheel-room:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.36), transparent 22%, rgba(255,255,255,.10) 42%, transparent 66%),
+    linear-gradient(180deg, rgba(255,255,255,.16), transparent 38%);
+  pointer-events:none;
+  mix-blend-mode:screen;
+}
+
+.casino-title h1{
+  background:linear-gradient(120deg, #fff 0%, #fff56a 16%, var(--green) 34%, var(--cyan) 58%, var(--pink) 78%, #fff 100%);
+  background-size:220% 100%;
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  filter:
+    drop-shadow(5px 5px 0 rgba(255,23,68,.96))
+    drop-shadow(-2px -2px 0 rgba(0,229,255,.70))
+    drop-shadow(0 0 32px rgba(255,230,0,.38));
+  animation:casinoTitleGloss 4.8s ease-in-out infinite;
+}
+
+@keyframes casinoTitleGloss{
+  0%,100%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+}
+
+.floor-tag-row .tag{
+  border-color:rgba(255,255,255,.42);
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.26), rgba(255,255,255,.07)),
+    rgba(0,0,0,.30);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.38),
+    0 12px 24px rgba(0,0,0,.24);
+}
+
+.casino-announcer{
+  border:1px solid rgba(255,255,255,.38);
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.23), rgba(255,43,214,.20) 45%, rgba(0,229,255,.13)),
+    rgba(0,0,0,.38);
+  color:rgba(255,255,255,.96);
+  box-shadow:var(--neon-pink), inset 0 1px 0 rgba(255,255,255,.36);
+}
+
+.casino-announcer:before{
+  filter:drop-shadow(0 0 15px rgba(255,230,0,.78));
+}
+
+.casino-announcer:after,
+.game-tab:after,
+.slots-topper:after,
+.card:before,
+.slot-reel:before,
+.vault-wheel:after{
+  content:"";
+  position:absolute;
+  pointer-events:none;
+}
+
+.casino-announcer:after{
+  inset:0;
+  background:linear-gradient(110deg, transparent 0 30%, rgba(255,255,255,.38), transparent 62% 100%);
+  transform:translateX(-120%);
+  animation:casinoShineSweep 3.5s ease-in-out infinite;
+}
+
+@keyframes casinoShineSweep{55%,100%{transform:translateX(120%)}}
+
+.game-tab{
+  border:1px solid rgba(255,255,255,.40);
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.24), rgba(255,255,255,.07)),
+    rgba(0,0,0,.28);
+  box-shadow:
+    0 14px 28px rgba(0,0,0,.30),
+    inset 0 1px 0 rgba(255,255,255,.42);
+  overflow:hidden;
+}
+
+.game-tab:hover,
+.game-tab.active{
+  color:#050505;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.56), rgba(255,255,255,.10) 28%),
+    linear-gradient(135deg, var(--yellow), var(--green) 40%, var(--cyan));
+  box-shadow:
+    0 18px 36px rgba(0,229,255,.24),
+    var(--neon-green),
+    inset 0 2px 0 rgba(255,255,255,.64),
+    inset 0 -10px 20px rgba(0,0,0,.12);
+}
+
+.casino-bankroll .stat{
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.25), rgba(255,255,255,.06)),
+    rgba(0,0,0,.34);
+  border:1px solid rgba(255,255,255,.38);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.40), 0 14px 28px rgba(0,0,0,.24);
+}
+
+.casino-bankroll .stat strong{
+  color:#fff56a;
+  text-shadow:0 0 18px rgba(255,230,0,.58), 2px 2px 0 rgba(255,23,68,.46);
+}
+
+.chip{
+  position:relative;
+  overflow:hidden;
+  border:8px dashed rgba(255,255,255,.86);
+  background:
+    radial-gradient(circle at 34% 24%, rgba(255,255,255,.82), rgba(255,255,255,.14) 24%, transparent 35%),
+    radial-gradient(circle, rgba(255,255,255,.20), rgba(0,0,0,.24));
+  box-shadow:
+    0 16px 30px rgba(0,0,0,.44),
+    inset 0 3px 0 rgba(255,255,255,.48),
+    inset 0 -11px 20px rgba(0,0,0,.24);
+  transition:transform .18s ease, filter .18s ease;
+}
+
+.chip:before{
+  content:"";
+  position:absolute;
+  inset:7px 10px auto 10px;
+  height:36%;
+  border-radius:999px;
+  background:linear-gradient(180deg, rgba(255,255,255,.74), rgba(255,255,255,.08));
+}
+
+.chip:hover{transform:translateY(-5px) rotate(-7deg);filter:saturate(1.38) brightness(1.14)}
+.chip:nth-child(1){box-shadow:var(--neon-green), 0 16px 30px rgba(0,0,0,.44), inset 0 3px 0 rgba(255,255,255,.48)}
+.chip:nth-child(2){box-shadow:0 0 34px rgba(255,23,68,.46), 0 16px 30px rgba(0,0,0,.44), inset 0 3px 0 rgba(255,255,255,.48)}
+.chip:nth-child(3){box-shadow:var(--neon-cyan), 0 16px 30px rgba(0,0,0,.44), inset 0 3px 0 rgba(255,255,255,.48)}
+.chip:nth-child(4){box-shadow:var(--neon-yellow), 0 16px 30px rgba(0,0,0,.44), inset 0 3px 0 rgba(255,255,255,.48)}
+
+.blackjack-table{
+  border-radius:34px;
+  border:4px solid rgba(255,255,255,.42);
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.24), transparent 22%),
+    radial-gradient(ellipse at center, rgba(57,255,20,.38), transparent 42%),
+    radial-gradient(circle at 18% 12%, rgba(255,230,0,.28), transparent 21%),
+    radial-gradient(circle at 82% 88%, rgba(255,43,214,.30), transparent 29%),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.06) 0 2px, transparent 2px 20px),
+    linear-gradient(160deg, rgba(0,170,70,.96), rgba(0,48,25,.98));
+  box-shadow:
+    inset 0 0 96px rgba(0,0,0,.48),
+    inset 0 1px 0 rgba(255,255,255,.42),
+    inset 0 0 0 10px rgba(255,255,255,.08),
+    0 0 46px rgba(57,255,20,.34),
+    0 0 60px rgba(0,229,255,.16);
+}
+
+.blackjack-table:before{
+  inset:16px;
+  border-radius:28px;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.34), transparent 24%, rgba(255,255,255,.10) 44%, transparent 64%);
+  border:1px solid rgba(255,255,255,.20);
+  box-shadow:inset 0 0 34px rgba(255,255,255,.10);
+  transform:none;
+  width:auto;
+  height:auto;
+}
+
+.table-divider span,
+.game-message{
+  border:1px solid rgba(255,255,255,.38);
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.22), rgba(0,229,255,.10), rgba(255,43,214,.10)),
+    rgba(0,0,0,.38);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.32), 0 14px 30px rgba(0,0,0,.24);
+}
+
+.table-divider span{
+  color:var(--yellow);
+  box-shadow:var(--neon-yellow), inset 0 1px 0 rgba(255,255,255,.32);
+}
+
+.card{
+  border:1px solid rgba(255,255,255,.66);
+  background:
+    linear-gradient(145deg, rgba(255,255,255,1), rgba(255,255,255,.88) 42%, rgba(218,244,255,.92));
+  box-shadow:
+    0 19px 32px rgba(0,0,0,.42),
+    0 0 18px rgba(255,255,255,.16),
+    inset 0 2px 0 rgba(255,255,255,.94),
+    inset 0 -10px 18px rgba(0,0,0,.10);
+}
+
+.card:before{
+  inset:6px 8px auto 8px;
+  height:38%;
+  border-radius:10px;
+  background:linear-gradient(180deg, rgba(255,255,255,.76), rgba(255,255,255,.08));
+}
+
+.card.back{
+  background:
+    radial-gradient(circle at 35% 25%, rgba(255,255,255,.44), transparent 23%),
+    repeating-linear-gradient(45deg, rgba(255,255,255,.25) 0 5px, transparent 5px 12px),
+    linear-gradient(135deg, var(--red), var(--pink) 28%, var(--purple) 55%, var(--green));
+  box-shadow:0 19px 32px rgba(0,0,0,.42), var(--neon-pink), inset 0 2px 0 rgba(255,255,255,.56);
+}
+
+.slots-machine{
+  border-radius:34px;
+  border:4px solid rgba(255,255,255,.44);
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.24), transparent 22%),
+    radial-gradient(circle at 50% 0%, rgba(255,230,0,.40), transparent 31%),
+    radial-gradient(circle at 0% 80%, rgba(57,255,20,.32), transparent 31%),
+    radial-gradient(circle at 100% 72%, rgba(0,229,255,.30), transparent 35%),
+    linear-gradient(145deg, rgba(255,23,68,.48), rgba(124,77,255,.42) 48%, rgba(0,229,255,.30)),
+    rgba(6,6,6,.92);
+  box-shadow:
+    inset 0 0 74px rgba(0,0,0,.44),
+    inset 0 1px 0 rgba(255,255,255,.42),
+    0 0 48px rgba(255,230,0,.32),
+    0 0 56px rgba(255,43,214,.18);
+}
+
+.slots-machine:before{
+  inset:14px;
+  border-radius:26px;
+  background:linear-gradient(135deg, rgba(255,255,255,.36), transparent 24%, rgba(255,255,255,.12) 44%, transparent 64%);
+  border:2px solid rgba(255,255,255,.20);
+}
+
+.slots-topper{
+  position:relative;
+  overflow:hidden;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.66), rgba(255,255,255,.10) 29%),
+    linear-gradient(135deg, var(--yellow), var(--green) 40%, var(--pink) 72%, var(--cyan));
+  box-shadow:
+    0 19px 36px rgba(0,0,0,.32),
+    var(--neon-yellow),
+    inset 0 2px 0 rgba(255,255,255,.70),
+    inset 0 -9px 19px rgba(0,0,0,.12);
+}
+
+.slots-topper:after{
+  inset:0;
+  background:linear-gradient(110deg, transparent 0 34%, rgba(255,255,255,.42), transparent 65% 100%);
+  animation:casinoShineSweep 3.2s ease-in-out infinite;
+}
+
+.slot-reels{
+  border:2px solid rgba(255,255,255,.36);
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.18), rgba(255,255,255,.06)),
+    rgba(0,0,0,.42);
+  box-shadow:inset 0 0 36px rgba(0,0,0,.54), inset 0 1px 0 rgba(255,255,255,.34), 0 15px 30px rgba(0,0,0,.24);
+}
+
+.slot-reel{
+  position:relative;
+  overflow:hidden;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.98), rgba(255,255,255,.68) 34%, rgba(210,244,255,.84)),
+    radial-gradient(circle at center, rgba(255,230,0,.14), transparent 54%);
+  border:3px solid rgba(255,255,255,.66);
+  box-shadow:
+    0 19px 32px rgba(0,0,0,.38),
+    inset 0 2px 0 rgba(255,255,255,.92),
+    inset 0 -12px 22px rgba(0,0,0,.12),
+    0 0 24px rgba(255,255,255,.12);
+}
+
+.slot-reel:before{
+  inset:8px 10px auto 10px;
+  height:34%;
+  border-radius:16px;
+  background:linear-gradient(180deg, rgba(255,255,255,.78), rgba(255,255,255,.10));
+}
+
+.slot-payline{
+  height:5px;
+  background:linear-gradient(90deg, transparent, var(--red), var(--yellow), var(--green), var(--cyan), transparent);
+  box-shadow:0 0 28px rgba(255,230,0,.66), 0 0 30px rgba(0,229,255,.34);
+}
+
+.wheel-room{
+  border-radius:34px;
+  border:4px solid rgba(255,255,255,.42);
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.24), transparent 22%),
+    radial-gradient(circle at 50% 42%, rgba(0,229,255,.38), transparent 36%),
+    radial-gradient(circle at 20% 15%, rgba(255,43,214,.32), transparent 25%),
+    radial-gradient(circle at 88% 22%, rgba(255,230,0,.22), transparent 27%),
+    linear-gradient(145deg, rgba(0,0,0,.86), rgba(17,17,17,.86));
+  box-shadow:inset 0 0 74px rgba(0,0,0,.46), inset 0 1px 0 rgba(255,255,255,.42), 0 0 48px rgba(0,229,255,.28);
+}
+
+.vault-wheel{
+  border:12px solid rgba(255,255,255,.95);
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.32), transparent 23%),
+    conic-gradient(var(--green) 0 60deg, var(--red) 60deg 120deg, var(--yellow) 120deg 180deg, var(--cyan) 180deg 240deg, var(--pink) 240deg 300deg, var(--purple) 300deg 360deg);
+  box-shadow:
+    0 28px 56px rgba(0,0,0,.46),
+    0 0 48px rgba(0,229,255,.38),
+    0 0 36px rgba(255,43,214,.22),
+    inset 0 3px 0 rgba(255,255,255,.58),
+    inset 0 0 0 14px rgba(0,0,0,.18);
+}
+
+.vault-wheel:before{
+  background:
+    radial-gradient(circle at 35% 25%, rgba(255,255,255,.96), transparent 32%),
+    radial-gradient(circle, #fff, var(--yellow));
+  box-shadow:0 0 30px rgba(255,230,0,.66), inset 0 2px 0 rgba(255,255,255,.78);
+}
+
+.vault-wheel:after{
+  inset:16px;
+  border-radius:50%;
+  background:linear-gradient(135deg, rgba(255,255,255,.38), transparent 28%, rgba(255,255,255,.12) 52%, transparent 70%);
+  mix-blend-mode:screen;
+}
+
+.wheel-prizes div{
+  border:1px solid rgba(255,255,255,.36);
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.22), rgba(255,255,255,.07)),
+    rgba(0,0,0,.38);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.34), 0 14px 26px rgba(0,0,0,.22);
+}
+
+.wheel-prizes strong{
+  color:#fff56a;
+  text-shadow:0 0 16px rgba(255,230,0,.52);
+}
+
+.game-controls button{
+  border:1px solid rgba(255,255,255,.40);
+  box-shadow:
+    0 15px 30px rgba(0,0,0,.30),
+    inset 0 2px 0 rgba(255,255,255,.42),
+    inset 0 -8px 18px rgba(0,0,0,.18);
+}
+
+.game-controls button.primary{
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.55), rgba(255,255,255,.10) 28%),
+    linear-gradient(135deg, var(--yellow), var(--green), var(--cyan));
+  color:#050505;
+  box-shadow:
+    0 19px 36px rgba(0,229,255,.22),
+    var(--neon-green),
+    inset 0 2px 0 rgba(255,255,255,.66),
+    inset 0 -8px 18px rgba(0,0,0,.14);
+}
+
+.game-controls button:not(.primary){
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.24), rgba(255,255,255,.07)),
+    linear-gradient(135deg, rgba(255,23,68,.90), rgba(124,77,255,.88));
+}
+
+@media (max-width:860px){
+  .casino-lobby-panel,
+  .casino-game-panel{
+    backdrop-filter:blur(16px) saturate(1.45);
+    -webkit-backdrop-filter:blur(16px) saturate(1.45);
+  }
+
+  .blackjack-table,
+  .slots-machine,
+  .wheel-room{
+    border-radius:28px;
+  }
+
+  .casino-title h1{
+    filter:
+      drop-shadow(3px 3px 0 rgba(255,23,68,.94))
+      drop-shadow(-1px -1px 0 rgba(0,229,255,.70))
+      drop-shadow(0 0 22px rgba(255,230,0,.35));
+  }
+}
