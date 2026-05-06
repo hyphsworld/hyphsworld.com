@@ -1,0 +1,161 @@
+/* HYPHSWORLD Casino Arcade — real table visuals for card/domino games */
+
+@media(max-width:760px){
+  .casino-game-picker{
+    width:min(100% - 28px,720px);
+    margin:18px auto 22px;
+    display:flex!important;
+    flex-direction:column!important;
+    gap:13px!important;
+    max-height:none!important;
+    overflow:visible!important;
+  }
+
+  .casino-game-tile{
+    width:100%!important;
+    min-height:76px!important;
+    display:grid!important;
+    grid-template-columns:56px 1fr!important;
+    grid-template-rows:auto auto!important;
+    column-gap:14px!important;
+    align-items:center!important;
+    text-align:left!important;
+    padding:14px 18px!important;
+    border-radius:26px!important;
+    border:2px solid rgba(255,255,255,.16)!important;
+  }
+
+  .casino-game-tile span{
+    grid-row:1 / span 2!important;
+    width:50px!important;
+    height:50px!important;
+    display:grid!important;
+    place-items:center!important;
+    margin:0!important;
+    border-radius:18px!important;
+    font-size:1.85rem!important;
+    background:rgba(0,0,0,.36)!important;
+    border:1px solid rgba(255,255,255,.14)!important;
+  }
+
+  .casino-game-tile strong{
+    margin:0!important;
+    font-size:clamp(1.15rem,6vw,1.85rem)!important;
+    line-height:1!important;
+  }
+
+  .casino-game-tile small{
+    margin:5px 0 0!important;
+    font-size:.82rem!important;
+  }
+
+  .casino-game-tile.is-active{
+    color:#050507!important;
+    background:linear-gradient(100deg,#39ff7a 0%,#15f49a 42%,#1ffcff 100%)!important;
+    border-color:rgba(57,255,122,.9)!important;
+  }
+}
+
+.hw-table-room{
+  position:relative;
+  min-height:430px;
+  width:100%;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+  padding:14px;
+}
+
+.hw-felt-table{
+  position:relative;
+  width:min(760px,100%);
+  min-height:390px;
+  border-radius:42px;
+  border:14px solid #5a321d;
+  background:
+    radial-gradient(ellipse at center,rgba(57,255,122,.20),transparent 52%),
+    linear-gradient(145deg,#0b7b42,#064426);
+  box-shadow:0 24px 50px rgba(0,0,0,.45), inset 0 0 42px rgba(0,0,0,.38);
+}
+
+.hw-felt-table.purple{
+  background:
+    radial-gradient(ellipse at center,rgba(255,255,255,.16),transparent 52%),
+    linear-gradient(145deg,#7c5cff,#39207d 58%,#1d113e);
+  border-color:#161016;
+}
+
+.hw-seat-chip{
+  position:absolute;
+  z-index:3;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:#fff;
+  font-weight:1000;
+  text-shadow:0 2px 4px rgba(0,0,0,.5);
+}
+.hw-seat-chip .avatar{
+  width:46px;height:46px;border-radius:14px;display:grid;place-items:center;
+  background:linear-gradient(135deg,#39ff7a,#ff4fd8);border:3px solid #fff;font-size:1.4rem;
+}
+.hw-seat-chip.top{top:12px;left:50%;transform:translateX(-50%)}
+.hw-seat-chip.left{left:12px;top:45%;transform:translateY(-50%)}
+.hw-seat-chip.right{right:12px;top:45%;transform:translateY(-50%)}
+.hw-seat-chip.bottom{bottom:12px;left:50%;transform:translateX(-50%)}
+
+.hw-card-row,.hw-bone-row{
+  display:flex;
+  gap:7px;
+  justify-content:center;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+.hw-card-row.center{position:absolute;left:50%;top:43%;transform:translate(-50%,-50%);z-index:4}
+.hw-card-row.player{position:absolute;left:50%;bottom:66px;transform:translateX(-50%);z-index:4;max-width:92%}
+.hw-card-row.dealer{position:absolute;left:50%;top:78px;transform:translateX(-50%);z-index:4;max-width:92%}
+
+.hw-card-face{
+  width:52px;height:74px;border-radius:9px;background:#fff;color:#111;
+  display:flex;flex-direction:column;justify-content:space-between;padding:6px;
+  font-weight:1000;box-shadow:0 8px 18px rgba(0,0,0,.36);border:1px solid rgba(0,0,0,.18);
+}
+.hw-card-face.red{color:#d71938}
+.hw-card-face.back{background:repeating-linear-gradient(45deg,#8ed8ff 0 6px,#d7f5ff 6px 12px);color:transparent}
+.hw-card-face strong{font-size:1rem;line-height:1}.hw-card-face span{align-self:flex-end;font-size:1.1rem}
+
+.hw-table-label{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);opacity:.16;
+  color:#fff;font-size:clamp(2.5rem,8vw,5rem);font-weight:1000;text-transform:uppercase;text-align:center;line-height:.8;pointer-events:none;
+}
+
+.hw-score-strip{
+  position:absolute;left:18px;right:18px;top:16px;display:flex;justify-content:space-between;gap:8px;z-index:5;pointer-events:none;
+}
+.hw-score-strip span{background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:7px 10px;font-weight:1000;color:#fff}
+
+.hw-bone-board{
+  position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);z-index:4;display:flex;gap:3px;align-items:center;justify-content:center;max-width:78%;flex-wrap:wrap;
+}
+.hw-bone-hand{position:absolute;left:50%;bottom:42px;transform:translateX(-50%);z-index:4;display:flex;gap:6px;max-width:90%;overflow-x:auto;padding:6px}
+.hw-boneyard{position:absolute;left:18px;top:82px;z-index:5;background:#f6edbf;color:#111;border-radius:12px;padding:8px 10px;font-weight:1000;box-shadow:0 8px 18px rgba(0,0,0,.32)}
+.hw-bone{
+  width:38px;height:72px;border-radius:7px;background:#f8f1d6;color:#111;border:1px solid rgba(0,0,0,.22);
+  display:grid;grid-template-rows:1fr 1fr;box-shadow:0 8px 14px rgba(0,0,0,.28);font-weight:1000;overflow:hidden;
+}
+.hw-bone.horizontal{width:72px;height:38px;grid-template-columns:1fr 1fr;grid-template-rows:none}
+.hw-bone div{display:grid;place-items:center;border-bottom:1px solid #111;font-size:1.1rem}.hw-bone.horizontal div{border-bottom:0;border-right:1px solid #111}.hw-bone div:last-child{border:0}
+.hw-bone.gold{background:#ffe45c}
+
+.hw-table-help{
+  position:absolute;right:16px;bottom:16px;z-index:6;max-width:240px;border-radius:18px;padding:10px 12px;background:rgba(0,0,0,.52);border:1px solid rgba(255,255,255,.16);color:#fff;font-weight:900;
+}
+
+@media(max-width:680px){
+  .hw-table-room{min-height:380px;padding:8px}
+  .hw-felt-table{min-height:350px;border-width:9px;border-radius:30px}
+  .hw-seat-chip .avatar{width:36px;height:36px;font-size:1.1rem}.hw-seat-chip{font-size:.8rem}
+  .hw-card-face{width:42px;height:60px}.hw-card-row.dealer{top:62px}.hw-card-row.player{bottom:54px}
+  .hw-bone{width:31px;height:58px}.hw-bone.horizontal{width:58px;height:31px}.hw-bone-board{max-width:84%}.hw-table-help{display:none}
+}
