@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="leaderboard-widgets.css" />
   <link rel="stylesheet" href="games.css" />
   <link rel="stylesheet" href="casino-arcade.css" />
+  <link rel="stylesheet" href="casino-table-games.css?v=visual-tables-20260505" />
 </head>
 <body class="casino-page">
   <header class="site-header">
@@ -35,8 +36,8 @@
   <main>
     <section class="ticker casino-ticker" aria-label="HYPHSWORLD casino ticker">
       <div class="ticker-track">
-        <span>NEW CASINO ARCADE LIVE</span><b>✦</b><span>CRASH</span><b>✦</b><span>PLINKO</span><b>✦</b><span>MINES</span><b>✦</b><span>NEON SLOTS</span><b>✦</b><span>SCRATCHERS</span><b>✦</b><span>HIGH-LOW</span><b>✦</b><span>ROULETTE</span><b>✦</b><span>COOL POINTS ONLY</span><b>✦</b>
-        <span>NEW CASINO ARCADE LIVE</span><b>✦</b><span>CRASH</span><b>✦</b><span>PLINKO</span><b>✦</b><span>MINES</span><b>✦</b><span>NEON SLOTS</span><b>✦</b><span>SCRATCHERS</span><b>✦</b><span>HIGH-LOW</span><b>✦</b><span>ROULETTE</span><b>✦</b><span>COOL POINTS ONLY</span><b>✦</b>
+        <span>NEW CASINO ARCADE LIVE</span><b>✦</b><span>BLACKJACK</span><b>✦</b><span>DOMINOS</span><b>✦</b><span>CRASH</span><b>✦</b><span>PLINKO</span><b>✦</b><span>MINES</span><b>✦</b><span>NEON SLOTS</span><b>✦</b><span>SCRATCHERS</span><b>✦</b><span>HIGH-LOW</span><b>✦</b><span>ROULETTE</span><b>✦</b><span>COOL POINTS ONLY</span><b>✦</b>
+        <span>NEW CASINO ARCADE LIVE</span><b>✦</b><span>BLACKJACK</span><b>✦</b><span>DOMINOS</span><b>✦</b><span>CRASH</span><b>✦</b><span>PLINKO</span><b>✦</b><span>MINES</span><b>✦</b><span>NEON SLOTS</span><b>✦</b><span>SCRATCHERS</span><b>✦</b><span>HIGH-LOW</span><b>✦</b><span>ROULETTE</span><b>✦</b><span>COOL POINTS ONLY</span><b>✦</b>
       </div>
     </section>
 
@@ -44,7 +45,7 @@
       <div class="casino-hero-copy">
         <p class="eyebrow">HYPHSWORLD // NEXT-GEN CASINO ARCADE</p>
         <h1>Casino Arcade</h1>
-        <p>Fast modern game floor with glowing arcade visuals. Crash, Plinko, Mines, Slots, Scratchers, High-Low, and Roulette are all Cool Points only.</p>
+        <p>Fast modern game floor with visible tables and boards. Blackjack, Dominos, Crash, Plinko, Mines, Slots, Scratchers, High-Low, and Roulette are all Cool Points only.</p>
         <div class="casino-pill-row" aria-label="Casino arcade status">
           <span class="casino-pill hot">No Real Money</span>
           <span class="casino-pill">Cool Points Stay</span>
@@ -65,6 +66,12 @@
     </section>
 
     <section class="casino-game-picker" aria-label="Casino arcade game picker">
+      <button class="casino-game-tile" type="button" data-game="blackjack">
+        <span>🂡</span><strong>Blackjack</strong><small>Card table</small>
+      </button>
+      <button class="casino-game-tile" type="button" data-game="dominos">
+        <span>🁬</span><strong>Dominos</strong><small>Bones table</small>
+      </button>
       <button class="casino-game-tile is-active" type="button" data-game="crash">
         <span>🚀</span><strong>Crash</strong><small>Cash-out timing</small>
       </button>
@@ -155,6 +162,7 @@
   <script src="auth-client.js"></script>
   <script src="leaderboard-widgets.js"></script>
   <script src="casino-arcade.js"></script>
+  <script src="casino-table-games.js?v=visual-tables-20260505"></script>
   <script src="duck-helper.js?v=movable-duck-20260505"></script>
 </body>
 </html>
