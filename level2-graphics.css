@@ -1,0 +1,353 @@
+/* HYPHSWORLD LEVEL 2 — SKATE / GRAFFITI GRAPHICS OVERRIDE
+   Scoped to .vault-shell.hyphsworld5 only. Level 1 untouched.
+*/
+
+.vault-shell.hyphsworld5{
+  --deck-green:#39ff14;
+  --spray-pink:#ff2bd6;
+  --slap-cyan:#00e5ff;
+  --warning-yellow:#ffe600;
+  --paint-red:#ff1744;
+  padding:22px;
+  background:
+    radial-gradient(circle at 0% 8%, rgba(255,43,214,.24), transparent 28%),
+    radial-gradient(circle at 96% 12%, rgba(57,255,20,.20), transparent 30%),
+    radial-gradient(circle at 60% 92%, rgba(0,229,255,.16), transparent 38%),
+    linear-gradient(135deg,#050606 0%,#132018 42%,#080509 100%);
+}
+
+.vault-shell.hyphsworld5:before{
+  opacity:.95;
+  background:
+    radial-gradient(circle, rgba(255,255,255,.08) 1px, transparent 1px),
+    repeating-linear-gradient(135deg, rgba(255,255,255,.04) 0 2px, transparent 2px 18px),
+    linear-gradient(90deg, rgba(57,255,20,.045) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(255,43,214,.04) 1px, transparent 1px);
+  background-size:18px 18px, 34px 34px, 42px 42px, 42px 42px;
+  mask-image:linear-gradient(to bottom, rgba(0,0,0,.95), transparent 96%);
+}
+
+.vault-shell.hyphsworld5:after{
+  background:
+    linear-gradient(118deg, rgba(255,23,68,.18), transparent 26%),
+    linear-gradient(310deg, rgba(57,255,20,.16), transparent 32%),
+    conic-gradient(from 180deg, transparent, rgba(255,43,214,.12), transparent, rgba(0,229,255,.10), transparent);
+  animation:brandSpin 18s linear infinite;
+}
+
+.vault-shell.hyphsworld5 .topbar{
+  max-width:1060px;
+  margin-bottom:18px;
+  padding:18px;
+  border:2px solid rgba(255,230,0,.45);
+  border-radius:30px;
+  background:
+    linear-gradient(135deg, rgba(0,0,0,.80), rgba(255,43,214,.10)),
+    rgba(0,0,0,.56);
+  box-shadow:0 20px 48px rgba(0,0,0,.42), inset 0 0 0 1px rgba(255,255,255,.06);
+  position:relative;
+  overflow:hidden;
+}
+
+.vault-shell.hyphsworld5 .topbar:before{
+  content:"LEVEL 2 // SKATE DECK ACCESS // AMS WEST";
+  position:absolute;
+  right:20px;
+  bottom:8px;
+  opacity:.13;
+  color:#fff;
+  font-size:clamp(20px,5vw,46px);
+  line-height:.8;
+  transform:rotate(-4deg);
+  text-shadow:4px 4px 0 var(--spray-pink), -3px -2px 0 var(--deck-green);
+  pointer-events:none;
+}
+
+.vault-shell.hyphsworld5 .brand-lockup small{
+  font-size:clamp(13px,3vw,24px);
+  color:var(--deck-green);
+  letter-spacing:.22em;
+  text-shadow:0 0 18px rgba(57,255,20,.45);
+}
+
+.vault-shell.hyphsworld5 .brand-lockup strong{
+  font-size:clamp(32px,8vw,72px);
+  line-height:.76;
+  color:#fff;
+  text-shadow:5px 5px 0 var(--paint-red), -2px -2px 0 var(--slap-cyan), 0 0 28px rgba(57,255,20,.25);
+}
+
+.vault-shell.hyphsworld5 .nav-pills{gap:12px}
+.vault-shell.hyphsworld5 .nav-pill{
+  padding:14px 22px;
+  border-radius:999px;
+  border:3px solid rgba(255,255,255,.22);
+  background:rgba(255,255,255,.10);
+  font-size:clamp(16px,3.5vw,28px);
+  text-shadow:0 3px 0 rgba(0,0,0,.35);
+  box-shadow:0 12px 28px rgba(0,0,0,.34), inset 0 0 0 1px rgba(255,255,255,.06);
+}
+.vault-shell.hyphsworld5 .nav-pill:hover,
+.vault-shell.hyphsworld5 .nav-pill[href="floor2.html"]{
+  color:#050507;
+  border-color:rgba(57,255,20,.95);
+  background:linear-gradient(135deg,var(--deck-green),var(--warning-yellow),var(--slap-cyan));
+  text-shadow:none;
+}
+
+.vault-shell.hyphsworld5 .floor-grid{
+  max-width:1060px;
+  grid-template-columns:.94fr 1.06fr;
+  gap:26px;
+}
+
+.vault-shell.hyphsworld5 .floor-hero,
+.vault-shell.hyphsworld5 .track-panel{
+  border-radius:42px;
+  border:3px solid rgba(57,255,20,.28);
+  background:
+    repeating-linear-gradient(135deg, rgba(255,255,255,.035) 0 2px, transparent 2px 18px),
+    radial-gradient(circle at 85% 20%, rgba(0,229,255,.12), transparent 32%),
+    radial-gradient(circle at 0% 100%, rgba(255,43,214,.20), transparent 36%),
+    rgba(10,8,11,.76);
+  box-shadow:0 30px 80px rgba(0,0,0,.58), inset 0 0 0 1px rgba(255,255,255,.06);
+}
+
+.vault-shell.hyphsworld5 .floor-hero{
+  min-height:735px;
+  padding:30px;
+}
+
+/* skate ramp + graffiti orbit */
+.vault-shell.hyphsworld5 .floor-hero:before{
+  content:"";
+  position:absolute;
+  right:7%;
+  top:23%;
+  width:310px;
+  height:310px;
+  border-radius:50%;
+  border:5px dashed rgba(255,255,255,.14);
+  opacity:.82;
+  pointer-events:none;
+}
+.vault-shell.hyphsworld5 .floor-hero:after{
+  content:"🛹";
+  position:absolute;
+  right:8%;
+  top:28%;
+  font-size:46px;
+  transform:rotate(-18deg);
+  filter:drop-shadow(0 0 14px rgba(255,230,0,.42));
+  pointer-events:none;
+}
+
+.vault-shell.hyphsworld5 .floor-tag-row{max-width:620px}
+.vault-shell.hyphsworld5 .tag{
+  padding:13px 18px;
+  border-radius:999px;
+  border:2px solid rgba(255,255,255,.16);
+  background:rgba(0,0,0,.64);
+  font-size:clamp(12px,3vw,22px);
+  letter-spacing:.09em;
+  box-shadow:0 10px 22px rgba(0,0,0,.30);
+}
+.vault-shell.hyphsworld5 .tag.green{color:var(--deck-green)}
+.vault-shell.hyphsworld5 .tag.red{color:var(--paint-red)}
+.vault-shell.hyphsworld5 .tag.cyan{color:var(--slap-cyan)}
+.vault-shell.hyphsworld5 .tag.yellow{color:var(--warning-yellow)}
+
+.vault-shell.hyphsworld5 .floor-title{position:relative;margin-top:76px}
+.vault-shell.hyphsworld5 .floor-title:before{
+  content:"NO MIDDLEMEN";
+  display:inline-grid;
+  place-items:center;
+  margin-bottom:22px;
+  padding:12px 20px;
+  border-radius:18px 34px 18px 30px;
+  color:#050507;
+  background:linear-gradient(100deg,var(--deck-green),var(--warning-yellow),var(--spray-pink),var(--slap-cyan));
+  box-shadow:9px 9px 0 rgba(255,43,214,.82), 0 0 26px rgba(57,255,20,.22);
+  font-size:clamp(14px,4vw,28px);
+  letter-spacing:.08em;
+  transform:rotate(-2deg);
+}
+.vault-shell.hyphsworld5 .floor-title:after{
+  content:"RICHMOND TAGGED THIS FLOOR";
+  display:block;
+  width:max-content;
+  max-width:100%;
+  margin:14px 0 0;
+  padding:8px 13px;
+  border-radius:999px;
+  color:#fff;
+  background:rgba(255,43,214,.22);
+  border:2px dashed rgba(255,255,255,.24);
+  font-size:clamp(12px,3vw,20px);
+  letter-spacing:.12em;
+  transform:rotate(1.5deg);
+}
+.vault-shell.hyphsworld5 .floor-title h1{
+  margin-top:0;
+  font-size:clamp(72px,17vw,158px);
+  line-height:.72;
+  letter-spacing:-.09em;
+  color:var(--deck-green);
+  text-shadow:10px 7px 0 var(--paint-red), 0 0 28px rgba(57,255,20,.30);
+}
+.vault-shell.hyphsworld5 .floor-title h2{
+  display:inline-block;
+  margin-top:10px;
+  padding:10px 14px;
+  border-radius:18px;
+  color:#050507;
+  background:linear-gradient(135deg,var(--slap-cyan),var(--deck-green),var(--warning-yellow));
+  box-shadow:7px 7px 0 rgba(255,43,214,.65);
+  text-shadow:none;
+  font-size:clamp(28px,7vw,74px);
+}
+.vault-shell.hyphsworld5 .floor-title p{
+  margin-top:24px;
+  max-width:650px;
+  color:#e8e1e8;
+  font-size:clamp(22px,5vw,42px);
+  line-height:1.32;
+  font-weight:950;
+}
+
+/* sticker stack */
+.vault-shell.hyphsworld5 .floor-actions{
+  margin-top:34px;
+  position:relative;
+}
+.vault-shell.hyphsworld5 .floor-actions:before{
+  content:"SKATE RAMP ACCESS";
+  position:absolute;
+  right:0;
+  top:-58px;
+  padding:8px 12px;
+  border-radius:14px 20px 12px 22px;
+  color:#050507;
+  background:linear-gradient(135deg,var(--warning-yellow),var(--deck-green));
+  box-shadow:6px 6px 0 rgba(255,23,68,.72);
+  transform:rotate(5deg);
+  font-size:13px;
+  letter-spacing:.12em;
+}
+.vault-shell.hyphsworld5 .brand-btn{
+  padding:16px 22px;
+  border-radius:999px;
+  border:3px solid rgba(255,255,255,.20);
+  font-size:clamp(14px,3.2vw,22px);
+  text-transform:uppercase;
+  box-shadow:0 14px 28px rgba(0,0,0,.34);
+}
+.vault-shell.hyphsworld5 .brand-btn.fun{background:linear-gradient(110deg,var(--deck-green),var(--slap-cyan));color:#050507}
+.vault-shell.hyphsworld5 .brand-btn.hot{background:linear-gradient(110deg,var(--paint-red),var(--spray-pink),var(--purple))}
+.vault-shell.hyphsworld5 .brand-btn.gold{background:linear-gradient(110deg,var(--warning-yellow),var(--deck-green));color:#050507}
+
+.vault-shell.hyphsworld5 .track-panel{
+  padding:24px;
+  min-height:735px;
+}
+.vault-shell.hyphsworld5 .track-panel:before{
+  content:"LEVEL 2  •  HYPHSWORLD 5  •  DUCK SAUCE WAS HERE";
+  position:absolute;
+  left:20px;
+  right:20px;
+  bottom:16px;
+  opacity:.12;
+  color:#fff;
+  font-size:clamp(22px,5vw,56px);
+  line-height:.9;
+  transform:rotate(-3deg);
+  text-shadow:4px 4px 0 var(--spray-pink), -3px -2px 0 var(--deck-green);
+  pointer-events:none;
+}
+.vault-shell.hyphsworld5 .track-panel:after{
+  content:"AMS WEST STICKER PACK";
+  position:absolute;
+  right:24px;
+  top:88px;
+  padding:10px 14px;
+  border-radius:12px 24px 12px 22px;
+  color:#050507;
+  background:linear-gradient(135deg,var(--spray-pink),var(--warning-yellow),var(--slap-cyan));
+  box-shadow:7px 7px 0 rgba(57,255,20,.68);
+  transform:rotate(7deg);
+  font-size:13px;
+  letter-spacing:.12em;
+  z-index:3;
+}
+.vault-shell.hyphsworld5 .panel-head{
+  position:relative;
+  z-index:2;
+  padding-bottom:14px;
+  border-bottom:12px solid transparent;
+  border-image:linear-gradient(90deg,var(--deck-green),var(--spray-pink),var(--slap-cyan),var(--warning-yellow),var(--deck-green)) 1;
+}
+.vault-shell.hyphsworld5 .panel-head h3{
+  font-size:clamp(34px,8vw,76px);
+  line-height:.85;
+  color:#fff;
+  text-shadow:5px 5px 0 var(--paint-red), -2px -2px 0 var(--slap-cyan);
+}
+.vault-shell.hyphsworld5 .panel-head p{font-size:16px;color:#d8efe6}
+.vault-shell.hyphsworld5 .now-playing{
+  position:relative;
+  z-index:2;
+  border-radius:26px;
+  border:2px solid rgba(255,255,255,.15);
+  background:rgba(0,0,0,.50);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
+}
+.vault-shell.hyphsworld5 .now-playing small{color:var(--deck-green);letter-spacing:.12em}
+.vault-shell.hyphsworld5 .now-playing strong{color:#fff;font-size:clamp(20px,4vw,34px)}
+.vault-shell.hyphsworld5 .track-list{position:relative;z-index:2;gap:14px}
+.vault-shell.hyphsworld5 .track-card{
+  min-height:86px;
+  border-radius:26px;
+  border:2px solid rgba(255,255,255,.14);
+  background:linear-gradient(135deg, rgba(255,255,255,.09), rgba(255,255,255,.03)), rgba(0,0,0,.32);
+  box-shadow:0 14px 28px rgba(0,0,0,.30);
+}
+.vault-shell.hyphsworld5 .track-card:hover{
+  transform:translateY(-2px) scale(1.01);
+  color:#050507;
+  background:linear-gradient(100deg,var(--deck-green),var(--slap-cyan));
+  border-color:rgba(57,255,20,.95);
+}
+.vault-shell.hyphsworld5 .track-num{
+  width:56px;
+  height:56px;
+  font-size:18px;
+  background:linear-gradient(135deg,var(--deck-green),var(--warning-yellow),var(--spray-pink));
+}
+.vault-shell.hyphsworld5 .track-meta strong{font-size:clamp(18px,4vw,28px)}
+.vault-shell.hyphsworld5 .track-meta span{color:rgba(255,255,255,.72)}
+.vault-shell.hyphsworld5 .track-card:hover .track-meta span{color:#06381f}
+.vault-shell.hyphsworld5 .track-play{color:var(--warning-yellow);font-size:34px;filter:drop-shadow(0 0 10px rgba(255,230,0,.35))}
+.vault-shell.hyphsworld5 .alive-banner{
+  max-width:1060px;
+  margin-top:28px;
+  border:2px dashed rgba(255,230,0,.42);
+  border-radius:30px;
+  background:rgba(0,0,0,.55);
+  color:#fff;
+  font-size:clamp(16px,3.5vw,28px);
+  box-shadow:0 20px 40px rgba(0,0,0,.35);
+}
+
+@media(max-width:860px){
+  .vault-shell.hyphsworld5{padding:20px 16px 110px}
+  .vault-shell.hyphsworld5 .topbar{display:block;border-radius:26px;padding:18px}
+  .vault-shell.hyphsworld5 .nav-pills{justify-content:flex-start;margin-top:18px}
+  .vault-shell.hyphsworld5 .nav-pill{padding:13px 18px}
+  .vault-shell.hyphsworld5 .floor-grid{display:block}
+  .vault-shell.hyphsworld5 .floor-hero,.vault-shell.hyphsworld5 .track-panel{min-height:auto;border-radius:36px}
+  .vault-shell.hyphsworld5 .floor-hero{padding:26px 22px}
+  .vault-shell.hyphsworld5 .floor-title{margin-top:52px}
+  .vault-shell.hyphsworld5 .floor-title h1{font-size:clamp(70px,22vw,128px)}
+  .vault-shell.hyphsworld5 .track-panel{margin-top:24px}
+  .vault-shell.hyphsworld5 .track-panel:after{top:74px;right:18px;font-size:11px}
+}
