@@ -1,0 +1,124 @@
+/* HYPHSWORLD transparent glass logo + hidden-casino homepage helper polish. */
+.home-page .site-header {
+  background:
+    linear-gradient(180deg, rgba(3, 3, 8, 0.22), rgba(3, 3, 8, 0.05)),
+    radial-gradient(circle at 10% 0%, rgba(57, 255, 122, 0.10), transparent 36%),
+    radial-gradient(circle at 90% 0%, rgba(31, 252, 255, 0.09), transparent 38%) !important;
+  backdrop-filter: blur(5px) saturate(1.16) !important;
+  -webkit-backdrop-filter: blur(5px) saturate(1.16) !important;
+  border-bottom: 1px solid rgba(255, 79, 216, 0.20) !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14), inset 0 -1px 0 rgba(255,255,255,0.03) !important;
+}
+.home-page .site-header::after { opacity: 0.08 !important; }
+.home-page .site-header::before {
+  top: 9px !important;
+  right: 12px !important;
+  font-size: 0.46rem !important;
+  letter-spacing: 0.18em !important;
+  opacity: 0.62 !important;
+}
+.home-page .brand-lockup {
+  display: inline-grid !important;
+  width: auto !important;
+  max-width: 63% !important;
+  margin-bottom: 4px !important;
+  padding: 4px 6px 5px !important;
+  border-radius: 12px !important;
+  background: linear-gradient(135deg, rgba(0,0,0,0.18), rgba(255,255,255,0.018)) !important;
+  border: 1px solid rgba(255,255,255,0.045) !important;
+  box-shadow: 0 5px 12px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.045) !important;
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
+}
+.home-page .brand-lockup span {
+  font-size: clamp(0.38rem, 1.98vw, 0.48rem) !important;
+  letter-spacing: 0.17em !important;
+  color: rgba(255, 228, 92, 0.88) !important;
+  line-height: 1 !important;
+}
+.home-page .brand-lockup strong {
+  font-size: clamp(0.96rem, 6.0vw, 1.72rem) !important;
+  line-height: 0.80 !important;
+  letter-spacing: -0.078em !important;
+  color: rgba(255,255,255,0.92) !important;
+  text-shadow: 0 0 16px rgba(31,252,255,0.14), 0 6px 10px rgba(0,0,0,0.25) !important;
+}
+.home-page .main-nav {
+  background: linear-gradient(145deg, rgba(255,255,255,0.026), rgba(255,255,255,0.006)) !important;
+  border-color: rgba(31,252,255,0.12) !important;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12), inset 0 0 0 1px rgba(255,255,255,0.018) !important;
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
+}
+.home-page #login-section {
+  background: linear-gradient(135deg, rgba(57,255,122,.18), rgba(12,8,24,.68) 48%, rgba(31,252,255,.13)) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+.home-page header.site-header nav.main-nav > a {
+  min-height: 29px !important;
+  height: 29px !important;
+  font-size: 0.40rem !important;
+  border-color: rgba(31,252,255,.70) !important;
+}
+.home-page header.site-header nav.main-nav > a[href="leaderboard.html"],
+.home-page header.site-header nav.main-nav > a[href="app-player.html"] {
+  font-size: 0.34rem !important;
+}
+.home-page .duck-zone { display: none !important; }
+.home-page .duckBox {
+  left: 12px !important;
+  bottom: 108px !important;
+  top: auto !important;
+  width: 72px !important;
+  height: 72px !important;
+  filter: drop-shadow(0 16px 18px rgba(0,0,0,.42)) drop-shadow(0 0 18px rgba(57,255,122,.25));
+}
+.home-page .duckFace,
+.home-page .duckFace img {
+  width: 72px !important;
+  height: 72px !important;
+}
+.home-page .duckTalk {
+  left: 0 !important;
+  top: auto !important;
+  bottom: 82px !important;
+  width: min(88vw, 330px) !important;
+  border-radius: 18px !important;
+  background:
+    linear-gradient(145deg, rgba(5, 7, 12, 0.90), rgba(9, 4, 21, 0.82)),
+    radial-gradient(circle at 12% 0%, rgba(57,255,122,.18), transparent 34%) !important;
+  border: 1px solid rgba(31,252,255,.36) !important;
+  box-shadow: 0 18px 38px rgba(0,0,0,.46), inset 0 1px 0 rgba(255,255,255,.10) !important;
+  backdrop-filter: blur(12px) saturate(1.25) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(1.25) !important;
+}
+.home-page .duckTalk strong {
+  color: #ffe45c !important;
+  text-shadow: 0 0 16px rgba(255,228,92,.35) !important;
+}
+.home-page .duckReturn {
+  left: 12px !important;
+  bottom: 84px !important;
+}
+@media (max-width: 620px) {
+  .home-page .site-header { padding: 5px 8px 6px !important; }
+  .home-page .brand-lockup {
+    margin-bottom: 3px !important;
+    padding: 4px 6px 5px !important;
+    max-width: 62% !important;
+    border-radius: 12px !important;
+  }
+  .home-page .brand-lockup strong { font-size: clamp(0.96rem, 6vw, 1.68rem) !important; }
+  .home-page .brand-lockup span { font-size: clamp(0.38rem, 1.95vw, 0.46rem) !important; }
+  .home-page .main-nav { padding: 5px !important; gap: 4px !important; }
+  .home-page header.site-header nav.main-nav > a {
+    min-height: 28px !important;
+    height: 28px !important;
+    font-size: 0.39rem !important;
+  }
+  .home-page header.site-header nav.main-nav > a[href="leaderboard.html"],
+  .home-page header.site-header nav.main-nav > a[href="app-player.html"] {
+    font-size: 0.32rem !important;
+  }
+}
