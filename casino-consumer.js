@@ -1,7 +1,7 @@
 /* HYPHSWORLD Casino — Consumer-first single UI engine
    Enhances the existing casino.html layout.
    No duplicate casino shell injection.
-   Features: blackjack, 5-reel slots, wheel, local reward progress, login-aware point awarding.
+   Features: blackjack, custom icon 5-reel slots, wheel, local reward progress, login-aware point awarding.
 */
 (() => {
   "use strict";
@@ -9,22 +9,22 @@
   const SUPABASE_URL = "https://yuhxtdkhsltaqiagrtys.supabase.co";
   const SUPABASE_KEY = "sb_publishable_oYdN-75W3b7k3m1zLukI-A_BKWVDD5e";
   const SUPABASE_CDN = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
-  const SAVE_KEY = "hyphsworld:casino:consumer:v1";
+  const SAVE_KEY = "hyphsworld:casino:consumer:v2";
 
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
   const SLOT_SYMBOLS = [
-    { icon: "🛹", label: "RAMP", weight: 10 },
-    { icon: "🎤", label: "MIC", weight: 10 },
-    { icon: "🔊", label: "SLAP", weight: 10 },
-    { icon: "🔑", label: "CODE", weight: 7 },
-    { icon: "🎧", label: "TRACK", weight: 7 },
-    { icon: "🧢", label: "HYPOWER", weight: 8 },
-    { icon: "🦆", label: "DUCK", weight: 6 },
-    { icon: "🛡️", label: "BUCK", weight: 6 },
-    { icon: "💎", label: "ICE", weight: 8 },
-    { icon: "👑", label: "CROWN", weight: 5 },
+    { key: "ramp", short: "RMP", label: "RAMP", weight: 10 },
+    { key: "mic", short: "MIC", label: "MIC", weight: 10 },
+    { key: "slap", short: "SLP", label: "SLAP", weight: 10 },
+    { key: "key", short: "KEY", label: "CODE", weight: 7 },
+    { key: "track", short: "TRK", label: "TRACK", weight: 7 },
+    { key: "hyph", short: "HYP", label: "HYPOWER", weight: 8 },
+    { key: "duck", short: "DS", label: "DUCK", weight: 6 },
+    { key: "buck", short: "BCK", label: "BUCK", weight: 6 },
+    { key: "diamond", short: "ICE", label: "ICE", weight: 8 },
+    { key: "crown", short: "CRN", label: "CROWN", weight: 5 },
   ];
 
   const WHEEL_PRIZES = [
@@ -126,7 +126,7 @@
     style.id = "casinoConsumerStyles";
     style.textContent = `
       .consumer-reward-hud{margin:16px 0;padding:15px;border:2px dashed rgba(57,255,20,.48);border-radius:22px;background:radial-gradient(circle at 8% 8%,rgba(255,43,214,.20),transparent 30%),linear-gradient(135deg,rgba(0,0,0,.58),rgba(57,255,20,.08));box-shadow:0 16px 34px rgba(0,0,0,.32)}
-      .consumer-reward-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:11px}.consumer-reward-kicker{color:var(--green,#39ff14);font-size:12px;font-weight:1000;letter-spacing:.15em;text-transform:uppercase}.consumer-reward-title{margin:2px 0 0;font-size:clamp(18px,3vw,28px);line-height:1;text-transform:uppercase;text-shadow:2px 2px 0 rgba(255,43,214,.8)}.consumer-login-pill{border-radius:999px;padding:8px 11px;color:#050505;background:linear-gradient(135deg,var(--yellow,#ffe600),var(--green,#39ff14),var(--cyan,#00e5ff));font-weight:1000;font-size:12px}.consumer-progress-wrap{display:grid;gap:8px}.consumer-progress-line{height:13px;border-radius:999px;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.16);overflow:hidden}.consumer-progress-fill{height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg,var(--green,#39ff14),var(--yellow,#ffe600),var(--pink,#ff2bd6),var(--cyan,#00e5ff));box-shadow:0 0 18px rgba(57,255,20,.34);transition:width .25s ease}.consumer-reward-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px}.consumer-reward-card{border:1px solid rgba(255,255,255,.16);background:rgba(0,0,0,.32);border-radius:16px;padding:10px;position:relative;overflow:hidden}.consumer-reward-card.unlocked{border-color:rgba(57,255,20,.58);box-shadow:0 0 22px rgba(57,255,20,.12)}.consumer-reward-card strong{display:block;color:#fff;text-transform:uppercase}.consumer-reward-card small{display:block;color:rgba(255,255,255,.7);font-family:system-ui,sans-serif;font-weight:800;margin-top:3px}.consumer-reward-card .status{display:inline-block;margin-top:8px;border-radius:999px;padding:5px 8px;color:#050505;background:var(--yellow,#ffe600);font-size:11px;font-weight:1000}.consumer-reward-card.unlocked .status{background:var(--green,#39ff14)}.consumer-toast{position:fixed;left:50%;bottom:28px;z-index:12000;transform:translateX(-50%) translateY(18px);opacity:0;pointer-events:none;max-width:min(92vw,620px);border:2px solid rgba(57,255,20,.65);border-radius:999px;padding:12px 16px;color:#fff;background:linear-gradient(135deg,#071108,#17001f);box-shadow:0 18px 40px rgba(0,0,0,.48);font-weight:1000;transition:.22s ease}.consumer-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}.slot-reels{grid-template-columns:repeat(5,1fr)}.slot-reel.consumer-pop{animation:consumerPop .26s cubic-bezier(.2,1.35,.45,1) both}@keyframes consumerPop{0%{transform:scale(.8) rotate(-2deg);opacity:.5}100%{transform:scale(1) rotate(0);opacity:1}}.reward-flash{animation:rewardFlash .55s ease both}@keyframes rewardFlash{0%,100%{filter:none}45%{filter:drop-shadow(0 0 24px var(--yellow,#ffe600)) brightness(1.28)}}@media(max-width:760px){.consumer-reward-grid{grid-template-columns:1fr}.consumer-login-pill{width:100%;text-align:center}.slot-reels{grid-template-columns:repeat(3,1fr)}}
+      .consumer-reward-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:11px}.consumer-reward-kicker{color:var(--green,#39ff14);font-size:12px;font-weight:1000;letter-spacing:.15em;text-transform:uppercase}.consumer-reward-title{margin:2px 0 0;font-size:clamp(18px,3vw,28px);line-height:1;text-transform:uppercase;text-shadow:2px 2px 0 rgba(255,43,214,.8)}.consumer-login-pill{border-radius:999px;padding:8px 11px;color:#050505;background:linear-gradient(135deg,var(--yellow,#ffe600),var(--green,#39ff14),var(--cyan,#00e5ff));font-weight:1000;font-size:12px}.consumer-progress-wrap{display:grid;gap:8px}.consumer-progress-line{height:13px;border-radius:999px;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.16);overflow:hidden}.consumer-progress-fill{height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg,var(--green,#39ff14),var(--yellow,#ffe600),var(--pink,#ff2bd6),var(--cyan,#00e5ff));box-shadow:0 0 18px rgba(57,255,20,.34);transition:width .25s ease}.consumer-reward-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px}.consumer-reward-card{border:1px solid rgba(255,255,255,.16);background:rgba(0,0,0,.32);border-radius:16px;padding:10px;position:relative;overflow:hidden}.consumer-reward-card.unlocked{border-color:rgba(57,255,20,.58);box-shadow:0 0 22px rgba(57,255,20,.12)}.consumer-reward-card strong{display:block;color:#fff;text-transform:uppercase}.consumer-reward-card small{display:block;color:rgba(255,255,255,.7);font-family:system-ui,sans-serif;font-weight:800;margin-top:3px}.consumer-reward-card .status{display:inline-block;margin-top:8px;border-radius:999px;padding:5px 8px;color:#050505;background:var(--yellow,#ffe600);font-size:11px;font-weight:1000}.consumer-reward-card.unlocked .status{background:var(--green,#39ff14)}.consumer-toast{position:fixed;left:50%;bottom:28px;z-index:12000;transform:translateX(-50%) translateY(18px);opacity:0;pointer-events:none;max-width:min(92vw,620px);border:2px solid rgba(57,255,20,.65);border-radius:999px;padding:12px 16px;color:#fff;background:linear-gradient(135deg,#071108,#17001f);box-shadow:0 18px 40px rgba(0,0,0,.48);font-weight:1000;transition:.22s ease}.consumer-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}.slot-reel.consumer-pop{animation:consumerPop .26s cubic-bezier(.2,1.35,.45,1) both}@keyframes consumerPop{0%{transform:scale(.8) rotate(-2deg);opacity:.5}100%{transform:scale(1) rotate(0);opacity:1}}.reward-flash{animation:rewardFlash .55s ease both}@keyframes rewardFlash{0%,100%{filter:none}45%{filter:drop-shadow(0 0 24px var(--yellow,#ffe600)) brightness(1.28)}}@media(max-width:760px){.consumer-reward-grid{grid-template-columns:1fr}.consumer-login-pill{width:100%;text-align:center}}
     `;
     document.head.append(style);
   }
@@ -269,10 +269,10 @@
       tab.setAttribute("aria-selected", active ? "true" : "false");
     });
     $$(".game-view").forEach(view => view.classList.toggle("active", view.dataset.gameView === game));
-    const titleMap = { blackjack: "Blackjack Table", slots: "Duck Sauce 5-Reel Slots", wheel: "Spin Wheel" };
+    const titleMap = { blackjack: "Blackjack Table", slots: "Duck Sauce Custom Slots", wheel: "Spin Wheel" };
     const subMap = {
       blackjack: "Beat the dealer without going over 21.",
-      slots: "Line up HYPHSWORLD symbols to trigger hidden rewards.",
+      slots: "Line up custom HYPHSWORLD symbols to trigger hidden rewards.",
       wheel: "Spin for bonus points, clues, roasts, and reward jumps.",
     };
     if ($("#activeGameTitle")) $("#activeGameTitle").textContent = titleMap[game] || "Casino";
@@ -316,7 +316,7 @@
       return node;
     }
     const red = ["♥", "♦"].includes(card.suit);
-    if (red) node.classList.add("red");
+    if (red) node.classList.add("red-card");
     node.innerHTML = `<strong>${card.rank}</strong><span>${card.suit}</span>`;
     return node;
   }
@@ -332,8 +332,8 @@
       playerCards.innerHTML = "";
       casino.player.forEach(card => playerCards.append(renderCard(card)));
     }
-    if ($("#dealerScore")) $("#dealerScore").textContent = hideDealer ? handScore([casino.dealer[0]]) : handScore(casino.dealer);
-    if ($("#playerScore")) $("#playerScore").textContent = handScore(casino.player);
+    if ($("#dealerScore")) $("#dealerScore").textContent = casino.dealer.length ? (hideDealer ? handScore([casino.dealer[0]]) : handScore(casino.dealer)) : 0;
+    if ($("#playerScore")) $("#playerScore").textContent = casino.player.length ? handScore(casino.player) : 0;
     if ($("#hitBtn")) $("#hitBtn").disabled = casino.phase !== "player";
     if ($("#standBtn")) $("#standBtn").disabled = casino.phase !== "player";
   }
@@ -399,15 +399,16 @@
     updateStats();
   }
 
+  function iconMarkup(symbol) {
+    return `<div class="casino-icon icon-${symbol.key}"><span class="icon-core">${symbol.short}</span></div><small>${symbol.label}</small>`;
+  }
+
   function ensureFiveReels() {
     const reels = $("#slotReels");
     if (!reels) return;
-    while (reels.children.length < 5) {
-      const reel = document.createElement("div");
-      reel.className = "slot-reel";
-      reel.innerHTML = "<span>🛹</span><small>RAMP</small>";
-      reels.append(reel);
-    }
+    reels.classList.add("five-reels");
+    const defaultSymbols = [SLOT_SYMBOLS[6], SLOT_SYMBOLS[8], SLOT_SYMBOLS[3], SLOT_SYMBOLS[0], SLOT_SYMBOLS[4]];
+    reels.innerHTML = defaultSymbols.map(symbol => `<div class="slot-reel">${iconMarkup(symbol)}</div>`).join("");
   }
 
   function weightedSymbol() {
@@ -423,20 +424,14 @@
   function spinSlots() {
     switchGame("slots");
     ensureBet();
-    ensureFiveReels();
     const reels = $("#slotReels");
     if (!reels) return;
+    if (!reels.children.length) ensureFiveReels();
     reels.classList.add("spinning");
     setMessage("Slots spinning. Duck Sauce says don’t blink.");
     setTimeout(() => {
       const result = Array.from({ length: 5 }, weightedSymbol);
-      $$(".slot-reel", reels).forEach((reel, index) => {
-        const symbol = result[index];
-        reel.classList.remove("consumer-pop");
-        reel.innerHTML = `<span>${symbol.icon}</span><small>${symbol.label}</small>`;
-        void reel.offsetWidth;
-        reel.classList.add("consumer-pop");
-      });
+      reels.innerHTML = result.map(symbol => `<div class="slot-reel consumer-pop">${iconMarkup(symbol)}</div>`).join("");
       reels.classList.remove("spinning");
       const counts = result.reduce((map, symbol) => {
         map[symbol.label] = (map[symbol.label] || 0) + 1;
@@ -444,19 +439,21 @@
       }, {});
       const best = Math.max(...Object.values(counts));
       let reward = 0;
-      if (best >= 5) reward = casino.bet * 10;
-      else if (best >= 4) reward = casino.bet * 5;
-      else if (best >= 3) reward = casino.bet * 2;
+      if (best >= 5) reward = casino.bet * 12;
+      else if (best >= 4) reward = casino.bet * 6;
+      else if (best >= 3) reward = casino.bet * 3;
       else if (result.some(symbol => symbol.label === "TRACK" || symbol.label === "CODE")) reward = 10;
 
       if (reward > 0) {
         casino.balance += reward;
         casino.lastWin = reward;
+        casino.streak += 1;
         addProgress("slots", Math.min(100, reward));
-        setMessage(`Slots hit ${reward}. Hidden reward progress jumped.`);
+        setMessage(`Slots hit ${reward}. Custom icon pressure landed.`);
       } else {
         casino.balance = Math.max(0, casino.balance - casino.bet);
         casino.lastWin = 0;
+        casino.streak = 0;
         addProgress("slots", 3);
         setMessage("No match. Duck Sauce says the machine still remembers you.");
       }
@@ -475,9 +472,11 @@
       if (prize.points > 0) {
         casino.balance += prize.points;
         casino.lastWin = prize.points;
+        casino.streak += 1;
         addProgress("wheel", prize.points);
       } else {
         casino.lastWin = 0;
+        casino.streak = 0;
         addProgress("wheel", 2);
       }
       setMessage(prize.message);
@@ -521,7 +520,7 @@
     renderBlackjack(false);
     updateStats();
     switchGame("blackjack");
-    setMessage("Casino floor live. Free play is open — sign in to save rewards.");
+    setMessage("Casino floor live. Custom icons are loaded — sign in to save rewards.");
     await initSupabase();
     renderRewardHud();
   }
