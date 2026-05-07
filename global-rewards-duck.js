@@ -17,6 +17,26 @@
     return String(value || '').replace(/[<>]/g, '').trim();
   }
 
+  function createMotionLayer() {
+    if ($('.hw-motion-layer')) return;
+
+    var layer = document.createElement('div');
+    layer.className = 'hw-motion-layer';
+    layer.setAttribute('aria-hidden', 'true');
+    layer.innerHTML = '' +
+      '<span class="hw-motion-orb one"></span>' +
+      '<span class="hw-motion-orb two"></span>' +
+      '<span class="hw-motion-orb three"></span>' +
+      '<span class="hw-motion-icon one">🎧</span>' +
+      '<span class="hw-motion-icon two">🛹</span>' +
+      '<span class="hw-motion-icon three">🔑</span>' +
+      '<span class="hw-motion-icon four">💎</span>' +
+      '<span class="hw-motion-person one"></span>' +
+      '<span class="hw-motion-person two"></span>';
+
+    document.body.prepend(layer);
+  }
+
   function getSavedPosition() {
     try {
       var saved = JSON.parse(localStorage.getItem(DUCK_POS_KEY) || 'null');
@@ -110,6 +130,7 @@
 
   function makeDraggable(node, handle) {
     var dragging = false;
+    var moved = false;
     var startX = 0;
     var startY = 0;
     var nodeX = 0;
@@ -118,6 +139,7 @@
     function begin(event) {
       var point = event.touches ? event.touches[0] : event;
       dragging = true;
+      moved = false;
       startX = point.clientX;
       startY = point.clientY;
       var rect = node.getBoundingClientRect();
@@ -134,8 +156,11 @@
     function move(event) {
       if (!dragging) return;
       var point = event.touches ? event.touches[0] : event;
-      var nextX = clamp(nodeX + point.clientX - startX, 8, window.innerWidth - node.offsetWidth - 8);
-      var nextY = clamp(nodeY + point.clientY - startY, 8, window.innerHeight - node.offsetHeight - 8);
+      var deltaX = point.clientX - startX;
+      var deltaY = point.clientY - startY;
+      if (Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3) moved = true;
+      var nextX = clamp(nodeX + deltaX, 8, window.innerWidth - node.offsetWidth - 8);
+      var nextY = clamp(nodeY + deltaY, 8, window.innerHeight - node.offsetHeight - 8);
       node.style.left = nextX + 'px';
       node.style.top = nextY + 'px';
       event.preventDefault();
@@ -147,6 +172,7 @@
       node.classList.remove('is-dragging');
       var rect = node.getBoundingClientRect();
       savePosition(rect.left, rect.top);
+      if (!moved) node.classList.toggle('is-open');
     }
 
     handle.addEventListener('mousedown', begin);
@@ -166,6 +192,7 @@
   }
 
   function boot() {
+    createMotionLayer();
     createRewardsList();
     createDuckHelper();
   }
