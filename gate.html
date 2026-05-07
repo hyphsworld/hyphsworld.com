@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vault Access Gate</title>
   <link rel="stylesheet" href="gate.css">
 </head>
@@ -11,15 +12,29 @@
 
   <!-- HUD Overlay -->
   <div class="hud"></div>
+  <div class="color-orb orb-green"></div>
+  <div class="color-orb orb-red"></div>
+  <div class="color-orb orb-blue"></div>
 
-  <!-- Scan Pad -->
-  <div class="scan-pad" id="scanPad">
-    <div class="scan-bar"></div>
-    <div class="scan-text">TAP TO SCAN</div>
-  </div>
+  <section class="gate-card" aria-label="HYPHSWORLD Vault Access Scanner">
+    <p class="eyebrow">AMS WEST // HYPHSWORLD</p>
+    <h1 class="gate-title">VAULT ACCESS</h1>
 
-  <!-- Status -->
-  <div class="status" id="statusText">AWAITING INPUT</div>
+    <!-- Scan Pad -->
+    <button class="scan-pad" id="scanPad" type="button" aria-label="Tap to scan for vault access">
+      <span class="scan-glass"></span>
+      <span class="scan-bar"></span>
+      <span class="corner corner-top-left"></span>
+      <span class="corner corner-top-right"></span>
+      <span class="corner corner-bottom-left"></span>
+      <span class="corner corner-bottom-right"></span>
+      <span class="scan-text">TAP TO SCAN</span>
+      <span class="scan-subtext">CLEARANCE REQUIRED</span>
+    </button>
+
+    <!-- Status -->
+    <div class="status" id="statusText">AWAITING INPUT</div>
+  </section>
 
 </div>
 
