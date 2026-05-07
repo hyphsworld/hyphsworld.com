@@ -1,81 +1,380 @@
-/* HYPHSWORLD transparent glass logo + hidden-casino homepage helper polish. */
+/* HYPHSWORLD mobile homepage arcade match. */
+.home-page {
+  background:
+    radial-gradient(circle at 18% 8%, rgba(57, 255, 122, 0.20), transparent 32%),
+    radial-gradient(circle at 90% 18%, rgba(255, 79, 216, 0.12), transparent 34%),
+    linear-gradient(115deg, #172b22 0%, #25392f 45%, #2b2833 100%) !important;
+}
+
+.home-page #login-section {
+  display: none !important;
+}
+
 .home-page .site-header {
-  background: transparent !important;
+  position: relative !important;
+  top: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+  gap: 22px !important;
+  padding: 32px 34px 34px !important;
+  background:
+    linear-gradient(90deg, rgba(26, 47, 38, 0.96), rgba(38, 50, 47, 0.92) 64%, rgba(43, 40, 50, 0.98)) !important;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.70) !important;
+  box-shadow: none !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-  border-bottom: 0 !important;
-  box-shadow: none !important;
 }
-.home-page .site-header::after { display: none !important; }
-.home-page .site-header::before {
-  top: 9px !important;
-  right: 12px !important;
-  font-size: 0.46rem !important;
-  letter-spacing: 0.18em !important;
-  opacity: 0.50 !important;
-}
+
 .home-page .brand-lockup {
   display: inline-grid !important;
+  gap: 4px !important;
   width: auto !important;
-  max-width: 63% !important;
-  margin-bottom: 4px !important;
-  padding: 4px 6px 5px !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
   border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.home-page .brand-lockup span {
+  color: #45ff59 !important;
+  font-size: clamp(1.02rem, 3.5vw, 1.35rem) !important;
+  font-weight: 1000 !important;
+  letter-spacing: 0.32em !important;
+  line-height: 1 !important;
+  text-shadow: 0 0 16px rgba(57, 255, 122, 0.20) !important;
+}
+
+.home-page .brand-lockup strong {
+  color: #ffffff !important;
+  font-size: clamp(2rem, 7.7vw, 3.2rem) !important;
+  font-weight: 1000 !important;
+  letter-spacing: -0.08em !important;
+  line-height: 0.82 !important;
+  text-shadow: 0 0 18px rgba(255, 255, 255, 0.10) !important;
+}
+
+.home-page .main-nav {
+  width: min(760px, 100%) !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+  gap: 18px 16px !important;
+  padding: 0 !important;
   background: transparent !important;
   border: 0 !important;
   box-shadow: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
 }
-.home-page .brand-lockup span {
-  font-size: clamp(0.38rem, 1.98vw, 0.48rem) !important;
-  letter-spacing: 0.17em !important;
-  color: rgba(255, 228, 92, 0.88) !important;
+
+.home-page .main-nav a[href="#music"],
+.home-page .main-nav a[href="#spotlight"],
+.home-page .main-nav a[href="#connect"] {
+  display: none !important;
+}
+
+.home-page header.site-header nav.main-nav > a,
+.home-page .main-nav a {
+  position: relative !important;
+  width: auto !important;
+  min-width: 0 !important;
+  min-height: 82px !important;
+  height: auto !important;
+  padding: 22px 24px 24px !important;
+  border-radius: 999px !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.035)),
+    rgba(24, 29, 29, 0.76) !important;
+  border: 3px solid rgba(69, 255, 89, 0.28) !important;
+  color: #ffffff !important;
+  font-size: clamp(1.22rem, 3.4vw, 1.62rem) !important;
+  font-weight: 1000 !important;
+  letter-spacing: 0.08em !important;
   line-height: 1 !important;
+  text-transform: uppercase !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 -14px 24px rgba(0, 0, 0, 0.24),
+    0 0 0 1px rgba(255, 255, 255, 0.04),
+    0 9px 18px rgba(0, 0, 0, 0.26),
+    0 0 18px rgba(69, 255, 89, 0.12) !important;
 }
-.home-page .brand-lockup strong {
-  font-size: clamp(0.96rem, 6.0vw, 1.72rem) !important;
-  line-height: 0.80 !important;
-  letter-spacing: -0.078em !important;
-  color: rgba(255,255,255,0.92) !important;
-  text-shadow: 0 0 16px rgba(31,252,255,0.14), 0 6px 10px rgba(0,0,0,0.25) !important;
+
+.home-page .main-nav a::before {
+  display: none !important;
 }
-.home-page .main-nav {
-  background: transparent !important;
-  border-color: transparent !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
+
+.home-page .main-nav a::after {
+  left: 30px !important;
+  right: 30px !important;
+  bottom: 11px !important;
+  height: 5px !important;
+  border-radius: 999px !important;
+  background: linear-gradient(90deg, #39ff14, #ffe45c, #ff4fd8, #35d7ff, #39ff14) !important;
+  opacity: 0.74 !important;
+  filter: blur(1.1px) !important;
 }
-.home-page #login-section {
-  background: linear-gradient(135deg, rgba(57,255,122,.18), rgba(12,8,24,.68) 48%, rgba(31,252,255,.13)) !important;
-  backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
+
+.home-page .main-nav .nav-cta {
+  color: #000000 !important;
+  background: linear-gradient(135deg, #9cff40, #ffe45c 39%, #ff4fd8 68%, #35d7ff) !important;
+  border-color: rgba(255, 255, 255, 0.38) !important;
 }
-.home-page header.site-header nav.main-nav > a {
-  min-height: 29px !important;
-  height: 29px !important;
-  font-size: 0.40rem !important;
-  border-color: rgba(31,252,255,.72) !important;
+
+.home-page .ticker {
+  margin: 0 !important;
+  background: #000000 !important;
+  border-top: 3px solid rgba(0, 0, 0, 0.95) !important;
+  border-bottom: 2px solid rgba(69, 255, 54, 0.42) !important;
 }
-.home-page header.site-header nav.main-nav > a[href="leaderboard.html"],
-.home-page header.site-header nav.main-nav > a[href="app-player.html"] {
-  font-size: 0.34rem !important;
+
+.home-page .ticker-track {
+  padding: 18px 0 !important;
+  color: #ffe45c !important;
+  font-size: clamp(1.1rem, 3.6vw, 1.65rem) !important;
+  font-weight: 1000 !important;
+  letter-spacing: 0.22em !important;
 }
-.home-page .duck-zone { display: none !important; }
+
+.home-page .ticker-track span:nth-of-type(1),
+.home-page .ticker-track span:nth-of-type(2),
+.home-page .ticker-track span:nth-of-type(3),
+.home-page .ticker-track span:nth-of-type(4),
+.home-page .ticker-track span:nth-of-type(6),
+.home-page .ticker-track span:nth-of-type(7),
+.home-page .ticker-track span:nth-of-type(8),
+.home-page .ticker-track span:nth-of-type(9),
+.home-page .ticker-track span:nth-of-type(10),
+.home-page .ticker-track span:nth-of-type(12) {
+  display: none !important;
+}
+
+.home-page .ticker b {
+  color: #45ff59 !important;
+}
+
+.home-page .hero-shell {
+  padding: 72px 30px 38px !important;
+}
+
+.home-page .hero-video-card {
+  width: min(100%, 980px) !important;
+  min-height: auto !important;
+  display: block !important;
+  margin: 0 auto !important;
+  padding: 54px 48px 56px !important;
+  border-radius: 64px !important;
+  border: 2px solid rgba(255, 255, 255, 0.16) !important;
+  background:
+    linear-gradient(115deg, rgba(79, 96, 73, 0.78), rgba(43, 54, 51, 0.72) 46%, rgba(45, 38, 49, 0.82)),
+    rgba(0, 0, 0, 0.28) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 28px 80px rgba(0, 0, 0, 0.24) !important;
+}
+
+.home-page .hero-video,
+.home-page .hero-video-tint,
+.home-page .hero-scan-line,
+.home-page .hero-video-status,
+.home-page .hero-sound-toggle {
+  display: none !important;
+}
+
+.home-page .hero-content {
+  width: 100% !important;
+  padding: 0 !important;
+}
+
+.home-page .hero-content .eyebrow {
+  color: #d9fff0 !important;
+  font-size: clamp(1.28rem, 4.7vw, 2.1rem) !important;
+  font-weight: 1000 !important;
+  letter-spacing: 0.32em !important;
+  line-height: 1.35 !important;
+  margin: 0 0 18px !important;
+  text-shadow: none !important;
+}
+
+.home-page .hero-content .eyebrow::before {
+  content: "HYPHSWORLD // HIDDEN ARCADE" !important;
+}
+
+.home-page .hero-content .eyebrow {
+  font-size: 0 !important;
+}
+
+.home-page .hero-content .eyebrow::before {
+  font-size: clamp(1.28rem, 4.7vw, 2.1rem) !important;
+}
+
+.home-page .hero-content h1 {
+  margin: 0 0 22px !important;
+  color: #ffffff !important;
+  font-size: clamp(3.4rem, 10vw, 6.2rem) !important;
+  font-weight: 1000 !important;
+  letter-spacing: -0.08em !important;
+  line-height: 0.92 !important;
+  text-shadow: none !important;
+}
+
+.home-page .hero-content h1::before {
+  content: "HIDDEN ARCADE" !important;
+}
+
+.home-page .hero-content h1 {
+  font-size: 0 !important;
+}
+
+.home-page .hero-content h1::before {
+  font-size: clamp(3.4rem, 10vw, 6.2rem) !important;
+}
+
+.home-page .hero-content .lead {
+  max-width: 780px !important;
+  margin: 0 0 38px !important;
+  color: #dcfff1 !important;
+  font-size: clamp(1.48rem, 5vw, 2.2rem) !important;
+  font-weight: 900 !important;
+  line-height: 1.5 !important;
+}
+
+.home-page .hero-content .lead::before {
+  content: "One simple place for secret HYPHSWORLD games. Play quick CPU challenges, earn Cool Points, and save progress when you sign in." !important;
+}
+
+.home-page .hero-content .lead {
+  font-size: 0 !important;
+}
+
+.home-page .hero-content .lead::before {
+  font-size: clamp(1.48rem, 5vw, 2.2rem) !important;
+}
+
+.home-page .hero-content .button-row {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  width: min(640px, 100%) !important;
+  gap: 20px !important;
+}
+
+.home-page .hero-content .button-row > * {
+  display: none !important;
+}
+
+.home-page .hero-content .button-row a[href="games.html"],
+.home-page .hero-content .button-row a[href="leaderboard.html"],
+.home-page .hero-content .button-row a[href="leaderboard.html"] + a,
+.home-page .hero-content .button-row a[href="app-player.html"] {
+  display: inline-flex !important;
+}
+
+.home-page .hero-content .button-row a[href="games.html"]::before,
+.home-page .hero-content .button-row a[href="leaderboard.html"]::before,
+.home-page .hero-content .button-row a[href="app-player.html"]::before {
+  display: none !important;
+}
+
+.home-page .hero-content .button-row a[href="games.html"] {
+  color: #000000 !important;
+  background: linear-gradient(100deg, #27ff86, #1ffcff 33%, #ffe45c 58%, #ff5fc4) !important;
+}
+
+.home-page .hero-content .button-row a[href="games.html"] {
+  font-size: 0 !important;
+}
+
+.home-page .hero-content .button-row a[href="games.html"]::after {
+  content: "ENTER HIDDEN ARCADE" !important;
+}
+
+.home-page .hero-content .button-row a[href="leaderboard.html"] {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.20) !important;
+}
+
+.home-page .hero-content .button-row a[href="leaderboard.html"] {
+  font-size: 0 !important;
+}
+
+.home-page .hero-content .button-row a[href="leaderboard.html"]::after {
+  content: "VIEW REWARDS BOARD" !important;
+}
+
+.home-page .hero-content .button-row a[href="app-player.html"] {
+  display: none !important;
+}
+
+.home-page .hero-content .button-row::after {
+  content: "CREATE ID";
+  width: fit-content;
+  min-height: 74px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px 34px;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.36);
+  color: #ffffff;
+  font-size: clamp(1.5rem, 4.7vw, 2rem);
+  font-weight: 1000;
+  letter-spacing: 0.08em;
+  box-shadow: 0 11px 22px rgba(0, 0, 0, 0.24);
+}
+
+.home-page .hero-content .btn {
+  min-height: 92px !important;
+  width: 100% !important;
+  justify-content: center !important;
+  padding: 25px 34px !important;
+  border-radius: 999px !important;
+  font-size: clamp(1.5rem, 4.7vw, 2rem) !important;
+  font-weight: 1000 !important;
+  letter-spacing: 0.06em !important;
+}
+
+.home-page .section-pad {
+  padding-left: 30px !important;
+  padding-right: 30px !important;
+}
+
+.home-page .section-card,
+.home-page .duck-guide-card,
+.home-page .hw-mini-widget,
+.home-page .hw-leaderboard-card {
+  border-radius: 46px !important;
+  background:
+    linear-gradient(115deg, rgba(79, 96, 73, 0.54), rgba(43, 54, 51, 0.54) 46%, rgba(45, 38, 49, 0.66)),
+    rgba(0, 0, 0, 0.24) !important;
+  border: 2px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.22) !important;
+}
+
+.home-page .duck-zone {
+  display: none !important;
+}
+
 .home-page .duckBox {
   left: 12px !important;
   bottom: 108px !important;
   top: auto !important;
   width: 72px !important;
   height: 72px !important;
-  filter: drop-shadow(0 16px 18px rgba(0,0,0,.42)) drop-shadow(0 0 18px rgba(57,255,122,.25));
+  filter: drop-shadow(0 16px 18px rgba(0, 0, 0, 0.42)) drop-shadow(0 0 18px rgba(57, 255, 122, 0.25));
 }
+
 .home-page .duckFace,
 .home-page .duckFace img {
   width: 72px !important;
   height: 72px !important;
 }
+
 .home-page .duckTalk {
   left: 0 !important;
   top: auto !important;
@@ -84,38 +383,80 @@
   border-radius: 18px !important;
   background:
     linear-gradient(145deg, rgba(5, 7, 12, 0.90), rgba(9, 4, 21, 0.82)),
-    radial-gradient(circle at 12% 0%, rgba(57,255,122,.18), transparent 34%) !important;
-  border: 1px solid rgba(31,252,255,.36) !important;
-  box-shadow: 0 18px 38px rgba(0,0,0,.46), inset 0 1px 0 rgba(255,255,255,.10) !important;
+    radial-gradient(circle at 12% 0%, rgba(57, 255, 122, 0.18), transparent 34%) !important;
+  border: 1px solid rgba(31, 252, 255, 0.36) !important;
+  box-shadow: 0 18px 38px rgba(0, 0, 0, 0.46), inset 0 1px 0 rgba(255, 255, 255, 0.10) !important;
   backdrop-filter: blur(12px) saturate(1.25) !important;
   -webkit-backdrop-filter: blur(12px) saturate(1.25) !important;
 }
+
 .home-page .duckTalk strong {
   color: #ffe45c !important;
-  text-shadow: 0 0 16px rgba(255,228,92,.35) !important;
+  text-shadow: 0 0 16px rgba(255, 228, 92, 0.35) !important;
 }
+
 .home-page .duckReturn {
   left: 12px !important;
   bottom: 84px !important;
 }
+
 @media (max-width: 620px) {
-  .home-page .site-header { padding: 5px 8px 6px !important; }
-  .home-page .brand-lockup {
-    margin-bottom: 3px !important;
-    padding: 4px 6px 5px !important;
-    max-width: 62% !important;
-    border-radius: 0 !important;
+  .home-page .site-header {
+    padding: 34px 34px 34px !important;
+    gap: 26px !important;
   }
-  .home-page .brand-lockup strong { font-size: clamp(0.96rem, 6vw, 1.68rem) !important; }
-  .home-page .brand-lockup span { font-size: clamp(0.38rem, 1.95vw, 0.46rem) !important; }
-  .home-page .main-nav { padding: 5px !important; gap: 4px !important; }
-  .home-page header.site-header nav.main-nav > a {
-    min-height: 28px !important;
-    height: 28px !important;
-    font-size: 0.39rem !important;
+
+  .home-page .main-nav {
+    gap: 18px 14px !important;
   }
-  .home-page header.site-header nav.main-nav > a[href="leaderboard.html"],
-  .home-page header.site-header nav.main-nav > a[href="app-player.html"] {
-    font-size: 0.32rem !important;
+
+  .home-page header.site-header nav.main-nav > a,
+  .home-page .main-nav a {
+    min-height: 82px !important;
+    padding: 22px 22px 24px !important;
+    font-size: 1.42rem !important;
+  }
+
+  .home-page .main-nav a[href="leaderboard.html"] {
+    font-size: 1.28rem !important;
+  }
+
+  .home-page .main-nav a[href="app-player.html"] {
+    font-size: 1.28rem !important;
+  }
+
+  .home-page .hero-shell {
+    padding-top: 72px !important;
+  }
+
+  .home-page .hero-video-card {
+    padding: 50px 46px 52px !important;
+    border-radius: 64px !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .home-page .site-header {
+    padding: 32px 34px 34px !important;
+  }
+
+  .home-page .main-nav {
+    gap: 18px 14px !important;
+  }
+
+  .home-page header.site-header nav.main-nav > a,
+  .home-page .main-nav a {
+    min-height: 82px !important;
+    padding: 22px 22px 24px !important;
+    font-size: 1.34rem !important;
+  }
+
+  .home-page .main-nav a[href="leaderboard.html"],
+  .home-page .main-nav a[href="app-player.html"] {
+    font-size: 1.17rem !important;
+  }
+
+  .home-page .hero-video-card {
+    padding: 48px 46px 52px !important;
   }
 }

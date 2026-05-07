@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Casino Arcade | HYPHSWORLD</title>
-  <meta name="description" content="HYPHSWORLD Casino Arcade with Blackjack, Dominos, Crash, Plinko, Mines, Slots, Scratchers, High-Low, Roulette, Cool Points, and CPU play." />
+  <title>Hidden Arcade | HYPHSWORLD</title>
+  <meta name="description" content="Enter the HYPHSWORLD Hidden Arcade. Play one secret CPU challenge at a time, earn Cool Points, and save progress with a HYPHSWORLD ID." />
   <meta name="theme-color" content="#00ff66" />
 
   <link rel="stylesheet" href="styles.css" />
@@ -13,9 +13,9 @@
   <link rel="stylesheet" href="leaderboard-widgets.css" />
   <link rel="stylesheet" href="games.css" />
   <link rel="stylesheet" href="casino-arcade.css" />
-  <link rel="stylesheet" href="casino-table-games.css?v=all-games-engine-20260505" />
+  <link rel="stylesheet" href="casino-table-games.css?v=hidden-arcade-20260507" />
 </head>
-<body class="casino-page">
+<body class="casino-page hidden-arcade-page">
   <header class="site-header">
     <a class="brand-lockup" href="index.html" aria-label="HYPHSWORLD home">
       <span>AMS WEST PRESENTS</span>
@@ -24,8 +24,7 @@
     <nav class="main-nav" aria-label="Main navigation">
       <a href="index.html">Home</a>
       <a href="vault.html">Vault</a>
-      <a href="games.html">Games</a>
-      <a href="casino-arcade.html" aria-current="page">Casino Arcade</a>
+      <a href="games.html">Hidden Arcade</a>
       <a href="leaderboard.html">Leaderboards</a>
       <a href="app-player.html">Full Player</a>
       <a href="shop.html">Merch</a>
@@ -34,30 +33,30 @@
   </header>
 
   <main>
-    <section class="ticker casino-ticker" aria-label="HYPHSWORLD casino ticker">
+    <section class="ticker casino-ticker" aria-label="HYPHSWORLD hidden arcade ticker">
       <div class="ticker-track">
-        <span>ALL-NEW CASINO ARCADE LIVE</span><b>✦</b><span>DUCK WHEEL EVENT</span><b>✦</b><span>BLACKJACK CPU</span><b>✦</b><span>DOMINOS CPU</span><b>✦</b><span>CRASH CPU</span><b>✦</b><span>PLINKO CPU</span><b>✦</b><span>MINES CPU</span><b>✦</b><span>NEON SLOTS CPU</span><b>✦</b><span>SCRATCHERS CPU</span><b>✦</b><span>HIGH-LOW CPU</span><b>✦</b><span>ROULETTE CPU</span><b>✦</b><span>COOL POINTS ONLY</span><b>✦</b>
-        <span>ALL-NEW CASINO ARCADE LIVE</span><b>✦</b><span>DUCK WHEEL EVENT</span><b>✦</b><span>BLACKJACK CPU</span><b>✦</b><span>DOMINOS CPU</span><b>✦</b><span>CRASH CPU</span><b>✦</b><span>PLINKO CPU</span><b>✦</b><span>MINES CPU</span><b>✦</b><span>NEON SLOTS CPU</span><b>✦</b><span>SCRATCHERS CPU</span><b>✦</b><span>HIGH-LOW CPU</span><b>✦</b><span>ROULETTE CPU</span><b>✦</b><span>COOL POINTS ONLY</span><b>✦</b>
+        <span>HIDDEN ARCADE LIVE</span><b>✦</b><span>ONE BUTTON PLAY</span><b>✦</b><span>SECRET CHALLENGES</span><b>✦</b><span>COOL POINTS</span><b>✦</b><span>SAVE WITH HYPHSWORLD ID</span><b>✦</b>
+        <span>HIDDEN ARCADE LIVE</span><b>✦</b><span>ONE BUTTON PLAY</span><b>✦</b><span>SECRET CHALLENGES</span><b>✦</b><span>COOL POINTS</span><b>✦</b><span>SAVE WITH HYPHSWORLD ID</span><b>✦</b>
       </div>
     </section>
 
     <section class="casino-hero">
       <div class="casino-hero-copy">
-        <p class="eyebrow">HYPHSWORLD // ALL-NEW CPU GAME FLOOR</p>
-        <h1>Casino Arcade</h1>
-        <p>Fast modern game floor with visible tables and boards. Every game has solo CPU / house mode, so users can play immediately with no waiting.</p>
-        <div class="casino-pill-row" aria-label="Casino arcade status">
-          <span class="casino-pill hot">No Real Money</span>
-          <span class="casino-pill">CPU Mode Ready</span>
-          <span class="casino-pill">Duck Wheel Event</span>
-          <span class="casino-pill">Mobile First</span>
+        <p class="eyebrow">HYPHSWORLD // HIDDEN ARCADE</p>
+        <h1>Hidden Arcade</h1>
+        <p>Tap play and the arcade pulls a secret challenge. No big menu, no confusing setup — just quick games, Cool Points, and unlock energy.</p>
+        <div class="casino-pill-row" aria-label="Hidden arcade status">
+          <span class="casino-pill hot">Play</span>
+          <span class="casino-pill">Earn Cool Points</span>
+          <span class="casino-pill">Save Progress</span>
+          <span class="casino-pill">Unlock More</span>
         </div>
       </div>
 
       <aside class="casino-score-card" aria-label="Player status">
         <span>Player Status</span>
         <strong id="casinoPlayerName">Checking...</strong>
-        <p id="casinoPlayerMode">Login to save scores to the leaderboard.</p>
+        <p id="casinoPlayerMode">Create a HYPHSWORLD ID to save across devices.</p>
         <div class="casino-points-meter">
           <span>Cool Points</span>
           <strong id="casinoPoints">0</strong>
@@ -65,90 +64,54 @@
       </aside>
     </section>
 
-    <section class="casino-game-picker" aria-label="Casino arcade game picker">
-      <button class="casino-game-tile is-active" type="button" data-game="blackjack">
-        <span>🂡</span><strong>Blackjack</strong><small>CPU dealer table</small>
-      </button>
-      <button class="casino-game-tile" type="button" data-game="dominos">
-        <span>🁬</span><strong>Dominos</strong><small>CPU bones table</small>
-      </button>
-      <button class="casino-game-tile" type="button" data-game="crash">
-        <span>🚀</span><strong>Crash</strong><small>CPU rocket run</small>
-      </button>
-      <button class="casino-game-tile" type="button" data-game="plinko">
-        <span>🟢</span><strong>Plinko</strong><small>CPU physics board</small>
-      </button>
-      <button class="casino-game-tile" type="button" data-game="mines">
-        <span>💣</span><strong>Mines</strong><small>CPU hidden mines</small>
-      </button>
-      <button class="casino-game-tile" type="button" data-game="slots">
-        <span>💎</span><strong>Neon Slots</strong><small>CPU 5-reel spin</small>
-      </button>
-      <button class="casino-game-tile" type="button" data-game="scratcher">
-        <span>🎟️</span><strong>Scratcher</strong><small>CPU reveal card</small>
-      </button>
-      <button class="casino-game-tile" type="button" data-game="hilo">
-        <span>🃏</span><strong>High-Low</strong><small>CPU card flip</small>
-      </button>
-      <button class="casino-game-tile" type="button" data-game="roulette">
-        <span>🎡</span><strong>Roulette</strong><small>Duck wheel choice</small>
-      </button>
-    </section>
-
-    <section class="casino-console" aria-label="Casino arcade console">
+    <section class="casino-console" aria-label="Hidden arcade console">
       <div class="casino-stage-shell">
         <div class="casino-stage-top">
           <div>
-            <p class="eyebrow" id="casinoGameKicker">HYPHSWORLD ARCADE</p>
-            <h2 id="casinoGameTitle">Blackjack</h2>
+            <p class="eyebrow" id="casinoGameKicker">SECRET CHALLENGE</p>
+            <h2 id="casinoGameTitle">Ready?</h2>
           </div>
           <span class="casino-live-dot">LIVE</span>
         </div>
 
         <div class="casino-stage" id="casinoStage">
-          <div class="casino-loading">Loading arcade...</div>
+          <div class="casino-loading">Tap Play to open a hidden challenge.</div>
         </div>
       </div>
 
       <aside class="casino-control-panel">
-        <h2>Control Deck</h2>
-        <p id="casinoGameDescription">Pick a game and run the arcade.</p>
-
-        <label class="casino-field" for="casinoPowerInput">
-          <span>Entry Power</span>
-          <input id="casinoPowerInput" type="number" min="1" max="1000" step="5" value="25" inputmode="numeric" />
-          <small>Entry Power controls bonus size only. It does not subtract Cool Points.</small>
-        </label>
+        <h2>Arcade Controls</h2>
+        <p id="casinoGameDescription">One button starts a hidden challenge. Guest progress stays on this device.</p>
 
         <div class="casino-dynamic-controls" id="casinoControls"></div>
 
-        <p class="casino-status" id="casinoStatus">Duck Sauce: “All-new CPU arcade loaded. Pick any game and play now.”</p>
+        <p class="casino-status" id="casinoStatus">Duck Sauce: “Hidden Arcade loaded. Tap Play and let it pick.”</p>
 
         <div class="casino-recent" id="casinoRecent">
-          <strong>Recent Arcade Hits</strong>
+          <strong>Recent Runs</strong>
           <div class="casino-recent-list" id="casinoRecentList">
-            <span>No hits yet.</span>
+            <span>No runs yet.</span>
           </div>
         </div>
       </aside>
     </section>
 
-    <section class="hw-leaderboard-wrap" data-hw-leaderboard data-default-mode="games" data-limit="8" aria-label="Casino arcade leaderboard preview">
+    <section class="hw-leaderboard-wrap" data-hw-leaderboard data-default-mode="games" data-limit="8" aria-label="Hidden arcade leaderboard preview">
       <article class="hw-leaderboard-card">
         <div class="hw-leaderboard-head">
           <div>
-            <span class="hw-leaderboard-kicker">CASINO ARCADE BOARD</span>
-            <h2>Game Scores</h2>
-            <p>Logged-in wins try to save into Supabase game scores and Cool Points. Guest play stays local.</p>
+            <span class="hw-leaderboard-kicker">HIDDEN ARCADE BOARD</span>
+            <h2>Reward Rankings</h2>
+            <p>Signed-in runs can save to the reward board. Guest runs stay local.</p>
           </div>
           <div class="hw-leaderboard-actions">
-            <button class="hw-board-btn is-active" type="button" data-hw-board-mode="games">Game Scores</button>
+            <button class="hw-board-btn is-active" type="button" data-hw-board-mode="games">Arcade Scores</button>
             <button class="hw-board-btn" type="button" data-hw-board-mode="points">Cool Points</button>
-            <a class="hw-board-btn" href="games.html">Games Lobby</a>
+            <a class="hw-board-btn" href="games.html">Hidden Arcade</a>
           </div>
         </div>
         <div class="hw-leaderboard-list" data-hw-leaderboard-list>
-          <div class="hw-leaderboard-empty">Loading casino board...</div>
+          <div class="hw-leaderboard-empty">Loading reward board...</div>
         </div>
       </article>
     </section>
@@ -156,13 +119,12 @@
 
   <footer class="site-footer">
     <span>© <span id="year"></span> AMS WEST LLC</span>
-    <span>Casino Arcade • Cool Points only • No real-money payout</span>
+    <span>Hidden Arcade • Cool Points only • No cash payout</span>
   </footer>
 
   <script src="auth-client.js"></script>
   <script src="leaderboard-widgets.js"></script>
-  <script src="casino-arcade.js?v=all-games-engine-20260505"></script>
-  <script src="casino-duck-wheel-event.js?v=duck-wheel-event-20260505"></script>
+  <script src="casino-arcade.js?v=hidden-arcade-20260507"></script>
   <script src="duck-helper.js?v=movable-duck-20260505"></script>
 </body>
 </html>

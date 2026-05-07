@@ -1,0 +1,20 @@
+{
+  "name": "hyphsworld-site-diagnostics",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Diagnostics tooling for the HYPHSWORLD / AMS WEST static site.",
+  "scripts": {
+    "diagnostics": "npm run lint:html && npm run lint:css && npm run lint:js",
+    "lint:html": "html-validate \"**/*.html\"",
+    "lint:css": "stylelint \"**/*.css\"",
+    "lint:js": "eslint \"**/*.js\""
+  },
+  "devDependencies": {
+    "@eslint/js": "latest",
+    "eslint": "latest",
+    "globals": "latest",
+    "html-validate": "latest",
+    "stylelint": "latest",
+    "stylelint-config-standard": "latest"
+  }
+}

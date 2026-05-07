@@ -1,114 +1,172 @@
 (function () {
   'use strict';
 
-  async function bootHUD() {
-    if (!window.HWAuth) return;
+  function safeText(value, fallback) {
+    if (value === null || value === undefined || value === '') return fallback;
+    return String(value);
+  }
 
-    const user = await HWAuth.getCurrentUser();
+  function safeNumber(value, fallback) {
+    const number = Number(value);
+    return Number.isFinite(number) ? number : fallback;
+  }
+
+  function appendText(parent, tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    node.textContent = text;
+    parent.appendChild(node);
+    return node;
+  }
+
+  function createStat(label, value) {
+    const article = document.createElement('article');
+    article.className = 'hw-daily-stat';
+    appendText(article, 'span', '', label);
+    appendText(article, 'strong', '', value);
+    return article;
+  }
+
+  function getClaimMessage(error) {
+    if (!error) return 'Could not claim';
+
+    const message = String(error.message || error.details || error.hint || '').toLowerCase();
+    const code = String(error.code || '').toLowerCase();
+
+    if (message.includes('already') || message.includes('claimed') || code.includes('23505')) {
+      return 'Already Claimed';
+    }
+
+    if (message.includes('auth') || message.includes('jwt') || message.includes('permission') || message.includes('not logged')) {
+      return 'Sign In Again';
+    }
+
+    if (message.includes('rate') || message.includes('limit') || message.includes('cooldown')) {
+      return 'Try Later';
+    }
+
+    return 'Claim Failed';
+  }
+
+  async function bootHUD() {
+    if (!window.HWAuth || typeof window.HWAuth.getCurrentUser !== 'function') return;
+
+    const user = await window.HWAuth.getCurrentUser();
 
     const wrap = document.createElement('aside');
     wrap.className = 'hw-daily-hud';
 
     if (!user) wrap.classList.add('is-guest');
 
-    const displayName = user?.displayName || 'Guest Visitor';
-    const avatar = user?.avatarIcon || '🎮';
-    const points = user?.coolPoints || 0;
-    const streak = user?.daily_streak_count || 0;
-    const multiplier = user?.multiplier || '1.0x';
-    const rank = user?.rank_title || 'Lobby Rookie';
+    const displayName = safeText(user?.displayName, 'Guest Visitor');
+    const avatar = safeText(user?.avatarIcon, '🎮');
+    const points = safeNumber(user?.coolPoints, 0).toLocaleString();
+    const streak = safeNumber(user?.daily_streak_count, 0).toLocaleString();
+    const multiplier = safeText(user?.multiplier, '1.0x');
+    const rank = safeText(user?.rank_title, 'Lobby Rookie');
 
-    wrap.innerHTML = `
-      <div class="hw-daily-card">
-        <div class="hw-daily-inner">
+    const card = document.createElement('div');
+    card.className = 'hw-daily-card';
 
-          <div class="hw-daily-top">
-            <div>
-              <span class="hw-daily-kicker">HYPHSWORLD ID</span>
-              <strong class="hw-daily-name">${displayName}</strong>
-            </div>
-            <div class="hw-daily-avatar">${avatar}</div>
-          </div>
+    const inner = document.createElement('div');
+    inner.className = 'hw-daily-inner';
+    card.appendChild(inner);
 
-          <div class="hw-daily-stats">
-            <article class="hw-daily-stat">
-              <span>Points</span>
-              <strong>${points}</strong>
-            </article>
+    const top = document.createElement('div');
+    top.className = 'hw-daily-top';
+    inner.appendChild(top);
 
-            <article class="hw-daily-stat">
-              <span>Streak</span>
-              <strong>${streak}</strong>
-            </article>
+    const identity = document.createElement('div');
+    top.appendChild(identity);
+    appendText(identity, 'span', 'hw-daily-kicker', 'HYPHSWORLD ID');
+    appendText(identity, 'strong', 'hw-daily-name', displayName);
+    appendText(top, 'div', 'hw-daily-avatar', avatar);
 
-            <article class="hw-daily-stat">
-              <span>Boost</span>
-              <strong>${multiplier}</strong>
-            </article>
+    const stats = document.createElement('div');
+    stats.className = 'hw-daily-stats';
+    stats.appendChild(createStat('Points', points));
+    stats.appendChild(createStat('Streak', streak));
+    stats.appendChild(createStat('Boost', multiplier));
+    stats.appendChild(createStat('Status', user ? 'LIVE' : 'GUEST'));
+    inner.appendChild(stats);
 
-            <article class="hw-daily-stat">
-              <span>Status</span>
-              <strong>${user ? 'LIVE' : 'GUEST'}</strong>
-            </article>
-          </div>
+    const rankBox = document.createElement('div');
+    rankBox.className = 'hw-daily-rank';
+    appendText(rankBox, 'span', '', 'Current Rank');
+    appendText(rankBox, 'strong', '', rank);
+    inner.appendChild(rankBox);
 
-          <div class="hw-daily-rank">
-            <span>Current Rank</span>
-            <strong>${rank}</strong>
-          </div>
+    const actions = document.createElement('div');
+    actions.className = 'hw-daily-actions';
 
-          <div class="hw-daily-actions">
-            ${user
-              ? '<button class="hw-daily-btn" type="button" data-hw-claim>Claim Daily</button>'
-              : '<a class="hw-daily-btn" href="auth.html">Create ID</a>'}
+    if (user) {
+      const claim = document.createElement('button');
+      claim.className = 'hw-daily-btn';
+      claim.type = 'button';
+      claim.dataset.hwClaim = 'true';
+      claim.textContent = 'Claim Daily';
+      actions.appendChild(claim);
+    } else {
+      const createId = document.createElement('a');
+      createId.className = 'hw-daily-btn';
+      createId.href = 'auth.html';
+      createId.textContent = 'Create ID';
+      actions.appendChild(createId);
+    }
 
-            <button class="hw-daily-btn secondary" type="button" data-hw-collapse>Hide</button>
-          </div>
+    const collapse = document.createElement('button');
+    collapse.className = 'hw-daily-btn secondary';
+    collapse.type = 'button';
+    collapse.dataset.hwCollapse = 'true';
+    collapse.textContent = 'Hide';
+    actions.appendChild(collapse);
+    inner.appendChild(actions);
 
-          <p class="hw-daily-msg">
-            ${user
-              ? 'Duck Sauce says don’t lose your streak. The leaderboard watching.'
-              : 'Create a HYPHSWORLD ID to save Cool Points forever.'}
-          </p>
+    appendText(
+      inner,
+      'p',
+      'hw-daily-msg',
+      user
+        ? 'Duck Sauce says don’t lose your streak. The leaderboard watching.'
+        : 'Create a HYPHSWORLD ID to save Cool Points forever.'
+    );
 
-        </div>
-      </div>
-    `;
-
+    wrap.appendChild(card);
     document.body.appendChild(wrap);
 
-    const collapse = wrap.querySelector('[data-hw-collapse]');
-
-    if (collapse) {
-      collapse.addEventListener('click', function () {
-        wrap.classList.toggle('is-collapsed');
-      });
-    }
+    collapse.addEventListener('click', function () {
+      wrap.classList.toggle('is-collapsed');
+    });
 
     const claim = wrap.querySelector('[data-hw-claim]');
 
     if (claim) {
       claim.addEventListener('click', async function () {
         claim.disabled = true;
-        claim.textContent = 'Loading...';
+        claim.textContent = 'Checking...';
 
         try {
-          if (window.supabaseClient && typeof window.supabaseClient.rpc === 'function') {
-            const result = await window.supabaseClient.rpc('claim_daily_streak');
-
-            if (result.error) {
-              claim.textContent = 'Already Claimed';
-            } else {
-              claim.textContent = '+ Daily Added';
-              setTimeout(function () {
-                window.location.reload();
-              }, 1200);
-            }
-          } else {
-            claim.textContent = 'Ready';
+          if (!window.supabaseClient || typeof window.supabaseClient.rpc !== 'function') {
+            claim.disabled = false;
+            claim.textContent = 'Sign In Again';
+            return;
           }
+
+          const result = await window.supabaseClient.rpc('claim_daily_streak');
+
+          if (result.error) {
+            claim.disabled = false;
+            claim.textContent = getClaimMessage(result.error);
+            return;
+          }
+
+          claim.textContent = '+ Daily Added';
+          setTimeout(function () {
+            window.location.reload();
+          }, 1200);
         } catch (err) {
-          claim.textContent = 'Retry';
+          claim.disabled = false;
+          claim.textContent = 'Retry Claim';
         }
       });
     }

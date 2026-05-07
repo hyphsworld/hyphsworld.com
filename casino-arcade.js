@@ -1,111 +1,389 @@
-(function(){
-"use strict";
+(function () {
+  'use strict';
 
-const LP="hyphsworld.coolPoints.total",RK="hyphsworld.casinoArcade.recent";
-const CDN="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2",CFG="supabase-config.js";
-const $=id=>document.getElementById(id),q=(s,r=document)=>r.querySelector(s),qa=(s,r=document)=>Array.from(r.querySelectorAll(s));
-const rnd=n=>Math.floor(Math.random()*n),cl=(n,a,b)=>Math.max(a,Math.min(b,n)),num=v=>{let p=parseInt(v,10);return Number.isFinite(p)&&p>0?p:0},fmt=v=>new Intl.NumberFormat("en-US").format(num(v));
-const safe=v=>String(v||"").replace(/[<>]/g,"").trim();
+  const LOCAL_POINTS_KEY = 'hyphsworld.coolPoints.total';
+  const RECENT_KEY = 'hyphsworld.hiddenArcade.recent';
+  const CONFIG_SRC = 'supabase-config.js';
+  const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+  const CHALLENGE_POINTS = 25;
 
-const G={
-  blackjack:{title:"Blackjack",kicker:"CPU CARD TABLE",desc:"Play against Duck Dealer. Deal, hit, or stand. Closest to 21 wins bonus Cool Points.",key:"01_blackjack_cpu"},
-  dominos:{title:"Dominos",kicker:"CPU BONES TABLE",desc:"Play bones against Duck, Buck, and the CPU table. Match the open ends and keep moving.",key:"01_dominos_cpu"},
-  crash:{title:"Crash",kicker:"CPU ROCKET RUN",desc:"Pick a target multiplier. If the CPU rocket clears it before crashing, you collect bonus Cool Points.",key:"01_crash_arcade"},
-  plinko:{title:"Plinko",kicker:"CPU PHYSICS BOARD",desc:"Drop the neon ball through the peg board. The CPU board decides the bucket bonus.",key:"01_plinko_arcade"},
-  mines:{title:"Mines",kicker:"CPU HIDDEN MINES",desc:"Open safe tiles and cash out before the CPU minefield catches you.",key:"01_mines_arcade"},
-  slots:{title:"Neon Slots",kicker:"CPU 5-REEL SPIN",desc:"Spin the HYPHSWORLD reels. Matching symbols and TRACK/CODE icons build rewards.",key:"01_neon_slots"},
-  scratcher:{title:"Scratcher",kicker:"CPU REVEAL CARD",desc:"Reveal all panels. Three matching icons hits the bonus.",key:"01_scratcher"},
-  hilo:{title:"High-Low",kicker:"CPU CARD FLIP",desc:"Guess higher or lower. Each correct CPU flip builds the bonus streak.",key:"01_high_low"},
-  roulette:{title:"Roulette",kicker:"CPU WHEEL SPIN",desc:"Pick red, black, or green. The CPU wheel spins for bonus Cool Points.",key:"01_roulette"}
-};
+  const $ = (id) => document.getElementById(id);
+  const rand = (max) => Math.floor(Math.random() * max);
+  const format = (value) => new Intl.NumberFormat('en-US').format(Math.max(0, Math.round(Number(value) || 0)));
+  const clean = (value) => String(value || '').replace(/[<>]/g, '').trim();
 
-const SY=["💎","🧢","🦆","🔥","🎹","💵","🎲","🌉","🔑","🎧","🛹","🛡️"],PM=[0,1,2,4,8,12,8,4,2,1,0],CV=[2,3,4,5,6,7,8,9,10,11,12,13,14];
-let game="blackjack",user=null,sbp=null,mines=null,hilo=null,scratch=null,rot=0;
-let bj={deck:[],player:[],dealer:[],phase:"idle"};
-let dom={hand:[[0,1],[1,3],[2,3],[3,5],[5,6],[6,6],[2,6]],board:[[1,6],[6,5],[5,5],[5,2],[2,4]],boneyard:13};
+  let user = null;
+  let supabasePromise = null;
+  let activeChallenge = null;
+  let activeAnswer = null;
+  let runCount = 0;
 
-function txt(id,v){let e=$(id);if(e)e.textContent=v}
-function status(v){txt("casinoStatus",`Duck Sauce: “${v}”`)}
-function power(){let i=$("casinoPowerInput"),v=cl(num(i&&i.value),1,1000);if(i)i.value=v;return v}
-function lp(){try{return num(localStorage.getItem(LP))}catch{return 0}}
-function slp(v){try{localStorage.setItem(LP,String(Math.max(0,num(v))))}catch{}}
-function rec(){try{return JSON.parse(localStorage.getItem(RK)||"[]")}catch{return[]}}
-function saveRec(x){let r=[x].concat(rec()).slice(0,5);try{localStorage.setItem(RK,JSON.stringify(r))}catch{};drawRec()}
-function drawRec(){let l=$("casinoRecentList"),r=rec();if(!l)return;l.innerHTML=r.length?r.map(x=>`<span>${safe(x.g)} • +${fmt(x.p)} • ${safe(x.r)}</span>`).join(""):"<span>No hits yet.</span>"}
-function load(src){return new Promise((res,rej)=>{let old=Array.from(document.scripts).find(s=>s.src&&s.src.includes(src));if(old){old.addEventListener("load",res,{once:true});setTimeout(res,200);return}let s=document.createElement("script");s.src=src;s.async=false;s.onload=res;s.onerror=()=>rej(new Error("Could not load "+src));document.head.appendChild(s)})}
-async function sb(){if(sbp)return sbp;sbp=(async()=>{try{if(!window.HW_SUPABASE_CONFIG)await load(CFG);let c=window.HW_SUPABASE_CONFIG||{},u=String(c.url||""),k=String(c.anonKey||c.anon_key||"");if(!u||!k||/PASTE_|YOUR_|PROJECT_URL|ANON_PUBLIC_KEY/i.test(u+k))return null;if(!window.supabase||!window.supabase.createClient)await load(CDN);return window.supabase&&window.supabase.createClient?window.supabase.createClient(u,k,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}):null}catch{return null}})();return sbp}
-async function refreshUser(){let a=$("casinoAuthLink");try{user=window.HWAuth&&await window.HWAuth.getCurrentUser()}catch{user=null}if(user&&user.email){txt("casinoPlayerName",user.displayName||user.username||user.email);txt("casinoPlayerMode","Logged in. CPU wins can save to Cool Points and the game board.");txt("casinoPoints",fmt(user.coolPoints||0));if(a){a.textContent="Manage ID";a.href="account.html"}}else{txt("casinoPlayerName","Guest Player");txt("casinoPlayerMode","Guest mode. Create ID to keep scores across devices.");txt("casinoPoints",fmt(lp()))}}
-async function addPts(p,reason){p=Math.max(0,Math.round(p||0));if(!p)return;try{if(window.HWAuth&&window.HWAuth.addPoints){let n=await window.HWAuth.addPoints(p,reason);txt("casinoPoints",fmt(n));await refreshUser();return}}catch(e){console.warn("points",e&&e.message||e)}let n=lp()+p;slp(n);txt("casinoPoints",fmt(n))}
-async function saveScore(g,score,p,meta){if(!user||!user.userId||user.provider==="mock")return;try{let c=await sb();if(!c)return;await c.from("game_scores").insert({user_id:user.userId,game_key:G[g].key,score:Math.max(1,Math.round(score||p||1)),points_delta:Math.max(0,Math.round(p||0)),metadata:Object.assign({source:"casino_arcade_cpu",no_real_money:true},meta||{})})}catch(e){console.warn("score",e&&e.message||e)}}
-async function award(g,p,score,result,meta){p=Math.max(0,Math.round(p||0));if(p){await addPts(p,G[g].key+"_win");await saveScore(g,score||p,p,Object.assign({result},meta||{}));saveRec({g:G[g].title,p:p,r:result||"win"});status(`${G[g].title} CPU hit +${fmt(p)} Cool Points. Your points were never reduced.`)}else{await saveScore(g,score||1,0,Object.assign({result:result||"no_bonus"},meta||{}));status("No bonus this round. Cool Points stayed untouched — this floor does not subtract points.")}}
+  const hiddenChallenges = [
+    {
+      id: 'code-path',
+      title: 'Code Path',
+      kicker: 'SECRET CHALLENGE',
+      prompt: 'Duck Sauce left three glowing doors. Pick the one with the hidden code.',
+      icon: '🔑',
+      choices: ['Door 01', 'Door 33', 'Door 600'],
+      success: 'Code found. Cool Points added.',
+      miss: 'Wrong door. Points stayed safe.',
+    },
+    {
+      id: 'beat-drop',
+      title: 'Beat Drop',
+      kicker: 'SECRET CHALLENGE',
+      prompt: 'Catch the right drop before the beat switches.',
+      icon: '🎧',
+      choices: ['Kick', 'Snare', '808'],
+      success: 'Perfect timing. Cool Points added.',
+      miss: 'Beat slipped. Run it back.',
+    },
+    {
+      id: 'skate-line',
+      title: 'Skate Line',
+      kicker: 'SECRET CHALLENGE',
+      prompt: 'Pick the cleanest line through the hidden ramp.',
+      icon: '🛹',
+      choices: ['Rail', 'Ramp', 'Wallride'],
+      success: 'Clean line. Cool Points added.',
+      miss: 'Almost had it. Points stayed safe.',
+    },
+    {
+      id: 'vault-glow',
+      title: 'Vault Glow',
+      kicker: 'SECRET CHALLENGE',
+      prompt: 'The vault flashed one color. Choose the glow Duck Sauce pointed at.',
+      icon: '💎',
+      choices: ['Green', 'Pink', 'Gold'],
+      success: 'Vault glow matched. Cool Points added.',
+      miss: 'Wrong glow. Try another run.',
+    },
+    {
+      id: 'bridge-run',
+      title: 'Bridge Run',
+      kicker: 'SECRET CHALLENGE',
+      prompt: 'Pick the safe route across the HYPHSWORLD bridge.',
+      icon: '🌉',
+      choices: ['Left Lane', 'Middle Lane', 'Right Lane'],
+      success: 'Route cleared. Cool Points added.',
+      miss: 'Traffic jam. No points removed.',
+    },
+  ];
 
-const btn=(t,a,c="")=>`<button class="arcade-btn ${c}" type="button" data-action="${a}">${t}</button>`;
-const field=(lab,id,html,note="")=>`<label class="casino-field" for="${id}"><span>${lab}</span>${html}${note?`<small>${note}</small>`:""}</label>`;
-function card(rank,suit){return{rank,suit}}
-function makeDeck(){let suits=["♠","♥","♦","♣"],ranks=["A","2","3","4","5","6","7","8","9","10","J","Q","K"],d=[];suits.forEach(s=>ranks.forEach(r=>d.push(card(r,s))));for(let i=d.length-1;i>0;i--){let j=rnd(i+1),t=d[i];d[i]=d[j];d[j]=t}return d}
-function val(c){if(c.rank==="A")return 11;if(/[JQK]/.test(c.rank))return 10;return Number(c.rank)}
-function handScore(h){let s=0,a=0;h.forEach(c=>{s+=val(c);if(c.rank==="A")a++});while(s>21&&a){s-=10;a--}return s}
-function cardHtml(c,back){if(back||!c)return'<div class="hw-card-face back"><strong>?</strong><span>?</span></div>';let red=(c.suit==="♥"||c.suit==="♦")?" red":"";return`<div class="hw-card-face${red}"><strong>${c.rank}</strong><span>${c.suit}</span></div>`}
-function dots(n){return n===0?"—":"•".repeat(n)}
-function boneHtml(b,h){return`<div class="hw-bone ${h?'horizontal ':''}${b[0]===b[1]?'gold':''}"><div>${dots(b[0])}</div><div>${dots(b[1])}</div></div>`}
-function face(v){return v===14?"A":v===13?"K":v===12?"Q":v===11?"J":String(v)}
-function cpuPanel(text){return`<div class="cpu-mode-panel"><strong>Solo / CPU Play Ready</strong><span>${text}</span></div>`}
-function bind(){qa("[data-action]").forEach(b=>b.onclick=()=>act(b.dataset.action))}
-function setGame(g){game=g;mines=hilo=scratch=null;qa("[data-game]").forEach(b=>b.classList.toggle("is-active",b.dataset.game===g));txt("casinoGameTitle",G[g].title);txt("casinoGameKicker",G[g].kicker);txt("casinoGameDescription",G[g].desc);render()}
+  function text(id, value) {
+    const node = $(id);
+    if (node) node.textContent = value;
+  }
 
-function render(){let s=$("casinoStage"),c=$("casinoControls");if(!s||!c)return;
-if(game==="blackjack")renderBlackjack(s,c);
-if(game==="dominos")renderDominos(s,c);
-if(game==="crash")renderCrash(s,c);
-if(game==="plinko")renderPlinko(s,c);
-if(game==="mines")renderMines(s,c);
-if(game==="slots")renderSlots(s,c);
-if(game==="scratcher")renderScratcher(s,c);
-if(game==="hilo")renderHilo(s,c);
-if(game==="roulette")renderRoulette(s,c);
-bind()}
+  function status(message) {
+    text('casinoStatus', 'Duck Sauce: “' + message + '”');
+  }
 
-function renderBlackjack(s,c){let hide=bj.phase==="player";s.innerHTML=`<div class="hw-table-room"><div class="hw-felt-table"><div class="hw-table-label">BLACK<br>JACK</div><div class="hw-score-strip"><span>Dealer: ${bj.dealer.length?(hide?handScore([bj.dealer[0]]):handScore(bj.dealer)):0}</span><span>You: ${bj.player.length?handScore(bj.player):0}</span></div><div class="hw-seat-chip top"><span class="avatar">🦆</span><b>Duck Dealer</b></div><div class="hw-card-row dealer">${bj.dealer.length?bj.dealer.map((x,i)=>cardHtml(x,hide&&i===1)).join(""):cardHtml(null,true)+cardHtml(null,true)}</div><div class="hw-card-row center">${cardHtml({rank:"A",suit:"♠"})}${cardHtml({rank:"K",suit:"♦"})}</div><div class="hw-card-row player">${bj.player.length?bj.player.map(x=>cardHtml(x)).join(""):cardHtml(null,true)+cardHtml(null,true)}</div><div class="hw-seat-chip bottom"><span class="avatar">🧢</span><b>You</b></div><div class="hw-table-help">CPU Dealer: Deal, Hit, or Stand. Closest to 21 wins.</div></div></div>`;c.innerHTML=cpuPanel("Duck Dealer plays the house hand. No second user needed.")+`<div class="casino-button-row">${btn("Play CPU Dealer","bj-deal")}${btn("Hit","bj-hit","secondary")}${btn("Stand","bj-stand","secondary")}</div>`}
-function bjDeal(){bj.deck=makeDeck();bj.player=[bj.deck.pop(),bj.deck.pop()];bj.dealer=[bj.deck.pop(),bj.deck.pop()];bj.phase="player";status("CPU Dealer is live. Hit or stand.");render()}
-function bjHit(){if(bj.phase!=="player")return status("Deal first.");bj.player.push(bj.deck.pop());if(handScore(bj.player)>21){bj.phase="done";award("blackjack",0,1,"bust",{});status("Bust. Duck Dealer got this one.")}else status("You hit. Choose again.");render()}
-async function bjStand(){if(bj.phase!=="player")return status("Deal first.");while(handScore(bj.dealer)<17)bj.dealer.push(bj.deck.pop());let ps=handScore(bj.player),ds=handScore(bj.dealer),win=ds>21||ps>ds,push=ps===ds;bj.phase="done";await award("blackjack",win?power()*2:(push?Math.floor(power()/2):0),win?ps*10:1,win?"player win":push?"push":"dealer win",{player:ps,dealer:ds});render()}
+  function localPoints() {
+    try {
+      return Math.max(0, Math.round(Number(localStorage.getItem(LOCAL_POINTS_KEY)) || 0));
+    } catch {
+      return 0;
+    }
+  }
 
-function renderDominos(s,c){s.innerHTML=`<div class="hw-table-room"><div class="hw-felt-table"><div class="hw-table-label">DOM<br>INOS</div><div class="hw-seat-chip top"><span class="avatar">🤖</span><b>CPU 25/50</b></div><div class="hw-seat-chip left"><span class="avatar">🦆</span><b>Duck 20/50</b></div><div class="hw-seat-chip right"><span class="avatar">🛡️</span><b>Buck 25/50</b></div><div class="hw-seat-chip bottom"><span class="avatar">🧢</span><b>You</b></div><div class="hw-boneyard">Boneyard<br>${dom.boneyard}</div><div class="hw-bone-board">${dom.board.map(b=>boneHtml(b,true)).join("")}</div><div class="hw-bone-hand">${dom.hand.map(b=>boneHtml(b,false)).join("")}</div><div class="hw-table-help">CPU Table: Play a matching bone or draw from boneyard.</div></div></div>`;c.innerHTML=cpuPanel("Duck, Buck, and CPU seats are already at the table.")+`<div class="casino-button-row">${btn("Play CPU Dominos","dom-new")}${btn("Play Bone","dom-play","secondary")}${btn("Draw From CPU Boneyard","dom-draw","secondary")}</div>`}
-function domNew(){dom={hand:[[0,1],[1,3],[2,3],[3,5],[5,6],[6,6],[2,6]],board:[[1,6],[6,5],[5,5],[5,2],[2,4]],boneyard:13};status("New CPU domino table loaded.");render()}
-async function domPlay(){if(!dom.hand.length){await award("dominos",power()*3,300,"hand cleared",{});return render()}let b=dom.hand.shift();dom.board.push(b);if(Math.random()>.35&&dom.boneyard>0)dom.boneyard--;await award("dominos",Math.random()>.55?power():0,100,"bone played",{bone:b});render()}
-function domDraw(){let a=rnd(7),b=rnd(7);dom.hand.push([Math.min(a,b),Math.max(a,b)]);dom.boneyard=Math.max(0,dom.boneyard-1);status("Drew from CPU boneyard.");render()}
+  function setLocalPoints(value) {
+    const next = Math.max(0, Math.round(Number(value) || 0));
+    try {
+      localStorage.setItem(LOCAL_POINTS_KEY, String(next));
+    } catch {}
+    text('casinoPoints', format(next));
+  }
 
-function renderCrash(s,c){s.innerHTML=`<div class="crash-screen"><div class="crash-graph"><div class="crash-line" id="crashLine"></div><div class="crash-rocket" id="crashRocket">🚀</div><div class="crash-multiplier" id="crashMultiplier">1.00x</div><div class="arcade-caption" id="crashCaption">Set target. CPU rocket runs the crash curve.</div></div></div>`;c.innerHTML=cpuPanel("The CPU rocket decides when the crash happens.")+field("Target Multiplier","crashTargetInput",'<input id="crashTargetInput" type="number" min="1.1" max="10" step=".1" value="2.0" />',"Higher target means bigger bonus, but harder to clear.")+`<div class="casino-button-row">${btn("Play CPU Crash","crash-play")}</div>`}
-async function playCrash(){let p=power(),i=$("crashTargetInput"),t=cl(parseFloat(i&&i.value)||2,1.1,10);if(i)i.value=t.toFixed(1);let ca=Math.min(12,Math.max(1,Math.pow(1/Math.max(.02,Math.random()),.58))),win=ca>=t,l=$("crashLine"),r=$("crashRocket");if(l)l.style.transform=`rotate(-${win?28:12}deg) scaleX(${Math.min(.98,ca/6)})`;if(r){r.style.left=`${Math.min(82,22+ca*7)}%`;r.style.bottom=`${Math.min(78,16+ca*8)}%`;r.style.transform=win?"rotate(-18deg)":"rotate(44deg)"}txt("crashMultiplier",ca.toFixed(2)+"x");txt("crashCaption",win?`Rocket cleared ${t.toFixed(1)}x.`:`Rocket crashed at ${ca.toFixed(2)}x.`);await award("crash",win?p*t:0,Math.round(ca*100),win?`${t.toFixed(1)}x clear`:`${ca.toFixed(2)}x crash`,{target:t,crashAt:ca})}
+  function getRecent() {
+    try {
+      const items = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]');
+      return Array.isArray(items) ? items : [];
+    } catch {
+      return [];
+    }
+  }
 
-function renderPlinko(s,c){let pegs=[];for(let r=0;r<8;r++)for(let col=0;col<=r+3;col++)pegs.push(`<span class="plinko-peg" style="left:${12+col*(76/(r+4))+(r%2?4:0)}%;top:${14+r*8.8}%"></span>`);s.innerHTML=`<div class="plinko-screen"><div class="plinko-board">${pegs.join("")}<div class="plinko-ball" id="plinkoBall"></div><div class="plinko-buckets">${PM.map(m=>`<span>${m}x</span>`).join("")}</div></div></div>`;c.innerHTML=cpuPanel("The CPU board controls the drop path.")+`<div class="casino-button-row">${btn("Play CPU Plinko","plinko-drop")}</div>`}
-async function playPlinko(){let lane=cl(Math.floor((Math.random()+Math.random())/2*PM.length),0,PM.length-1),m=PM[lane],b=$("plinkoBall");if(b){b.style.left=`${6+lane*8.8}%`;b.style.top="303px"}await award("plinko",power()*m,m*100,m?`${m}x bucket`:"dead bucket",{lane,multiplier:m})}
+  function saveRecent(item) {
+    const items = [item].concat(getRecent()).slice(0, 5);
+    try {
+      localStorage.setItem(RECENT_KEY, JSON.stringify(items));
+    } catch {}
+    drawRecent();
+  }
 
-function renderMines(s,c){s.innerHTML=`<div class="mines-screen"><div class="mines-grid" id="minesGrid"></div><div class="arcade-result-number" id="minesMultiplier">1.00x</div><div class="arcade-caption" id="minesCaption">CPU hides the mines. Reveal safe tiles.</div></div>`;c.innerHTML=cpuPanel("The CPU hides mines before you open tiles.")+field("Mines Count","minesCountInput",'<select id="minesCountInput"><option value="3">3 Mines</option><option value="5">5 Mines</option><option value="7">7 Mines</option></select>',"More mines means bigger cash-out multiplier.")+`<div class="casino-button-row">${btn("Play CPU Mines","mines-start")}${btn("Cash Out","mines-cashout","secondary")}</div>`;drawMines()}
-function mineSet(n){let s=new Set;while(s.size<n)s.add(rnd(25));return s}
-function drawMines(all=false){let g=$("minesGrid");if(!g)return;g.innerHTML=Array.from({length:25}).map((_,i)=>{let is=mines&&mines.set.has(i),op=mines&&mines.open.has(i),show=all||op,cls=show?(is?"boom":"safe"):"";return`<button class="mine-tile ${cls}" type="button" data-i="${i}" ${mines&&mines.done?"disabled":""}>${show?(is?"💣":"💎"):"?"}</button>`}).join("");qa("[data-i]",g).forEach(b=>b.onclick=()=>openMine(+b.dataset.i))}
-function startMines(){let n=cl(num($("minesCountInput")&&$("minesCountInput").value),3,7);mines={set:mineSet(n),open:new Set,done:false,n};drawMines();txt("minesMultiplier","1.00x");txt("minesCaption","Board armed. Safe tiles build multiplier.");status(`CPU mines board started with ${n} hidden mines.`)}
-function mm(){return mines?1+mines.open.size*(.22+mines.n*.055):1}
-async function openMine(i){if(!mines||mines.done)return status("Start CPU Mines first.");if(mines.open.has(i))return;if(mines.set.has(i)){mines.done=true;drawMines(true);txt("minesCaption","Boom. No bonus, no points removed.");return award("mines",0,mines.open.size*10,"mine hit",{mines:mines.n,safeTiles:mines.open.size})}mines.open.add(i);let m=mm();drawMines();txt("minesMultiplier",m.toFixed(2)+"x");txt("minesCaption",`${mines.open.size} safe tiles. Cash out or keep moving.`)}
-async function cashMines(){if(!mines||mines.done||!mines.open.size)return status("Open at least one safe tile first.");mines.done=true;let m=mm();drawMines(true);txt("minesCaption",`Cashed out at ${m.toFixed(2)}x.`);await award("mines",power()*m,Math.round(m*100),`${mines.open.size} safe cashout`,{mines:mines.n,safeTiles:mines.open.size,multiplier:m})}
+  function drawRecent() {
+    const list = $('casinoRecentList');
+    if (!list) return;
 
-function renderSlots(s,c){s.innerHTML=`<div class="slots-screen"><div class="slot-machine"><div class="slot-marquee">${"<span></span>".repeat(14)}</div><div class="slot-reels"><div class="slot-reel" id="slot0">🦆</div><div class="slot-reel" id="slot1">💎</div><div class="slot-reel" id="slot2">🔑</div><div class="slot-reel" id="slot3">🛹</div><div class="slot-reel" id="slot4">🎧</div></div><div class="arcade-caption" id="slotCaption">Five reels. TRACK/CODE icons push reward energy.</div></div></div>`;c.innerHTML=cpuPanel("The CPU reels spin instantly. Match symbols to win.")+`<div class="casino-button-row">${btn("Play CPU Slots","slots-spin")}</div>`}
-async function spinSlots(){let reels=[0,1,2,3,4].map(i=>$(`slot${i}`));reels.forEach(x=>x&&x.classList.add("spin"));status("CPU reels spinning...");setTimeout(async()=>{let r=Array.from({length:5},()=>SY[rnd(SY.length)]);reels.forEach((x,i)=>{if(x){x.textContent=r[i];x.classList.remove("spin")}});let counts=r.reduce((a,s)=>(a[s]=(a[s]||0)+1,a),{}),max=Math.max(...Object.values(counts)),m=max>=5?20:max>=4?10:max>=3?4:max>=2?1:0;if(r.includes("🔑")||r.includes("🎧"))m+=1;txt("slotCaption",m?`CPU reels hit ${m}x.`:"No match. Points stayed put.");await award("slots",power()*m,m*100,m?`${m}x reel hit`:"no match",{result:r,multiplier:m})},850)}
+    const items = getRecent();
+    list.innerHTML = '';
 
-function mkScratch(){let win=Math.random()>.48,t=SY[rnd(SY.length)],tiles=win?[t,t,t,SY[rnd(SY.length)],SY[rnd(SY.length)],SY[rnd(SY.length)]]:Array.from({length:6},()=>SY[rnd(SY.length)]);for(let i=tiles.length-1;i>0;i--){let j=rnd(i+1);[tiles[i],tiles[j]]=[tiles[j],tiles[i]]}return{tiles,rev:new Set,done:false}}
-function renderScratcher(s,c){scratch=mkScratch();s.innerHTML=`<div class="scratcher-screen"><div class="scratcher-card" id="scratcherCard"></div><div class="arcade-caption" id="scratchCaption">CPU printed a fresh card. Reveal all six panels.</div></div>`;c.innerHTML=cpuPanel("The CPU generates the scratch card. Reveal panels to match icons.")+`<div class="casino-button-row">${btn("Play CPU Scratcher","scratch-new")}</div>`;drawScratch()}
-function drawScratch(){let c=$("scratcherCard");if(!c||!scratch)return;c.innerHTML=scratch.tiles.map((s,i)=>`<button class="scratch-tile ${scratch.rev.has(i)?"revealed":""}" type="button" data-s="${i}" ${scratch.done?"disabled":""}>${scratch.rev.has(i)?s:"H"}</button>`).join("");qa("[data-s]",c).forEach(b=>b.onclick=()=>revealScratch(+b.dataset.s))}
-function newScratch(){scratch=mkScratch();drawScratch();txt("scratchCaption","Fresh CPU scratcher loaded.");status("New CPU scratcher ready.")}
-async function revealScratch(i){if(!scratch||scratch.done)return;scratch.rev.add(i);drawScratch();if(scratch.rev.size<6)return;let vis=Array.from(scratch.rev).map(i=>scratch.tiles[i]),counts=vis.reduce((a,s)=>(a[s]=(a[s]||0)+1,a),{}),win=Math.max(...Object.values(counts))>=3;scratch.done=true;drawScratch();txt("scratchCaption",win?"Three-match scratcher hit.":"No three-match. Points stayed safe.");await award("scratcher",win?power()*6:0,win?600:1,win?"three match":"no match",{tiles:vis})}
+    if (!items.length) {
+      const empty = document.createElement('span');
+      empty.textContent = 'No runs yet.';
+      list.appendChild(empty);
+      return;
+    }
 
-function renderHilo(s,c){hilo={cur:CV[rnd(CV.length)],streak:0};s.innerHTML=`<div class="hilo-screen"><div class="hilo-card"><div><strong id="hiloCardValue">${face(hilo.cur)}</strong><span>Current Card</span></div></div><div class="arcade-result-number" id="hiloStreak">0x</div><div class="arcade-caption" id="hiloCaption">CPU flips next. Guess higher or lower.</div></div>`;c.innerHTML=cpuPanel("The CPU flips the next card after your call.")+`<div class="casino-button-row">${btn("CPU Flip: Higher","hilo-high")}${btn("CPU Flip: Lower","hilo-low","secondary")}${btn("New CPU Card","hilo-new","secondary")}</div>`}
-function newHilo(){hilo={cur:CV[rnd(CV.length)],streak:0};txt("hiloCardValue",face(hilo.cur));txt("hiloStreak","0x");txt("hiloCaption","New CPU card loaded.")}
-async function playHilo(guess){if(!hilo)newHilo();let n=CV[rnd(CV.length)],cur=hilo.cur,ok=guess==="high"?n>=cur:n<=cur;hilo.cur=n;txt("hiloCardValue",face(n));if(ok){hilo.streak++;let m=1+hilo.streak*1.5;txt("hiloStreak",hilo.streak+"x");txt("hiloCaption",`Correct. Streak ${hilo.streak}.`);await award("hilo",power()*m,Math.round(m*100),`${hilo.streak} streak`,{guess,next:n,streak:hilo.streak})}else{hilo.streak=0;txt("hiloStreak","0x");txt("hiloCaption","Wrong call. No bonus, no points removed.");await award("hilo",0,1,"wrong call",{guess,next:n})}}
+    items.forEach((item) => {
+      const row = document.createElement('span');
+      row.textContent = clean(item.title) + ' • +' + format(item.points) + ' • ' + clean(item.result);
+      list.appendChild(row);
+    });
+  }
 
-function renderRoulette(s,c){s.innerHTML=`<div class="roulette-screen"><div class="roulette-wheel-wrap"><div class="roulette-pointer"></div><div class="roulette-wheel" id="rouletteWheel"></div><div class="roulette-center" id="rouletteResult">PICK<br>COLOR</div></div></div>`;c.innerHTML=cpuPanel("The CPU wheel spins against your color pick.")+field("Pick Color","roulettePickInput",'<select id="roulettePickInput"><option value="red">Red 2x</option><option value="black">Black 2x</option><option value="green">Green 14x</option></select>',"Green is rare but bigger.")+`<div class="casino-button-row">${btn("Play CPU Roulette","roulette-spin")}</div>`}
-async function spinRoulette(){let pick=String($("roulettePickInput")&&$("roulettePickInput").value||"red"),roll=Math.random(),res=roll<.06?"green":roll<.53?"red":"black",m=res==="green"?14:2,win=res===pick;rot+=720+rnd(720);let w=$("rouletteWheel");if(w)w.style.transform=`rotate(${rot}deg)`;let r=$("rouletteResult");if(r)r.innerHTML=`${res.toUpperCase()}<br>${win?"HIT":"MISS"}`;await award("roulette",win?power()*m:0,m*100,win?`${res} hit`:`${res} miss`,{pick,result:res,multiplier:m})}
+  function loadScript(src) {
+    return new Promise((resolve, reject) => {
+      const old = Array.from(document.scripts).find((script) => script.src && script.src.includes(src));
+      if (old) {
+        old.addEventListener('load', resolve, { once: true });
+        setTimeout(resolve, 200);
+        return;
+      }
 
-function act(a){if(a==="bj-deal")bjDeal();if(a==="bj-hit")bjHit();if(a==="bj-stand")bjStand();if(a==="dom-new")domNew();if(a==="dom-play")domPlay();if(a==="dom-draw")domDraw();if(a==="crash-play")playCrash();if(a==="plinko-drop")playPlinko();if(a==="mines-start")startMines();if(a==="mines-cashout")cashMines();if(a==="slots-spin")spinSlots();if(a==="scratch-new")newScratch();if(a==="hilo-high")playHilo("high");if(a==="hilo-low")playHilo("low");if(a==="hilo-new")newHilo();if(a==="roulette-spin")spinRoulette()}
-function boot(){let y=$("year");if(y)y.textContent=new Date().getFullYear();qa("[data-game]").forEach(b=>b.onclick=()=>setGame(b.dataset.game));drawRec();refreshUser();setGame("blackjack");status("All-new CPU arcade loaded. Pick any game and play now.")}
-if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot);else boot();
+      const script = document.createElement('script');
+      script.src = src;
+      script.async = false;
+      script.onload = resolve;
+      script.onerror = () => reject(new Error('Could not load ' + src));
+      document.head.appendChild(script);
+    });
+  }
+
+  async function getSupabase() {
+    if (supabasePromise) return supabasePromise;
+
+    supabasePromise = (async () => {
+      try {
+        if (!window.HW_SUPABASE_CONFIG) await loadScript(CONFIG_SRC);
+        const config = window.HW_SUPABASE_CONFIG || {};
+        const url = String(config.url || '');
+        const key = String(config.anonKey || config.anon_key || '');
+
+        if (!url || !key || /PASTE_|YOUR_|PROJECT_URL|ANON_PUBLIC_KEY/i.test(url + key)) return null;
+        if (!window.supabase?.createClient) await loadScript(SUPABASE_CDN);
+
+        return window.supabase?.createClient
+          ? window.supabase.createClient(url, key, {
+              auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
+            })
+          : null;
+      } catch {
+        return null;
+      }
+    })();
+
+    return supabasePromise;
+  }
+
+  async function refreshUser() {
+    const authLink = $('casinoAuthLink');
+
+    try {
+      user = window.HWAuth && typeof window.HWAuth.getCurrentUser === 'function'
+        ? await window.HWAuth.getCurrentUser()
+        : null;
+    } catch {
+      user = null;
+    }
+
+    if (user && user.email) {
+      text('casinoPlayerName', user.displayName || user.username || user.email);
+      text('casinoPlayerMode', 'Signed in. Hidden Arcade progress can save to your HYPHSWORLD ID.');
+      text('casinoPoints', format(user.coolPoints || 0));
+
+      if (authLink) {
+        authLink.textContent = 'Manage ID';
+        authLink.href = 'account.html';
+      }
+    } else {
+      text('casinoPlayerName', 'Guest Player');
+      text('casinoPlayerMode', 'Guest mode. Create ID to keep Cool Points across devices.');
+      text('casinoPoints', format(localPoints()));
+    }
+  }
+
+  async function addPoints(points, reason) {
+    const safePoints = Math.max(0, Math.round(Number(points) || 0));
+    if (!safePoints) return;
+
+    try {
+      if (window.HWAuth && typeof window.HWAuth.addPoints === 'function') {
+        const nextTotal = await window.HWAuth.addPoints(safePoints, reason);
+        text('casinoPoints', format(nextTotal));
+        await refreshUser();
+        return;
+      }
+    } catch (error) {
+      console.warn('Hidden Arcade points fallback:', error && error.message ? error.message : error);
+    }
+
+    setLocalPoints(localPoints() + safePoints);
+  }
+
+  async function saveScore(challenge, points, result) {
+    if (!user || !user.userId || user.provider === 'mock') return;
+
+    try {
+      const client = await getSupabase();
+      if (!client) return;
+
+      await client.from('game_scores').insert({
+        user_id: user.userId,
+        game_key: 'hidden_arcade_' + challenge.id,
+        score: Math.max(1, points || 1),
+        points_delta: Math.max(0, points || 0),
+        metadata: {
+          source: 'hidden_arcade',
+          challenge: challenge.id,
+          result,
+          no_cash_payout: true,
+        },
+      });
+    } catch (error) {
+      console.warn('Hidden Arcade score skipped:', error && error.message ? error.message : error);
+    }
+  }
+
+  function button(label, action, extraClass) {
+    return '<button class="arcade-btn ' + (extraClass || '') + '" type="button" data-action="' + action + '">' + label + '</button>';
+  }
+
+  function renderStart() {
+    activeChallenge = null;
+    activeAnswer = null;
+
+    text('casinoGameTitle', 'Ready?');
+    text('casinoGameKicker', 'SECRET CHALLENGE');
+    text('casinoGameDescription', 'Tap Play and the Hidden Arcade will pick a secret challenge.');
+
+    const stage = $('casinoStage');
+    const controls = $('casinoControls');
+
+    if (stage) {
+      stage.innerHTML =
+        '<div class="hidden-arcade-start">' +
+          '<div class="arcade-result-number">?</div>' +
+          '<h3>Hidden Challenge Locked</h3>' +
+          '<p>Tap Play to reveal the next run.</p>' +
+        '</div>';
+    }
+
+    if (controls) {
+      controls.innerHTML =
+        '<div class="cpu-mode-panel"><strong>Simple Mode</strong><span>One button. One secret challenge. Cool Points stay safe.</span></div>' +
+        '<div class="casino-button-row">' + button('Play Hidden Challenge', 'start-hidden') + '</div>';
+    }
+
+    bindActions();
+  }
+
+  function renderChallenge() {
+    const stage = $('casinoStage');
+    const controls = $('casinoControls');
+    if (!stage || !controls || !activeChallenge) return;
+
+    text('casinoGameTitle', activeChallenge.title);
+    text('casinoGameKicker', activeChallenge.kicker);
+    text('casinoGameDescription', activeChallenge.prompt);
+
+    stage.innerHTML =
+      '<div class="hidden-challenge-card">' +
+        '<div class="arcade-result-number">' + activeChallenge.icon + '</div>' +
+        '<h3>' + activeChallenge.title + '</h3>' +
+        '<p>' + activeChallenge.prompt + '</p>' +
+      '</div>';
+
+    controls.innerHTML =
+      '<div class="cpu-mode-panel"><strong>Pick One</strong><span>The arcade already chose the answer. Make your move.</span></div>' +
+      '<div class="casino-button-row hidden-choice-row">' +
+        activeChallenge.choices.map((choice, index) => button(choice, 'choice-' + index, index === 1 ? 'secondary' : '')).join('') +
+      '</div>' +
+      '<div class="casino-button-row">' + button('New Challenge', 'start-hidden', 'secondary') + '</div>';
+
+    bindActions();
+  }
+
+  function startHiddenChallenge() {
+    runCount += 1;
+    activeChallenge = hiddenChallenges[rand(hiddenChallenges.length)];
+    activeAnswer = rand(activeChallenge.choices.length);
+    status('Challenge opened. Pick one and see if the arcade lets you through.');
+    renderChallenge();
+  }
+
+  async function choose(index) {
+    if (!activeChallenge) {
+      startHiddenChallenge();
+      return;
+    }
+
+    const correct = index === activeAnswer;
+    const points = correct ? CHALLENGE_POINTS + Math.min(25, runCount * 2) : 0;
+    const result = correct ? 'cleared' : 'missed';
+
+    if (correct) {
+      await addPoints(points, 'hidden_arcade_clear');
+      await saveScore(activeChallenge, points, result);
+      saveRecent({ title: activeChallenge.title, points, result: 'cleared' });
+      status(activeChallenge.success);
+    } else {
+      await saveScore(activeChallenge, 0, result);
+      saveRecent({ title: activeChallenge.title, points: 0, result: 'missed' });
+      status(activeChallenge.miss);
+    }
+
+    renderResult(correct, points);
+  }
+
+  function renderResult(correct, points) {
+    const stage = $('casinoStage');
+    const controls = $('casinoControls');
+    if (!stage || !controls || !activeChallenge) return;
+
+    stage.innerHTML =
+      '<div class="hidden-challenge-card ' + (correct ? 'is-clear' : 'is-miss') + '">' +
+        '<div class="arcade-result-number">' + (correct ? '+' + format(points) : '0') + '</div>' +
+        '<h3>' + (correct ? 'Challenge Cleared' : 'Run Missed') + '</h3>' +
+        '<p>' + (correct ? activeChallenge.success : activeChallenge.miss) + '</p>' +
+      '</div>';
+
+    controls.innerHTML =
+      '<div class="cpu-mode-panel"><strong>Next Move</strong><span>Run another hidden challenge or check the reward board.</span></div>' +
+      '<div class="casino-button-row">' +
+        button('Play Again', 'start-hidden') +
+        '<a class="arcade-btn secondary" href="leaderboard.html">Reward Board</a>' +
+      '</div>';
+
+    bindActions();
+  }
+
+  function handleAction(action) {
+    if (action === 'start-hidden') startHiddenChallenge();
+    if (action && action.indexOf('choice-') === 0) choose(Number(action.replace('choice-', '')));
+  }
+
+  function bindActions() {
+    document.querySelectorAll('[data-action]').forEach((node) => {
+      node.onclick = () => handleAction(node.dataset.action);
+    });
+  }
+
+  function boot() {
+    const year = $('year');
+    if (year) year.textContent = new Date().getFullYear();
+
+    drawRecent();
+    refreshUser();
+    renderStart();
+    status('Hidden Arcade loaded. Tap Play and let it pick.');
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
 })();
