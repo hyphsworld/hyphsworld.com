@@ -15,15 +15,16 @@
   <link rel="stylesheet" href="homepage-panel-3d.css?v=20260506b" />
   <link rel="stylesheet" href="homepage-glass-logo.css?v=20260506b" />
   <link rel="stylesheet" href="leaderboard-widgets.css?v=20260506b" />
+  <link rel="stylesheet" href="global-animation.css?v=20260507c" />
 </head>
-<body class="home-page graffiti-skate-standard">
-  <div id="login-section" style="background:#0f1e2b; color:#a9ff87; padding: 10px; text-align:center;">
+<body class="home-page graffiti-skate-standard transparent-header-page">
+  <div id="login-section" style="background:rgba(15,30,43,.52); backdrop-filter:blur(14px); color:#a9ff87; padding: 10px; text-align:center;">
     <span id="login-status" style="margin-left:20px;">Checking session...</span>
     <a href="auth.html" id="auth-link" style="margin-left:12px; color:#45ff36; font-weight:700;">Create ID / Login</a>
     <button id="home-logout" type="button" hidden style="margin-left:10px; border:0; border-radius:999px; padding:7px 11px; background:#ff275d; color:#fff; font-weight:800; cursor:pointer;">Logout</button>
   </div>
 
-  <header class="site-header">
+  <header class="site-header glass-site-header">
     <a class="brand-lockup" href="index.html" aria-label="HYPHSWORLD home">
       <span>AMS WEST PRESENTS</span>
       <strong>HYPHSWORLD</strong>
@@ -32,7 +33,7 @@
       <a href="#music">Music</a>
       <a href="#spotlight">Spotlight</a>
       <a href="vault.html">Vault</a>
-      <a href="games.html">Games</a>
+      <a href="games.html">Hidden Arcade</a>
       <a href="leaderboard.html">Leaderboards</a>
       <a href="app-player.html">Full Player</a>
       <a href="shop.html">Merch</a>
@@ -44,8 +45,8 @@
   <main>
     <section class="ticker" aria-label="HYPHSWORLD ticker">
       <div class="ticker-track">
-        <span>WELCOME 2 HYPHSWORLD</span><b>✦</b><span>DUCK SAUCE GOT INSTRUCTIONS</span><b>✦</b><span>VAULT TRANSPORT READY</span><b>✦</b><span>01 DOMINO ROOM OPEN</span><b>✦</b><span>COOL POINTS HIT THE LEADERBOARD</span><b>✦</b><span>NO PUBLIC CODES UNTIL TONE SAYS SO</span><b>✦</b>
-        <span>WELCOME 2 HYPHSWORLD</span><b>✦</b><span>DUCK SAUCE GOT INSTRUCTIONS</span><b>✦</b><span>VAULT TRANSPORT READY</span><b>✦</b><span>01 DOMINO ROOM OPEN</span><b>✦</b><span>COOL POINTS HIT THE LEADERBOARD</span><b>✦</b><span>NO PUBLIC CODES UNTIL TONE SAYS SO</span><b>✦</b>
+        <span>WELCOME 2 HYPHSWORLD</span><b>✦</b><span>DUCK SAUCE GOT INSTRUCTIONS</span><b>✦</b><span>VAULT TRANSPORT READY</span><b>✦</b><span>HIDDEN ARCADE OPEN</span><b>✦</b><span>COOL POINTS HIT THE LEADERBOARD</span><b>✦</b><span>NO PUBLIC CODES UNTIL TONE SAYS SO</span><b>✦</b>
+        <span>WELCOME 2 HYPHSWORLD</span><b>✦</b><span>DUCK SAUCE GOT INSTRUCTIONS</span><b>✦</b><span>VAULT TRANSPORT READY</span><b>✦</b><span>HIDDEN ARCADE OPEN</span><b>✦</b><span>COOL POINTS HIT THE LEADERBOARD</span><b>✦</b><span>NO PUBLIC CODES UNTIL TONE SAYS SO</span><b>✦</b>
       </div>
     </section>
 
@@ -61,7 +62,7 @@
           <div class="button-row compact-actions">
             <button class="btn btn-primary" type="button" data-track-id="ham">Play HAM</button>
             <a class="btn btn-hot" href="vault.html">Enter Vault</a>
-            <a class="btn btn-soft" href="games.html">Play Games</a>
+            <a class="btn btn-soft" href="games.html">Hidden Arcade</a>
             <a class="btn btn-soft" href="leaderboard.html">Leaderboards</a>
             <a class="btn btn-soft" href="app-player.html">Full Player</a>
           </div>
@@ -80,17 +81,17 @@
         <div class="duck-copy">
           <p class="eyebrow">Duck Sauce Help Desk</p>
           <h2>Don’t just stand in the lobby.</h2>
-          <p id="duck-line" class="duck-line">Spotlight for the slap. Vault for the pressure. Games for the leaderboard. Full Player if you really listening. Duck Sauce got the helper desk by himself today, so expect extra talking.</p>
+          <p id="duck-line" class="duck-line">Spotlight for the slap. Vault for the pressure. Hidden Arcade for the leaderboard. Full Player if you really listening. Duck Sauce got the helper desk by himself today, so expect extra talking.</p>
           <div class="duck-guide-grid" aria-label="Duck guide quick instructions">
             <article><strong>01</strong><span>Press play. The lobby wakes up.</span></article>
             <article><strong>02</strong><span>Run the Vault scan. No public hints.</span></article>
-            <article><strong>03</strong><span>Play games. Stack Cool Points.</span></article>
+            <article><strong>03</strong><span>Play Hidden Arcade. Stack Cool Points.</span></article>
             <article><strong>04</strong><span>Climb the live leaderboard.</span></article>
           </div>
           <div class="button-row compact-actions">
             <button class="btn btn-primary" type="button" data-duck-tip>Duck Talk</button>
             <a class="btn btn-soft" href="vault.html">Run Scan</a>
-            <a class="btn btn-hot" href="games.html">01 Domino Room</a>
+            <a class="btn btn-hot" href="games.html">Hidden Arcade</a>
           </div>
         </div>
       </div>
@@ -263,6 +264,8 @@
   <script src="auth-client.js?v=20260506b"></script>
   <script src="leaderboard-widgets.js?v=20260506b"></script>
   <script src="duck-helper.js?v=20260506b"></script>
+  <script src="global-rewards-duck.js?v=20260507c"></script>
+  <script src="hidden-track-lobby.js?v=20260507c"></script>
   <script>
   document.addEventListener("DOMContentLoaded", async function () {
     var statusEl = document.getElementById("login-status");
