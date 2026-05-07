@@ -312,6 +312,74 @@
         }
       });
     }
+
+    var duckMain = document.querySelector(".duck-main");
+    if (duckMain) {
+      var duckWrap = duckMain.closest(".duck-only-wrap");
+      var duckPos = { x: 0, y: 0 };
+      var dragState = null;
+
+      function paintDuck() {
+        duckMain.style.transform = "translate(" + duckPos.x + "px," + duckPos.y + "px)";
+      }
+
+      function clampDuck(nextX, nextY) {
+        if (!duckWrap) return { x: nextX, y: nextY };
+        var wrapRect = duckWrap.getBoundingClientRect();
+        var duckRect = duckMain.getBoundingClientRect();
+        var maxX = Math.max(0, wrapRect.width - duckRect.width);
+        var maxY = Math.max(0, wrapRect.height - duckRect.height);
+        return {
+          x: Math.max(-maxX * 0.3, Math.min(maxX, nextX)),
+          y: Math.max(-maxY * 0.25, Math.min(maxY, nextY))
+        };
+      }
+
+      function startDuckDrag(clientX, clientY) {
+        dragState = {
+          startX: clientX,
+          startY: clientY,
+          baseX: duckPos.x,
+          baseY: duckPos.y
+        };
+        duckMain.classList.add("is-dragging");
+      }
+
+      function moveDuckDrag(clientX, clientY) {
+        if (!dragState) return;
+        var dx = clientX - dragState.startX;
+        var dy = clientY - dragState.startY;
+        var next = clampDuck(dragState.baseX + dx, dragState.baseY + dy);
+        duckPos.x = next.x;
+        duckPos.y = next.y;
+        paintDuck();
+      }
+
+      function endDuckDrag() {
+        dragState = null;
+        duckMain.classList.remove("is-dragging");
+      }
+
+      duckMain.addEventListener("mousedown", function (event) {
+        event.preventDefault();
+        startDuckDrag(event.clientX, event.clientY);
+      });
+      window.addEventListener("mousemove", function (event) { moveDuckDrag(event.clientX, event.clientY); });
+      window.addEventListener("mouseup", endDuckDrag);
+
+      duckMain.addEventListener("touchstart", function (event) {
+        var touch = event.touches && event.touches[0];
+        if (!touch) return;
+        startDuckDrag(touch.clientX, touch.clientY);
+      }, { passive: true });
+      window.addEventListener("touchmove", function (event) {
+        var touch = event.touches && event.touches[0];
+        if (!touch) return;
+        moveDuckDrag(touch.clientX, touch.clientY);
+      }, { passive: true });
+      window.addEventListener("touchend", endDuckDrag);
+    }
+
   });
   </script>
 </body>
