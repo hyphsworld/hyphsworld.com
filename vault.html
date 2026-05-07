@@ -14,27 +14,43 @@
 
   <style>
     .lobby-video-section{
+      position:relative;
+      z-index:3;
       width:min(1180px,calc(100% - 28px));
-      margin:26px auto 0;
+      margin:18px auto 18px;
     }
     .lobby-video-card{
       position:relative;
       overflow:hidden;
-      border:1px solid rgba(255,255,255,.18);
+      border:2px solid rgba(31,252,255,.36);
       border-radius:30px;
       background:
-        radial-gradient(circle at 18% 18%,rgba(57,255,122,.22),transparent 30%),
-        radial-gradient(circle at 82% 20%,rgba(184,77,255,.28),transparent 34%),
-        linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.035));
-      box-shadow:0 0 34px rgba(184,77,255,.20), inset 0 0 38px rgba(31,252,255,.05);
+        radial-gradient(circle at 18% 18%,rgba(57,255,122,.24),transparent 30%),
+        radial-gradient(circle at 82% 20%,rgba(255,79,216,.30),transparent 34%),
+        radial-gradient(circle at 50% 100%,rgba(255,228,92,.16),transparent 38%),
+        linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,.035));
+      box-shadow:0 0 34px rgba(184,77,255,.20), 0 18px 60px rgba(0,0,0,.36), inset 0 0 38px rgba(31,252,255,.08);
+    }
+    .lobby-video-card::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background-image:
+        linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px);
+      background-size:34px 34px;
+      opacity:.35;
     }
     .lobby-video-head{
+      position:relative;
+      z-index:2;
       display:flex;
       align-items:flex-end;
       justify-content:space-between;
       gap:18px;
       flex-wrap:wrap;
-      padding:24px 24px 14px;
+      padding:20px 22px 12px;
     }
     .lobby-video-head h2{
       margin:8px 0 6px;
@@ -42,13 +58,16 @@
       line-height:.88;
       letter-spacing:-.06em;
       text-transform:uppercase;
+      color:#fff;
+      text-shadow:5px 5px 0 rgba(255,43,214,.45), 0 0 26px rgba(31,252,255,.18);
     }
     .lobby-video-head p{
-      max-width:680px;
+      max-width:760px;
       margin:0;
-      color:#d8efe6;
+      color:#eafef4;
       line-height:1.45;
-      font-weight:750;
+      font-family:Arial,sans-serif;
+      font-weight:850;
     }
     .lobby-video-badge{
       display:inline-flex;
@@ -66,12 +85,13 @@
     }
     .lobby-video-shell{
       position:relative;
-      margin:0 24px 24px;
+      z-index:2;
+      margin:0 22px 22px;
       border-radius:24px;
       overflow:hidden;
-      border:1px solid rgba(255,255,255,.18);
+      border:2px solid rgba(31,252,255,.30);
       background:#050505;
-      box-shadow:0 0 28px rgba(0,0,0,.45);
+      box-shadow:0 0 28px rgba(0,0,0,.45), inset 0 0 30px rgba(57,255,122,.06);
     }
     .lobby-video-shell video{
       display:block;
@@ -87,9 +107,10 @@
       gap:12px;
       flex-wrap:wrap;
       padding:13px 16px;
-      background:rgba(0,0,0,.72);
+      background:rgba(0,0,0,.78);
       border-top:1px solid rgba(255,255,255,.12);
       color:#fff;
+      font-family:Arial,sans-serif;
       font-weight:900;
     }
     .lobby-video-strip small{
@@ -99,8 +120,9 @@
       font-weight:1000;
     }
     @media(max-width:640px){
-      .lobby-video-head{padding:18px 18px 12px;}
-      .lobby-video-shell{margin:0 14px 18px;}
+      .lobby-video-section{width:calc(100% - 20px);margin:12px auto 16px;}
+      .lobby-video-head{padding:16px 16px 10px;}
+      .lobby-video-shell{margin:0 12px 16px;border-radius:20px;}
     }
   </style>
 </head>
@@ -110,6 +132,29 @@
   <div class="graffiti-glow glow-pink" aria-hidden="true"></div>
   <div class="graffiti-glow glow-blue" aria-hidden="true"></div>
   <div class="graffiti-glow glow-green" aria-hidden="true"></div>
+
+  <section class="lobby-video-section" aria-label="Lobby video preview">
+    <article class="lobby-video-card">
+      <div class="lobby-video-head">
+        <div>
+          <span class="lobby-video-badge">LOBBY MP4 // TOP SCREEN</span>
+          <h2>Lobby Screen</h2>
+          <p>The Lobby owns the MP4 screen. Upload the video as <strong>lobby-preview.mp4</strong> in the repo root so it loads live.</p>
+        </div>
+      </div>
+
+      <div class="lobby-video-shell">
+        <video id="lobbyPreviewVideo" controls playsinline preload="metadata" poster="hyphsworld-5-cover.png">
+          <source src="lobby-preview.mp4" type="video/mp4" />
+          Your browser does not support the HYPHSWORLD Lobby video.
+        </video>
+        <div class="lobby-video-strip">
+          <small>NOW SHOWING</small>
+          <span>01 Show Preview // HYPHSWORLD Lobby</span>
+        </div>
+      </div>
+    </article>
+  </section>
 
   <header class="vault-header">
     <a class="vault-logo" href="index.html" aria-label="Back to HYPHSWORLD homepage">
@@ -248,29 +293,6 @@
           </div>
         </form>
       </div>
-    </section>
-
-    <section class="lobby-video-section" aria-label="Lobby video preview">
-      <article class="lobby-video-card">
-        <div class="lobby-video-head">
-          <div>
-            <span class="lobby-video-badge">LOBBY MP4 // 01 SHOW PREVIEW</span>
-            <h2>Lobby Screen</h2>
-            <p>The Lobby now has its own MP4 screen before the arcade and player. Upload the video as <strong>lobby-preview.mp4</strong> in the repo root so it loads live.</p>
-          </div>
-        </div>
-
-        <div class="lobby-video-shell">
-          <video id="lobbyPreviewVideo" controls playsinline preload="metadata" poster="hyphsworld-5-cover.png">
-            <source src="lobby-preview.mp4" type="video/mp4" />
-            Your browser does not support the HYPHSWORLD Lobby video.
-          </video>
-          <div class="lobby-video-strip">
-            <small>NOW SHOWING</small>
-            <span>01 Show Preview // HYPHSWORLD Lobby</span>
-          </div>
-        </div>
-      </article>
     </section>
 
     <section class="gate-arcade" aria-label="Lobby arcade">
