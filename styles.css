@@ -47,9 +47,10 @@ button, input { font: inherit; }
   justify-content: space-between;
   gap: 18px;
   padding: 16px clamp(14px, 4vw, 44px);
-  background: rgba(0, 0, 0, 0.74);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.10);
-  backdrop-filter: blur(18px);
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  backdrop-filter: none;
+  box-shadow: none;
 }
 
 .brand-lockup { display: grid; gap: 2px; flex: 0 0 auto; }
