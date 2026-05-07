@@ -7,39 +7,67 @@ const transportSound = document.getElementById("transportSound");
 
 let active = false;
 
+const statusMessages = {
+  idle: "AWAITING INPUT",
+  scan: "SCANNING USER PROFILE...",
+  checking: "VERIFYING COOL POINTS...",
+  granted: "ACCESS GRANTED",
+  transport: "ENTERING HYPHSWORLD..."
+};
+
 pad.addEventListener("click", () => {
   if (active) return;
+
   active = true;
 
-  // Phase 1 → Start Scan
   document.body.classList.add("scanning");
-  statusText.innerText = "SCANNING...";
-  scanSound.play();
+  pad.style.boxShadow = `
+    inset 0 0 30px rgba(255,255,255,0.12),
+    0 0 45px rgba(0,255,136,0.4),
+    0 0 85px rgba(255,0,85,0.3)
+  `;
 
-  // Phase 2 → Processing
+  statusText.innerText = statusMessages.scan;
+
+  if (scanSound) {
+    scanSound.currentTime = 0;
+    scanSound.play();
+  }
+
   setTimeout(() => {
-    statusText.innerText = "ACCESS CHECKING...";
-  }, 1500);
+    statusText.innerText = statusMessages.checking;
+    statusText.style.color = "#00cfff";
+  }, 1600);
 
-  // Phase 3 → Granted
   setTimeout(() => {
     document.body.classList.add("flash");
-    statusText.innerText = "ACCESS GRANTED";
-    grantedSound.play();
-  }, 3000);
 
-  // Phase 4 → Transport
+    statusText.innerText = statusMessages.granted;
+    statusText.style.color = "#00ff88";
+
+    if (grantedSound) {
+      grantedSound.currentTime = 0;
+      grantedSound.play();
+    }
+
+    pad.style.transform = "scale(1.06) rotate(1deg)";
+  }, 3200);
+
   setTimeout(() => {
-    statusText.innerText = "TRANSPORTING...";
-    transportSound.play();
+    statusText.innerText = statusMessages.transport;
+    statusText.style.color = "#ff7eb3";
 
-    document.body.style.transform = "scale(1.3)";
-    document.body.style.transition = "1s ease-in-out";
+    if (transportSound) {
+      transportSound.currentTime = 0;
+      transportSound.play();
+    }
 
-  }, 4000);
+    document.body.style.transition = "transform 1.2s ease, filter 1.2s ease";
+    document.body.style.transform = "scale(1.12)";
+    document.body.style.filter = "saturate(1.4) brightness(1.15)";
+  }, 4500);
 
-  // Redirect
   setTimeout(() => {
     window.location.href = "/vault.html";
-  }, 5200);
+  }, 6200);
 });
