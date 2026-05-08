@@ -49,20 +49,10 @@
     </section>
 
     <section class="hero-shell" id="top">
-      <div class="hero-video-card">
-        <video id="hero-video" class="hero-video" autoplay muted loop playsinline preload="auto" poster="album-art.jpg" data-hero-sources="hyphsworld-hero.mp4"></video>
-        <div class="hero-video-tint"></div>
-        <div class="hero-scan-line"></div>
-        <div class="hero-content">
-          <p class="eyebrow neon-text">Richmond, CA • AMS WEST • Direct Motion</p>
-          <h1>REAL MUSIC.<br />NO MIDDLEMEN.</h1>
-          <p class="lead">HYPHSWORLD is the lobby. The Vault is the pressure. Duck Sauce is the loud helper pointing everybody toward the right door.</p>
-          <div class="button-row compact-actions">
-            <button class="btn btn-primary" type="button" data-hero-start>Play / Start</button>
-          </div>
-          <div class="hero-video-status" id="hero-video-status">MP4 hero loading…</div>
-        </div>
-        <button class="hero-sound-toggle" type="button" data-hero-toggle>Mute / Unmute</button>
+      <div class="hero-video-card lobby-style-player">
+        <video id="hero-video" class="hero-video" autoplay muted loop playsinline preload="auto" controls poster="album-art.jpg" data-hero-sources="hyphsworld-hero.mp4"></video>
+        <div class="hero-video-status" id="hero-video-status">MP4 loading muted...</div>
+        <button class="hero-sound-toggle" type="button" data-hero-toggle>Unmute</button>
       </div>
     </section>
 
@@ -164,25 +154,40 @@
     var logoutButton = document.getElementById("home-logout");
     var year = document.getElementById("year");
     var heroVideo = document.getElementById("hero-video");
-    var heroStart = document.querySelector("[data-hero-start]");
     var heroToggle = document.querySelector("[data-hero-toggle]");
-    function updateHeroToggleText() {
-      if (!heroVideo || !heroToggle) return;
+    var heroStatus = document.getElementById("hero-video-status");
+
+    function setHeroStatus(message) {
+      if (heroStatus) heroStatus.textContent = message;
+    }
+
+    function syncHeroButton() {
+      if (!heroToggle || !heroVideo) return;
       heroToggle.textContent = heroVideo.muted ? "Unmute" : "Mute";
     }
-    if (heroStart && heroVideo) {
-      heroStart.addEventListener("click", function () {
-        heroVideo.play().catch(function () {});
+
+    if (heroVideo) {
+      heroVideo.muted = true;
+      heroVideo.setAttribute("muted", "");
+      heroVideo.play().then(function () {
+        setHeroStatus("MP4 playing muted");
+      }).catch(function () {
+        setHeroStatus("Tap play if your browser blocks autoplay");
       });
     }
+
     if (heroToggle && heroVideo) {
+      syncHeroButton();
       heroToggle.addEventListener("click", function () {
         heroVideo.muted = !heroVideo.muted;
+        if (heroVideo.muted) heroVideo.setAttribute("muted", "");
+        else heroVideo.removeAttribute("muted");
         heroVideo.play().catch(function () {});
-        updateHeroToggleText();
+        syncHeroButton();
+        setHeroStatus(heroVideo.muted ? "MP4 playing muted" : "MP4 sound on");
       });
-      updateHeroToggleText();
     }
+
     if (year) year.textContent = new Date().getFullYear();
     if (!window.HWAuth) { statusEl.textContent = "Auth unavailable"; return; }
     var session = await HWAuth.getSession();
