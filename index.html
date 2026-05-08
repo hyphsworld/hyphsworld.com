@@ -57,8 +57,12 @@
           <p class="eyebrow neon-text">Richmond, CA • AMS WEST • Direct Motion</p>
           <h1>REAL MUSIC.<br />NO MIDDLEMEN.</h1>
           <p class="lead">HYPHSWORLD is the lobby. The Vault is the pressure. Duck Sauce is the loud helper pointing everybody toward the right door.</p>
+          <div class="button-row compact-actions">
+            <button class="btn btn-primary" type="button" data-hero-start>Play / Start</button>
+          </div>
           <div class="hero-video-status" id="hero-video-status">MP4 hero loading…</div>
         </div>
+        <button class="hero-sound-toggle" type="button" data-hero-toggle>Mute / Unmute</button>
       </div>
     </section>
 
@@ -159,6 +163,26 @@
     var navAccountLink = document.getElementById("nav-account-link");
     var logoutButton = document.getElementById("home-logout");
     var year = document.getElementById("year");
+    var heroVideo = document.getElementById("hero-video");
+    var heroStart = document.querySelector("[data-hero-start]");
+    var heroToggle = document.querySelector("[data-hero-toggle]");
+    function updateHeroToggleText() {
+      if (!heroVideo || !heroToggle) return;
+      heroToggle.textContent = heroVideo.muted ? "Unmute" : "Mute";
+    }
+    if (heroStart && heroVideo) {
+      heroStart.addEventListener("click", function () {
+        heroVideo.play().catch(function () {});
+      });
+    }
+    if (heroToggle && heroVideo) {
+      heroToggle.addEventListener("click", function () {
+        heroVideo.muted = !heroVideo.muted;
+        heroVideo.play().catch(function () {});
+        updateHeroToggleText();
+      });
+      updateHeroToggleText();
+    }
     if (year) year.textContent = new Date().getFullYear();
     if (!window.HWAuth) { statusEl.textContent = "Auth unavailable"; return; }
     var session = await HWAuth.getSession();
