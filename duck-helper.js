@@ -18,41 +18,29 @@
     if(p.indexOf("casino")>-1)return"Casino Arcade: pick a game, read the controls, and use Cool Points only.";
     if(p.indexOf("vault")>-1)return"Lobby/Vault: drag me anywhere. Run the scan, enter the code, and let Buck clear the door.";
     if(p.indexOf("games")>-1)return"Games: pick a game and sign in so progress can stay with you.";
-    if(p.indexOf("app-player")>-1)return"Full Player: use this page for the clean music listening view.";
-    if(p.indexOf("shop")>-1)return"Merch: check the drops and AMS WEST items here.";
+    if(p.indexOf("app-player")>-1||p.indexOf("player")>-1||p.indexOf("music")>-1)return"Player: tap a record, play music, and keep your HYPHSWORLD motion clean.";
+    if(p.indexOf("shop")>-1||p.indexOf("point-store")>-1)return"Shop and rewards: check merch, drops, and point unlocks here.";
+    if(p.indexOf("booking")>-1)return"Booking: use this page for shows, features, business, and direct contact.";
+    if(p.indexOf("visuals")>-1)return"Visuals: watch videos, trailers, and 01 Show motion here.";
+    if(p.indexOf("socials")>-1)return"Socials: follow the official HYPHSWORLD and AMS WEST channels here.";
     if(p.indexOf("auth")>-1||p.indexOf("account")>-1)return"Manage ID: sign in so points and rewards stay with your account.";
-    return"Drag Duck anywhere. Tap me for help. Hide me when you need the screen clear.";
+    return"Homepage: drag Duck anywhere. Tap me for help. Hide me when you need the screen clear.";
   }
   function say(t,hold){var b=$("#duckTalk"),x=$("#duckText");if(!b||!x)return;x.textContent=t;b.classList.add("show");clearTimeout(b._t);if(!hold)b._t=setTimeout(function(){b.classList.remove("show")},6000)}
   function hide(){var d=$("#duckBox"),r=$("#duckReturn");if(d)d.classList.add("off");if(r)r.classList.add("on");save({off:true})}
-  function show(){var d=$("#duckBox"),r=$("#duckReturn");if(d)d.classList.remove("off");if(r)r.classList.remove("on");save({off:false});say(pageText())}
-  function context(el){
-    var game=el.dataset&&el.dataset.game;
-    if(game==="crash")return"Crash: set Entry Power, choose a target, then launch. Clear the target to earn bonus progress.";
-    if(game==="plinko")return"Plinko: drop the ball. The board picks your bonus path.";
-    if(game==="mines")return"Mines: open safe tiles, then stop when you like the bonus.";
-    if(game==="slots")return"Slots: press Spin. Matching symbols and special icons push rewards.";
-    if(game==="scratcher")return"Scratcher: reveal all panels. Matching icons win a bonus.";
-    if(game==="hilo")return"High-Low: guess higher or lower. Correct calls build a streak.";
-    if(game==="roulette")return"Roulette: pick a color, then spin. Rare colors give bigger bonus progress.";
-    var t=[el.textContent,el.getAttribute("aria-label"),el.href,el.id,String(el.className||"")].filter(Boolean).join(" ").toLowerCase();
-    if(t.indexOf("leader")>-1)return"Leaderboard: this shows rankings and Cool Points activity.";
-    if(t.indexOf("casino")>-1||t.indexOf("arcade")>-1)return"Casino Arcade: select a game, set Entry Power, then press the game button.";
-    if(t.indexOf("vault")>-1||t.indexOf("lobby")>-1)return"Lobby/Vault: use access paths to reach hidden music and levels.";
-    if(t.indexOf("game")>-1)return"Games: choose a game and keep earning progress.";
-    if(t.indexOf("player")>-1||t.indexOf("music")>-1)return"Player: this is for music playback.";
-    if(t.indexOf("merch")>-1||t.indexOf("shop")>-1)return"Merch: check products and drops here.";
-    if(t.indexOf("manage")>-1||t.indexOf("login")>-1||t.indexOf("account")>-1||t.indexOf("id")>-1)return"Manage ID: sign in so points and rewards stay saved.";
-    if(t.indexOf("home")>-1)return"Home: main HYPHSWORLD landing page.";
-    return null;
-  }
+  function show(){var d=$("#duckBox"),r=$("#duckReturn");if(d)d.classList.remove("off");if(r)r.classList.remove("on");save({off:false});say(pageText(),true)}
+  function context(el){return null}
   function drag(box){
     var down=false,moved=false,sx=0,sy=0,bx=0,by=0,st=state();
     if(Number.isFinite(st.x)&&Number.isFinite(st.y)){box.style.left=st.x+"px";box.style.top=st.y+"px";box.style.bottom="auto"}
     function start(e){var p=e.touches?e.touches[0]:e;down=true;moved=false;sx=p.clientX;sy=p.clientY;var r=box.getBoundingClientRect();bx=r.left;by=r.top;box.style.bottom="auto";e.preventDefault()}
     function move(e){if(!down)return;var p=e.touches?e.touches[0]:e,dx=p.clientX-sx,dy=p.clientY-sy;if(Math.abs(dx)+Math.abs(dy)>6)moved=true;var x=Math.max(6,Math.min(innerWidth-box.offsetWidth-6,bx+dx)),y=Math.max(6,Math.min(innerHeight-box.offsetHeight-6,by+dy));box.style.left=x+"px";box.style.top=y+"px";e.preventDefault()}
-    function end(){if(!down)return;down=false;var r=box.getBoundingClientRect();save({x:Math.round(r.left),y:Math.round(r.top)});setTimeout(function(){moved=false},50)}
-    box.addEventListener("mousedown",start);box.addEventListener("touchstart",start,{passive:false});box.addEventListener("pointerdown",start);addEventListener("mousemove",move,{passive:false});addEventListener("touchmove",move,{passive:false});addEventListener("pointermove",move,{passive:false});addEventListener("mouseup",end);addEventListener("touchend",end);addEventListener("pointerup",end);$("#duckFace").addEventListener("click",function(){if(!moved)say(pageText(),true)})
+    function end(){if(!down)return;down=false;var r=box.getBoundingClientRect();save({x:Math.round(r.left),y:Math.round(r.top)});setTimeout(function(){moved=false},80)}
+    function openDuck(e){if(moved)return;e.preventDefault();e.stopPropagation();say(pageText(),true)}
+    box.addEventListener("mousedown",start);box.addEventListener("touchstart",start,{passive:false});box.addEventListener("pointerdown",start);addEventListener("mousemove",move,{passive:false});addEventListener("touchmove",move,{passive:false});addEventListener("pointermove",move,{passive:false});addEventListener("mouseup",end);addEventListener("touchend",end);addEventListener("pointerup",end);
+    $("#duckFace").addEventListener("click",openDuck);
+    $("#duckFace").addEventListener("touchend",openDuck,{passive:false});
+    $("#duckFace").addEventListener("pointerup",openDuck);
   }
   function boot(){
     css();
@@ -60,10 +48,13 @@
     if($("#duckBox"))return;
     var st=state();
     var d=document.createElement("div");d.id="duckBox";d.className="duckBox"+(st.off?" off":"");
-    d.innerHTML="<button id='duckFace' class='duckFace' type='button'><img src='"+IMG+"' alt='Duck Sauce'></button><div id='duckTalk' class='duckTalk'><strong>Duck Sauce</strong><span id='duckText'></span><div class='duckBtns'><button id='duckHelp' type='button'>Page Help</button><button id='duckHide' type='button'>Hide Duck</button></div></div>";
+    d.innerHTML="<button id='duckFace' class='duckFace' type='button' aria-label='Duck Sauce help'><img src='"+IMG+"' alt='Duck Sauce'></button><div id='duckTalk' class='duckTalk'><strong>Duck Sauce</strong><span id='duckText'></span><div class='duckBtns'><button id='duckHelp' type='button'>Page Help</button><button id='duckHide' type='button'>Hide Duck</button></div></div>";
     var r=document.createElement("button");r.id="duckReturn";r.className="duckReturn"+(st.off?" on":"");r.type="button";r.textContent="Duck";
-    document.body.append(d,r);drag(d);$("#duckHelp").onclick=function(){say(pageText(),true)};$("#duckHide").onclick=hide;r.onclick=show;
-    document.addEventListener("click",function(e){var el=e.target.closest("a,button,[data-game],[role='tab']");if(!el||el.closest("#duckBox")||el.closest("#duckReturn"))return;var t=context(el);if(t)setTimeout(function(){say(t)},80)},true);
+    document.body.append(d,r);
+    drag(d);
+    $("#duckHelp").onclick=function(e){e.stopPropagation();say(pageText(),true)};
+    $("#duckHide").onclick=function(e){e.stopPropagation();hide()};
+    r.onclick=show;
     if(!st.off)setTimeout(function(){say(pageText())},700)
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot);else boot();
