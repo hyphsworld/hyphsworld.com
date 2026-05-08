@@ -28,11 +28,10 @@
 
 /* Compact futuristic 3D cinematic homepage controls. No links removed. */
 .home-page .site-header {
-  background:
-    linear-gradient(135deg, rgba(4, 255, 112, 0.14), rgba(7, 8, 20, 0.86) 38%, rgba(255, 79, 216, 0.12)),
-    rgba(0, 0, 0, 0.78);
-  border-bottom: 1px solid rgba(31, 252, 255, 0.28);
-  box-shadow: 0 16px 38px rgba(0,0,0,.44), inset 0 -1px 0 rgba(255,255,255,.08);
+  background: transparent !important;
+  border-bottom: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
 }
 .home-page .main-nav a,
 .home-page .btn {
@@ -69,10 +68,9 @@
   .home-page #login-section {
     padding: 7px 10px !important;
     line-height: 1.2;
-    background:
-      linear-gradient(135deg, rgba(57,255,122,.34), rgba(12,8,24,.86) 48%, rgba(31,252,255,.22)) !important;
-    border-bottom: 1px solid rgba(255,79,216,.42);
-    box-shadow: 0 12px 32px rgba(0,0,0,.35);
+    background: transparent !important;
+    border-bottom: 0 !important;
+    box-shadow: none !important;
   }
   .home-page #login-status {
     display: block;
@@ -100,6 +98,9 @@
     padding: 12px 12px 14px;
     gap: 10px;
     perspective: 900px;
+    background: transparent !important;
+    border-bottom: 0 !important;
+    box-shadow: none !important;
   }
   .home-page .brand-lockup span {
     font-size: 0.62rem;
