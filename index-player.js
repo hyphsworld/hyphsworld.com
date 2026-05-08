@@ -1,16 +1,6 @@
 (() => {
   'use strict';
 
-  // Load additional CSS for homepage store and analytics only once
-  function loadHomepageStoreStyle() {
-    if (document.querySelector('link[data-homepage-store-style]')) return;
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = 'homepage-store-style.css';
-    link.setAttribute('data-homepage-store-style', 'true');
-    document.head.appendChild(link);
-  }
-
   function loadSharedAnalytics() {
     if (window.__HYPHSWORLD_ANALYTICS_BOOTSTRAP__) return;
     window.__HYPHSWORLD_ANALYTICS_BOOTSTRAP__ = true;
@@ -20,17 +10,14 @@
     document.head.appendChild(script);
   }
 
-  loadHomepageStoreStyle();
   loadSharedAnalytics();
 
-  // Legacy keys for older Cool Points tracking in local/session storage
   const LEGACY_KEYS = [
     'coolPoints', 'cool_points', 'hyphCoolPoints', 'hyphsworld_points',
     'hyphsWorldCoolPoints', 'HYPHSWORLD_COOL_POINTS', 'hw_points', 'points',
     'HW_SESSION_COOL_POINTS_V3', 'HW_SESSION_EARNED_ACTIONS_V3'
   ];
 
-  // Track library with metadata for the audio player
   const tracks = {
     ham: {
       title: 'HAM',
@@ -64,7 +51,6 @@
     }
   };
 
-  // Fun lines for the Duck Helper overlay
   const duckLines = [
     'Spotlight for the slap. Vault for the pressure. Full Player if you really listening. And stop asking Buck questions he do not work in customer service.',
     'Code clean? Transport opens. Code weak? Buck gone look at you like you brought sand to the beach.',
@@ -74,11 +60,9 @@
     'If the MP4 is moving, the site is breathing. If the beat plays, the world is open.'
   ];
 
-  // Convenience query helpers
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
 
-  // Grab essential DOM elements once
   const audio = $('#hyph-audio');
   const titleEl = $('#track-title');
   const metaEl = $('#track-meta');
@@ -95,7 +79,6 @@
   const duckTipButton = $('[data-duck-tip]');
   const yearEl = $('#year');
 
-  // State variables
   let coolPoints = 0;
   let earnedActions = new Set();
   let currentTrackId = getInitialTrackId();
@@ -103,16 +86,13 @@
   let playRequested = false;
   let duckIndex = 0;
 
-  // Clear out old local/session keys to avoid conflicts
   function cleanLegacyPoints() {
     try {
       LEGACY_KEYS.forEach((key) => {
         localStorage.removeItem(key);
         sessionStorage.removeItem(key);
       });
-    } catch (error) {
-      // Storage can be blocked. Points stay memory-only.
-    }
+    } catch (error) {}
   }
 
   function setPoints(value) {
@@ -194,31 +174,6 @@
     if (!audio || !titleEl || !metaEl) return;
     updateTrackUI(currentTrackId);
     loadSource(currentTrackId, 0);
-    audio.addEventListener('error', () => {
-      const track = tracks[currentTrackId] || tracks.ham;
-      const nextIndex = sourceIndex + 1;
-      if (nextIndex < track.sources.length) {
-        loadSource(currentTrackId, nextIndex);
-        if (playRequested) playTrack(currentTrackId);
-      } else {
-        setStatus(`MP3 not found for ${track.title}. Rename/upload the file or update index-player.js.`);
-      }
-    });
-    audio.addEventListener('timeupdate', () => {
-      if (!audio.duration || !progressEl) return;
-      progressEl.value = String((audio.currentTime / audio.duration) * 100);
-      if (currentTimeEl) currentTimeEl.textContent = formatTime(audio.currentTime);
-      if (durationTimeEl) durationTimeEl.textContent = formatTime(audio.duration);
-    });
-    audio.addEventListener('loadedmetadata', () => {
-      if (durationTimeEl) durationTimeEl.textContent = formatTime(audio.duration);
-    });
-    if (progressEl) {
-      progressEl.addEventListener('input', () => {
-        if (!audio.duration) return;
-        audio.currentTime = (Number(progressEl.value) / 100) * audio.duration;
-      });
-    }
   }
 
   function initButtons() {
@@ -227,12 +182,6 @@
         event.preventDefault();
         sourceIndex = 0;
         playTrack(button.dataset.trackId);
-      });
-    });
-    $$('[data-player-action]').forEach((button) => {
-      button.addEventListener('click', () => {
-        if (button.dataset.playerAction === 'play') playTrack(currentTrackId);
-        if (button.dataset.playerAction === 'pause') pauseTrack();
       });
     });
   }
@@ -253,38 +202,42 @@
       .map((item) => item.trim())
       .filter(Boolean);
     if (!sources.length) return;
+
     let heroIndex = 0;
-    const card = heroVideo.closest('.hero-video-card');
+
     function setHeroMessage(text) {
       if (heroStatus) heroStatus.textContent = text;
     }
+
     function tryHero(index) {
       if (index >= sources.length) {
-        if (card) card.classList.add('is-video-missing');
-        setHeroMessage('MP4 not found. Upload hyphsworld-hero.mp4 or keep delta-work.mp4 in root.');
+        setHeroMessage('MP4 missing. Upload hyphsworld-hero.mp4.');
         return;
       }
       heroIndex = index;
       heroVideo.src = sources[heroIndex];
       heroVideo.load();
-      setHeroMessage(`Testing MP4: ${sources[heroIndex]}`);
-      const playPromise = heroVideo.play();
-      if (playPromise && typeof playPromise.catch === 'function') {
-        playPromise.catch(() => setHeroMessage('Hero video loaded. Browser may keep it muted until tap.'));
-      }
+      heroVideo.play().catch(() => {
+        setHeroMessage('Tap to enable hero playback.');
+      });
     }
+
     heroVideo.addEventListener('loadeddata', () => {
-      if (card) card.classList.add('is-video-live');
       setHeroMessage(`MP4 HERO LIVE: ${sources[heroIndex]}`);
     });
+
     heroVideo.addEventListener('error', () => tryHero(heroIndex + 1));
+
     if (heroToggle) {
       heroToggle.addEventListener('click', async () => {
         heroVideo.muted = !heroVideo.muted;
         heroToggle.textContent = heroVideo.muted ? 'Hero Sound: Off' : 'Hero Sound: On';
-        try { await heroVideo.play(); } catch (error) { setHeroMessage('Tap again if Safari wants permission.'); }
+        try {
+          await heroVideo.play();
+        } catch (error) {}
       });
     }
+
     tryHero(0);
   }
 
@@ -297,5 +250,6 @@
     initButtons();
     initDuckGuide();
   }
+
   init();
 })();
