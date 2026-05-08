@@ -12,6 +12,7 @@
   <meta name="referrer" content="strict-origin-when-cross-origin" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="homepage-upgrades.css" />
+  <link rel="stylesheet" href="homepage-panel-3d.css" />
   <link rel="stylesheet" href="leaderboard-widgets.css" />
 </head>
 <body class="home-page">
@@ -71,10 +72,6 @@
 
     <section class="section-pad duck-zone" id="duck-guide">
       <div class="phone-shell duck-guide-card">
-        <div class="duck-visual-wrap duck-only-wrap">
-          <span class="lightbulb" aria-hidden="true">💡</span>
-          <img class="duck-main" src="duck-sauce.png" alt="Duck Sauce guide" onerror="this.onerror=null;this.src='duck-sauce.jpg';" />
-        </div>
         <div class="duck-copy">
           <p class="eyebrow">Duck Sauce Help Desk</p>
           <h2>Don’t just stand in the lobby.</h2>
@@ -136,130 +133,33 @@
     </section>
 
     <section class="hw-mini-widgets" data-hw-mini-widgets aria-label="HYPHSWORLD live widgets">
-      <article class="hw-mini-widget" data-hw-widget="top-player">
-        <span>Top Player</span>
-        <strong>Loading</strong>
-        <p>Highest Cool Points total right now.</p>
-      </article>
-      <article class="hw-mini-widget" data-hw-widget="total-players">
-        <span>Ranked Players</span>
-        <strong>0</strong>
-        <p>Public-safe players on the board.</p>
-      </article>
-      <article class="hw-mini-widget" data-hw-widget="latest-unlock">
-        <span>Latest Unlock</span>
-        <strong>Pending</strong>
-        <p>Newest Vault movement from Supabase.</p>
-      </article>
+      <article class="hw-mini-widget" data-hw-widget="top-player"><span>Top Player</span><strong>Loading</strong><p>Highest Cool Points total right now.</p></article>
+      <article class="hw-mini-widget" data-hw-widget="total-players"><span>Ranked Players</span><strong>0</strong><p>Public-safe players on the board.</p></article>
+      <article class="hw-mini-widget" data-hw-widget="latest-unlock"><span>Latest Unlock</span><strong>Pending</strong><p>Newest Vault movement from Supabase.</p></article>
     </section>
 
     <section class="hw-leaderboard-wrap" data-hw-leaderboard data-default-mode="points" data-limit="5" aria-label="Homepage leaderboard preview">
       <article class="hw-leaderboard-card">
-        <div class="hw-leaderboard-head">
-          <div>
-            <span class="hw-leaderboard-kicker">LIVE BOARD</span>
-            <h2>Cool Points Race</h2>
-            <p>Top players update from Supabase. No emails, no private data — just the public leaderboard energy.</p>
-          </div>
-          <div class="hw-leaderboard-actions">
-            <button class="hw-board-btn is-active" type="button" data-hw-board-mode="points">Cool Points</button>
-            <button class="hw-board-btn" type="button" data-hw-board-mode="games">Games</button>
-            <a class="hw-board-btn" href="games.html">Play</a>
-            <a class="hw-board-btn" href="leaderboard.html">Full Board</a>
-          </div>
-        </div>
-        <div class="hw-leaderboard-list" data-hw-leaderboard-list>
-          <div class="hw-leaderboard-empty">Loading leaderboard...</div>
-        </div>
+        <div class="hw-leaderboard-head"><div><span class="hw-leaderboard-kicker">LIVE BOARD</span><h2>Cool Points Race</h2><p>Top players update from Supabase. No emails, no private data — just the public leaderboard energy.</p></div><div class="hw-leaderboard-actions"><button class="hw-board-btn is-active" type="button" data-hw-board-mode="points">Cool Points</button><button class="hw-board-btn" type="button" data-hw-board-mode="games">Games</button><a class="hw-board-btn" href="games.html">Play</a><a class="hw-board-btn" href="leaderboard.html">Full Board</a></div></div>
+        <div class="hw-leaderboard-list" data-hw-leaderboard-list><div class="hw-leaderboard-empty">Loading leaderboard...</div></div>
       </article>
     </section>
 
-    <section id="spotlight" class="section-pad">
-      <div class="phone-shell section-card spotlight-section">
-        <div class="section-title">
-          <p class="eyebrow">Artist Spotlight</p>
-          <h2>Platform Motion</h2>
-          <p>Spotlight plays right here. No wrong redirect.</p>
-        </div>
+    <section id="spotlight" class="section-pad"><div class="phone-shell section-card spotlight-section"><div class="section-title"><p class="eyebrow">Artist Spotlight</p><h2>Platform Motion</h2><p>Spotlight plays right here. No wrong redirect.</p></div><article class="spotlight-feature"><div class="spotlight-art"><img src="25-8.jpg" alt="Young Tez 25/8 artwork" onerror="this.onerror=null;this.src='album-art.jpg';" /><span class="spotlight-badge">Spotlight #1</span></div><div class="spotlight-info"><p class="eyebrow">Artist Spotlight #1</p><h3>25/8</h3><p>Young Tez — prod by Marty McPhresh</p><div class="button-row compact-actions"><button class="btn btn-primary" type="button" data-track-id="tez258">Play 25/8</button><a class="btn btn-soft" href="app-player.html#track-tez258">Open Full Player</a><a class="btn btn-hot" href="#connect">Tap In</a></div></div></article></div></section>
 
-        <article class="spotlight-feature">
-          <div class="spotlight-art">
-            <img src="25-8.jpg" alt="Young Tez 25/8 artwork" onerror="this.onerror=null;this.src='album-art.jpg';" />
-            <span class="spotlight-badge">Spotlight #1</span>
-          </div>
-          <div class="spotlight-info">
-            <p class="eyebrow">Artist Spotlight #1</p>
-            <h3>25/8</h3>
-            <p>Young Tez — prod by Marty McPhresh</p>
-            <div class="button-row compact-actions">
-              <button class="btn btn-primary" type="button" data-track-id="tez258">Play 25/8</button>
-              <a class="btn btn-soft" href="app-player.html#track-tez258">Open Full Player</a>
-              <a class="btn btn-hot" href="#connect">Tap In</a>
-            </div>
-          </div>
-        </article>
-      </div>
-    </section>
+    <section id="vault-preview" class="section-pad"><div class="phone-shell section-card vault-preview-card"><div class="section-title"><p class="eyebrow">The Vault</p><h2>Level 1 is waiting.</h2><p>Homepage only teases the first floor. Higher levels stay off the public ticker until you choose.</p></div><article class="level-card level-one-only"><span class="lock-badge">LEVEL 1</span><h3>Quarantine Mixtape</h3><p>Hidden era. Unreleased pressure. Access scan required before transport.</p><div class="mini-transport-preview"><span></span><span></span><span></span></div><a class="btn btn-primary" href="vault.html">Run Vault Scan</a></article></div></section>
 
-    <section id="vault-preview" class="section-pad">
-      <div class="phone-shell section-card vault-preview-card">
-        <div class="section-title">
-          <p class="eyebrow">The Vault</p>
-          <h2>Level 1 is waiting.</h2>
-          <p>Homepage only teases the first floor. Higher levels stay off the public ticker until you choose.</p>
-        </div>
-        <article class="level-card level-one-only">
-          <span class="lock-badge">LEVEL 1</span>
-          <h3>Quarantine Mixtape</h3>
-          <p>Hidden era. Unreleased pressure. Access scan required before transport.</p>
-          <div class="mini-transport-preview">
-            <span></span><span></span><span></span>
-          </div>
-          <a class="btn btn-primary" href="vault.html">Run Vault Scan</a>
-        </article>
-      </div>
-    </section>
+    <section id="video" class="section-pad"><div class="phone-shell section-card"><div class="section-title"><p class="eyebrow">Featured Motion</p><h2>Visuals + 01 Show Energy</h2><p>Trailers, interviews, motion covers, and show drops can rotate here.</p></div><div class="video-slot"><iframe src="https://www.youtube.com/embed/4jvPUvhXnBA?si=xcAaqs7WezNUJeS7" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></div></section>
 
-    <section id="video" class="section-pad">
-      <div class="phone-shell section-card">
-        <div class="section-title">
-          <p class="eyebrow">Featured Motion</p>
-          <h2>Visuals + 01 Show Energy</h2>
-          <p>Trailers, interviews, motion covers, and show drops can rotate here.</p>
-        </div>
-        <div class="video-slot">
-          <iframe src="https://www.youtube.com/embed/4jvPUvhXnBA?si=xcAaqs7WezNUJeS7"
-                  referrerpolicy="strict-origin-when-cross-origin"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowfullscreen></iframe>
-        </div>
-      </div>
-    </section>
-
-    <section id="connect" class="section-pad">
-      <div class="phone-shell section-card connect-card">
-        <div class="section-title">
-          <p class="eyebrow">Tap In</p>
-          <h2>Stay Locked In</h2>
-          <p>Booking, features, merch, interviews, business, and Vault updates.</p>
-        </div>
-        <div class="button-row compact-actions">
-          <a class="btn btn-primary" href="mailto:tone@amsenterprisecorp.com">Email AMS WEST</a>
-          <a class="btn btn-hot" href="shop.html">Merch</a>
-          <a class="btn btn-soft" href="account.html">Manage ID</a>
-        </div>
-      </div>
-    </section>
+    <section id="connect" class="section-pad"><div class="phone-shell section-card connect-card"><div class="section-title"><p class="eyebrow">Tap In</p><h2>Stay Locked In</h2><p>Booking, features, merch, interviews, business, and Vault updates.</p></div><div class="button-row compact-actions"><a class="btn btn-primary" href="mailto:tone@amsenterprisecorp.com">Email AMS WEST</a><a class="btn btn-hot" href="shop.html">Merch</a><a class="btn btn-soft" href="account.html">Manage ID</a></div></div></section>
   </main>
 
-  <footer class="site-footer">
-    <span>© <span id="year"></span> AMS WEST LLC</span>
-    <span>HYPHSWORLD • Richmond, CA</span>
-  </footer>
+  <footer class="site-footer"><span>© <span id="year"></span> AMS WEST LLC</span><span>HYPHSWORLD • Richmond, CA</span></footer>
 
   <script src="index-player.js"></script>
   <script src="auth-client.js"></script>
   <script src="leaderboard-widgets.js"></script>
+  <script src="duck-helper.js"></script>
   <script>
   document.addEventListener("DOMContentLoaded", async function () {
     var statusEl = document.getElementById("login-status");
@@ -267,48 +167,12 @@
     var navAccountLink = document.getElementById("nav-account-link");
     var logoutButton = document.getElementById("home-logout");
     var year = document.getElementById("year");
-
     if (year) year.textContent = new Date().getFullYear();
-
-    if (!window.HWAuth) {
-      statusEl.textContent = "Auth unavailable";
-      return;
-    }
-
+    if (!window.HWAuth) { statusEl.textContent = "Auth unavailable"; return; }
     var session = await HWAuth.getSession();
-    if (session && session.email) {
-      statusEl.textContent = "Logged in as " + session.email;
-      authLink.textContent = "Manage Account";
-      authLink.href = "account.html";
-      if (navAccountLink) {
-        navAccountLink.textContent = "Manage ID";
-        navAccountLink.href = "account.html";
-      }
-      if (logoutButton) logoutButton.hidden = false;
-    } else {
-      statusEl.textContent = "Not logged in";
-      authLink.textContent = "Create ID / Login";
-      authLink.href = "auth.html";
-      if (navAccountLink) {
-        navAccountLink.textContent = "Create ID";
-        navAccountLink.href = "auth.html";
-      }
-      if (logoutButton) logoutButton.hidden = true;
-    }
-
-    if (logoutButton) {
-      logoutButton.addEventListener("click", async function () {
-        await HWAuth.signOut();
-        statusEl.textContent = "Logged out. Duck Sauce said he handled paperwork. He did not.";
-        logoutButton.hidden = true;
-        authLink.textContent = "Create ID / Login";
-        authLink.href = "auth.html";
-        if (navAccountLink) {
-          navAccountLink.textContent = "Create ID";
-          navAccountLink.href = "auth.html";
-        }
-      });
-    }
+    if (session && session.email) { statusEl.textContent = "Logged in as " + session.email; authLink.textContent = "Manage Account"; authLink.href = "account.html"; if (navAccountLink) { navAccountLink.textContent = "Manage ID"; navAccountLink.href = "account.html"; } if (logoutButton) logoutButton.hidden = false; }
+    else { statusEl.textContent = "Not logged in"; authLink.textContent = "Create ID / Login"; authLink.href = "auth.html"; if (navAccountLink) { navAccountLink.textContent = "Create ID"; navAccountLink.href = "auth.html"; } if (logoutButton) logoutButton.hidden = true; }
+    if (logoutButton) { logoutButton.addEventListener("click", async function () { await HWAuth.signOut(); statusEl.textContent = "Logged out. Duck Sauce said he handled paperwork. He did not."; logoutButton.hidden = true; authLink.textContent = "Create ID / Login"; authLink.href = "auth.html"; if (navAccountLink) { navAccountLink.textContent = "Create ID"; navAccountLink.href = "auth.html"; } }); }
   });
   </script>
 </body>
