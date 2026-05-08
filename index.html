@@ -11,7 +11,7 @@
   <meta name="theme-color" content="#00ff66" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
   <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="homepage-upgrades.css" />
+  <link rel="stylesheet" href="homepage-upgrades.css?v=clear-buttons-mp4-3file" />
   <link rel="stylesheet" href="homepage-panel-3d.css" />
   <link rel="stylesheet" href="leaderboard-widgets.css" />
 </head>
@@ -43,12 +43,11 @@
       <div class="hero-video-card">
         <div class="hero-media-frame">
           <video id="hero-video" class="hero-video" autoplay muted loop playsinline controls preload="auto" poster="album-art.jpg" data-hero-sources="hyphsworld-hero.mp4|01-show-teaser.mp4"></video>
-          <div class="hero-scan-line"></div>
         </div>
         <div class="hero-content">
           <p class="eyebrow neon-text">AMS WEST PRESENTS</p>
           <h1>HYPHSWORLD</h1>
-          <p class="lead">MP4 media player locked in clear dimensions. Tap the buttons like the arcade page and move through the world.</p>
+          <p class="lead">Clear buttons, colorful letters, no button-box background, and the MP4 picture stays open.</p>
           <div class="button-row compact-actions">
             <a class="btn btn-soft" href="index.html">Home</a>
             <a class="btn btn-soft" href="vault.html">Vault</a>
@@ -94,7 +93,6 @@
         </ul>
         <a class="btn btn-primary" href="games.html">Play Now</a>
       </article>
-
       <article class="phone-shell section-card action-card">
         <span class="pill-label">SECRET</span>
         <h2>Hidden Challenges</h2>
@@ -110,7 +108,6 @@
           <h2>Homepage Player</h2>
           <p>Logged-in Cool Points can climb and stay attached to the account. Guest sessions still stay local.</p>
         </div>
-
         <div class="player-grid">
           <div class="now-playing-card">
             <span id="active-track-chip" class="track-chip">HAM</span>
@@ -118,22 +115,16 @@
             <p id="track-meta">Hyph Life — prod by 1ManBand</p>
             <audio id="hyph-audio" preload="metadata"></audio>
           </div>
-
           <div class="player-side">
-            <div class="points-box">
-              <span>Cool Points</span>
-              <strong id="cool-points">0</strong>
-            </div>
+            <div class="points-box"><span>Cool Points</span><strong id="cool-points">0</strong></div>
             <p id="player-status" class="status-line">Pick a record. Browser may ask for one tap before audio starts.</p>
           </div>
         </div>
-
         <div class="progress-wrap" aria-label="Track progress">
           <span id="current-time">0:00</span>
           <input id="track-progress" type="range" min="0" max="100" value="0" aria-label="Audio progress" />
           <span id="duration-time">0:00</span>
         </div>
-
         <div class="button-row player-controls">
           <button class="btn btn-primary" type="button" data-player-action="play">Play</button>
           <button class="btn btn-soft" type="button" data-player-action="pause">Pause</button>
@@ -143,56 +134,11 @@
         </div>
       </div>
     </section>
-
-    <section id="spotlight" class="section-pad">
-      <div class="phone-shell section-card spotlight-section">
-        <div class="section-title">
-          <p class="eyebrow">Artist Spotlight</p>
-          <h2>Platform Motion</h2>
-          <p>Spotlight plays right here. No wrong redirect.</p>
-        </div>
-
-        <article class="spotlight-feature">
-          <div class="spotlight-art">
-            <img src="25-8.jpg" alt="Young Tez 25/8 artwork" onerror="this.onerror=null;this.src='album-art.jpg';" />
-            <span class="spotlight-badge">Spotlight #1</span>
-          </div>
-          <div class="spotlight-info">
-            <p class="eyebrow">Artist Spotlight #1</p>
-            <h3>25/8</h3>
-            <p>Young Tez — prod by Marty McPhresh</p>
-            <div class="button-row compact-actions">
-              <button class="btn btn-primary" type="button" data-track-id="tez258">Play 25/8</button>
-              <a class="btn btn-soft" href="app-player.html#track-tez258">Open Full Player</a>
-              <a class="btn btn-hot" href="#connect">Tap In</a>
-            </div>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <section id="connect" class="section-pad">
-      <div class="phone-shell section-card connect-card">
-        <div class="section-title">
-          <p class="eyebrow">Tap In</p>
-          <h2>Stay Locked In</h2>
-          <p>Booking, features, merch, interviews, business, and Vault updates.</p>
-        </div>
-        <div class="button-row compact-actions">
-          <a class="btn btn-primary" href="mailto:tone@amsenterprisecorp.com">Email AMS WEST</a>
-          <a class="btn btn-hot" href="shop.html">Merch</a>
-          <a class="btn btn-soft" href="account.html">Manage ID</a>
-        </div>
-      </div>
-    </section>
   </main>
 
-  <footer class="site-footer">
-    <span>© <span id="year"></span> AMS WEST LLC</span>
-    <span>HYPHSWORLD • Richmond, CA</span>
-  </footer>
+  <footer class="site-footer"><span>© <span id="year"></span> AMS WEST LLC</span><span>HYPHSWORLD • Richmond, CA</span></footer>
 
-  <script src="index-player.js"></script>
+  <script src="index-player.js?v=clear-buttons-mp4-3file"></script>
   <script src="auth-client.js"></script>
   <script src="leaderboard-widgets.js"></script>
   <script src="duck-helper.js"></script>
@@ -204,58 +150,30 @@
     var heroAccountLink = document.getElementById("hero-account-link");
     var logoutButton = document.getElementById("home-logout");
     var year = document.getElementById("year");
-
     if (year) year.textContent = new Date().getFullYear();
-
-    if (!window.HWAuth) {
-      statusEl.textContent = "Auth unavailable";
-      return;
-    }
-
+    if (!window.HWAuth) { statusEl.textContent = "Auth unavailable"; return; }
     var session = await HWAuth.getSession();
     if (session && session.email) {
       statusEl.textContent = "Logged in as " + session.email;
-      authLink.textContent = "Manage Account";
-      authLink.href = "account.html";
-      if (navAccountLink) {
-        navAccountLink.textContent = "Manage ID";
-        navAccountLink.href = "account.html";
-      }
-      if (heroAccountLink) {
-        heroAccountLink.textContent = "Manage ID";
-        heroAccountLink.href = "account.html";
-      }
+      authLink.textContent = "Manage Account"; authLink.href = "account.html";
+      if (navAccountLink) { navAccountLink.textContent = "Manage ID"; navAccountLink.href = "account.html"; }
+      if (heroAccountLink) { heroAccountLink.textContent = "Manage ID"; heroAccountLink.href = "account.html"; }
       if (logoutButton) logoutButton.hidden = false;
     } else {
       statusEl.textContent = "Not logged in";
-      authLink.textContent = "Create ID / Login";
-      authLink.href = "auth.html";
-      if (navAccountLink) {
-        navAccountLink.textContent = "Create ID";
-        navAccountLink.href = "auth.html";
-      }
-      if (heroAccountLink) {
-        heroAccountLink.textContent = "Create ID";
-        heroAccountLink.href = "auth.html";
-      }
+      authLink.textContent = "Create ID / Login"; authLink.href = "auth.html";
+      if (navAccountLink) { navAccountLink.textContent = "Create ID"; navAccountLink.href = "auth.html"; }
+      if (heroAccountLink) { heroAccountLink.textContent = "Create ID"; heroAccountLink.href = "auth.html"; }
       if (logoutButton) logoutButton.hidden = true;
     }
-
     if (logoutButton) {
       logoutButton.addEventListener("click", async function () {
         await HWAuth.signOut();
         statusEl.textContent = "Logged out. Duck Sauce said he handled paperwork. He did not.";
         logoutButton.hidden = true;
-        authLink.textContent = "Create ID / Login";
-        authLink.href = "auth.html";
-        if (navAccountLink) {
-          navAccountLink.textContent = "Create ID";
-          navAccountLink.href = "auth.html";
-        }
-        if (heroAccountLink) {
-          heroAccountLink.textContent = "Create ID";
-          heroAccountLink.href = "auth.html";
-        }
+        authLink.textContent = "Create ID / Login"; authLink.href = "auth.html";
+        if (navAccountLink) { navAccountLink.textContent = "Create ID"; navAccountLink.href = "auth.html"; }
+        if (heroAccountLink) { heroAccountLink.textContent = "Create ID"; heroAccountLink.href = "auth.html"; }
       });
     }
   });
