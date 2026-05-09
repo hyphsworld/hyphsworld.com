@@ -1,0 +1,124 @@
+/* HYPHSWORLD global futuristic button lettering upgrade */
+:root{
+  --hw-letter-rainbow:linear-gradient(90deg,#39ff14 0%,#ffe600 18%,#ff2bd6 39%,#00e5ff 62%,#ff8a00 82%,#39ff14 100%);
+}
+.main-nav a,
+.btn,
+.games-btn,
+.hw-board-btn,
+.gate-game-btn,
+.gate-track-btn,
+.scan-button,
+.clear-button,
+.manual-enter,
+.nav-pill,
+.page-merch .pill,
+.chip,
+.game-tab,
+.game-controls button,
+.duckBtns button,
+.duckReturn{
+  font-size:clamp(.88rem,1.15vw,1.05rem)!important;
+  font-weight:1000!important;
+  letter-spacing:.095em!important;
+  text-transform:uppercase!important;
+}
+.main-nav a,
+.btn,
+.games-btn,
+.hw-board-btn,
+.gate-game-btn,
+.gate-track-btn,
+.scan-button,
+.clear-button,
+.manual-enter,
+.nav-pill{
+  position:relative;
+  isolation:isolate;
+  text-shadow:0 0 10px rgba(255,255,255,.18),0 0 18px rgba(57,255,20,.14);
+}
+.main-nav a:not(.nav-cta),
+.btn-soft,
+.games-btn:not(.primary),
+.hw-board-btn,
+.gate-track-btn,
+.clear-button,
+.nav-pill{
+  color:#fff!important;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,.055)),
+    radial-gradient(circle at 20% 20%,rgba(57,255,20,.18),transparent 34%),
+    rgba(0,0,0,.46)!important;
+  border-color:rgba(0,229,255,.34)!important;
+}
+.main-nav a::first-letter,
+.btn::first-letter,
+.games-btn::first-letter,
+.hw-board-btn::first-letter,
+.gate-game-btn::first-letter,
+.gate-track-btn::first-letter,
+.scan-button::first-letter,
+.clear-button::first-letter,
+.nav-pill::first-letter{
+  color:#ffe600;
+  text-shadow:0 0 12px rgba(255,230,0,.72),2px 1px 0 rgba(255,43,214,.55);
+}
+.main-nav a:nth-child(6n+1),.button-row .btn:nth-child(6n+1),.games-actions .games-btn:nth-child(6n+1){color:#39ff14!important}
+.main-nav a:nth-child(6n+2),.button-row .btn:nth-child(6n+2),.games-actions .games-btn:nth-child(6n+2){color:#ffe600!important}
+.main-nav a:nth-child(6n+3),.button-row .btn:nth-child(6n+3),.games-actions .games-btn:nth-child(6n+3){color:#ff4fd8!important}
+.main-nav a:nth-child(6n+4),.button-row .btn:nth-child(6n+4),.games-actions .games-btn:nth-child(6n+4){color:#42ccff!important}
+.main-nav a:nth-child(6n+5),.button-row .btn:nth-child(6n+5),.games-actions .games-btn:nth-child(6n+5){color:#ff8a00!important}
+.main-nav a:nth-child(6n+6),.button-row .btn:nth-child(6n+6),.games-actions .games-btn:nth-child(6n+6){color:#ffffff!important}
+.main-nav .nav-cta,
+.btn-primary,
+.btn-neon,
+.games-btn.primary,
+.gate-game-btn,
+.scan-button,
+.game-controls .primary{
+  color:#050505!important;
+  background:var(--hw-letter-rainbow)!important;
+  background-size:260% 100%!important;
+  animation:hwButtonColorRun 3.4s linear infinite!important;
+  text-shadow:0 1px 0 rgba(255,255,255,.32)!important;
+  box-shadow:0 0 22px rgba(57,255,20,.22),0 0 34px rgba(0,229,255,.12),0 14px 30px rgba(0,0,0,.32)!important;
+}
+.btn-hot,.btn-ice{
+  color:#fff!important;
+  text-shadow:0 0 12px rgba(255,255,255,.20),2px 2px 0 rgba(0,0,0,.24)!important;
+}
+.main-nav a:hover,
+.btn:hover,
+.games-btn:hover,
+.hw-board-btn:hover,
+.gate-game-btn:hover,
+.gate-track-btn:hover,
+.nav-pill:hover{
+  transform:translateY(-3px) scale(1.045)!important;
+  filter:saturate(1.24) contrast(1.05)!important;
+}
+.main-nav a::after,
+.btn::after,
+.games-btn::after,
+.hw-board-btn::after,
+.gate-game-btn::after,
+.gate-track-btn::after,
+.nav-pill::after{
+  height:3px!important;
+  background:var(--hw-letter-rainbow)!important;
+  background-size:240% 100%!important;
+  animation:hwButtonColorRun 2.8s linear infinite!important;
+  opacity:.9!important;
+}
+@keyframes hwButtonColorRun{to{background-position:260% 50%}}
+@media(max-width:700px){
+  .main-nav a,.btn,.games-btn,.hw-board-btn,.gate-game-btn,.gate-track-btn,.scan-button,.clear-button,.manual-enter,.nav-pill{
+    font-size:clamp(.86rem,3.2vw,.98rem)!important;
+    padding-left:13px!important;
+    padding-right:13px!important;
+    min-height:44px!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .main-nav .nav-cta,.btn-primary,.btn-neon,.games-btn.primary,.gate-game-btn,.scan-button,.game-controls .primary,.main-nav a::after,.btn::after,.games-btn::after,.hw-board-btn::after,.gate-game-btn::after,.gate-track-btn::after,.nav-pill::after{animation:none!important}
+}
