@@ -1,0 +1,120 @@
+/* HYPHSWORLD Level 1 Cyber Vault Skin */
+body.vault-page{
+  background:
+    radial-gradient(circle at 18% 10%,rgba(0,229,255,.22),transparent 30%),
+    radial-gradient(circle at 82% 18%,rgba(255,43,214,.16),transparent 34%),
+    linear-gradient(180deg,#02070b 0%,#061b1e 45%,#030507 100%)!important;
+}
+body.vault-page .motion-grid{
+  background-image:
+    linear-gradient(rgba(0,255,230,.12) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(57,255,20,.08) 1px,transparent 1px)!important;
+  background-size:42px 42px!important;
+  opacity:.7!important;
+}
+.live-pad,.console-card,.scan-window{
+  border-color:rgba(0,255,230,.34)!important;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(0,229,255,.16),transparent 34%),
+    linear-gradient(145deg,rgba(4,21,24,.92),rgba(0,0,0,.72))!important;
+  box-shadow:0 0 44px rgba(0,229,255,.14),0 30px 90px rgba(0,0,0,.55),inset 0 0 42px rgba(57,255,20,.05)!important;
+}
+.access-core{
+  min-height:560px!important;
+  border-radius:34px!important;
+  border:2px solid rgba(0,255,230,.42)!important;
+  background:
+    radial-gradient(circle at 50% 46%,rgba(0,255,230,.18),transparent 30%),
+    linear-gradient(rgba(0,255,230,.10) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(57,255,20,.08) 1px,transparent 1px),
+    linear-gradient(180deg,rgba(0,20,24,.92),rgba(0,0,0,.82))!important;
+  background-size:auto,36px 36px,36px 36px,auto!important;
+  box-shadow:inset 0 0 70px rgba(0,229,255,.16),0 0 44px rgba(0,229,255,.16)!important;
+  perspective:900px;
+}
+.access-core::before{
+  content:"";
+  position:absolute;
+  left:50%;top:51%;
+  width:min(78%,440px);aspect-ratio:1;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  border:18px solid rgba(0,255,230,.18);
+  box-shadow:0 0 0 4px rgba(0,255,230,.28),inset 0 0 38px rgba(0,255,230,.18),0 0 60px rgba(0,255,230,.22);
+  background:
+    conic-gradient(from 0deg,rgba(0,255,230,.58),rgba(0,0,0,0) 12%,rgba(57,255,20,.48) 20%,rgba(0,0,0,0) 34%,rgba(255,43,214,.34) 48%,rgba(0,0,0,0) 64%,rgba(0,255,230,.58) 82%,rgba(0,0,0,0));
+  animation:cyberVaultSpin 10s linear infinite;
+  opacity:.95;
+}
+.access-core::after{
+  content:"LEVEL 1 ACCESS";
+  position:absolute;
+  left:50%;bottom:32px;
+  transform:translateX(-50%);
+  padding:9px 14px;
+  border-radius:999px;
+  border:1px solid rgba(0,255,230,.48);
+  background:rgba(0,0,0,.62);
+  color:#39ff14;
+  font:1000 12px/1 Arial,sans-serif;
+  letter-spacing:.18em;
+  text-shadow:0 0 12px rgba(57,255,20,.65);
+}
+@keyframes cyberVaultSpin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.vault-door{
+  inset:24%!important;
+  border-radius:50%!important;
+  border:2px solid rgba(0,255,230,.60)!important;
+  background:radial-gradient(circle,rgba(0,229,255,.18),rgba(0,0,0,.82) 64%)!important;
+  box-shadow:inset 0 0 44px rgba(0,255,230,.35),0 0 38px rgba(0,255,230,.22)!important;
+}
+.door-side{background:linear-gradient(135deg,rgba(0,255,230,.12),rgba(0,0,0,.32))!important;clip-path:polygon(0 0,100% 50%,0 100%)!important}
+.door-side.right{clip-path:polygon(100% 0,0 50%,100% 100%)!important}
+.scan-rings span{border-color:#00ffe6!important;box-shadow:0 0 24px rgba(0,255,230,.34)!important}
+.scan-rings span:nth-child(2){border-color:#39ff14!important}.scan-rings span:nth-child(3){border-color:#ff2bd6!important}
+.body-target,.scan-person{filter:drop-shadow(0 0 18px rgba(0,255,230,.8))!important}
+.body-target .head,.scan-head,.body-target .torso,.scan-torso,.body-target .arm,.body-target .leg,.scan-arm,.scan-leg{
+  background:rgba(0,255,230,.08)!important;
+  border:2px solid rgba(0,255,230,.82)!important;
+  box-shadow:inset 0 0 18px rgba(0,255,230,.28),0 0 18px rgba(0,255,230,.35)!important;
+}
+.idle-scan-beam,.real-scan-beam{
+  background:linear-gradient(90deg,transparent,#39ff14,#00ffe6,#fff,transparent)!important;
+  box-shadow:0 0 32px #00ffe6,0 0 70px rgba(57,255,20,.72)!important;
+}
+.console-card{position:relative;overflow:hidden}
+.console-card::before{
+  content:"";position:absolute;inset:14px;border-radius:24px;pointer-events:none;
+  border:1px solid rgba(0,255,230,.20);
+  background:linear-gradient(90deg,transparent,rgba(0,255,230,.10),transparent);
+  animation:cyberSweep 3.8s linear infinite;
+}
+@keyframes cyberSweep{from{transform:translateX(-110%)}to{transform:translateX(110%)}}
+.gate-form{position:relative;z-index:2;padding:18px;border-radius:24px;border:1px solid rgba(0,255,230,.32);background:rgba(0,0,0,.34);box-shadow:inset 0 0 28px rgba(0,255,230,.08)}
+.input-shell input{
+  border-color:rgba(0,255,230,.54)!important;
+  background:linear-gradient(180deg,rgba(0,22,25,.92),rgba(0,0,0,.86))!important;
+  color:#00ffe6!important;
+  letter-spacing:.22em!important;
+  text-align:center;
+  text-shadow:0 0 14px rgba(0,255,230,.65);
+}
+.input-shell input::placeholder{color:rgba(0,255,230,.56)!important}
+.input-pulse{border-color:#00ffe6!important;box-shadow:0 0 26px rgba(0,255,230,.24)!important}
+.scan-button{
+  color:#020405!important;
+  background:linear-gradient(135deg,#00ffe6,#39ff14,#ffe600,#ff2bd6)!important;
+  box-shadow:0 0 26px rgba(0,255,230,.35),0 16px 34px rgba(0,0,0,.35)!important;
+}
+.scan-visual{
+  background:
+    radial-gradient(circle at 50% 52%,rgba(0,255,230,.20),transparent 34%),
+    linear-gradient(rgba(0,255,230,.10) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,255,230,.08) 1px,transparent 1px),
+    #02080b!important;
+  background-size:auto,34px 34px,34px 34px,auto!important;
+}
+.scan-door-big{inset:10%!important;border-radius:50%!important;border:2px solid rgba(0,255,230,.38);box-shadow:inset 0 0 48px rgba(0,255,230,.18)}
+.big-door{background:linear-gradient(135deg,rgba(0,255,230,.12),rgba(0,0,0,.55))!important;border-color:rgba(0,255,230,.18)!important}
+.granted-badge{background:linear-gradient(135deg,#39ff14,#00ffe6,#fff)!important;color:#020405!important;text-shadow:none!important}
+@media(max-width:760px){.access-core{min-height:460px!important}.vault-door{inset:20%!important}.access-core::before{width:min(88%,360px)}.gate-form{padding:14px}.input-shell input{font-size:18px!important}}
