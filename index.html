@@ -51,7 +51,9 @@
 
     <section class="hero-shell" id="top">
       <div class="hero-video-card lobby-style-player">
-        <video id="hero-video" class="hero-video" autoplay muted loop playsinline preload="auto" controls poster="album-art.jpg" data-hero-sources="hyphsworld-hero.mp4"></video>
+        <video id="hero-video" class="hero-video" autoplay muted loop playsinline preload="auto" controls poster="album-art.jpg" data-hero-sources="hyphsworld-hero.mp4,lobby-preview.mp4,01-show-teaser.mp4">
+          <source src="hyphsworld-hero.mp4?v=homepage-mp4-20260509" type="video/mp4" />
+        </video>
         <div class="hero-video-status" id="hero-video-status">MP4 loading muted...</div>
         <button class="hero-sound-toggle" type="button" data-hero-toggle>Unmute</button>
       </div>
@@ -146,7 +148,7 @@
   <script src="auth-client.js"></script>
   <script src="index-player.js"></script>
   <script src="leaderboard-widgets.js"></script>
-  <script src="duck-helper.js"></script>
+  <script src="duck-helper.js?v=global-duck-20260508-friendly-1"></script>
   <script src="transport-system.js"></script>
   <script>
   document.addEventListener("DOMContentLoaded", async function () {
@@ -158,6 +160,8 @@
     var heroVideo = document.getElementById("hero-video");
     var heroToggle = document.querySelector("[data-hero-toggle]");
     var heroStatus = document.getElementById("hero-video-status");
+    var heroSources = heroVideo ? (heroVideo.dataset.heroSources || "hyphsworld-hero.mp4,lobby-preview.mp4,01-show-teaser.mp4").split(",") : [];
+    var heroSourceIndex = 0;
 
     function setHeroStatus(message) {
       if (heroStatus) heroStatus.textContent = message;
@@ -168,14 +172,44 @@
       heroToggle.textContent = heroVideo.muted ? "Unmute" : "Mute";
     }
 
-    if (heroVideo) {
+    function setHeroSource(index) {
+      if (!heroVideo || !heroSources.length) return false;
+      var raw = (heroSources[index] || "").trim();
+      if (!raw) return false;
+      heroSourceIndex = index;
+      heroVideo.innerHTML = "";
+      var source = document.createElement("source");
+      source.src = raw + (raw.indexOf("?") > -1 ? "&" : "?") + "v=homepage-mp4-20260509";
+      source.type = "video/mp4";
+      heroVideo.appendChild(source);
+      heroVideo.load();
+      setHeroStatus("Loading " + raw + " muted...");
+      return true;
+    }
+
+    function tryPlayHero() {
+      if (!heroVideo) return;
       heroVideo.muted = true;
       heroVideo.setAttribute("muted", "");
+      heroVideo.setAttribute("playsinline", "");
       heroVideo.play().then(function () {
         setHeroStatus("MP4 playing muted");
       }).catch(function () {
         setHeroStatus("Tap play if your browser blocks autoplay");
       });
+    }
+
+    if (heroVideo) {
+      heroVideo.addEventListener("error", function () {
+        var next = heroSourceIndex + 1;
+        if (next < heroSources.length && setHeroSource(next)) {
+          tryPlayHero();
+        } else {
+          setHeroStatus("MP4 file not found. Check hyphsworld-hero.mp4 in the repo root.");
+        }
+      }, true);
+      setHeroSource(0);
+      tryPlayHero();
     }
 
     if (heroToggle && heroVideo) {
