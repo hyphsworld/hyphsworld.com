@@ -1,9 +1,12 @@
 (function(){
   "use strict";
 
-  var IMG="duck-sauce.png";
+  var VERSION="global-duck-20260508-reload-2";
+  var IMG_VERSION="duck-reload-20260508";
+  var IMG_FALLBACKS=["duck-sauce.png","duck-sauce.jpg","./duck-sauce.png","./duck-sauce.jpg"];
   var KEY="duck_helper_pos";
   var HIDE_KEY="duck_helper_hidden_hint_seen";
+  var VERSION_KEY="duck_helper_version";
   var lastTap=0;
   var lineIndex=0;
 
@@ -12,6 +15,7 @@
   function save(o){try{localStorage.setItem(KEY,JSON.stringify(Object.assign(state(),o)))}catch(e){}}
   function store(key,value){try{localStorage.setItem(key,String(value))}catch(e){}}
   function read(key){try{return localStorage.getItem(key)}catch(e){return null}}
+  function busted(src){return src+(src.indexOf("?")>-1?"&":"?")+"v="+IMG_VERSION}
 
   var GENERAL_LINES=[
     "Tap me once for help. Double-tap me if you need me gone. I got feelings, but I also got a hide button, genius.",
@@ -115,7 +119,7 @@
     if($("#duckStyle"))return;
     var s=document.createElement("style");
     s.id="duckStyle";
-    s.textContent=".hw-duck-guide{display:none!important}.duckBox{position:fixed;left:16px;top:170px;width:92px;height:92px;z-index:2147483000;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}.duckBox:active{cursor:grabbing}.duckBox.off{display:none}.duckBox::before{content:'TAP HELP';position:absolute;left:50%;top:-18px;transform:translateX(-50%);padding:4px 8px;border-radius:999px;background:linear-gradient(90deg,#39ff14,#ffe600,#ff2bd6,#00e5ff);color:#050505;font:1000 10px/1 system-ui;letter-spacing:.08em;box-shadow:0 0 18px rgba(57,255,20,.28);white-space:nowrap}.duckBox::after{content:'';position:absolute;inset:-8px;border-radius:50%;border:2px dashed rgba(57,255,20,.45);animation:duckOrbit 2.8s linear infinite;pointer-events:none}.duckFace{width:92px;height:92px;border:0;background:transparent;padding:0;cursor:inherit;filter:drop-shadow(0 14px 22px rgba(0,0,0,.52)) drop-shadow(0 0 14px rgba(57,255,20,.18));animation:duckBob 2.2s ease-in-out infinite alternate}.duckFace img{width:100%;height:100%;object-fit:contain}.duckTalk{position:absolute;left:78px;top:-6px;width:min(72vw,278px);display:none;padding:10px 11px;border-radius:14px;background:linear-gradient(135deg,rgba(6,8,9,.96),rgba(18,8,28,.94));color:#fff;border:2px solid rgba(31,252,255,.30);box-shadow:0 12px 28px rgba(0,0,0,.42),0 0 18px rgba(57,255,20,.08);font:850 12px/1.32 system-ui}.duckTalk.show{display:block}.duckTalk strong{display:block;color:#39ff14;font-size:9px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:3px}.duckTalk span{display:block}.duckBtns{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap}.duckBtns button,.duckReturn{border:0;border-radius:999px;padding:7px 9px;font:1000 9px/1 system-ui;cursor:pointer}.duckBtns button:first-child,.duckReturn{color:#050505;background:linear-gradient(135deg,#39ff14,#ffe600,#ff2bd6,#00e5ff)}.duckBtns button:nth-child(2){color:#050505;background:linear-gradient(135deg,#ffe600,#ff8a00)}.duckBtns button:last-child{color:#fff;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18)}.duckReturn{position:fixed;left:14px;bottom:88px;z-index:2147482999;display:none;text-transform:uppercase;box-shadow:0 0 22px rgba(57,255,20,.22)}.duckReturn.on{display:block}@keyframes duckBob{from{transform:translateY(0) rotate(-2deg)}to{transform:translateY(-8px) rotate(2deg)}}@keyframes duckOrbit{to{transform:rotate(360deg)}}@media(max-width:700px){.duckBox{width:78px;height:78px;top:auto;bottom:118px;left:18px}.duckFace{width:78px;height:78px}.duckTalk{left:0;top:auto;bottom:82px;width:min(82vw,278px);padding:9px 10px;border-radius:13px;font-size:11px;line-height:1.26}.duckTalk strong{font-size:8px}.duckBtns{gap:4px;margin-top:7px}.duckBtns button{padding:6px 7px;font-size:8px}.duckBox::before{top:-17px;font-size:9px}}";
+    s.textContent=".hw-duck-guide{display:none!important}.duckBox{position:fixed;left:16px;top:170px;width:92px;height:92px;z-index:2147483000;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}.duckBox:active{cursor:grabbing}.duckBox.off{display:none}.duckBox::before{content:'TAP HELP';position:absolute;left:50%;top:-18px;transform:translateX(-50%);padding:4px 8px;border-radius:999px;background:linear-gradient(90deg,#39ff14,#ffe600,#ff2bd6,#00e5ff);color:#050505;font:1000 10px/1 system-ui;letter-spacing:.08em;box-shadow:0 0 18px rgba(57,255,20,.28);white-space:nowrap}.duckBox::after{content:'';position:absolute;inset:-8px;border-radius:50%;border:2px dashed rgba(57,255,20,.45);animation:duckOrbit 2.8s linear infinite;pointer-events:none}.duckFace{width:92px;height:92px;border:0;background:transparent;padding:0;cursor:inherit;filter:drop-shadow(0 14px 22px rgba(0,0,0,.52)) drop-shadow(0 0 14px rgba(57,255,20,.18));animation:duckBob 2.2s ease-in-out infinite alternate}.duckFace img{width:100%;height:100%;object-fit:contain}.duckFace .duckFallback{display:grid;place-items:center;width:100%;height:100%;border-radius:50%;background:radial-gradient(circle at 30% 25%,#fff36d,#39ff14 42%,#00e5ff 70%,#ff2bd6);color:#050505;font:1000 30px/1 system-ui;box-shadow:0 0 24px rgba(57,255,20,.28)}.duckTalk{position:absolute;left:78px;top:-6px;width:min(72vw,278px);display:none;padding:10px 11px;border-radius:14px;background:linear-gradient(135deg,rgba(6,8,9,.96),rgba(18,8,28,.94));color:#fff;border:2px solid rgba(31,252,255,.30);box-shadow:0 12px 28px rgba(0,0,0,.42),0 0 18px rgba(57,255,20,.08);font:850 12px/1.32 system-ui}.duckTalk.show{display:block}.duckTalk strong{display:block;color:#39ff14;font-size:9px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:3px}.duckTalk span{display:block}.duckBtns{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap}.duckBtns button,.duckReturn{border:0;border-radius:999px;padding:7px 9px;font:1000 9px/1 system-ui;cursor:pointer}.duckBtns button:first-child,.duckReturn{color:#050505;background:linear-gradient(135deg,#39ff14,#ffe600,#ff2bd6,#00e5ff)}.duckBtns button:nth-child(2){color:#050505;background:linear-gradient(135deg,#ffe600,#ff8a00)}.duckBtns button:last-child{color:#fff;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18)}.duckReturn{position:fixed;left:14px;bottom:88px;z-index:2147482999;display:none;text-transform:uppercase;box-shadow:0 0 22px rgba(57,255,20,.22)}.duckReturn.on{display:block}@keyframes duckBob{from{transform:translateY(0) rotate(-2deg)}to{transform:translateY(-8px) rotate(2deg)}}@keyframes duckOrbit{to{transform:rotate(360deg)}}@media(max-width:700px){.duckBox{width:78px;height:78px;top:auto;bottom:118px;left:18px}.duckFace{width:78px;height:78px}.duckTalk{left:0;top:auto;bottom:82px;width:min(82vw,278px);padding:9px 10px;border-radius:13px;font-size:11px;line-height:1.26}.duckTalk strong{font-size:8px}.duckBtns{gap:4px;margin-top:7px}.duckBtns button{padding:6px 7px;font-size:8px}.duckBox::before{top:-17px;font-size:9px}}";
     document.head.appendChild(s);
   }
 
@@ -144,45 +148,29 @@
     say("I’m back. Try not to need me immediately. Tap me for help, double-tap if you want me gone again.",true);
   }
 
+  function installDuckImage(img){
+    var i=0;
+    function tryNext(){
+      if(i>=IMG_FALLBACKS.length){
+        var wrap=img.parentNode;
+        if(wrap){wrap.innerHTML="<span class='duckFallback' aria-hidden='true'>🦆</span>";}
+        return;
+      }
+      img.src=busted(IMG_FALLBACKS[i++]);
+    }
+    img.onerror=tryNext;
+    tryNext();
+  }
+
   function drag(box){
     var down=false,moved=false,sx=0,sy=0,bx=0,by=0,st=state();
     if(Number.isFinite(st.x)&&Number.isFinite(st.y)){box.style.left=st.x+"px";box.style.top=st.y+"px";box.style.bottom="auto"}
 
     function point(e){return e.touches?e.touches[0]:e}
-    function start(e){
-      var p=point(e);down=true;moved=false;sx=p.clientX;sy=p.clientY;
-      var r=box.getBoundingClientRect();bx=r.left;by=r.top;box.style.bottom="auto";
-      e.preventDefault();
-    }
-    function move(e){
-      if(!down)return;
-      var p=point(e),dx=p.clientX-sx,dy=p.clientY-sy;
-      if(Math.abs(dx)+Math.abs(dy)>7)moved=true;
-      var x=Math.max(6,Math.min(innerWidth-box.offsetWidth-6,bx+dx));
-      var y=Math.max(6,Math.min(innerHeight-box.offsetHeight-6,by+dy));
-      box.style.left=x+"px";box.style.top=y+"px";
-      e.preventDefault();
-    }
-    function end(){
-      if(!down)return;
-      down=false;
-      var r=box.getBoundingClientRect();
-      save({x:Math.round(r.left),y:Math.round(r.top)});
-      setTimeout(function(){moved=false},90);
-    }
-    function tapDuck(e){
-      if(moved)return;
-      e.preventDefault();
-      e.stopPropagation();
-      var now=Date.now();
-      if(now-lastTap<360){
-        say("Fine. I’ll hide. Bring me back with the Duck button when you remember you need adult supervision.",true);
-        setTimeout(hide,320);
-      }else{
-        say(nextLine(),true);
-      }
-      lastTap=now;
-    }
+    function start(e){var p=point(e);down=true;moved=false;sx=p.clientX;sy=p.clientY;var r=box.getBoundingClientRect();bx=r.left;by=r.top;box.style.bottom="auto";e.preventDefault()}
+    function move(e){if(!down)return;var p=point(e),dx=p.clientX-sx,dy=p.clientY-sy;if(Math.abs(dx)+Math.abs(dy)>7)moved=true;var x=Math.max(6,Math.min(innerWidth-box.offsetWidth-6,bx+dx));var y=Math.max(6,Math.min(innerHeight-box.offsetHeight-6,by+dy));box.style.left=x+"px";box.style.top=y+"px";e.preventDefault()}
+    function end(){if(!down)return;down=false;var r=box.getBoundingClientRect();save({x:Math.round(r.left),y:Math.round(r.top)});setTimeout(function(){moved=false},90)}
+    function tapDuck(e){if(moved)return;e.preventDefault();e.stopPropagation();var now=Date.now();if(now-lastTap<360){say("Fine. I’ll hide. Bring me back with the Duck button when you remember you need adult supervision.",true);setTimeout(hide,320)}else{say(nextLine(),true)}lastTap=now}
 
     box.addEventListener("mousedown",start);
     box.addEventListener("touchstart",start,{passive:false});
@@ -205,27 +193,24 @@
     document.querySelectorAll(".hw-duck-guide").forEach(function(el){el.style.display="none"});
     if($("#duckBox"))return;
     var st=state();
+    if(read(VERSION_KEY)!==VERSION){st.off=false;save({off:false});store(VERSION_KEY,VERSION)}
     var d=document.createElement("div");
     d.id="duckBox";
     d.className="duckBox"+(st.off?" off":"");
-    d.innerHTML="<button id='duckFace' class='duckFace' type='button' aria-label='Duck Sauce help. Tap for help. Double tap to hide.'><img src='"+IMG+"' alt='Duck Sauce'></button><div id='duckTalk' class='duckTalk'><strong>Duck Sauce</strong><span id='duckText'></span><div class='duckBtns'><button id='duckHelp' type='button'>More Help</button><button id='duckHide' type='button'>Hide Duck</button><button id='duckClose' type='button'>Close Bubble</button></div></div>";
+    d.innerHTML="<button id='duckFace' class='duckFace' type='button' aria-label='Duck Sauce help. Tap for help. Double tap to hide.'><img id='duckImg' alt='Duck Sauce'></button><div id='duckTalk' class='duckTalk'><strong>Duck Sauce</strong><span id='duckText'></span><div class='duckBtns'><button id='duckHelp' type='button'>More Help</button><button id='duckHide' type='button'>Hide Duck</button><button id='duckClose' type='button'>Close Bubble</button></div></div>";
     var r=document.createElement("button");
     r.id="duckReturn";
     r.className="duckReturn"+(st.off?" on":"");
     r.type="button";
     r.textContent="Duck";
     document.body.append(d,r);
+    installDuckImage($("#duckImg"));
     drag(d);
     $("#duckHelp").onclick=function(e){e.stopPropagation();say(nextLine(),true)};
     $("#duckHide").onclick=function(e){e.stopPropagation();say("Aight, I’m gone. Try not to touch the wrong thing immediately.",true);setTimeout(hide,300)};
     $("#duckClose").onclick=function(e){e.stopPropagation();var b=$("#duckTalk");if(b)b.classList.remove("show")};
     r.onclick=show;
-    if(!st.off){
-      setTimeout(function(){
-        var intro=read(HIDE_KEY)?"Duck Sauce online. Tap for help, double-tap to hide me again, or drag me out the way." : "Duck Sauce online. Tap me for help. Double-tap me to hide. Drag me if I’m blocking your little masterpiece.";
-        say(intro);
-      },700);
-    }
+    if(!st.off){setTimeout(function(){var intro=read(HIDE_KEY)?"Duck Sauce online. Tap for help, double-tap to hide me again, or drag me out the way." : "Duck Sauce online. Tap me for help. Double-tap me to hide. Drag me if I’m blocking your little masterpiece.";say(intro)},700)}
   }
 
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot);else boot();
