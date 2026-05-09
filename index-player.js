@@ -18,6 +18,13 @@
     'HW_SESSION_COOL_POINTS_V3', 'HW_SESSION_EARNED_ACTIONS_V3'
   ];
 
+  const POINTS_KEY = 'hyphsworld.coolPoints.total';
+  const REWARD_STATE_KEY = 'hyphsworld.rewards.songPlays.v1';
+  const MIN_PLAY_SECONDS = 18;
+  const MIN_PLAY_RATIO = 0.35;
+  const PLAY_REWARD_COOLDOWN_MS = 45 * 1000;
+  const BASE_PLAY_POINTS = 3;
+
   const tracks = {
     ham: {
       title: 'HAM',
@@ -51,13 +58,32 @@
     }
   };
 
+  const songMilestones = [
+    { count: 3, points: 10, label: '3-play warmup' },
+    { count: 5, points: 20, label: '5-play repeat runner' },
+    { count: 10, points: 50, label: '10x song loyalty bonus' },
+    { count: 25, points: 125, label: '25x heavy rotation bonus' },
+    { count: 50, points: 300, label: '50x anthem bonus' },
+    { count: 100, points: 750, label: '100x HYPHSWORLD certified bonus' }
+  ];
+
+  const totalMilestones = [
+    { count: 10, points: 25, label: '10 total plays' },
+    { count: 25, points: 75, label: '25 total plays' },
+    { count: 50, points: 175, label: '50 total plays' },
+    { count: 100, points: 400, label: '100 total plays' },
+    { count: 250, points: 1200, label: '250 total plays' },
+    { count: 500, points: 3000, label: '500 total plays' }
+  ];
+
   const duckLines = [
     'Spotlight for the slap. Vault for the pressure. Full Player if you really listening. And stop asking Buck questions he do not work in customer service.',
     'Code clean? Transport opens. Code weak? Buck gone look at you like you brought sand to the beach.',
     'Don’t ask me for secrets in the lobby. I got a lightbulb, not a loose mouth.',
     'Level 1 got Quarantine Mixtape energy. Hidden era. Mask on. Pressure out.',
     'Press something. This is not a museum. The buttons are lit for a reason.',
-    'If the MP4 is moving, the site is breathing. If the beat plays, the world is open.'
+    'If the MP4 is moving, the site is breathing. If the beat plays, the world is open.',
+    'Cool Points keep going now. Play songs, repeat songs, hit milestones. Duck Sauce built a treadmill for your ears.'
   ];
 
   const $ = (selector, root = document) => root.querySelector(selector);
@@ -72,19 +98,47 @@
   const progressEl = $('#track-progress');
   const currentTimeEl = $('#current-time');
   const durationTimeEl = $('#duration-time');
-  const heroVideo = $('#hero-video');
-  const heroToggle = $('[data-hero-toggle]');
-  const heroStatus = $('#hero-video-status');
   const duckLine = $('#duck-line');
   const duckTipButton = $('[data-duck-tip]');
   const yearEl = $('#year');
 
   let coolPoints = 0;
-  let earnedActions = new Set();
   let currentTrackId = getInitialTrackId();
   let sourceIndex = 0;
-  let playRequested = false;
   let duckIndex = 0;
+  let playStartMs = 0;
+  let playStartTime = 0;
+  let lastRewardAtByTrack = {};
+
+  function readJSON(key, fallback) {
+    try {
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : fallback;
+    } catch (error) {
+      return fallback;
+    }
+  }
+
+  function writeJSON(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {}
+  }
+
+  function readNumber(key, fallback = 0) {
+    try {
+      const value = Number.parseInt(localStorage.getItem(key), 10);
+      return Number.isFinite(value) ? value : fallback;
+    } catch (error) {
+      return fallback;
+    }
+  }
+
+  function writeNumber(key, value) {
+    try {
+      localStorage.setItem(key, String(Math.max(0, Number.parseInt(value, 10) || 0)));
+    } catch (error) {}
+  }
 
   function cleanLegacyPoints() {
     try {
@@ -95,15 +149,49 @@
     } catch (error) {}
   }
 
-  function setPoints(value) {
-    coolPoints = Math.max(0, Number.parseInt(value, 10) || 0);
-    if (pointsEl) pointsEl.textContent = String(coolPoints);
+  function rewardState() {
+    const base = readJSON(REWARD_STATE_KEY, {});
+    return {
+      version: 1,
+      totalPlays: Number.parseInt(base.totalPlays, 10) || 0,
+      tracks: base.tracks && typeof base.tracks === 'object' ? base.tracks : {},
+      totalMilestones: base.totalMilestones && typeof base.totalMilestones === 'object' ? base.totalMilestones : {}
+    };
   }
 
-  function award(actionId, amount) {
-    if (earnedActions.has(actionId)) return;
-    earnedActions.add(actionId);
-    setPoints(coolPoints + amount);
+  function saveRewardState(state) {
+    writeJSON(REWARD_STATE_KEY, state);
+  }
+
+  function trackState(state, trackId) {
+    if (!state.tracks[trackId]) {
+      state.tracks[trackId] = { plays: 0, milestones: {} };
+    }
+    if (!state.tracks[trackId].milestones || typeof state.tracks[trackId].milestones !== 'object') {
+      state.tracks[trackId].milestones = {};
+    }
+    state.tracks[trackId].plays = Number.parseInt(state.tracks[trackId].plays, 10) || 0;
+    return state.tracks[trackId];
+  }
+
+  function setPoints(value) {
+    coolPoints = Math.max(0, Number.parseInt(value, 10) || 0);
+    writeNumber(POINTS_KEY, coolPoints);
+    if (pointsEl) pointsEl.textContent = String(coolPoints);
+    document.dispatchEvent(new CustomEvent('hyph:points-updated', { detail: { points: coolPoints } }));
+  }
+
+  async function addPoints(amount, reason) {
+    const n = Number.parseInt(amount, 10) || 0;
+    if (!n) return coolPoints;
+    const next = coolPoints + n;
+    setPoints(next);
+    if (window.HWAuth && typeof window.HWAuth.addPoints === 'function') {
+      try {
+        await window.HWAuth.addPoints(n, reason || 'song_reward');
+      } catch (error) {}
+    }
+    return next;
   }
 
   function setStatus(message) {
@@ -145,20 +233,20 @@
     }
     audio.src = source;
     audio.load();
-    setStatus(`Loaded ${track.title}. Tap play if the browser is acting Hollywood.`);
+    setStatus(`Loaded ${track.title}. Listen long enough and Cool Points keep moving.`);
   }
 
   async function playTrack(trackId = currentTrackId) {
     if (!tracks[trackId]) trackId = 'ham';
     currentTrackId = trackId;
-    playRequested = true;
     updateTrackUI(trackId);
     if (!audio) return;
     if (!audio.src || !audio.src.includes(tracks[trackId].sources[sourceIndex] || '')) loadSource(trackId, 0);
     try {
       await audio.play();
-      setStatus(`${tracks[trackId].title} playing. Duck Sauce said quit refreshing and listen.`);
-      award(`play-${trackId}`, trackId === 'tez258' ? 15 : 10);
+      playStartMs = Date.now();
+      playStartTime = audio.currentTime || 0;
+      setStatus(`${tracks[trackId].title} playing. Stay on it for rewards — Duck Sauce counts repeats now.`);
     } catch (error) {
       setStatus('Browser blocked autoplay. Tap Play one more time. Duck blamed Safari.');
     }
@@ -166,14 +254,91 @@
 
   function pauseTrack() {
     if (!audio) return;
+    maybeRewardListen('pause');
     audio.pause();
-    setStatus('Paused. Buck still watching the door.');
+    setStatus('Paused. Progress counted if you listened long enough. Buck still watching the door.');
+  }
+
+  function listenedEnough() {
+    if (!audio) return false;
+    const elapsedWall = (Date.now() - playStartMs) / 1000;
+    const elapsedMedia = Math.max(0, (audio.currentTime || 0) - playStartTime);
+    const duration = Number.isFinite(audio.duration) ? audio.duration : 0;
+    const needed = duration > 0 ? Math.min(MIN_PLAY_SECONDS, Math.max(8, duration * MIN_PLAY_RATIO)) : MIN_PLAY_SECONDS;
+    return Math.max(elapsedWall, elapsedMedia) >= needed;
+  }
+
+  async function maybeRewardListen(trigger) {
+    if (!audio || !currentTrackId || !tracks[currentTrackId]) return;
+    if (!playStartMs || !listenedEnough()) return;
+
+    const now = Date.now();
+    const lastRewardAt = lastRewardAtByTrack[currentTrackId] || 0;
+    if (now - lastRewardAt < PLAY_REWARD_COOLDOWN_MS && trigger !== 'ended') return;
+    lastRewardAtByTrack[currentTrackId] = now;
+    playStartMs = Date.now();
+    playStartTime = audio.currentTime || 0;
+
+    const state = rewardState();
+    const tState = trackState(state, currentTrackId);
+    tState.plays += 1;
+    state.totalPlays += 1;
+
+    let earned = BASE_PLAY_POINTS;
+    const notes = [`+${BASE_PLAY_POINTS} play`];
+
+    songMilestones.forEach((milestone) => {
+      const key = String(milestone.count);
+      if (tState.plays >= milestone.count && !tState.milestones[key]) {
+        tState.milestones[key] = true;
+        earned += milestone.points;
+        notes.push(`+${milestone.points} ${milestone.label}`);
+      }
+    });
+
+    totalMilestones.forEach((milestone) => {
+      const key = String(milestone.count);
+      if (state.totalPlays >= milestone.count && !state.totalMilestones[key]) {
+        state.totalMilestones[key] = true;
+        earned += milestone.points;
+        notes.push(`+${milestone.points} ${milestone.label}`);
+      }
+    });
+
+    saveRewardState(state);
+    await addPoints(earned, `song_play:${currentTrackId}:${trigger}`);
+
+    const trackTitle = tracks[currentTrackId].title;
+    setStatus(`${trackTitle} play #${tState.plays} counted. ${notes.join(' • ')}. Total plays: ${state.totalPlays}.`);
   }
 
   function initAudio() {
     if (!audio || !titleEl || !metaEl) return;
     updateTrackUI(currentTrackId);
     loadSource(currentTrackId, 0);
+
+    audio.addEventListener('timeupdate', () => {
+      if (!audio || !progressEl) return;
+      const duration = audio.duration || 0;
+      if (duration > 0) progressEl.value = String(Math.min(100, (audio.currentTime / duration) * 100));
+      if (currentTimeEl) currentTimeEl.textContent = formatTime(audio.currentTime || 0);
+      if (durationTimeEl) durationTimeEl.textContent = formatTime(duration);
+    });
+
+    audio.addEventListener('play', () => {
+      playStartMs = Date.now();
+      playStartTime = audio.currentTime || 0;
+    });
+
+    audio.addEventListener('pause', () => maybeRewardListen('pause'));
+    audio.addEventListener('ended', () => maybeRewardListen('ended'));
+
+    if (progressEl) {
+      progressEl.addEventListener('input', () => {
+        if (!audio || !audio.duration) return;
+        audio.currentTime = (Number(progressEl.value) / 100) * audio.duration;
+      });
+    }
   }
 
   function initButtons() {
@@ -184,6 +349,15 @@
         playTrack(button.dataset.trackId);
       });
     });
+
+    $$('[data-player-action]').forEach((button) => {
+      button.addEventListener('click', (event) => {
+        event.preventDefault();
+        const action = button.dataset.playerAction;
+        if (action === 'play') playTrack(currentTrackId);
+        if (action === 'pause') pauseTrack();
+      });
+    });
   }
 
   function initDuckGuide() {
@@ -191,61 +365,25 @@
     duckTipButton.addEventListener('click', () => {
       duckIndex = (duckIndex + 1) % duckLines.length;
       duckLine.textContent = duckLines[duckIndex];
-      award('duck-tip', 5);
+      addPoints(2, 'duck_tip');
     });
   }
 
-  function initHeroVideo() {
-    if (!heroVideo) return;
-    const sources = (heroVideo.dataset.heroSources || '')
-      .split('|')
-      .map((item) => item.trim())
-      .filter(Boolean);
-    if (!sources.length) return;
-
-    let heroIndex = 0;
-
-    function setHeroMessage(text) {
-      if (heroStatus) heroStatus.textContent = text;
+  async function restorePoints() {
+    const localPoints = readNumber(POINTS_KEY, 0);
+    setPoints(localPoints);
+    if (window.HWAuth && typeof window.HWAuth.getPoints === 'function') {
+      try {
+        const accountPoints = await window.HWAuth.getPoints();
+        if (Number.isFinite(Number(accountPoints))) setPoints(Math.max(localPoints, Number(accountPoints)));
+      } catch (error) {}
     }
-
-    function tryHero(index) {
-      if (index >= sources.length) {
-        setHeroMessage('MP4 missing. Upload hyphsworld-hero.mp4.');
-        return;
-      }
-      heroIndex = index;
-      heroVideo.src = sources[heroIndex];
-      heroVideo.load();
-      heroVideo.play().catch(() => {
-        setHeroMessage('Tap to enable hero playback.');
-      });
-    }
-
-    heroVideo.addEventListener('loadeddata', () => {
-      setHeroMessage(`MP4 HERO LIVE: ${sources[heroIndex]}`);
-    });
-
-    heroVideo.addEventListener('error', () => tryHero(heroIndex + 1));
-
-    if (heroToggle) {
-      heroToggle.addEventListener('click', async () => {
-        heroVideo.muted = !heroVideo.muted;
-        heroToggle.textContent = heroVideo.muted ? 'Hero Sound: Off' : 'Hero Sound: On';
-        try {
-          await heroVideo.play();
-        } catch (error) {}
-      });
-    }
-
-    tryHero(0);
   }
 
   function init() {
     cleanLegacyPoints();
-    setPoints(0);
     if (yearEl) yearEl.textContent = String(new Date().getFullYear());
-    initHeroVideo();
+    restorePoints();
     initAudio();
     initButtons();
     initDuckGuide();
