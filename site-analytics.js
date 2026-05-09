@@ -5,7 +5,7 @@
   var MEASUREMENT_ID = 'G-CT7CWHCHYC';
   var SCRIPT_ID = 'hw-google-analytics-loader';
   var DUCK_SCRIPT_ID = 'hw-global-duck-helper-loader';
-  var DUCK_SRC = 'duck-helper.js?v=global-duck-20260508-reload-2';
+  var DUCK_SRC = 'duck-helper.js?v=global-duck-20260509-slick-talk-1';
 
   function loadGlobalDuckSauce() {
     if (window.__HYPHSWORLD_DUCK_HELPER_REQUESTED__) return;
