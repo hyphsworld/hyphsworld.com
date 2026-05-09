@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>Earn Arcade Access | HYPHSWORLD</title>
   <meta name="description" content="Earn HYPHSWORLD Hidden Arcade access through Cool Points, Vault progress, rewards, and account progression. Casino-style rooms are locked until earned." />
   <meta name="theme-color" content="#00ff66" />
-
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="homepage-upgrades.css" />
   <link rel="stylesheet" href="leaderboard-widgets.css" />
   <link rel="stylesheet" href="games.css" />
+  <link rel="stylesheet" href="transport-system.css" />
+  <link rel="stylesheet" href="global-button-pop.css" />
 </head>
 <body class="games-page">
   <header class="site-header">
@@ -56,42 +56,14 @@
     </section>
 
     <section class="game-card-grid" aria-label="Hidden Arcade earned access cards">
-      <article class="game-card live">
-        <span class="game-badge">LOCKED</span>
-        <h2>Casino Room</h2>
-        <p>This room opens only after earned progression. Direct URL entry is blocked.</p>
-        <ul><li>Earn Cool Points</li><li>Clear Vault moments</li><li>Watch reward unlocks</li></ul>
-        <a class="games-btn primary" href="vault.html">Start Unlock Path</a>
-      </article>
-
-      <article class="game-card live">
-        <span class="game-badge">REWARDS</span>
-        <h2>Hidden Challenges</h2>
-        <p>Challenge rooms reveal through access keys, reward progress, and HYPHSWORLD events.</p>
-        <ul><li>No public casino links</li><li>Earned rooms only</li><li>Duck Sauce hints</li></ul>
-        <a class="games-btn primary" href="leaderboard.html">Check Progress</a>
-      </article>
-
-      <article class="game-card live">
-        <span class="game-badge">SAVE</span>
-        <h2>Cool Points</h2>
-        <p>Logged-in users keep Cool Points on their HYPHSWORLD ID. Guest points stay on this device.</p>
-        <ul><li>Daily check-ins</li><li>Reward board</li><li>Account progress</li></ul>
-        <a class="games-btn primary" href="auth.html">Create ID</a>
-      </article>
+      <article class="game-card live"><span class="game-badge">LOCKED</span><h2>Casino Room</h2><p>This room opens only after earned progression. Direct URL entry is blocked.</p><ul><li>Earn Cool Points</li><li>Clear Vault moments</li><li>Watch reward unlocks</li></ul><a class="games-btn primary" href="vault.html">Start Unlock Path</a></article>
+      <article class="game-card live"><span class="game-badge">REWARDS</span><h2>Hidden Challenges</h2><p>Challenge rooms reveal through access keys, reward progress, and HYPHSWORLD events.</p><ul><li>No public casino links</li><li>Earned rooms only</li><li>Duck Sauce hints</li></ul><a class="games-btn primary" href="leaderboard.html">Check Progress</a></article>
+      <article class="game-card live"><span class="game-badge">SAVE</span><h2>Cool Points</h2><p>Logged-in users keep Cool Points on their HYPHSWORLD ID. Guest points stay on this device.</p><ul><li>Daily check-ins</li><li>Reward board</li><li>Account progress</li></ul><a class="games-btn primary" href="auth.html">Create ID</a></article>
     </section>
 
     <section class="hw-leaderboard-wrap" data-hw-leaderboard data-default-mode="games" data-limit="8" aria-label="Earned access leaderboard preview">
       <article class="hw-leaderboard-card">
-        <div class="hw-leaderboard-head">
-          <div><span class="hw-leaderboard-kicker">EARNED ACCESS BOARD</span><h2>Reward Rankings</h2><p>Scores and Cool Points feed this board when users are signed in. Hidden rooms unlock through progress, not pasted URLs.</p></div>
-          <div class="hw-leaderboard-actions">
-            <button class="hw-board-btn is-active" type="button" data-hw-board-mode="games">Arcade Scores</button>
-            <button class="hw-board-btn" type="button" data-hw-board-mode="points">Cool Points</button>
-            <a class="hw-board-btn" href="vault.html">Run Scan</a>
-            <a class="hw-board-btn" href="leaderboard.html">Full Board</a>
-          </div>
-        </div>
+        <div class="hw-leaderboard-head"><div><span class="hw-leaderboard-kicker">EARNED ACCESS BOARD</span><h2>Reward Rankings</h2><p>Scores and Cool Points feed this board when users are signed in. Hidden rooms unlock through progress, not pasted URLs.</p></div><div class="hw-leaderboard-actions"><button class="hw-board-btn is-active" type="button" data-hw-board-mode="games">Arcade Scores</button><button class="hw-board-btn" type="button" data-hw-board-mode="points">Cool Points</button><a class="hw-board-btn" href="vault.html">Run Scan</a><a class="hw-board-btn" href="leaderboard.html">Full Board</a></div></div>
         <div class="hw-leaderboard-list" data-hw-leaderboard-list><div class="hw-leaderboard-empty">Loading reward board...</div></div>
       </article>
     </section>
@@ -102,6 +74,8 @@
   <script src="auth-client.js"></script>
   <script src="leaderboard-widgets.js"></script>
   <script src="games.js"></script>
-  <script src="duck-helper.js?v=global-duck-20260509-slick-talk-1"></script>
+  <script src="site-analytics.js"></script>
+  <script src="transport-system.js"></script>
+  <script>document.addEventListener('DOMContentLoaded',function(){var year=document.getElementById('year');if(year)year.textContent=new Date().getFullYear();});</script>
 </body>
 </html>
