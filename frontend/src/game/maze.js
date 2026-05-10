@@ -5,7 +5,8 @@
 // 3 = power pellet (BIG cash)
 //
 // Maze: 21 cols x 19 rows. Symmetric horizontally.
-// Cols 0 and 20 are tunnel passages on rows 7 and 11.
+// Rows 7 and 11 are tunnel rows — full edge-to-edge corridors that wrap
+// horizontally (exit left → enter right, and vice versa).
 
 export const MAZE_TEMPLATE = [
     "111111111111111111111",  // 0
@@ -15,11 +16,11 @@ export const MAZE_TEMPLATE = [
     "101011111010111110101",  // 4
     "100010000000000010001",  // 5
     "111010111111111010111",  // 6
-    "211100000000000001112",  // 7  <- tunnel row
+    "200000000000000000002",  // 7  <- tunnel row (open edge-to-edge)
     "111010111010111010111",  // 8
     "100000010000010000001",  // 9
     "111010111010111010111",  // 10
-    "211100000000000001112",  // 11 <- tunnel row
+    "200000000000000000002",  // 11 <- tunnel row (open edge-to-edge)
     "111010111111111010111",  // 12
     "100010000000000010001",  // 13
     "101011111010111110101",  // 14
