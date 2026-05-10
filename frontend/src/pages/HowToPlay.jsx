@@ -39,7 +39,7 @@ export default function HowToPlay() {
                         <div>
                             <kbd className="cr-tag">P</kbd> / <kbd className="cr-tag">Esc</kbd> pause
                         </div>
-                        <div>On phone: tap the on-screen D-pad.</div>
+                        <div>On phone: drag the on-screen joystick.</div>
                     </div>
                 </Section>
 
