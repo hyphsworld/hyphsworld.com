@@ -17,8 +17,83 @@
   <link rel="stylesheet" href="transport-system.css" />
   <link rel="stylesheet" href="o1-show-links.css" />
   <link rel="stylesheet" href="global-button-pop.css" />
+  <style>
+    .homepage-full-episode-frame {
+      position: relative;
+      overflow: hidden;
+      width: min(1180px, calc(100% - 28px));
+      margin: 0 auto;
+      border-radius: 32px;
+      border: 2px solid rgba(31, 252, 255, 0.36);
+      background:
+        radial-gradient(circle at 12% 14%, rgba(57, 255, 122, 0.22), transparent 32%),
+        radial-gradient(circle at 82% 18%, rgba(255, 79, 216, 0.24), transparent 34%),
+        linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.03));
+      box-shadow: 0 0 34px rgba(31, 252, 255, 0.16), 0 22px 70px rgba(0,0,0,0.36);
+    }
+    .homepage-full-episode-frame::before {
+      content: "01 SHOW FULL EPISODE";
+      position: absolute;
+      left: 18px;
+      top: 14px;
+      z-index: 3;
+      display: inline-flex;
+      border-radius: 999px;
+      padding: 8px 12px;
+      color: #060606;
+      background: linear-gradient(90deg, #39ff7a, #1ffcff, #ffe45c, #ff4fd8);
+      font-size: 0.72rem;
+      font-weight: 1000;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      box-shadow: 0 0 22px rgba(31,252,255,.2);
+    }
+    .homepage-full-episode-frame::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      background: linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px);
+      background-size: 100% 7px;
+      opacity: .18;
+      mix-blend-mode: screen;
+    }
+    .homepage-full-episode-frame iframe {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      height: auto;
+      border: 0;
+      background: #000;
+    }
+    .homepage-full-episode-strip {
+      position: relative;
+      z-index: 4;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 12px 14px;
+      color: #fff;
+      background: rgba(0,0,0,.74);
+      border-top: 1px solid rgba(255,255,255,.12);
+      font-weight: 900;
+    }
+    .homepage-full-episode-strip small {
+      color: #9fffd0;
+      font-weight: 1000;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    @media (max-width: 640px) {
+      .homepage-full-episode-frame { width: calc(100% - 20px); border-radius: 24px; }
+      .homepage-full-episode-frame::before { left: 10px; top: 10px; font-size: .62rem; }
+    }
+  </style>
 </head>
-<body class="home-page" data-homepage-video="oPUZx7mCceg-20260510-refresh">
+<body class="home-page" data-homepage-video="oPUZx7mCceg-top-episode-20260510">
   <div id="login-section" style="background: transparent; color:#a9ff87; padding: 10px; text-align:center; border:0; box-shadow:none;">
     <span id="login-status" style="margin-left:20px;">Checking session...</span>
     <a href="auth.html" id="auth-link" style="margin-left:12px; color:#45ff36; font-weight:700;">Create ID / Login</a>
@@ -47,18 +122,15 @@
   <main>
     <section class="ticker" aria-label="HYPHSWORLD ticker">
       <div class="ticker-track">
-        <span>WELCOME 2 HYPHSWORLD</span><b>✦</b><span>01 SHOW HUB COMING ONLINE</span><b>✦</b><span>DUCK SAUCE GOT INSTRUCTIONS</span><b>✦</b><span>VAULT TRANSPORT READY</span><b>✦</b><span>COOL POINTS HIT THE LEADERBOARD</span><b>✦</b><span>CASINO ACCESS MUST BE EARNED</span><b>✦</b>
-        <span>WELCOME 2 HYPHSWORLD</span><b>✦</b><span>01 SHOW HUB COMING ONLINE</span><b>✦</b><span>DUCK SAUCE GOT INSTRUCTIONS</span><b>✦</b><span>VAULT TRANSPORT READY</span><b>✦</b><span>COOL POINTS HIT THE LEADERBOARD</span><b>✦</b><span>CASINO ACCESS MUST BE EARNED</span><b>✦</b>
+        <span>WELCOME 2 HYPHSWORLD</span><b>✦</b><span>01 SHOW FULL EPISODE NOW PLAYING</span><b>✦</b><span>DUCK SAUCE GOT INSTRUCTIONS</span><b>✦</b><span>VAULT TRANSPORT READY</span><b>✦</b><span>COOL POINTS HIT THE LEADERBOARD</span><b>✦</b><span>CASINO ACCESS MUST BE EARNED</span><b>✦</b>
+        <span>WELCOME 2 HYPHSWORLD</span><b>✦</b><span>01 SHOW FULL EPISODE NOW PLAYING</span><b>✦</b><span>DUCK SAUCE GOT INSTRUCTIONS</span><b>✦</b><span>VAULT TRANSPORT READY</span><b>✦</b><span>COOL POINTS HIT THE LEADERBOARD</span><b>✦</b><span>CASINO ACCESS MUST BE EARNED</span><b>✦</b>
       </div>
     </section>
 
     <section class="hero-shell" id="top">
-      <div class="hero-video-card lobby-style-player">
-        <video id="hero-video" class="hero-video" autoplay muted loop playsinline preload="auto" controls poster="album-art.jpg" data-hero-sources="hyphsworld-hero.mp4,lobby-preview.mp4,01-show-teaser.mp4">
-          <source src="hyphsworld-hero.mp4?v=homepage-mp4-20260509" type="video/mp4" />
-        </video>
-        <div class="hero-video-status" id="hero-video-status">MP4 loading muted...</div>
-        <button class="hero-sound-toggle" type="button" data-hero-toggle>Unmute</button>
+      <div class="homepage-full-episode-frame" data-featured-video="oPUZx7mCceg-top">
+        <iframe src="https://www.youtube.com/embed/oPUZx7mCceg?si=1n257lXjiWNRMhMI&rel=0&modestbranding=1" title="01 Show full episode" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        <div class="homepage-full-episode-strip"><small>NOW SHOWING</small><span>01 Show Full Episode // HYPHSWORLD Top Screen</span></div>
       </div>
     </section>
 
@@ -69,7 +141,7 @@
           <h2>Don’t just stand in the lobby.</h2>
           <p id="duck-line" class="duck-line">Spotlight for the slap. Vault for the pressure. Games for the leaderboard. Full Player if you really listening. Duck Sauce got the helper desk by himself today, so expect extra talking.</p>
           <div class="duck-guide-grid" aria-label="Duck guide quick instructions">
-            <article><strong>01</strong><span>Press play. The lobby wakes up.</span></article>
+            <article><strong>01</strong><span>Watch the full episode up top.</span></article>
             <article><strong>02</strong><span>Run the Vault scan. No public hints.</span></article>
             <article><strong>03</strong><span>Play games. Stack Cool Points.</span></article>
             <article><strong>04</strong><span>Climb the live leaderboard.</span></article>
@@ -126,7 +198,7 @@
             <p>Episodes, news breaks, Duck Sauce clips, trailers, and vault-only story drops live here as the HYPHSWORLD entertainment universe opens up.</p>
           </div>
           <div class="o1-show-grid">
-            <article class="o1-show-card"><strong>01 Show Hub</strong><p>Main portal for O1 Show drops, trailers, skits, and cinematic universe updates.</p><a href="#video">Open Hub</a></article>
+            <article class="o1-show-card"><strong>01 Show Hub</strong><p>Main portal for O1 Show drops, trailers, skits, and cinematic universe updates.</p><a href="#top">Watch Episode</a></article>
             <article class="o1-show-card"><strong>O1NN LIVE</strong><p>In-universe breaking news, reports, alerts, and chaos from the O1 world.</p><a href="#video">Watch News</a></article>
             <article class="o1-show-card"><strong>Duck Sauce Clips</strong><p>Duck Sauce moments, slick talk, helper desk chaos, and secret hints.</p><a href="vault.html">Find Duck</a></article>
             <article class="o1-show-card"><strong>01 Girlz Missions</strong><p>Pressure Squad scenes, missions, salon chaos, gas station mayhem, and future drops.</p><a href="#video">View Drops</a></article>
@@ -182,55 +254,6 @@
       var navAccountLink = document.getElementById("nav-account-link");
       var logoutButton = document.getElementById("home-logout");
       var year = document.getElementById("year");
-      var heroVideo = document.getElementById("hero-video");
-      var heroToggle = document.querySelector("[data-hero-toggle]");
-      var heroStatus = document.getElementById("hero-video-status");
-      var heroSources = heroVideo ? (heroVideo.dataset.heroSources || "hyphsworld-hero.mp4,lobby-preview.mp4,01-show-teaser.mp4").split(",") : [];
-      var heroSourceIndex = 0;
-
-      function setHeroStatus(message) { if (heroStatus) heroStatus.textContent = message; }
-      function syncHeroButton() { if (heroToggle && heroVideo) heroToggle.textContent = heroVideo.muted ? "Unmute" : "Mute"; }
-      function setHeroSource(index) {
-        if (!heroVideo || !heroSources.length) return false;
-        var raw = (heroSources[index] || "").trim();
-        if (!raw) return false;
-        heroSourceIndex = index;
-        heroVideo.innerHTML = "";
-        var source = document.createElement("source");
-        source.src = raw + (raw.indexOf("?") > -1 ? "&" : "?") + "v=homepage-mp4-20260509";
-        source.type = "video/mp4";
-        heroVideo.appendChild(source);
-        heroVideo.load();
-        setHeroStatus("Loading " + raw + " muted...");
-        return true;
-      }
-      function tryPlayHero() {
-        if (!heroVideo) return;
-        heroVideo.muted = true;
-        heroVideo.setAttribute("muted", "");
-        heroVideo.setAttribute("playsinline", "");
-        heroVideo.play().then(function () { setHeroStatus("MP4 playing muted"); }).catch(function () { setHeroStatus("Tap play if your browser blocks autoplay"); });
-      }
-      if (heroVideo) {
-        heroVideo.addEventListener("error", function () {
-          var next = heroSourceIndex + 1;
-          if (next < heroSources.length && setHeroSource(next)) tryPlayHero();
-          else setHeroStatus("MP4 file not found. Check hyphsworld-hero.mp4 in the repo root.");
-        }, true);
-        setHeroSource(0);
-        tryPlayHero();
-      }
-      if (heroToggle && heroVideo) {
-        syncHeroButton();
-        heroToggle.addEventListener("click", function () {
-          heroVideo.muted = !heroVideo.muted;
-          if (heroVideo.muted) heroVideo.setAttribute("muted", "");
-          else heroVideo.removeAttribute("muted");
-          heroVideo.play().catch(function () {});
-          syncHeroButton();
-          setHeroStatus(heroVideo.muted ? "MP4 playing muted" : "MP4 sound on");
-        });
-      }
       if (year) year.textContent = new Date().getFullYear();
       if (!window.HWAuth) { statusEl.textContent = "Auth unavailable"; return; }
       var session = await HWAuth.getSession();
