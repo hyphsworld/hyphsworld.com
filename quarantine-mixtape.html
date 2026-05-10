@@ -9,6 +9,125 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="homepage-upgrades.css" />
   <style>
+    .level-one-screen-card{
+      position:relative;
+      overflow:hidden;
+      margin:0 0 24px;
+      border:1px solid rgba(31,252,255,.34);
+      border-radius:30px;
+      padding:clamp(16px,4vw,24px);
+      background:
+        radial-gradient(circle at 14% 12%, rgba(57,255,122,.24), transparent 32%),
+        radial-gradient(circle at 82% 16%, rgba(255,79,216,.26), transparent 34%),
+        radial-gradient(circle at 50% 100%, rgba(255,228,92,.12), transparent 38%),
+        linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.028));
+      box-shadow:0 0 34px rgba(31,252,255,.14),0 18px 60px rgba(0,0,0,.28);
+    }
+    .level-one-screen-card::before{
+      content:"LEVEL 1 SCREEN  LEVEL 1 SCREEN  LEVEL 1 SCREEN";
+      position:absolute;
+      left:-18px;
+      right:-18px;
+      bottom:10px;
+      color:transparent;
+      -webkit-text-stroke:1px rgba(255,228,92,.16);
+      text-stroke:1px rgba(255,228,92,.16);
+      font-size:clamp(2.2rem,7vw,5.4rem);
+      font-weight:1000;
+      letter-spacing:-.08em;
+      line-height:.85;
+      transform:rotate(-3deg);
+      pointer-events:none;
+      opacity:.75;
+    }
+    .level-one-screen-head{
+      position:relative;
+      z-index:2;
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:14px;
+      flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+    .level-one-screen-head h2{
+      margin:6px 0 0;
+      color:#fff;
+      font-size:clamp(2rem,7vw,4.8rem);
+      line-height:.86;
+      letter-spacing:-.07em;
+      text-transform:uppercase;
+      text-shadow:4px 4px 0 rgba(255,43,214,.38),0 0 22px rgba(31,252,255,.20);
+    }
+    .level-one-screen-head p{
+      max-width:680px;
+      margin:0;
+      color:#d9efe5;
+      font-weight:850;
+      line-height:1.45;
+    }
+    .level-one-screen-badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:999px;
+      padding:9px 12px;
+      color:#060606;
+      background:linear-gradient(90deg,#39ff7a,#1ffcff,#ffe45c,#ff4fd8);
+      font-size:.74rem;
+      font-weight:1000;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      box-shadow:0 0 22px rgba(31,252,255,.18);
+    }
+    .level-one-video-frame{
+      position:relative;
+      z-index:2;
+      overflow:hidden;
+      border:2px solid rgba(31,252,255,.32);
+      border-radius:24px;
+      background:#050505;
+      box-shadow:0 0 28px rgba(0,0,0,.44),inset 0 0 30px rgba(57,255,122,.06);
+    }
+    .level-one-video-frame::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      z-index:2;
+      pointer-events:none;
+      background:linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px);
+      background-size:100% 6px;
+      mix-blend-mode:screen;
+      opacity:.22;
+    }
+    .level-one-video-frame iframe{
+      display:block;
+      width:100%;
+      aspect-ratio:16/9;
+      height:auto;
+      border:0;
+      background:#000;
+    }
+    .level-one-screen-strip{
+      position:relative;
+      z-index:2;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      padding:12px 14px;
+      border-top:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.72);
+      color:#fff;
+      font-weight:900;
+    }
+    .level-one-screen-strip small{
+      color:#9fffd0;
+      font-weight:1000;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
     .level-two-gate-card{
       margin-top:24px;
       border:1px solid rgba(255,255,255,.18);
@@ -54,6 +173,20 @@
 
     <section class="section-pad">
       <div class="phone-shell quarantine-shell">
+        <section class="level-one-screen-card" aria-label="Level 1 featured video screen">
+          <div class="level-one-screen-head">
+            <div>
+              <span class="level-one-screen-badge">LEVEL 1 MP4 SCREEN // FEATURE VIDEO</span>
+              <h2>Now Showing</h2>
+            </div>
+            <p>Duck Sauce got the Level 1 screen active. This slot can run the YouTube feature now, then later switch into private Vault MP4s, hidden trailers, or Cool Points unlock videos.</p>
+          </div>
+          <div class="level-one-video-frame">
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/0x66VFgcnYU?si=IGkdWfGY5fQ7MpQU" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            <div class="level-one-screen-strip"><small>LEVEL 1 SIGNAL</small><span>Featured video linked into the Quarantine room</span></div>
+          </div>
+        </section>
+
         <div class="quarantine-hero">
           <div>
             <img id="quarantine-cover" class="quarantine-cover" src="quarantine-mixtape.jpg" alt="The Quarantine Mixtape artwork" />
