@@ -67,12 +67,13 @@ export const ENEMY_SPAWNS = [
     { col: 14, row: 9 },
 ];
 
-// Power-up drop locations (rotate types each level)
+// Power-up drop locations (rotate types each level).
+// All cells MUST be open path tiles (verified against MAZE_TEMPLATE).
 export const POWERUP_SPOTS = [
-    { col: 4,  row: 5 },
-    { col: 16, row: 5 },
-    { col: 4,  row: 13 },
-    { col: 16, row: 13 },
+    { col: 5,  row: 5 },
+    { col: 15, row: 5 },
+    { col: 5,  row: 13 },
+    { col: 15, row: 13 },
 ];
 
 export function isWall(grid, col, row) {

@@ -182,6 +182,7 @@ export class CashRunEngine {
         this._powerUpTimer -= dt;
         if (this._powerUpTimer <= 0 && this._powerUpsActive.length < 2) {
             const free = POWERUP_SPOTS.filter(s =>
+                !isWall(this.grid, s.col, s.row) &&
                 !this._powerUpsActive.some(p => p.col === s.col && p.row === s.row)
             );
             if (free.length) {
