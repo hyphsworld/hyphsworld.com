@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CharacterSelect, { CharacterAvatar } from "../components/CharacterSelect";
-import { Trophy, BookOpenText, Play } from "lucide-react";
+import { audio } from "../game/audio";
+import { Trophy, BookOpenText, Play, Volume2, VolumeX } from "lucide-react";
 
 export default function Menu() {
     const nav = useNavigate();
