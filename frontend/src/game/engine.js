@@ -12,6 +12,7 @@ import {
     T,
 } from "./maze";
 import { getTheme, getDifficulty, POWERUP_TYPES } from "./themes";
+import { audio } from "./audio";
 
 const DIRS = {
     up:    { dc:  0, dr: -1 },
@@ -126,6 +127,8 @@ export class CashRunEngine {
         if (this.running) return;
         this.running = true;
         this._lastTs = performance.now();
+        audio.unlock();
+        audio.startMusic(this.level);
         const tick = (ts) => {
             if (!this.running) return;
             const dt = Math.min((ts - this._lastTs) / 1000, 0.05);
@@ -141,6 +144,7 @@ export class CashRunEngine {
         this.running = false;
         if (this._raf) cancelAnimationFrame(this._raf);
         document.removeEventListener("keydown", this._keyHandler);
+        audio.stopMusic();
     }
 
     pause(p) { this.paused = !!p; }
@@ -305,6 +309,7 @@ export class CashRunEngine {
             this.cashCollected += 10;
             const mult = this.activePower?.type === "double" ? 2 : 1;
             this._addScore(10 * mult);
+            audio.collect();
         } else if (v === T.POWER) {
             this.grid[tr][tc] = T.EMPTY;
             this.eatenPellets++;
@@ -317,6 +322,7 @@ export class CashRunEngine {
             for (const e of this.enemies) {
                 if (e.state !== "eyes") e.state = "fright";
             }
+            audio.bigCash();
         }
     }
 
@@ -332,6 +338,7 @@ export class CashRunEngine {
                 this.activePower = { type: pu.type, time: 6 };
                 this._addScore(25);
                 this._popText("+25", tc, tr, "#ffd84a");
+                audio.powerUp();
                 return;
             }
         }
@@ -441,6 +448,7 @@ export class CashRunEngine {
                     const mult = this.activePower?.type === "double" ? 2 : 1;
                     this._addScore(pts * mult);
                     this._popText(`+${pts * mult}`, e.col, e.row, "#7ee895");
+                    audio.eatEnemy();
                 } else {
                     if (this.activePower?.type === "shield") {
                         // burn shield instead of dying
@@ -448,6 +456,7 @@ export class CashRunEngine {
                         this._popText("SHIELD!", p.col, p.row, "#6cf2ff");
                         // briefly push enemy back
                         e.dir = OPP[e.dir];
+                        audio.shieldHit();
                     } else {
                         this._loseLife();
                         return;
@@ -459,9 +468,11 @@ export class CashRunEngine {
 
     _loseLife() {
         this.lives -= 1;
+        audio.death();
         this.onLifeLost?.(this.lives);
         if (this.lives <= 0) {
             this.running = false;
+            audio.stopMusic();
             this.onGameOver?.({ score: this.score, level: this.level });
             return;
         }
@@ -486,8 +497,10 @@ export class CashRunEngine {
     }
 
     _nextLevel() {
+        audio.levelUp();
         this.level += 1;
         this._initLevel();
+        audio.startMusic(this.level);
     }
 
     _addScore(n) {

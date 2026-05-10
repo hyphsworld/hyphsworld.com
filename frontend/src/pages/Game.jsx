@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { CashRunEngine, CANVAS_W, CANVAS_H } from "../game/engine";
+import { audio } from "../game/audio";
 import HUD from "../components/HUD";
 import TouchControls from "../components/TouchControls";
 import GameOverModal from "../components/GameOverModal";
-import { Pause as PauseIcon, ArrowLeft } from "lucide-react";
+import { Pause as PauseIcon, ArrowLeft, Volume2, VolumeX } from "lucide-react";
 
 export default function GamePage() {
     const navigate = useNavigate();
@@ -19,6 +20,7 @@ export default function GamePage() {
     });
     const [gameOver, setGameOver] = useState(null); // {score, level}
     const [paused, setPaused] = useState(false);
+    const [muted, setMuted] = useState(audio.isMuted());
     const [, force] = useState(0);
 
     useEffect(() => {
@@ -65,6 +67,13 @@ export default function GamePage() {
         if (!eng) return;
         eng.togglePause();
         setPaused(eng.paused);
+    };
+    const toggleMute = () => {
+        const next = audio.toggleMuted();
+        setMuted(next);
+        if (!next && engineRef.current?.running) {
+            audio.startMusic(engineRef.current.level);
+        }
     };
 
     const handleRestart = () => {
@@ -117,6 +126,16 @@ export default function GamePage() {
                     data-testid="game-pause-btn"
                 >
                     <PauseIcon className="inline mr-1" size={14} /> {paused ? "Resume" : "Pause"}
+                </button>
+                <button
+                    onClick={toggleMute}
+                    className="cr-btn"
+                    style={{ fontSize: "0.95rem", padding: "0.45rem 0.7rem" }}
+                    data-testid="game-mute-btn"
+                    aria-label={muted ? "Unmute" : "Mute"}
+                    title={muted ? "Unmute" : "Mute"}
+                >
+                    {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
                 </button>
             </div>
 

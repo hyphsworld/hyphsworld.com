@@ -11,6 +11,7 @@ export default function Menu() {
     const [mode, setMode] = useState(() => {
         return localStorage.getItem("cr-mode") || "normal";
     });
+    const [muted, setMuted] = useState(audio.isMuted());
 
     useEffect(() => {
         localStorage.setItem("cr-character", character);
@@ -20,7 +21,13 @@ export default function Menu() {
     }, [mode]);
 
     const startGame = () => {
+        audio.unlock();
         nav("/play", { state: { character, mode } });
+    };
+
+    const toggleMute = () => {
+        audio.unlock();
+        setMuted(audio.toggleMuted());
     };
 
     return (
@@ -96,6 +103,16 @@ export default function Menu() {
                     <button onClick={() => nav("/how-to-play")} className="cr-btn" data-testid="menu-how-to-play-btn">
                         <BookOpenText className="inline mr-2" size={18} />
                         HOW TO PLAY
+                    </button>
+                    <button
+                        onClick={toggleMute}
+                        className="cr-btn"
+                        style={{ padding: "0.85rem 1.1rem" }}
+                        data-testid="menu-mute-btn"
+                        aria-label={muted ? "Unmute" : "Mute"}
+                        title={muted ? "Unmute" : "Mute"}
+                    >
+                        {muted ? <VolumeX size={18} /> : <Volume2 size={18} />}
                     </button>
                 </div>
 
