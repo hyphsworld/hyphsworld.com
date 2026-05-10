@@ -86,13 +86,19 @@ export function getTheme(level) {
 }
 
 // Difficulty scaling — speeds in tiles per second.
-export function getDifficulty(level) {
+export function getDifficulty(level, mode = "normal") {
+    const easy = mode === "easy";
     // Base + small ramp per level.
-    const playerSpeed = 6.2 + Math.min(level - 1, 6) * 0.15;
-    const enemySpeed  = 4.6 + (level - 1) * 0.18;
-    const enemyCount  = Math.min(2 + Math.floor((level - 1) / 1), 6); // 2,3,4,5,6,6,6
-    const frightTime  = Math.max(7.5 - (level - 1) * 0.25, 3.5);
-    return { playerSpeed, enemySpeed, enemyCount, frightTime };
+    const playerSpeed = (easy ? 6.6 : 6.2) + Math.min(level - 1, 6) * 0.15;
+    const enemySpeed  = (easy ? 3.4 : 4.6) + (level - 1) * (easy ? 0.10 : 0.18);
+    // Easy: fewer enemies. Normal: scales up faster.
+    const enemyCount  = easy
+        ? Math.min(1 + Math.floor((level - 1) / 2), 3)   // 1,1,2,2,3,3...
+        : Math.min(2 + Math.floor((level - 1) / 1), 6);
+    const frightTime  = easy
+        ? Math.max(10 - (level - 1) * 0.2, 6)
+        : Math.max(7.5 - (level - 1) * 0.25, 3.5);
+    return { playerSpeed, enemySpeed, enemyCount, frightTime, easy };
 }
 
 // Power-up types (rotated)

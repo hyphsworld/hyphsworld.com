@@ -42,6 +42,7 @@ export class CashRunEngine {
         canvas.height = CANVAS_H;
 
         this.character = opts.character || "boy";
+        this.mode = opts.mode === "easy" ? "easy" : "normal";
         this.onLifeLost = opts.onLifeLost || (() => {});
         this.onGameOver = opts.onGameOver || (() => {});
         this.onLevelComplete = opts.onLevelComplete || (() => {});
@@ -49,7 +50,7 @@ export class CashRunEngine {
         this.onStateChange = opts.onStateChange || (() => {});
 
         this.score = 0;
-        this.lives = 3;
+        this.lives = this.mode === "easy" ? 5 : 3;
         this.level = 1;
         this.cashCollected = 0;
 
@@ -71,7 +72,7 @@ export class CashRunEngine {
 
     _initLevel() {
         const theme = getTheme(this.level);
-        const diff = getDifficulty(this.level);
+        const diff = getDifficulty(this.level, this.mode);
         this.theme = theme;
         this.diff = diff;
 
@@ -90,18 +91,19 @@ export class CashRunEngine {
         this.enemies = [];
         for (let i = 0; i < diff.enemyCount; i++) {
             const spawn = ENEMY_SPAWNS[i % ENEMY_SPAWNS.length];
-            // Mix thugs and cops; cops appear from level 2.
+            // In Easy mode: only thugs until level 3. Otherwise mix from level 2.
             let type = "thug";
-            if (this.level >= 2 && i % 2 === 1) type = "cop";
+            const copsAllowed = this.mode === "easy" ? this.level >= 3 : this.level >= 2;
+            if (copsAllowed && i % 2 === 1) type = "cop";
             this.enemies.push({
                 col: spawn.col + 0.0,
                 row: spawn.row + 0.0,
                 dir: ["up", "left", "right"][i % 3],
                 speed: diff.enemySpeed,
                 type,
-                state: "exit",   // exit -> chase; or fright; or eyes
+                state: "exit",
                 home: { col: spawn.col, row: spawn.row },
-                releaseAt: i * 1.2,  // staggered exit
+                releaseAt: i * (this.mode === "easy" ? 1.8 : 1.2),
                 exited: false,
             });
         }

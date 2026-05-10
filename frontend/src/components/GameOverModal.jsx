@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { submitScore, fetchRank } from "../lib/api";
 import { Loader2 } from "lucide-react";
 
-export default function GameOverModal({ score, level, character, onRestart, onMenu }) {
+export default function GameOverModal({ score, level, character, mode, onRestart, onMenu }) {
+    const isPractice = mode === "easy";
     const [name, setName] = useState("");
     const [submitted, setSubmitted] = useState(false);
     const [submitting, setSubmitting] = useState(false);
@@ -10,10 +11,11 @@ export default function GameOverModal({ score, level, character, onRestart, onMe
     const [error, setError] = useState("");
 
     useEffect(() => {
+        if (isPractice) return;
         fetchRank(score)
             .then(({ rank }) => setRank(rank))
             .catch(() => setRank(null));
-    }, [score]);
+    }, [score, isPractice]);
 
     const handleSubmit = async (e) => {
         e?.preventDefault();
@@ -64,13 +66,21 @@ export default function GameOverModal({ score, level, character, onRestart, onMe
                     </div>
                 </div>
 
-                {rank != null && (
+                {rank != null && !isPractice && (
                     <p className="font-arcade text-xl mb-4" style={{ color: "var(--cr-gold)" }} data-testid="game-over-rank">
                         Global Rank: #{rank}
                     </p>
                 )}
 
-                {!submitted ? (
+                {isPractice ? (
+                    <div
+                        className="font-arcade text-xl mb-4 cr-tag inline-block"
+                        style={{ color: "var(--cr-cash-bright)", borderColor: "var(--cr-cash-bright)" }}
+                        data-testid="game-over-practice-note"
+                    >
+                        PRACTICE RUN — score not saved
+                    </div>
+                ) : !submitted ? (
                     <form onSubmit={handleSubmit} className="space-y-3">
                         <label className="block font-arcade text-lg" style={{ color: "var(--cr-ink-dim)" }}>
                             ENTER NAME (3–12 chars)

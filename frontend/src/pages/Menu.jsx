@@ -8,13 +8,19 @@ export default function Menu() {
     const [character, setCharacter] = useState(() => {
         return localStorage.getItem("cr-character") || "boy";
     });
+    const [mode, setMode] = useState(() => {
+        return localStorage.getItem("cr-mode") || "normal";
+    });
 
     useEffect(() => {
         localStorage.setItem("cr-character", character);
     }, [character]);
+    useEffect(() => {
+        localStorage.setItem("cr-mode", mode);
+    }, [mode]);
 
     const startGame = () => {
-        nav("/play", { state: { character } });
+        nav("/play", { state: { character, mode } });
     };
 
     return (
@@ -42,6 +48,39 @@ export default function Menu() {
                         — pick your hustler —
                     </div>
                     <CharacterSelect value={character} onChange={setCharacter} />
+                </div>
+
+                {/* Difficulty toggle */}
+                <div className="mb-6 flex flex-col items-center gap-3" data-testid="mode-select">
+                    <div className="font-arcade text-lg" style={{ color: "var(--cr-ink-dim)" }}>
+                        — difficulty —
+                    </div>
+                    <div className="inline-flex p-1 rounded-full" style={{ background: "rgba(0,0,0,0.45)", border: "1px solid rgba(245,241,232,0.12)" }}>
+                        {[
+                            { id: "easy",   label: "Practice", color: "var(--cr-cash-bright)", desc: "5 lives · slower heat · cops appear later" },
+                            { id: "normal", label: "Normal",   color: "var(--cr-gold)",         desc: "real streets — score counts" },
+                        ].map((m) => (
+                            <button
+                                key={m.id}
+                                type="button"
+                                onClick={() => setMode(m.id)}
+                                data-testid={`mode-${m.id}`}
+                                className="font-arcade text-xl px-5 py-1.5 rounded-full transition-all"
+                                style={{
+                                    background: mode === m.id ? m.color : "transparent",
+                                    color: mode === m.id ? "#0a0a0c" : m.color,
+                                    letterSpacing: "0.04em",
+                                }}
+                            >
+                                {m.label}
+                            </button>
+                        ))}
+                    </div>
+                    <div className="font-mono text-xs" style={{ color: "var(--cr-ink-dim)" }} data-testid="mode-desc">
+                        {mode === "easy"
+                            ? "Practice run — 5 lives, slower heat, cops appear later. Score won't be saved."
+                            : "Normal mode — score counts toward the global leaderboard."}
+                    </div>
                 </div>
 
                 {/* Buttons */}
