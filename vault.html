@@ -22,14 +22,15 @@
     .lobby-video-head p{max-width:760px;margin:0;color:#eafef4;line-height:1.45;font-family:Arial,sans-serif;font-weight:850;}
     .lobby-video-badge{display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border-radius:999px;color:#070707;background:linear-gradient(90deg,#39ff7a,#1ffcff,#ffe45c,#ff4fd8);font-size:.78rem;font-weight:1000;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 0 22px rgba(31,252,255,.18);}
     .lobby-video-shell{position:relative;z-index:2;margin:0 22px 22px;border-radius:24px;overflow:hidden;border:2px solid rgba(31,252,255,.30);background:#050505;box-shadow:0 0 28px rgba(0,0,0,.45),inset 0 0 30px rgba(57,255,122,.06);}
-    .lobby-video-shell video{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:#000;}
-    .lobby-video-strip{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:13px 16px;background:rgba(0,0,0,.78);border-top:1px solid rgba(255,255,255,.12);color:#fff;font-family:Arial,sans-serif;font-weight:900;}
+    .lobby-video-shell::before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px);background-size:100% 7px;opacity:.18;mix-blend-mode:screen;}
+    .lobby-video-shell iframe{display:block;width:100%;aspect-ratio:16/9;height:auto;border:0;background:#000;}
+    .lobby-video-strip{position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:13px 16px;background:rgba(0,0,0,.78);border-top:1px solid rgba(255,255,255,.12);color:#fff;font-family:Arial,sans-serif;font-weight:900;}
     .lobby-video-strip small{color:#9fffd0;text-transform:uppercase;letter-spacing:.08em;font-weight:1000;}
     @media(max-width:640px){.lobby-video-section{width:calc(100% - 20px);margin:12px auto 16px;}.lobby-video-head{padding:16px 16px 10px;}.lobby-video-shell{margin:0 12px 16px;border-radius:20px;}}
   </style>
 </head>
 
-<body class="vault-page cyber-vault-live">
+<body class="vault-page cyber-vault-live" data-lobby-video="ecAxMIms3mY-20260510">
   <div class="motion-grid" aria-hidden="true"></div>
   <div class="graffiti-glow glow-pink" aria-hidden="true"></div>
   <div class="graffiti-glow glow-blue" aria-hidden="true"></div>
@@ -37,8 +38,8 @@
 
   <section class="lobby-video-section" aria-label="Lobby video preview">
     <article class="lobby-video-card">
-      <div class="lobby-video-head"><div><span class="lobby-video-badge">LOBBY MP4 // TOP SCREEN</span><h2>Lobby Screen</h2><p>The Lobby owns the MP4 screen. Upload the video as <strong>lobby-preview.mp4</strong> in the repo root so it loads live.</p></div></div>
-      <div class="lobby-video-shell"><video id="lobbyPreviewVideo" controls playsinline preload="metadata" poster="hyphsworld-5-cover.png"><source src="lobby-preview.mp4" type="video/mp4" />Your browser does not support the HYPHSWORLD Lobby video.</video><div class="lobby-video-strip"><small>NOW SHOWING</small><span>01 Show Preview // HYPHSWORLD Lobby</span></div></div>
+      <div class="lobby-video-head"><div><span class="lobby-video-badge">LOBBY SCREEN // YOUTUBE PLAYER</span><h2>Lobby Screen</h2><p>The Lobby top screen is now locked to the live YouTube embed while the scanner, arcade, and Level 1 transport stay active underneath.</p></div></div>
+      <div class="lobby-video-shell" data-lobby-player="ecAxMIms3mY"><iframe width="560" height="315" src="https://www.youtube.com/embed/ecAxMIms3mY?si=2bmcXgxheoAhRMWI&rel=0&modestbranding=1" title="HYPHSWORLD Lobby video player" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe><div class="lobby-video-strip"><small>NOW SHOWING</small><span>Lobby Player // HYPHSWORLD Signal</span></div></div>
     </article>
   </section>
 
