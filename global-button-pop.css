@@ -155,14 +155,19 @@
   font-weight:900;
   font-size:clamp(1rem,2vw,1.35rem);
 }
+.cash-run-home .cash-run-button{
+  font-size:clamp(2rem,7.5vw,4.5rem)!important;
+  line-height:.95!important;
+  letter-spacing:.09em!important;
+}
 .cash-run-button{
   display:inline-flex;
   align-items:center;
   justify-content:center;
   margin:14px auto;
-  padding:22px 34px;
-  min-height:72px;
-  border-radius:18px;
+  padding:clamp(24px,4vw,36px) clamp(32px,6vw,70px);
+  min-height:clamp(88px,14vw,132px);
+  border-radius:22px;
   text-decoration:none;
   white-space:nowrap;
 }
@@ -177,8 +182,16 @@
     padding-right:15px!important;
     min-height:54px!important;
   }
-  .main-nav a[href="games/cash-run/"],.main-nav a[href="/games/cash-run"],.cash-run-button{
+  .main-nav a[href="games/cash-run/"],.main-nav a[href="/games/cash-run"]{
     font-size:clamp(1.35rem,6vw,2rem)!important;
+  }
+  .cash-run-home .cash-run-button{
+    font-size:clamp(2rem,10vw,3.2rem)!important;
+    padding:22px 24px!important;
+    min-height:92px!important;
+    width:min(100%,620px)!important;
+    white-space:normal!important;
+    text-align:center!important;
   }
 }
 @media(prefers-reduced-motion:reduce){
