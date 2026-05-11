@@ -2,6 +2,9 @@
 :root{
   --hw-letter-rainbow:linear-gradient(90deg,#39ff14 0%,#ffe600 18%,#ff2bd6 39%,#00e5ff 62%,#ff8a00 82%,#39ff14 100%);
 }
+.main-nav{
+  gap:clamp(14px,2.5vw,32px)!important;
+}
 .main-nav a,
 .btn,
 .games-btn,
@@ -18,10 +21,28 @@
 .game-controls button,
 .duckBtns button,
 .duckReturn{
-  font-size:clamp(.88rem,1.15vw,1.05rem)!important;
+  font-size:clamp(1.05rem,1.65vw,1.65rem)!important;
   font-weight:1000!important;
   letter-spacing:.095em!important;
   text-transform:uppercase!important;
+  line-height:1.05!important;
+}
+.main-nav a{
+  padding:clamp(12px,1.6vw,18px) clamp(16px,2.2vw,30px)!important;
+  min-height:54px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  white-space:nowrap!important;
+  border-radius:999px!important;
+}
+.main-nav a[href="games/cash-run/"],
+.main-nav a[href="/games/cash-run"],
+.main-nav a[href="games/cash-run/index.html"],
+.cash-run-button{
+  font-size:clamp(1.35rem,2.4vw,2.25rem)!important;
+  font-weight:1000!important;
+  letter-spacing:.1em!important;
 }
 .main-nav a,
 .btn,
@@ -75,7 +96,8 @@
 .games-btn.primary,
 .gate-game-btn,
 .scan-button,
-.game-controls .primary{
+.game-controls .primary,
+.cash-run-button{
   color:#050505!important;
   background:var(--hw-letter-rainbow)!important;
   background-size:260% 100%!important;
@@ -110,15 +132,55 @@
   animation:hwButtonColorRun 2.8s linear infinite!important;
   opacity:.9!important;
 }
+.cash-run-home{
+  width:min(1180px,calc(100% - 28px));
+  margin:26px auto 0;
+  padding:clamp(22px,4vw,42px);
+  border-radius:32px;
+  border:2px solid rgba(57,255,20,.34);
+  text-align:center;
+  background:radial-gradient(circle at 20% 15%,rgba(57,255,20,.18),transparent 34%),radial-gradient(circle at 85% 25%,rgba(255,43,214,.18),transparent 34%),rgba(0,0,0,.58);
+  box-shadow:0 0 34px rgba(57,255,20,.15),0 22px 70px rgba(0,0,0,.36);
+}
+.cash-run-home h2{
+  margin:0 0 10px;
+  color:#39ff14;
+  font-size:clamp(2rem,6vw,5rem);
+  font-weight:1000;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.cash-run-home p{
+  color:#fff;
+  font-weight:900;
+  font-size:clamp(1rem,2vw,1.35rem);
+}
+.cash-run-button{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  margin:14px auto;
+  padding:22px 34px;
+  min-height:72px;
+  border-radius:18px;
+  text-decoration:none;
+  white-space:nowrap;
+}
 @keyframes hwButtonColorRun{to{background-position:260% 50%}}
 @media(max-width:700px){
+  .main-nav{
+    gap:10px!important;
+  }
   .main-nav a,.btn,.games-btn,.hw-board-btn,.gate-game-btn,.gate-track-btn,.scan-button,.clear-button,.manual-enter,.nav-pill{
-    font-size:clamp(.86rem,3.2vw,.98rem)!important;
-    padding-left:13px!important;
-    padding-right:13px!important;
-    min-height:44px!important;
+    font-size:clamp(1.05rem,4.5vw,1.35rem)!important;
+    padding-left:15px!important;
+    padding-right:15px!important;
+    min-height:54px!important;
+  }
+  .main-nav a[href="games/cash-run/"],.main-nav a[href="/games/cash-run"],.cash-run-button{
+    font-size:clamp(1.35rem,6vw,2rem)!important;
   }
 }
 @media(prefers-reduced-motion:reduce){
-  .main-nav .nav-cta,.btn-primary,.btn-neon,.games-btn.primary,.gate-game-btn,.scan-button,.game-controls .primary,.main-nav a::after,.btn::after,.games-btn::after,.hw-board-btn::after,.gate-game-btn::after,.gate-track-btn::after,.nav-pill::after{animation:none!important}
+  .main-nav .nav-cta,.btn-primary,.btn-neon,.games-btn.primary,.gate-game-btn,.scan-button,.game-controls .primary,.main-nav a::after,.btn::after,.games-btn::after,.hw-board-btn::after,.gate-game-btn::after,.gate-track-btn::after,.nav-pill::after,.cash-run-button{animation:none!important}
 }
