@@ -14,13 +14,26 @@ from datetime import datetime, timezone
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-# MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Cash Run Game API")
 api_router = APIRouter(prefix="/api")
+
+mongo_url = os.environ.get('MONGO_URL')
+db_name = os.environ.get('DB_NAME', 'cash_run')
+client: Optional[AsyncIOMotorClient] = None
+db = None
+
+if mongo_url:
+    client = AsyncIOMotorClient(mongo_url)
+    db = client[db_name]
+    logger.info("MongoDB configured for database: %s", db_name)
+else:
+    logger.warning("MONGO_URL is not configured. API will boot, but leaderboard database routes will return setup errors.")
 
 
 # ---------- Models ----------
@@ -43,15 +56,27 @@ class LeaderboardSubmit(BaseModel):
     character: str = Field(default="boy")
 
 
+def require_database():
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database is not configured. Set MONGO_URL and DB_NAME on the backend host.")
+    return db
+
+
 # ---------- Routes ----------
 
 @api_router.get("/")
 async def root():
-    return {"message": "Cash Run Game API", "version": "1.0"}
+    return {"message": "Cash Run Game API", "version": "1.0", "database": "configured" if db is not None else "missing"}
+
+
+@api_router.get("/health")
+async def health():
+    return {"status": "online", "service": "cash-run-backend", "database": "configured" if db is not None else "missing"}
 
 
 @api_router.post("/leaderboard", response_model=LeaderboardEntry)
 async def submit_score(payload: LeaderboardSubmit):
+    database = require_database()
     name = payload.name.strip().upper()[:12]
     if not name:
         raise HTTPException(status_code=400, detail="Name cannot be empty")
@@ -70,18 +95,19 @@ async def submit_score(payload: LeaderboardSubmit):
     doc = entry.model_dump()
     doc['timestamp'] = doc['timestamp'].isoformat()
 
-    await db.leaderboard.insert_one(doc)
+    await database.leaderboard.insert_one(doc)
     return entry
 
 
 @api_router.get("/leaderboard", response_model=List[LeaderboardEntry])
 async def get_leaderboard(limit: int = 50):
+    database = require_database()
     if limit < 1:
         limit = 50
     if limit > 200:
         limit = 200
 
-    cursor = db.leaderboard.find({}, {"_id": 0}).sort("score", -1).limit(limit)
+    cursor = database.leaderboard.find({}, {"_id": 0}).sort("score", -1).limit(limit)
     rows = await cursor.to_list(length=limit)
 
     for row in rows:
@@ -97,7 +123,8 @@ async def get_leaderboard(limit: int = 50):
 @api_router.get("/leaderboard/rank")
 async def get_rank(score: int):
     """Return how many entries beat this score (rank = count + 1)."""
-    higher = await db.leaderboard.count_documents({"score": {"$gt": score}})
+    database = require_database()
+    higher = await database.leaderboard.count_documents({"score": {"$gt": score}})
     return {"rank": higher + 1, "score": score}
 
 
@@ -112,13 +139,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
-
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
-    client.close()
+    if client is not None:
+        client.close()
