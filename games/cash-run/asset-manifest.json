@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/games/cash-run/static/css/main.71ba5c9b.css",
+    "main.js": "/games/cash-run/static/js/main.260cce7c.js",
+    "index.html": "/games/cash-run/index.html",
+    "main.71ba5c9b.css.map": "/games/cash-run/static/css/main.71ba5c9b.css.map",
+    "main.260cce7c.js.map": "/games/cash-run/static/js/main.260cce7c.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.71ba5c9b.css",
+    "static/js/main.260cce7c.js"
+  ]
+}
