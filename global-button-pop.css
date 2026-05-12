@@ -2,217 +2,43 @@
 :root{
   --hw-letter-rainbow:linear-gradient(90deg,#39ff14 0%,#ffe600 18%,#ff2bd6 39%,#00e5ff 62%,#ff8a00 82%,#39ff14 100%);
 }
-.main-nav{
-  gap:clamp(8px,1.7vw,16px)!important;
+.main-nav{gap:clamp(8px,1.7vw,16px)!important;}
+.main-nav a,.main-nav button,.btn,.games-btn,.hw-board-btn,.gate-game-btn,.gate-track-btn,.scan-button,.clear-button,.manual-enter,.nav-pill,.page-merch .pill,.chip,.game-tab,.game-controls button,.duckBtns button,.duckReturn{
+  font-size:clamp(1rem,1.45vw,1.45rem)!important;font-weight:1000!important;letter-spacing:.07em!important;text-transform:uppercase!important;line-height:1.05!important;
 }
-.main-nav a,
-.btn,
-.games-btn,
-.hw-board-btn,
-.gate-game-btn,
-.gate-track-btn,
-.scan-button,
-.clear-button,
-.manual-enter,
-.nav-pill,
-.page-merch .pill,
-.chip,
-.game-tab,
-.game-controls button,
-.duckBtns button,
-.duckReturn{
-  font-size:clamp(1rem,1.45vw,1.45rem)!important;
-  font-weight:1000!important;
-  letter-spacing:.07em!important;
-  text-transform:uppercase!important;
-  line-height:1.05!important;
+.main-nav a,.main-nav button,.btn,.games-btn,.hw-board-btn,.gate-game-btn,.gate-track-btn,.scan-button,.clear-button,.manual-enter,.nav-pill{
+  position:relative;isolation:isolate;text-shadow:0 0 10px rgba(255,255,255,.18),0 0 18px rgba(57,255,20,.14);
 }
-body.home-page .site-header .main-nav a,
-body.home-page header.site-header nav.main-nav a{
-  font-size:clamp(13px,2.45vw,19px)!important;
-  line-height:1!important;
-  font-weight:1000!important;
-  letter-spacing:.035em!important;
-  overflow:hidden!important;
-  text-overflow:clip!important;
+.main-nav a,.main-nav button{
+  padding:clamp(10px,1.35vw,15px) clamp(12px,1.7vw,19px)!important;min-height:54px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;white-space:nowrap!important;border-radius:999px!important;border:1px solid rgba(0,229,255,.34)!important;color:#fff!important;background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,.055)),radial-gradient(circle at 20% 20%,rgba(57,255,20,.18),transparent 34%),rgba(0,0,0,.46)!important;cursor:pointer!important;
 }
-.main-nav a{
-  padding:clamp(10px,1.35vw,15px) clamp(12px,1.7vw,19px)!important;
-  min-height:54px!important;
-  display:inline-flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  white-space:nowrap!important;
-  border-radius:999px!important;
+.main-nav .nav-cta,.main-nav .mobile-menu-toggle,.btn-primary,.btn-neon,.games-btn.primary,.gate-game-btn,.scan-button,.game-controls .primary,.cash-run-button{
+  color:#050505!important;background:var(--hw-letter-rainbow)!important;background-size:260% 100%!important;animation:hwButtonColorRun 3.4s linear infinite!important;text-shadow:0 1px 0 rgba(255,255,255,.32)!important;box-shadow:0 0 22px rgba(57,255,20,.22),0 0 34px rgba(0,229,255,.12),0 14px 30px rgba(0,0,0,.32)!important;
 }
-.main-nav a[href="games/cash-run/"],
-.main-nav a[href="/games/cash-run"],
-.main-nav a[href="games/cash-run/index.html"]{
-  font-size:clamp(14px,2.65vw,20px)!important;
-  font-weight:1000!important;
-  letter-spacing:.04em!important;
-}
-.main-nav a,
-.btn,
-.games-btn,
-.hw-board-btn,
-.gate-game-btn,
-.gate-track-btn,
-.scan-button,
-.clear-button,
-.manual-enter,
-.nav-pill{
-  position:relative;
-  isolation:isolate;
-  text-shadow:0 0 10px rgba(255,255,255,.18),0 0 18px rgba(57,255,20,.14);
-}
-.main-nav a:not(.nav-cta),
-.btn-soft,
-.games-btn:not(.primary),
-.hw-board-btn,
-.gate-track-btn,
-.clear-button,
-.nav-pill{
-  color:#fff!important;
-  background:
-    linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,.055)),
-    radial-gradient(circle at 20% 20%,rgba(57,255,20,.18),transparent 34%),
-    rgba(0,0,0,.46)!important;
-  border-color:rgba(0,229,255,.34)!important;
-}
-.main-nav a::first-letter,
-.btn::first-letter,
-.games-btn::first-letter,
-.hw-board-btn::first-letter,
-.gate-game-btn::first-letter,
-.gate-track-btn::first-letter,
-.scan-button::first-letter,
-.clear-button::first-letter,
-.nav-pill::first-letter{
-  color:#ffe600;
-  text-shadow:0 0 12px rgba(255,230,0,.72),2px 1px 0 rgba(255,43,214,.55);
-}
-.main-nav a:nth-child(6n+1),.button-row .btn:nth-child(6n+1),.games-actions .games-btn:nth-child(6n+1){color:#39ff14!important}
-.main-nav a:nth-child(6n+2),.button-row .btn:nth-child(6n+2),.games-actions .games-btn:nth-child(6n+2){color:#ffe600!important}
-.main-nav a:nth-child(6n+3),.button-row .btn:nth-child(6n+3),.games-actions .games-btn:nth-child(6n+3){color:#ff4fd8!important}
-.main-nav a:nth-child(6n+4),.button-row .btn:nth-child(6n+4),.games-actions .games-btn:nth-child(6n+4){color:#42ccff!important}
-.main-nav a:nth-child(6n+5),.button-row .btn:nth-child(6n+5),.games-actions .games-btn:nth-child(6n+5){color:#ff8a00!important}
-.main-nav a:nth-child(6n+6),.button-row .btn:nth-child(6n+6),.games-actions .games-btn:nth-child(6n+6){color:#ffffff!important}
-.main-nav .nav-cta,
-.btn-primary,
-.btn-neon,
-.games-btn.primary,
-.gate-game-btn,
-.scan-button,
-.game-controls .primary,
-.cash-run-button{
-  color:#050505!important;
-  background:var(--hw-letter-rainbow)!important;
-  background-size:260% 100%!important;
-  animation:hwButtonColorRun 3.4s linear infinite!important;
-  text-shadow:0 1px 0 rgba(255,255,255,.32)!important;
-  box-shadow:0 0 22px rgba(57,255,20,.22),0 0 34px rgba(0,229,255,.12),0 14px 30px rgba(0,0,0,.32)!important;
-}
-.btn-hot,.btn-ice{
-  color:#fff!important;
-  text-shadow:0 0 12px rgba(255,255,255,.20),2px 2px 0 rgba(0,0,0,.24)!important;
-}
-.main-nav a:hover,
-.btn:hover,
-.games-btn:hover,
-.hw-board-btn:hover,
-.gate-game-btn:hover,
-.gate-track-btn:hover,
-.nav-pill:hover{
-  transform:translateY(-3px) scale(1.02)!important;
-  filter:saturate(1.24) contrast(1.05)!important;
-}
-.main-nav a::after,
-.btn::after,
-.games-btn::after,
-.hw-board-btn::after,
-.gate-game-btn::after,
-.gate-track-btn::after,
-.nav-pill::after{
-  height:3px!important;
-  background:var(--hw-letter-rainbow)!important;
-  background-size:240% 100%!important;
-  animation:hwButtonColorRun 2.8s linear infinite!important;
-  opacity:.9!important;
-}
-.cash-run-home{
-  width:min(1180px,calc(100% - 28px));
-  margin:26px auto 0;
-  padding:clamp(22px,4vw,42px);
-  border-radius:32px;
-  border:2px solid rgba(57,255,20,.34);
-  text-align:center;
-  background:radial-gradient(circle at 20% 15%,rgba(57,255,20,.18),transparent 34%),radial-gradient(circle at 85% 25%,rgba(255,43,214,.18),transparent 34%),rgba(0,0,0,.58);
-  box-shadow:0 0 34px rgba(57,255,20,.15),0 22px 70px rgba(0,0,0,.36);
-}
-.cash-run-home h2{
-  margin:0 0 10px;
-  color:#39ff14;
-  font-size:clamp(2rem,6vw,5rem);
-  font-weight:1000;
-  letter-spacing:.08em;
-  text-transform:uppercase;
-}
-.cash-run-home p{
-  color:#fff;
-  font-weight:900;
-  font-size:clamp(1rem,2vw,1.35rem);
-}
-body.home-page .cash-run-home .cash-run-button,
-body.home-page a.cash-run-button[href="games/cash-run/"],
-body.home-page section.cash-run-home a.cash-run-button{
-  font-size:clamp(28px,8.2vw,52px)!important;
-  line-height:.94!important;
-  letter-spacing:.045em!important;
-  min-height:clamp(86px,14.5vw,124px)!important;
-  padding:clamp(20px,3.6vw,32px) clamp(22px,5.2vw,54px)!important;
-  white-space:normal!important;
-  text-align:center!important;
-}
-.cash-run-button{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  margin:14px auto;
-  padding:clamp(20px,3.6vw,32px) clamp(24px,4.8vw,54px);
-  min-height:clamp(80px,12vw,112px);
-  border-radius:22px;
-  text-decoration:none;
-  white-space:nowrap;
-}
+.main-nav a:hover,.main-nav button:hover,.btn:hover,.games-btn:hover,.hw-board-btn:hover,.gate-game-btn:hover,.gate-track-btn:hover,.nav-pill:hover{transform:translateY(-3px) scale(1.02)!important;filter:saturate(1.24) contrast(1.05)!important;}
+.main-nav a::after,.main-nav button::after,.btn::after,.games-btn::after,.hw-board-btn::after,.gate-game-btn::after,.gate-track-btn::after,.nav-pill::after{height:3px!important;background:var(--hw-letter-rainbow)!important;background-size:240% 100%!important;animation:hwButtonColorRun 2.8s linear infinite!important;opacity:.9!important;}
+.cash-run-home{width:min(1180px,calc(100% - 28px));margin:26px auto 0;padding:clamp(22px,4vw,42px);border-radius:32px;border:2px solid rgba(57,255,20,.34);text-align:center;background:radial-gradient(circle at 20% 15%,rgba(57,255,20,.18),transparent 34%),radial-gradient(circle at 85% 25%,rgba(255,43,214,.18),transparent 34%),rgba(0,0,0,.58);box-shadow:0 0 34px rgba(57,255,20,.15),0 22px 70px rgba(0,0,0,.36);}
+.cash-run-home h2{margin:0 0 10px;color:#39ff14;font-size:clamp(2rem,6vw,5rem);font-weight:1000;letter-spacing:.08em;text-transform:uppercase;}
+.cash-run-home p{color:#fff;font-weight:900;font-size:clamp(1rem,2vw,1.35rem);}
+body.home-page .cash-run-home .cash-run-button,body.home-page a.cash-run-button[href="games/cash-run/"],body.home-page section.cash-run-home a.cash-run-button{font-size:clamp(28px,8.2vw,52px)!important;line-height:.94!important;letter-spacing:.045em!important;min-height:clamp(86px,14.5vw,124px)!important;padding:clamp(20px,3.6vw,32px) clamp(22px,5.2vw,54px)!important;white-space:normal!important;text-align:center!important;}
+.cash-run-button{display:inline-flex;align-items:center;justify-content:center;margin:14px auto;padding:clamp(20px,3.6vw,32px) clamp(24px,4.8vw,54px);min-height:clamp(80px,12vw,112px);border-radius:22px;text-decoration:none;white-space:nowrap;}
+.homepage-full-episode-frame{position:relative;overflow:hidden;width:min(1180px,calc(100% - 28px));margin:0 auto;border-radius:32px;border:2px solid rgba(31,252,255,.36);background:radial-gradient(circle at 12% 14%,rgba(57,255,122,.22),transparent 32%),radial-gradient(circle at 82% 18%,rgba(255,79,216,.24),transparent 34%),linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.03));box-shadow:0 0 34px rgba(31,252,255,.16),0 22px 70px rgba(0,0,0,.36)}
+.homepage-full-episode-frame::before{content:"01 SHOW FULL EPISODE";position:absolute;left:18px;top:14px;z-index:3;display:inline-flex;border-radius:999px;padding:8px 12px;color:#060606;background:linear-gradient(90deg,#39ff7a,#1ffcff,#ffe45c,#ff4fd8);font-size:.72rem;font-weight:1000;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 0 22px rgba(31,252,255,.2)}
+.homepage-full-episode-frame::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px);background-size:100% 7px;opacity:.18;mix-blend-mode:screen}
+.homepage-full-episode-frame iframe{display:block;width:100%;aspect-ratio:16/9;height:auto;border:0;background:#000}
+.homepage-full-episode-strip{position:relative;z-index:4;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:12px 14px;color:#fff;background:rgba(0,0,0,.74);border-top:1px solid rgba(255,255,255,.12);font-weight:900}
+.homepage-full-episode-strip small{color:#9fffd0;font-weight:1000;letter-spacing:.08em;text-transform:uppercase}
+.mobile-menu-toggle,.mobile-menu-panel{display:none;}
 @keyframes hwButtonColorRun{to{background-position:260% 50%}}
-@media(max-width:700px){
-  .main-nav{
-    gap:8px!important;
-  }
-  body.home-page .site-header .main-nav a,
-  body.home-page header.site-header nav.main-nav a,
-  .main-nav a,.btn,.games-btn,.hw-board-btn,.gate-game-btn,.gate-track-btn,.scan-button,.clear-button,.manual-enter,.nav-pill{
-    font-size:clamp(12px,2.8vw,15px)!important;
-    padding-left:10px!important;
-    padding-right:10px!important;
-    min-height:54px!important;
-    max-width:134px!important;
-  }
-  .main-nav a[href="games/cash-run/"],.main-nav a[href="/games/cash-run"]{
-    font-size:clamp(13px,3vw,16px)!important;
-  }
-  body.home-page .cash-run-home .cash-run-button,
-  body.home-page a.cash-run-button[href="games/cash-run/"],
-  body.home-page section.cash-run-home a.cash-run-button{
-    font-size:clamp(28px,8.6vw,42px)!important;
-    padding:20px 20px!important;
-    min-height:88px!important;
-    width:min(100%,620px)!important;
-    white-space:normal!important;
-    text-align:center!important;
-  }
+@media(max-width:640px){
+  .homepage-full-episode-frame{width:calc(100% - 20px);border-radius:24px}.homepage-full-episode-frame::before{left:10px;top:10px;font-size:.62rem}
+  body.home-page .main-nav{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;width:100%!important;align-items:stretch!important;justify-items:stretch!important;}
+  body.home-page .main-nav>a,body.home-page .main-nav>button{width:100%!important;max-width:none!important;min-width:0!important;min-height:58px!important;font-size:clamp(14px,4vw,17px)!important;line-height:1.05!important;letter-spacing:.035em!important;padding:10px 12px!important;white-space:normal!important;text-align:center!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;overflow:hidden!important;}
+  body.home-page .main-nav .desktop-extra-link{display:none!important;}
+  body.home-page .main-nav .mobile-menu-toggle{display:inline-flex!important;border-radius:20px!important;}
+  body.home-page .main-nav .mobile-menu-panel{display:none!important;grid-column:1/-1!important;width:100%!important;margin-top:4px!important;padding:10px!important;border-radius:22px!important;border:1px solid rgba(0,229,255,.3)!important;background:rgba(0,0,0,.42)!important;box-shadow:inset 0 0 24px rgba(57,255,20,.1)!important;gap:8px!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+  body.home-page .main-nav .mobile-menu-panel.is-open{display:grid!important;}
+  body.home-page .main-nav .mobile-menu-panel a{width:100%!important;max-width:none!important;min-height:52px!important;font-size:clamp(12px,3.45vw,15px)!important;padding:9px 10px!important;white-space:normal!important;text-align:center!important;overflow:hidden!important;}
+  body.home-page .cash-run-home .cash-run-button{font-size:clamp(28px,8.6vw,42px)!important;padding:20px!important;min-height:88px!important;width:min(100%,620px)!important;}
 }
-@media(prefers-reduced-motion:reduce){
-  .main-nav .nav-cta,.btn-primary,.btn-neon,.games-btn.primary,.gate-game-btn,.scan-button,.game-controls .primary,.main-nav a::after,.btn::after,.games-btn::after,.hw-board-btn::after,.gate-game-btn::after,.gate-track-btn::after,.nav-pill::after,.cash-run-button{animation:none!important}
-}
+@media(prefers-reduced-motion:reduce){.main-nav .nav-cta,.main-nav .mobile-menu-toggle,.btn-primary,.btn-neon,.games-btn.primary,.gate-game-btn,.scan-button,.game-controls .primary,.main-nav a::after,.main-nav button::after,.btn::after,.games-btn::after,.hw-board-btn::after,.gate-game-btn::after,.gate-track-btn::after,.nav-pill::after,.cash-run-button{animation:none!important}}
