@@ -18,35 +18,34 @@
   <link rel="stylesheet" href="o1-show-links.css" />
   <link rel="stylesheet" href="global-button-pop.css" />
   <style>
-    .homepage-full-episode-frame { position: relative; overflow: hidden; width: min(1180px, calc(100% - 28px)); margin: 0 auto; border-radius: 32px; border: 2px solid rgba(31, 252, 255, 0.36); background: radial-gradient(circle at 12% 14%, rgba(57, 255, 122, 0.22), transparent 32%), radial-gradient(circle at 82% 18%, rgba(255, 79, 216, 0.24), transparent 34%), linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.03)); box-shadow: 0 0 34px rgba(31, 252, 255, 0.16), 0 22px 70px rgba(0,0,0,0.36); }
-    .homepage-full-episode-frame::before { content: "01 SHOW FULL EPISODE"; position: absolute; left: 18px; top: 14px; z-index: 3; display: inline-flex; border-radius: 999px; padding: 8px 12px; color: #060606; background: linear-gradient(90deg, #39ff7a, #1ffcff, #ffe45c, #ff4fd8); font-size: 0.72rem; font-weight: 1000; letter-spacing: 0.08em; text-transform: uppercase; box-shadow: 0 0 22px rgba(31,252,255,.2); }
-    .homepage-full-episode-frame::after { content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none; background: linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px); background-size: 100% 7px; opacity: .18; mix-blend-mode: screen; }
-    .homepage-full-episode-frame iframe { display: block; width: 100%; aspect-ratio: 16 / 9; height: auto; border: 0; background: #000; }
-    .homepage-full-episode-strip { position: relative; z-index: 4; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding: 12px 14px; color: #fff; background: rgba(0,0,0,.74); border-top: 1px solid rgba(255,255,255,.12); font-weight: 900; }
-    .homepage-full-episode-strip small { color: #9fffd0; font-weight: 1000; letter-spacing: .08em; text-transform: uppercase; }
-    .mobile-menu-toggle, .mobile-menu-panel { display: none; }
-    @media (max-width: 640px) {
-      .homepage-full-episode-frame { width: calc(100% - 20px); border-radius: 24px; }
-      .homepage-full-episode-frame::before { left: 10px; top: 10px; font-size: .62rem; }
-      .main-nav .desktop-extra-link { display: none !important; }
-      .mobile-menu-toggle { display: inline-flex !important; }
-      .mobile-menu-panel { display: none !important; width: 100%; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
-      .mobile-menu-panel.is-open { display: flex !important; }
+    .homepage-full-episode-frame{position:relative;overflow:hidden;width:min(1180px,calc(100% - 28px));margin:0 auto;border-radius:32px;border:2px solid rgba(31,252,255,.36);background:radial-gradient(circle at 12% 14%,rgba(57,255,122,.22),transparent 32%),radial-gradient(circle at 82% 18%,rgba(255,79,216,.24),transparent 34%),linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.03));box-shadow:0 0 34px rgba(31,252,255,.16),0 22px 70px rgba(0,0,0,.36)}
+    .homepage-full-episode-frame::before{content:"01 SHOW FULL EPISODE";position:absolute;left:18px;top:14px;z-index:3;display:inline-flex;border-radius:999px;padding:8px 12px;color:#060606;background:linear-gradient(90deg,#39ff7a,#1ffcff,#ffe45c,#ff4fd8);font-size:.72rem;font-weight:1000;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 0 22px rgba(31,252,255,.2)}
+    .homepage-full-episode-frame::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px);background-size:100% 7px;opacity:.18;mix-blend-mode:screen}
+    .homepage-full-episode-frame iframe{display:block;width:100%;aspect-ratio:16/9;height:auto;border:0;background:#000}
+    .homepage-full-episode-strip{position:relative;z-index:4;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:12px 14px;color:#fff;background:rgba(0,0,0,.74);border-top:1px solid rgba(255,255,255,.12);font-weight:900}
+    .homepage-full-episode-strip small{color:#9fffd0;font-weight:1000;letter-spacing:.08em;text-transform:uppercase}
+    .mobile-menu-toggle,.mobile-menu-panel{display:none}
+    @media(max-width:640px){
+      .homepage-full-episode-frame{width:calc(100% - 20px);border-radius:24px}
+      .homepage-full-episode-frame::before{left:10px;top:10px;font-size:.62rem}
+      body.home-page .main-nav{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;width:100%!important;align-items:stretch!important;justify-items:stretch!important}
+      body.home-page .main-nav>a,body.home-page .main-nav>button{width:100%!important;max-width:none!important;min-width:0!important;min-height:58px!important;font-size:clamp(14px,4vw,17px)!important;line-height:1.05!important;letter-spacing:.035em!important;padding:10px 12px!important;white-space:normal!important;text-align:center!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;overflow:hidden!important}
+      body.home-page .main-nav .desktop-extra-link{display:none!important}
+      body.home-page .main-nav .mobile-menu-toggle{display:inline-flex!important;color:#050505!important;background:linear-gradient(90deg,#39ff14,#ffe600,#ff2bd6,#00e5ff)!important;font-weight:1000!important;border:0!important;border-radius:20px!important;text-transform:uppercase!important}
+      body.home-page .main-nav .mobile-menu-panel{display:none!important;grid-column:1/-1!important;width:100%!important;margin-top:4px!important;padding:10px!important;border-radius:22px!important;border:1px solid rgba(0,229,255,.3)!important;background:rgba(0,0,0,.42)!important;box-shadow:inset 0 0 24px rgba(57,255,20,.1)!important;gap:8px!important;grid-template-columns:repeat(2,minmax(0,1fr))!important}
+      body.home-page .main-nav .mobile-menu-panel.is-open{display:grid!important}
+      body.home-page .main-nav .mobile-menu-panel a{width:100%!important;max-width:none!important;min-height:52px!important;font-size:clamp(12px,3.45vw,15px)!important;padding:9px 10px!important;white-space:normal!important;text-align:center!important;overflow:hidden!important}
     }
   </style>
 </head>
 <body class="home-page" data-homepage-video="oPUZx7mCceg-top-episode-20260510">
-  <div id="login-section" style="background: transparent; color:#a9ff87; padding: 10px; text-align:center; border:0; box-shadow:none;">
+  <div id="login-section" style="background:transparent;color:#a9ff87;padding:10px;text-align:center;border:0;box-shadow:none;">
     <span id="login-status" style="margin-left:20px;">Checking session...</span>
-    <a href="auth.html" id="auth-link" style="margin-left:12px; color:#45ff36; font-weight:700;">Create ID / Login</a>
-    <button id="home-logout" type="button" hidden style="margin-left:10px; border:0; border-radius:999px; padding:7px 11px; background:#ff275d; color:#fff; font-weight:800; cursor:pointer;">Logout</button>
+    <a href="auth.html" id="auth-link" style="margin-left:12px;color:#45ff36;font-weight:700;">Create ID / Login</a>
+    <button id="home-logout" type="button" hidden style="margin-left:10px;border:0;border-radius:999px;padding:7px 11px;background:#ff275d;color:#fff;font-weight:800;cursor:pointer;">Logout</button>
   </div>
-
   <header class="site-header">
-    <a class="brand-lockup" href="index.html" aria-label="HYPHSWORLD home">
-      <span>AMS WEST PRESENTS</span>
-      <strong>HYPHSWORLD</strong>
-    </a>
+    <a class="brand-lockup" href="index.html" aria-label="HYPHSWORLD home"><span>AMS WEST PRESENTS</span><strong>HYPHSWORLD</strong></a>
     <nav class="main-nav" aria-label="Main navigation">
       <a href="games/cash-run/">Play Cash Run</a>
       <a href="#o1-show">Watch 01 Show</a>
@@ -72,7 +71,6 @@
       </div>
     </nav>
   </header>
-
   <main>
     <section class="ticker" aria-label="HYPHSWORLD ticker"><div class="ticker-track"><span>WELCOME 2 HYPHSWORLD</span><b>✦</b><span>CASH RUN TEMP CODE: CASHRUN</span><b>✦</b><span>01 SHOW FULL EPISODE NOW PLAYING</span><b>✦</b><span>DUCK SAUCE GOT INSTRUCTIONS</span><b>✦</b><span>VAULT TRANSPORT READY</span><b>✦</b><span>COOL POINTS HIT THE LEADERBOARD</span><b>✦</b><span>CASINO ACCESS MUST BE EARNED</span><b>✦</b><span>WELCOME 2 HYPHSWORLD</span><b>✦</b><span>CASH RUN TEMP CODE: CASHRUN</span><b>✦</b><span>01 SHOW FULL EPISODE NOW PLAYING</span><b>✦</b><span>DUCK SAUCE GOT INSTRUCTIONS</span><b>✦</b><span>VAULT TRANSPORT READY</span><b>✦</b><span>COOL POINTS HIT THE LEADERBOARD</span><b>✦</b><span>CASINO ACCESS MUST BE EARNED</span><b>✦</b></div></section>
     <section class="hero-shell" id="top"><div class="homepage-full-episode-frame" data-featured-video="oPUZx7mCceg-top"><iframe src="https://www.youtube.com/embed/oPUZx7mCceg?si=1n257lXjiWNRMhMI&rel=0&modestbranding=1" title="01 Show full episode" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe><div class="homepage-full-episode-strip"><small>NOW SHOWING</small><span>01 Show Full Episode // HYPHSWORLD Top Screen</span></div></div></section>
@@ -87,20 +85,10 @@
     <section id="video" class="section-pad"><div class="phone-shell section-card"><div class="section-title"><p class="eyebrow">Featured Motion</p><h2>Visuals + 01 Show Energy</h2><p>Trailers, interviews, motion covers, and show drops can rotate here.</p></div><div class="video-slot" data-featured-video="oPUZx7mCceg"><iframe src="https://www.youtube.com/embed/oPUZx7mCceg?si=1n257lXjiWNRMhMI&rel=0&modestbranding=1" title="HYPHSWORLD homepage featured video" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div></div></section>
     <section id="connect" class="section-pad"><div class="phone-shell section-card connect-card"><div class="section-title"><p class="eyebrow">Tap In</p><h2>Stay Locked In</h2><p>Booking, features, merch, interviews, business, and Vault updates.</p></div><div class="button-row compact-actions"><a class="btn btn-primary" href="mailto:tone@amsenterprisecorp.com">Email AMS WEST</a><a class="btn btn-hot" href="shop.html">Merch</a><a class="btn btn-soft" href="account.html">Manage ID</a></div></div></section>
   </main>
-
   <footer class="site-footer"><span>© <span id="year"></span> AMS WEST LLC</span><span>HYPHSWORLD • Richmond, CA</span></footer>
   <script src="auth-client.js"></script><script src="index-player.js"></script><script src="leaderboard-widgets.js"></script><script src="site-analytics.js"></script><script src="transport-system.js"></script>
   <script>
-    document.addEventListener("DOMContentLoaded", async function () {
-      var statusEl = document.getElementById("login-status"); var authLink = document.getElementById("auth-link"); var navAccountLink = document.getElementById("nav-account-link"); var mobileNavAccountLink = document.getElementById("mobile-nav-account-link"); var logoutButton = document.getElementById("home-logout"); var year = document.getElementById("year"); var menuToggle = document.querySelector(".mobile-menu-toggle"); var menuPanel = document.getElementById("mobile-menu-panel");
-      if (year) year.textContent = new Date().getFullYear();
-      if (menuToggle && menuPanel) { menuToggle.addEventListener("click", function () { var open = menuPanel.classList.toggle("is-open"); menuToggle.setAttribute("aria-expanded", open ? "true" : "false"); menuToggle.textContent = open ? "Menu ▲" : "Menu ▼"; }); }
-      if (!window.HWAuth) { statusEl.textContent = "Auth unavailable"; return; }
-      var session = await HWAuth.getSession();
-      if (session && session.email) { statusEl.textContent = "Logged in as " + session.email; authLink.textContent = "Manage Account"; authLink.href = "account.html"; if (navAccountLink) { navAccountLink.textContent = "Manage ID"; navAccountLink.href = "account.html"; } if (mobileNavAccountLink) { mobileNavAccountLink.textContent = "Manage ID"; mobileNavAccountLink.href = "account.html"; } if (logoutButton) logoutButton.hidden = false; }
-      else { statusEl.textContent = "Not logged in"; authLink.textContent = "Create ID / Login"; authLink.href = "auth.html"; if (navAccountLink) { navAccountLink.textContent = "Create ID"; navAccountLink.href = "auth.html"; } if (mobileNavAccountLink) { mobileNavAccountLink.textContent = "Create ID"; mobileNavAccountLink.href = "auth.html"; } if (logoutButton) logoutButton.hidden = true; }
-      if (logoutButton) { logoutButton.addEventListener("click", async function () { await HWAuth.signOut(); statusEl.textContent = "Logged out."; logoutButton.hidden = true; authLink.textContent = "Create ID / Login"; authLink.href = "auth.html"; if (navAccountLink) { navAccountLink.textContent = "Create ID"; navAccountLink.href = "auth.html"; } if (mobileNavAccountLink) { mobileNavAccountLink.textContent = "Create ID"; mobileNavAccountLink.href = "auth.html"; } }); }
-    });
+    document.addEventListener("DOMContentLoaded",async function(){var statusEl=document.getElementById("login-status");var authLink=document.getElementById("auth-link");var navAccountLink=document.getElementById("nav-account-link");var mobileNavAccountLink=document.getElementById("mobile-nav-account-link");var logoutButton=document.getElementById("home-logout");var year=document.getElementById("year");var menuToggle=document.querySelector(".mobile-menu-toggle");var menuPanel=document.getElementById("mobile-menu-panel");if(year)year.textContent=new Date().getFullYear();if(menuToggle&&menuPanel){menuToggle.addEventListener("click",function(){var open=menuPanel.classList.toggle("is-open");menuToggle.setAttribute("aria-expanded",open?"true":"false");menuToggle.textContent=open?"Menu ▲":"Menu ▼";});}if(!window.HWAuth){statusEl.textContent="Auth unavailable";return;}var session=await HWAuth.getSession();if(session&&session.email){statusEl.textContent="Logged in as "+session.email;authLink.textContent="Manage Account";authLink.href="account.html";if(navAccountLink){navAccountLink.textContent="Manage ID";navAccountLink.href="account.html";}if(mobileNavAccountLink){mobileNavAccountLink.textContent="Manage ID";mobileNavAccountLink.href="account.html";}if(logoutButton)logoutButton.hidden=false;}else{statusEl.textContent="Not logged in";authLink.textContent="Create ID / Login";authLink.href="auth.html";if(navAccountLink){navAccountLink.textContent="Create ID";navAccountLink.href="auth.html";}if(mobileNavAccountLink){mobileNavAccountLink.textContent="Create ID";mobileNavAccountLink.href="auth.html";}if(logoutButton)logoutButton.hidden=true;}if(logoutButton){logoutButton.addEventListener("click",async function(){await HWAuth.signOut();statusEl.textContent="Logged out.";logoutButton.hidden=true;authLink.textContent="Create ID / Login";authLink.href="auth.html";if(navAccountLink){navAccountLink.textContent="Create ID";navAccountLink.href="auth.html";}if(mobileNavAccountLink){mobileNavAccountLink.textContent="Create ID";mobileNavAccountLink.href="auth.html";}});}});
   </script>
 </body>
 </html>
