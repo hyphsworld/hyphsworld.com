@@ -24,14 +24,14 @@
     .homepage-full-episode-frame iframe { display: block; width: 100%; aspect-ratio: 16 / 9; height: auto; border: 0; background: #000; }
     .homepage-full-episode-strip { position: relative; z-index: 4; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding: 12px 14px; color: #fff; background: rgba(0,0,0,.74); border-top: 1px solid rgba(255,255,255,.12); font-weight: 900; }
     .homepage-full-episode-strip small { color: #9fffd0; font-weight: 1000; letter-spacing: .08em; text-transform: uppercase; }
-    .mobile-more-access-toggle, .mobile-more-access-panel { display: none; }
+    .mobile-menu-toggle, .mobile-menu-panel { display: none; }
     @media (max-width: 640px) {
       .homepage-full-episode-frame { width: calc(100% - 20px); border-radius: 24px; }
       .homepage-full-episode-frame::before { left: 10px; top: 10px; font-size: .62rem; }
-      .main-nav .mobile-extra-link { display: none !important; }
-      .mobile-more-access-toggle { display: inline-flex !important; }
-      .mobile-more-access-panel { display: none; width: 100%; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
-      .mobile-more-access-panel.is-open { display: flex; }
+      .main-nav .desktop-extra-link { display: none !important; }
+      .mobile-menu-toggle { display: inline-flex !important; }
+      .mobile-menu-panel { display: none; width: 100%; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+      .mobile-menu-panel.is-open { display: flex; }
     }
   </style>
 </head>
@@ -48,19 +48,20 @@
       <strong>HYPHSWORLD</strong>
     </a>
     <nav class="main-nav" aria-label="Main navigation">
-      <a href="#music">Music</a>
-      <a href="#o1-show">01 Show</a>
-      <a href="games.html">Games</a>
-      <a href="games/cash-run/">Cash Run</a>
-      <button class="mobile-more-access-toggle" type="button" aria-expanded="false" aria-controls="mobile-more-access-panel">More Access ▼</button>
-      <a class="mobile-extra-link" href="#spotlight">Spotlight</a>
-      <a class="mobile-extra-link" href="vault.html">Vault</a>
-      <a class="mobile-extra-link" href="leaderboard.html">Leaderboards</a>
-      <a class="mobile-extra-link" href="app-player.html">Full Player</a>
-      <a class="mobile-extra-link" href="shop.html">Merch</a>
-      <a class="mobile-extra-link" href="#connect">Connect</a>
-      <a class="mobile-extra-link nav-cta" id="nav-account-link" href="auth.html">Create ID</a>
-      <div class="mobile-more-access-panel" id="mobile-more-access-panel">
+      <a href="games/cash-run/">Play Cash Run</a>
+      <a href="#o1-show">Watch 01 Show</a>
+      <a href="#music">Listen Music</a>
+      <button class="mobile-menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu-panel">Menu ▼</button>
+      <a class="desktop-extra-link" href="games.html">Games</a>
+      <a class="desktop-extra-link" href="#spotlight">Spotlight</a>
+      <a class="desktop-extra-link" href="vault.html">Vault</a>
+      <a class="desktop-extra-link" href="leaderboard.html">Leaderboards</a>
+      <a class="desktop-extra-link" href="app-player.html">Full Player</a>
+      <a class="desktop-extra-link" href="shop.html">Merch</a>
+      <a class="desktop-extra-link" href="#connect">Connect</a>
+      <a class="desktop-extra-link nav-cta" id="nav-account-link" href="auth.html">Create ID</a>
+      <div class="mobile-menu-panel" id="mobile-menu-panel">
+        <a href="games.html">Games</a>
         <a href="#spotlight">Spotlight</a>
         <a href="vault.html">Vault</a>
         <a href="leaderboard.html">Leaderboards</a>
@@ -91,9 +92,9 @@
   <script src="auth-client.js"></script><script src="index-player.js"></script><script src="leaderboard-widgets.js"></script><script src="site-analytics.js"></script><script src="transport-system.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", async function () {
-      var statusEl = document.getElementById("login-status"); var authLink = document.getElementById("auth-link"); var navAccountLink = document.getElementById("nav-account-link"); var mobileNavAccountLink = document.getElementById("mobile-nav-account-link"); var logoutButton = document.getElementById("home-logout"); var year = document.getElementById("year"); var moreToggle = document.querySelector(".mobile-more-access-toggle"); var morePanel = document.getElementById("mobile-more-access-panel");
+      var statusEl = document.getElementById("login-status"); var authLink = document.getElementById("auth-link"); var navAccountLink = document.getElementById("nav-account-link"); var mobileNavAccountLink = document.getElementById("mobile-nav-account-link"); var logoutButton = document.getElementById("home-logout"); var year = document.getElementById("year"); var menuToggle = document.querySelector(".mobile-menu-toggle"); var menuPanel = document.getElementById("mobile-menu-panel");
       if (year) year.textContent = new Date().getFullYear();
-      if (moreToggle && morePanel) { moreToggle.addEventListener("click", function () { var open = morePanel.classList.toggle("is-open"); moreToggle.setAttribute("aria-expanded", open ? "true" : "false"); moreToggle.textContent = open ? "More Access ▲" : "More Access ▼"; }); }
+      if (menuToggle && menuPanel) { menuToggle.addEventListener("click", function () { var open = menuPanel.classList.toggle("is-open"); menuToggle.setAttribute("aria-expanded", open ? "true" : "false"); menuToggle.textContent = open ? "Menu ▲" : "Menu ▼"; }); }
       if (!window.HWAuth) { statusEl.textContent = "Auth unavailable"; return; }
       var session = await HWAuth.getSession();
       if (session && session.email) { statusEl.textContent = "Logged in as " + session.email; authLink.textContent = "Manage Account"; authLink.href = "account.html"; if (navAccountLink) { navAccountLink.textContent = "Manage ID"; navAccountLink.href = "account.html"; } if (mobileNavAccountLink) { mobileNavAccountLink.textContent = "Manage ID"; mobileNavAccountLink.href = "account.html"; } if (logoutButton) logoutButton.hidden = false; }
