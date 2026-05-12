@@ -12,7 +12,7 @@
 </head>
 <body>
   <header class="site-header">
-    <a class="brand-lockup" href="index.html"><span>AMS WEST PRESENTS</span><strong>HYPHSWORLD</strong></a>
+    <a class="brand-lockup" href="index.html" aria-label="HYPHSWORLD home"><span>AMS WEST PRESENTS</span><strong>HYPHSWORLD</strong></a>
     <nav class="main-nav" aria-label="Main navigation">
       <a href="index.html#music">Music</a>
       <a href="index.html#spotlight">Spotlight</a>
@@ -23,17 +23,17 @@
   </header>
 
   <main class="section-pad">
-    <section class="phone-shell section-card">
+    <section class="phone-shell section-card" aria-labelledby="fullPlayerTitle">
       <div class="section-title">
         <p class="eyebrow">Full Player</p>
-        <h2>HYPHSWORLD Radio</h2>
+        <h1 id="fullPlayerTitle">HYPHSWORLD Radio</h1>
         <p>Clean player lane. All homepage records live here too.</p>
       </div>
 
       <div class="full-player-grid">
         <div class="now-playing-card">
           <span id="active-track-chip" class="track-chip">HAM</span>
-          <h3 id="track-title">HAM</h3>
+          <h2 id="track-title">HAM</h2>
           <p id="track-meta">Hyph Life — prod by 1ManBand</p>
           <audio id="hyph-audio" preload="metadata"></audio>
         </div>
@@ -44,9 +44,10 @@
         </div>
       </div>
 
-      <div class="progress-wrap" aria-label="Track progress">
+      <div class="progress-wrap">
         <span id="current-time">0:00</span>
-        <input id="track-progress" type="range" min="0" max="100" value="0" aria-label="Audio progress" />
+        <label class="sr-only" for="track-progress">Audio progress</label>
+        <input id="track-progress" type="range" min="0" max="100" value="0" />
         <span id="duration-time">0:00</span>
       </div>
 
