@@ -3,7 +3,7 @@
   --hw-letter-rainbow:linear-gradient(90deg,#39ff14 0%,#ffe600 18%,#ff2bd6 39%,#00e5ff 62%,#ff8a00 82%,#39ff14 100%);
 }
 .main-nav{
-  gap:clamp(9px,1.8vw,18px)!important;
+  gap:clamp(8px,1.7vw,16px)!important;
 }
 .main-nav a,
 .btn,
@@ -23,21 +23,21 @@
 .duckReturn{
   font-size:clamp(1rem,1.45vw,1.45rem)!important;
   font-weight:1000!important;
-  letter-spacing:.075em!important;
+  letter-spacing:.07em!important;
   text-transform:uppercase!important;
   line-height:1.05!important;
 }
 body.home-page .site-header .main-nav a,
 body.home-page header.site-header nav.main-nav a{
-  font-size:clamp(14px,2.65vw,20px)!important;
+  font-size:clamp(13px,2.45vw,19px)!important;
   line-height:1!important;
   font-weight:1000!important;
-  letter-spacing:.045em!important;
+  letter-spacing:.035em!important;
   overflow:hidden!important;
   text-overflow:clip!important;
 }
 .main-nav a{
-  padding:clamp(11px,1.45vw,16px) clamp(13px,1.8vw,21px)!important;
+  padding:clamp(10px,1.35vw,15px) clamp(12px,1.7vw,19px)!important;
   min-height:54px!important;
   display:inline-flex!important;
   align-items:center!important;
@@ -48,9 +48,9 @@ body.home-page header.site-header nav.main-nav a{
 .main-nav a[href="games/cash-run/"],
 .main-nav a[href="/games/cash-run"],
 .main-nav a[href="games/cash-run/index.html"]{
-  font-size:clamp(15px,2.85vw,22px)!important;
+  font-size:clamp(14px,2.65vw,20px)!important;
   font-weight:1000!important;
-  letter-spacing:.055em!important;
+  letter-spacing:.04em!important;
 }
 .main-nav a,
 .btn,
@@ -124,7 +124,7 @@ body.home-page header.site-header nav.main-nav a{
 .gate-game-btn:hover,
 .gate-track-btn:hover,
 .nav-pill:hover{
-  transform:translateY(-3px) scale(1.025)!important;
+  transform:translateY(-3px) scale(1.02)!important;
   filter:saturate(1.24) contrast(1.05)!important;
 }
 .main-nav a::after,
@@ -188,19 +188,19 @@ body.home-page section.cash-run-home a.cash-run-button{
 @keyframes hwButtonColorRun{to{background-position:260% 50%}}
 @media(max-width:700px){
   .main-nav{
-    gap:9px!important;
+    gap:8px!important;
   }
   body.home-page .site-header .main-nav a,
   body.home-page header.site-header nav.main-nav a,
   .main-nav a,.btn,.games-btn,.hw-board-btn,.gate-game-btn,.gate-track-btn,.scan-button,.clear-button,.manual-enter,.nav-pill{
-    font-size:clamp(13px,3.05vw,16px)!important;
-    padding-left:11px!important;
-    padding-right:11px!important;
+    font-size:clamp(12px,2.8vw,15px)!important;
+    padding-left:10px!important;
+    padding-right:10px!important;
     min-height:54px!important;
-    max-width:138px!important;
+    max-width:134px!important;
   }
   .main-nav a[href="games/cash-run/"],.main-nav a[href="/games/cash-run"]{
-    font-size:clamp(14px,3.25vw,17px)!important;
+    font-size:clamp(13px,3vw,16px)!important;
   }
   body.home-page .cash-run-home .cash-run-button,
   body.home-page a.cash-run-button[href="games/cash-run/"],
