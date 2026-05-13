@@ -4,7 +4,34 @@
     else fn();
   }
 
+  function removeMerchLinks() {
+    var selectors = [
+      'a[href="shop.html"]',
+      'a[href="merch.html"]',
+      'a[href="/shop.html"]',
+      'a[href="/merch.html"]',
+      '.main-nav a[href*="shop"]',
+      '.main-nav a[href*="merch"]',
+      '.button-row a[href*="shop"]',
+      '.button-row a[href*="merch"]'
+    ];
+
+    selectors.forEach(function (selector) {
+      document.querySelectorAll(selector).forEach(function (link) {
+        link.remove();
+      });
+    });
+
+    document.querySelectorAll('a, button').forEach(function (item) {
+      if ((item.textContent || '').trim().toLowerCase() === 'merch') {
+        item.remove();
+      }
+    });
+  }
+
   ready(async function () {
+    removeMerchLinks();
+
     var statusEl = document.getElementById('login-status');
     var authLink = document.getElementById('auth-link');
     var navAccountLink = document.getElementById('nav-account-link');
@@ -21,6 +48,7 @@
         var open = menuPanel.classList.toggle('is-open');
         menuToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
         menuToggle.textContent = open ? 'Menu ▲' : 'Menu ▼';
+        removeMerchLinks();
       });
     }
 
@@ -42,6 +70,7 @@
         mobileNavAccountLink.textContent = text === 'Manage Account' ? 'Manage ID' : 'Create ID';
         mobileNavAccountLink.href = href;
       }
+      removeMerchLinks();
     }
 
     if (session && session.email) {
