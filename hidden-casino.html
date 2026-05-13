@@ -10,19 +10,18 @@
   <link rel="stylesheet" href="hidden-casino.css" />
   <script src="site-analytics.js" defer></script>
 </head>
-
 <body class="casino-page">
   <div class="casino-grid" aria-hidden="true"></div>
   <div class="casino-glow pink" aria-hidden="true"></div>
   <div class="casino-glow green" aria-hidden="true"></div>
 
   <header class="casino-header">
-    <a class="brand" href="index.html">
+    <a class="brand" href="index.html" aria-label="HYPHSWORLD home">
       <span>AMS WEST PRESENTS</span>
       <strong>HYPHSWORLD</strong>
     </a>
 
-    <nav class="casino-nav" aria-label="Main navigation">
+    <nav class="casino-nav" aria-label="Hidden casino navigation">
       <a href="level-1.html">Back To Level 1</a>
       <a href="vault.html">Vault Gate</a>
       <a href="level-2.html">Level 2</a>
@@ -30,10 +29,10 @@
   </header>
 
   <main class="casino-main">
-    <section class="casino-hero">
+    <section class="casino-hero" aria-labelledby="hiddenCasinoTitle">
       <article class="casino-copy">
         <p class="eyebrow">BACK ROOM OPEN // LEVEL 1 BONUS</p>
-        <h1>Hidden Casino</h1>
+        <h1 id="hiddenCasinoTitle">Hidden Casino</h1>
         <p class="lead">
           Cool Points only. Duck Sauce running the machine, Buck watching the door.
         </p>
@@ -44,22 +43,22 @@
         </div>
       </article>
 
-      <aside class="security-card">
+      <aside class="security-card" aria-label="Duck and Buck security status">
         <div class="heads">
           <img src="duck-sauce.jpg" alt="Duck Sauce" onerror="this.style.display='none'" />
           <img src="buck-thebodyguard.jpg" alt="BuckTheBodyguard" onerror="this.style.display='none'" />
         </div>
-        <h2>Duck & Buck Posted</h2>
+        <h2>Duck &amp; Buck Posted</h2>
         <p id="casinoLine">Duck wants a cut. Buck wants order.</p>
       </aside>
     </section>
 
-    <section class="machine-section">
+    <section class="machine-section" aria-labelledby="casinoMachineTitle">
       <article class="casino-machine">
         <p class="eyebrow">COOL POINTS SLOT</p>
-        <h2>Back Room Machine</h2>
+        <h2 id="casinoMachineTitle">Back Room Machine</h2>
 
-        <div class="reels">
+        <div class="reels" aria-label="Slot reels">
           <div class="reel"><span id="c1">🦆</span></div>
           <div class="reel"><span id="c2">🎰</span></div>
           <div class="reel"><span id="c3">🛡️</span></div>
