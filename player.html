@@ -1,26 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>HYPHSWORLD Player</title>
-  <meta name="description" content="Stream HYPHSWORLD previews directly from the site.">
-  <link rel="stylesheet" href="player.css">
-</head> <div id="duck-helper"></div>
-<script src="duck-helper.js"></script>
+  <meta name="description" content="Stream HYPHSWORLD previews directly from the site." />
+  <link rel="stylesheet" href="player.css" />
+</head>
 <body>
+  <div id="duck-helper"></div>
   <div class="bg-orb orb-1"></div>
   <div class="bg-orb orb-2"></div>
 
   <main class="player-page">
-    <section class="player-wrap">
+    <section class="player-wrap" aria-labelledby="playerTitle">
       <div class="player-art">
-        <img src="player-cover.jpg" alt="Hyphsworld 5 cover">
+        <img src="player-cover.jpg" alt="Hyphsworld 5 cover" />
       </div>
 
       <div class="player-panel">
         <p class="eyebrow">HYPHSWORLD PLAYER</p>
-        <h1>Stream Previews On Site</h1>
+        <h1 id="playerTitle">Stream Previews On Site</h1>
         <p class="subtext">No middleman. Direct from Hyphsworld.</p>
 
         <div class="now-playing">
@@ -30,7 +30,8 @@
         </div>
 
         <div class="progress-wrap">
-          <input id="progress" type="range" min="0" max="100" value="0" step="0.1">
+          <label class="sr-only" for="progress">Track progress</label>
+          <input id="progress" type="range" min="0" max="100" value="0" step="0.1" />
           <div class="time-row">
             <span id="currentTime">0:00</span>
             <span id="duration">0:00</span>
@@ -49,37 +50,18 @@
         </div>
 
         <div id="playlist" class="playlist">
-          <button class="track-item active" data-index="0" type="button">
-            <span class="track-num">01</span>
-            <span class="track-copy">
-              <strong>THE WAY ft DejBae</strong>
-              <small>prod by K.M.T.</small>
-            </span>
-          </button>
-
-          <button class="track-item" data-index="1" type="button">
-            <span class="track-num">02</span>
-            <span class="track-copy">
-              <strong>YOU BAD ft DejBae</strong>
-              <small>prod by Cuz Zaid</small>
-            </span>
-          </button>
-
-          <button class="track-item" data-index="2" type="button">
-            <span class="track-num">03</span>
-            <span class="track-copy">
-              <strong>BOUT YOU</strong>
-              <small>prod by unknown</small>
-            </span>
-          </button>
+          <button class="track-item active" data-index="0" type="button"><span class="track-num">01</span><span class="track-copy"><strong>THE WAY ft DejBae</strong><small>prod by K.M.T.</small></span></button>
+          <button class="track-item" data-index="1" type="button"><span class="track-num">02</span><span class="track-copy"><strong>YOU BAD ft DejBae</strong><small>prod by Cuz Zaid</small></span></button>
+          <button class="track-item" data-index="2" type="button"><span class="track-num">03</span><span class="track-copy"><strong>BOUT YOU</strong><small>prod by unknown</small></span></button>
         </div>
 
-        <a class="back-link" href="index.html">← Back to Hyphsworld</a>
+        <a class="back-link" href="index.html">Back to Hyphsworld</a>
       </div>
     </section>
   </main>
 
   <audio id="audio"></audio>
+  <script src="duck-helper.js"></script>
   <script src="player.js"></script>
 </body>
 </html>
