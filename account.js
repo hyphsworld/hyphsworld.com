@@ -76,8 +76,54 @@
     }
   }
 
+  async function refreshPoints() {
+    try {
+      if (window.HWPoints && typeof window.HWPoints.refresh === 'function') {
+        await window.HWPoints.refresh();
+      }
+    } catch (error) {}
+    renderPoints();
+    renderBadgeSummary();
+  }
+
   function renderPoints() {
     if (coolPointsEl) coolPointsEl.textContent = String(getPoints());
+  }
+
+  function ensureBadgePanel() {
+    let panel = document.getElementById('accountBadgeProgress');
+    if (panel) return panel;
+    if (!accountPanel) return null;
+
+    panel = document.createElement('section');
+    panel.id = 'accountBadgeProgress';
+    panel.className = 'account-badge-progress';
+    panel.setAttribute('aria-label', 'Cool Points badge progress');
+
+    const anchor = coolPointsEl ? coolPointsEl.closest('.stat,.account-stat,.panel,section,article,div') : null;
+    if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(panel, anchor.nextSibling);
+    else accountPanel.appendChild(panel);
+    return panel;
+  }
+
+  function renderBadgeSummary() {
+    const panel = ensureBadgePanel();
+    if (!panel || !window.HWCoolBadges || typeof window.HWCoolBadges.state !== 'function') return;
+
+    const state = window.HWCoolBadges.state(getPoints());
+    const current = state.current;
+    const next = state.next;
+
+    panel.innerHTML = '' +
+      '<div class="account-badge-card">' +
+        '<div>' +
+          '<span class="account-badge-kicker">Player Progress</span>' +
+          '<h3>' + (current ? current.icon + ' ' + current.name : 'No Badge Yet') + '</h3>' +
+          '<p>' + (next ? state.needed.toLocaleString() + ' points until ' + next.name : 'All basic badges unlocked. Chrome legend status online.') + '</p>' +
+        '</div>' +
+        '<strong>' + state.progress + '%</strong>' +
+      '</div>' +
+      '<div class="account-badge-track"><span style="width:' + state.progress + '%"></span></div>';
   }
 
   function setText(id, value) {
@@ -102,6 +148,7 @@
     }
     if (logoutBtn) logoutBtn.disabled = true;
     renderPoints();
+    renderBadgeSummary();
     setAvatarChoice(localStorage.getItem('hyphsworld.avatarType') || 'boy');
     if (window.HWUserWidget) window.HWUserWidget.refresh();
     show('No active ID. Buck says login before touching account management.', 'error');
@@ -129,11 +176,7 @@
       return;
     }
 
-    try {
-      if (window.HWPoints && typeof window.HWPoints.refresh === 'function') {
-        await window.HWPoints.refresh();
-      }
-    } catch (error) {}
+    await refreshPoints();
 
     const user = await HWAuth.getCurrentUser();
     if (!user) {
@@ -152,7 +195,7 @@
     setText('accountName', user.displayName);
     setText('accountDuck', user.duckStatus);
     setText('accountBuck', user.buckClearance);
-    renderPoints();
+    await refreshPoints();
     if (window.HWUserWidget) window.HWUserWidget.refresh();
     show('Account loaded. Cool Points are locked to this ID.', 'success');
   }
@@ -176,7 +219,7 @@
         } catch (error) {}
 
         await renderUser();
-        if (window.HWPoints) window.HWPoints.render();
+        if (window.HWPoints) window.HWPoints.render('account_profile_saved');
         if (window.HWUserWidget) window.HWUserWidget.refresh();
         show('Account saved. Buck stamped it. Points stayed protected.', 'success');
       } catch (error) {
@@ -211,6 +254,7 @@
       if (action === 'resetPoints' || action === 'protectedPoints') {
         show(pick(funnyLines.protectedPoints), 'warn');
         renderPoints();
+        renderBadgeSummary();
         if (window.HWUserWidget) window.HWUserWidget.refresh();
         return;
       }
@@ -234,6 +278,11 @@
       }
     });
   }
+
+  document.addEventListener('hyph:points-updated', () => {
+    renderPoints();
+    renderBadgeSummary();
+  });
 
   setBodyState('is-loading-account');
   bindProfileForm();

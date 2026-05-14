@@ -61,7 +61,7 @@
     <section class="game-card-grid" aria-label="Hidden Arcade earned access cards">
       <article class="game-card live"><span class="game-badge">LOCKED</span><h2>Casino Room</h2><p>This room opens only after earned progression. Direct URL entry is blocked.</p><ul><li>Earn Cool Points</li><li>Clear Vault moments</li><li>Watch reward unlocks</li></ul><a class="games-btn primary" href="vault.html">Start Unlock Path</a></article>
       <article class="game-card live"><span class="game-badge">REWARDS</span><h2>Hidden Challenges</h2><p>Challenge rooms reveal through access keys, reward progress, and HYPHSWORLD events.</p><ul><li>No public casino links</li><li>Earned rooms only</li><li>Duck Sauce hints</li></ul><a class="games-btn primary" href="leaderboard.html">Check Progress</a></article>
-      <article class="game-card live"><span class="game-badge">SAVE</span><h2>Cool Points</h2><p>Logged-in users keep Cool Points on their HYPHSWORLD ID. Guest points stay on this device.</p><ul><li>Daily check-ins</li><li>Reward board</li><li>Account progress</li></ul><a class="games-btn primary" href="auth.html">Create ID</a></article>
+      <article class="game-card live"><span class="game-badge">SAVE</span><h2>Cool Points</h2><p>Logged-in users keep Cool Points on their HYPHSWORLD ID. Guest points are temporary until an ID is created.</p><ul><li>Daily check-ins</li><li>Reward board</li><li>Account progress</li></ul><a class="games-btn primary" href="auth.html">Create ID</a></article>
     </section>
 
     <section class="hw-leaderboard-wrap" data-hw-leaderboard data-default-mode="games" data-limit="8" aria-label="Earned access leaderboard preview">
@@ -74,7 +74,10 @@
 
   <footer class="site-footer"><span>© <span id="year"></span> AMS WEST LLC</span><span>Hidden Arcade access is earned through HYPHSWORLD Cool Points</span></footer>
 
+  <script src="supabase-config.js"></script>
   <script src="auth-client.js"></script>
+  <script src="cool-points.js"></script>
+  <script src="cool-badges.js"></script>
   <script src="leaderboard-widgets.js"></script>
   <script src="games.js"></script>
   <script src="progress-report.js"></script>

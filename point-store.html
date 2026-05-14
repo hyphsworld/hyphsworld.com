@@ -256,25 +256,15 @@ gtag('config','G-CT7CWHCHYC');
 <div id="cool-points-widget"></div>
 
 <script src="duck-helper.js"></script>
+<script src="supabase-config.js"></script>
+<script src="auth-client.js"></script>
 <script src="cool-points.js"></script>
+<script src="cool-badges.js"></script>
 <script>
 (function(){
-  const POINTS_KEY = "hyphsworld_points_v2";
   const PURCHASES_KEY = "hyphsworld_purchases_v1";
   const balance = document.getElementById("storeBalance");
   const msg = document.getElementById("storeMessage");
-
-  function getPoints(){
-    return parseInt(localStorage.getItem(POINTS_KEY) || "0", 10) || 0;
-  }
-
-  function setPoints(v){
-    localStorage.setItem(POINTS_KEY, String(Math.max(0, v)));
-    render();
-    if(window.HYPHSWORLD_POINTS && window.HYPHSWORLD_POINTS.set){
-      window.HYPHSWORLD_POINTS.set(Math.max(0, v));
-    }
-  }
 
   function getPurchases(){
     try{return JSON.parse(localStorage.getItem(PURCHASES_KEY) || "[]");}
@@ -282,19 +272,30 @@ gtag('config','G-CT7CWHCHYC');
   }
 
   function setPurchases(list){
-    localStorage.setItem(PURCHASES_KEY, JSON.stringify(list));
+    try{localStorage.setItem(PURCHASES_KEY, JSON.stringify(list));}
+    catch(e){}
   }
 
   function toast(text,bad){
+    if(!msg) return;
     msg.textContent = text;
     msg.classList.toggle("bad", !!bad);
     msg.style.display = "block";
     setTimeout(()=>msg.style.display="none",2600);
   }
 
-  function render(){
-    const pts = getPoints();
-    balance.textContent = pts;
+  async function refreshPoints(){
+    if(window.HWPoints && typeof window.HWPoints.refresh === "function"){
+      await window.HWPoints.refresh();
+      const pts = window.HWPoints.get();
+      if(balance) balance.textContent = pts;
+      return pts;
+    }
+    if(balance) balance.textContent = "0";
+    return 0;
+  }
+
+  function renderOwned(){
     const bought = getPurchases();
     document.querySelectorAll(".reward-card").forEach(card=>{
       const id = card.dataset.id;
@@ -314,12 +315,17 @@ gtag('config','G-CT7CWHCHYC');
     });
   }
 
+  async function render(){
+    await refreshPoints();
+    renderOwned();
+  }
+
   document.querySelectorAll(".buy-reward").forEach(button=>{
-    button.addEventListener("click",()=>{
+    button.addEventListener("click",async()=>{
       const card = button.closest(".reward-card");
+      if(!card) return;
       const id = card.dataset.id;
-      const cost = parseInt(card.dataset.cost,10);
-      const pts = getPoints();
+      const cost = parseInt(card.dataset.cost,10) || 0;
       const bought = getPurchases();
 
       if(bought.includes(id)){
@@ -327,22 +333,40 @@ gtag('config','G-CT7CWHCHYC');
         return;
       }
 
+      const pts = await refreshPoints();
+
       if(pts < cost){
-        toast("Not enough points blood.", true);
+        toast("Not enough points, blood.", true);
+        return;
+      }
+
+      if(!window.HWPoints || typeof window.HWPoints.spend !== "function"){
+        toast("Point system not loaded. Refresh and try again.", true);
+        return;
+      }
+
+      const before = window.HWPoints.get();
+      const after = await window.HWPoints.spend(cost, "point_store_" + id);
+
+      if(after >= before){
+        toast("Point spend did not save. Login again and retry.", true);
+        await render();
         return;
       }
 
       bought.push(id);
       setPurchases(bought);
-      setPoints(pts - cost);
-      toast("Reward claimed. Points spent.", false);
+      toast("Reward claimed. Points saved to your ID.", false);
 
       if(window.gtag){
         gtag("event","point_store_purchase",{reward:id,cost:cost});
       }
+
+      await render();
     });
   });
 
+  document.addEventListener("hyph:points-updated", render);
   render();
 })();
 </script>

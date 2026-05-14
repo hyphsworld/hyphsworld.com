@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  var FALLBACK_BADGES = [
+  var BADGES = [
     { id: 'signal_found', name: 'Signal Found', description: 'Entered the Hyphsworld grid.', threshold: 100, icon: '📡' },
     { id: 'gate_runner', name: 'Gate Runner', description: 'Unlocked movement through the digital gates.', threshold: 500, icon: '🚧' },
     { id: 'neon_regular', name: 'Neon Regular', description: 'Certified presence in the Hyphsworld zone.', threshold: 1000, icon: '🛹' },
@@ -10,40 +10,23 @@
     { id: 'chrome_legend', name: 'Chrome Legend', description: 'Maximum aura. Permanent system status.', threshold: 10000, icon: '💎' }
   ];
 
-  function readStorage(key) {
-    try { return localStorage.getItem(key) || sessionStorage.getItem(key); }
-    catch (error) { return null; }
+  function cleanPoints(value) {
+    var parsed = parseInt(value, 10);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
   }
 
-  function fallbackPoints() {
-    return ['hyphsworld.coolPoints.total', 'hyphsworld.coolPoints.guestSession', 'coolPoints'].reduce(function (max, key) {
-      var value = parseInt(readStorage(key) || '0', 10) || 0;
-      return Math.max(max, value);
-    }, 0);
-  }
-
-  async function getPoints() {
-    if (window.HWPoints && typeof window.HWPoints.refresh === 'function') {
-      try {
-        await window.HWPoints.refresh();
-        return window.HWPoints.get();
-      } catch (error) {}
-    }
-    return fallbackPoints();
-  }
-
-  function fallbackState(points) {
-    var total = Math.max(0, parseInt(points, 10) || 0);
-    var unlocked = FALLBACK_BADGES.filter(function (badge) { return total >= badge.threshold; });
+  function state(points) {
+    var total = cleanPoints(points);
+    var unlocked = BADGES.filter(function (badge) { return total >= badge.threshold; });
+    var next = BADGES.find(function (badge) { return total < badge.threshold; }) || null;
     var current = unlocked.length ? unlocked[unlocked.length - 1] : null;
-    var next = FALLBACK_BADGES.find(function (badge) { return total < badge.threshold; }) || null;
     var previousThreshold = current ? current.threshold : 0;
     var nextThreshold = next ? next.threshold : previousThreshold;
     var progress = next ? Math.round(((total - previousThreshold) / Math.max(1, nextThreshold - previousThreshold)) * 100) : 100;
 
     return {
       points: total,
-      badges: FALLBACK_BADGES.slice(),
+      badges: BADGES.slice(),
       unlocked: unlocked,
       current: current,
       next: next,
@@ -52,14 +35,53 @@
     };
   }
 
-  function renderFallback(root, progressState) {
+  function rememberUnlocks(progressState) {
+    var key = 'hyphsworld.coolBadges.unlocked';
+    var previous = [];
+    try { previous = JSON.parse(localStorage.getItem(key) || '[]'); } catch (error) { previous = []; }
+
+    var currentIds = progressState.unlocked.map(function (badge) { return badge.id; });
+    var fresh = progressState.unlocked.filter(function (badge) { return previous.indexOf(badge.id) === -1; });
+
+    try { localStorage.setItem(key, JSON.stringify(currentIds)); } catch (error) {}
+    return fresh;
+  }
+
+  function showUnlockToast(badge) {
+    if (!badge || !document.body) return;
+
+    var toast = document.getElementById('badgeUnlockToast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'badgeUnlockToast';
+      toast.className = 'badge-unlock-toast';
+      toast.innerHTML = '<span class="badge-unlock-icon"></span><div><strong>BADGE UNLOCKED</strong><p></p></div>';
+      document.body.appendChild(toast);
+    }
+
+    var icon = toast.querySelector('.badge-unlock-icon');
+    var name = toast.querySelector('p');
+    if (icon) icon.textContent = badge.icon;
+    if (name) name.textContent = badge.name;
+    toast.hidden = false;
+    toast.classList.add('is-visible');
+
+    clearTimeout(window.__hyphBadgeToastTimer);
+    window.__hyphBadgeToastTimer = setTimeout(function () {
+      toast.classList.remove('is-visible');
+    }, 3200);
+  }
+
+  function renderInto(root, points) {
+    if (!root) return null;
+    var progressState = state(points);
     var current = progressState.current;
     var next = progressState.next;
 
     root.innerHTML = '' +
       '<div class="hyf-progress-hud">' +
         '<div class="hud-scanline"></div>' +
-        '<div class="hud-header"><span>HYF CORE</span><span>PROGRESS ONLINE</span></div>' +
+        '<div class="hud-header"><span>HYF CORE</span><span>' + (window.HWPoints && window.HWPoints.isAccountBacked && window.HWPoints.isAccountBacked() ? 'ACCOUNT SAVED' : 'GUEST PREVIEW') + '</span></div>' +
         '<div class="hud-main">' +
           '<p class="hud-label">Cool Points Balance</p>' +
           '<h2>' + progressState.points.toLocaleString() + '</h2>' +
@@ -80,41 +102,15 @@
           }).join('') +
         '</div>' +
       '</div>';
+
+    return progressState;
   }
 
-  async function render(root) {
-    if (!root) return;
-    var total = await getPoints();
-    var progressState;
-
-    if (window.HWCoolBadges && typeof window.HWCoolBadges.renderInto === 'function') {
-      progressState = window.HWCoolBadges.renderInto(root, total);
-    } else {
-      progressState = fallbackState(total);
-      renderFallback(root, progressState);
-    }
-
-    if (window.HWCoolBadges && typeof window.HWCoolBadges.rememberUnlocks === 'function') {
-      var fresh = window.HWCoolBadges.rememberUnlocks(progressState) || [];
-      if (fresh.length && typeof window.HWCoolBadges.showUnlockToast === 'function') {
-        window.HWCoolBadges.showUnlockToast(fresh[fresh.length - 1]);
-      }
-    }
-  }
-
-  function init() {
-    var reports = Array.prototype.slice.call(document.querySelectorAll('[data-hw-progress-report]'));
-    if (!reports.length) return;
-
-    function refreshAll() {
-      reports.forEach(function (root) { render(root); });
-    }
-
-    refreshAll();
-    document.addEventListener('hyph:points-updated', refreshAll);
-    window.setInterval(refreshAll, 10000);
-  }
-
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
-  else init();
+  window.HWCoolBadges = {
+    all: function () { return BADGES.slice(); },
+    state: state,
+    renderInto: renderInto,
+    rememberUnlocks: rememberUnlocks,
+    showUnlockToast: showUnlockToast
+  };
 })();

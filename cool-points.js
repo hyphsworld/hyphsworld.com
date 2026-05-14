@@ -27,6 +27,7 @@
   let hydrated = false;
   let hydrating = false;
   let sessionActive = false;
+  let lastEventPoints = null;
 
   function safeGet(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
   function safeSet(key, value) { try { localStorage.setItem(key, String(value)); } catch (e) {} }
@@ -65,6 +66,26 @@
     safeSet(PROFILE_KEY, JSON.stringify(profile));
   }
 
+  function emitUpdate(reason) {
+    const detail = {
+      points,
+      accountBacked: sessionActive,
+      reason: reason || 'render',
+      profile: {
+        name: getProfileName(),
+        points,
+        accountBacked: sessionActive
+      }
+    };
+
+    if (lastEventPoints === points && reason === 'render') return;
+    lastEventPoints = points;
+
+    try {
+      document.dispatchEvent(new CustomEvent('hyph:points-updated', { detail }));
+    } catch (error) {}
+  }
+
   function toast(message) {
     const el = document.getElementById('hw-toast');
     if (!el) return;
@@ -74,7 +95,7 @@
     window.__hwToastTimer = setTimeout(() => el.classList.remove('show'), 2200);
   }
 
-  function render() {
+  function render(reason) {
     document.querySelectorAll('.js-cool-points,[data-cool-points],#accountCoolPoints,#gateCredits').forEach((el) => {
       el.textContent = String(points);
     });
@@ -92,16 +113,17 @@
     });
 
     saveProfile();
+    emitUpdate(reason || 'render');
   }
 
-  function setDisplay(value) {
+  function setDisplay(value, reason) {
     points = Math.max(0, parseInt(value, 10) || 0);
     if (sessionActive) safeSet(TOTAL_KEY, points);
     else {
       clearGuestPersistentPoints();
       safeSessionSet(GUEST_SESSION_KEY, points);
     }
-    render();
+    render(reason || 'set_display');
     return points;
   }
 
@@ -133,11 +155,11 @@
 
     if (sessionActive) {
       const accountPoints = await getAccountPoints();
-      setDisplay(accountPoints !== null ? accountPoints : numberFrom(safeGet(TOTAL_KEY)));
+      setDisplay(accountPoints !== null ? accountPoints : numberFrom(safeGet(TOTAL_KEY)), 'hydrate_account');
     } else {
       sessionActive = false;
       clearGuestPersistentPoints();
-      setDisplay(numberFrom(safeSessionGet(GUEST_SESSION_KEY)));
+      setDisplay(numberFrom(safeSessionGet(GUEST_SESSION_KEY)), 'hydrate_guest');
     }
 
     hydrated = true;
@@ -155,7 +177,7 @@
     if (sessionActive && window.HWAuth && typeof window.HWAuth.addPoints === 'function') {
       try {
         const next = await window.HWAuth.addPoints(n, reason || '');
-        setDisplay(next);
+        setDisplay(next, 'add_account');
         toast(`+${n} Cool Points${reason ? ' — ' + reason : ''}`);
         return points;
       } catch (error) {}
@@ -164,7 +186,7 @@
     sessionActive = false;
     clearGuestPersistentPoints();
     points += n;
-    setDisplay(points);
+    setDisplay(points, 'add_guest');
     toast(`+${n} temporary guest points — create ID to keep points`);
     return points;
   }
@@ -187,14 +209,14 @@
     if (sessionActive && window.HWAuth && typeof window.HWAuth.setPoints === 'function') {
       try {
         const saved = await window.HWAuth.setPoints(next, reason || 'spend');
-        setDisplay(saved);
+        setDisplay(saved, 'spend_account');
         toast(`-${n} Cool Points spent${reason ? ' — ' + reason : ''}`);
         return points;
       } catch (error) {}
     }
 
     sessionActive = false;
-    setDisplay(next);
+    setDisplay(next, 'spend_guest');
     toast(`-${n} temporary guest points spent${reason ? ' — ' + reason : ''}`);
     return points;
   }
@@ -207,19 +229,21 @@
     if (sessionActive && window.HWAuth && typeof window.HWAuth.setPoints === 'function') {
       try {
         const saved = await window.HWAuth.setPoints(next, 'set_points');
-        setDisplay(saved);
+        setDisplay(saved, 'set_account');
         return points;
       } catch (error) {}
     }
 
     sessionActive = false;
-    setDisplay(next);
+    setDisplay(next, 'set_guest');
     return points;
   }
 
   async function refresh() {
     hydrated = false;
-    return hydrate(true);
+    const refreshed = await hydrate(true);
+    render('refresh');
+    return refreshed;
   }
 
   document.addEventListener('click', (event) => {
@@ -248,10 +272,10 @@
   };
 
   document.addEventListener('DOMContentLoaded', () => {
-    hydrate(true).then(render);
+    hydrate(true).then(() => render('dom_ready'));
   });
 
   points = numberFrom(safeSessionGet(GUEST_SESSION_KEY));
   clearGuestPersistentPoints();
-  render();
+  render('boot');
 })();

@@ -16,6 +16,12 @@
 
       <div id="message" class="message" role="status" aria-live="polite"></div>
 
+      <div class="panel auth-google-panel">
+        <h2>Fast ID</h2>
+        <p class="sub">Use Google to create or open your HYPHSWORLD ID, then Cool Points, badges, and progress can save to your account.</p>
+        <button id="googleLoginBtn" class="google-login-btn" type="button"><span>G</span> Continue with Google</button>
+      </div>
+
       <div class="grid">
         <form id="signupForm" class="panel">
           <h2>Sign Up</h2>
@@ -41,7 +47,10 @@
       </div>
     </section>
   </main>
+  <script src="supabase-config.js"></script>
   <script src="auth-client.js"></script>
+  <script src="cool-points.js"></script>
+  <script src="cool-badges.js"></script>
   <script src="auth.js"></script>
 </body>
 </html>
