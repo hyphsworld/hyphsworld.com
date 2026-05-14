@@ -7,7 +7,7 @@
   const LOCAL_USERS = 'hw_mock_users_v1';
   const POINTS_KEY = 'hyphsworld.coolPoints.total';
   const PROFILE_TABLE = 'profiles';
-  const AUTH_REDIRECT_URL = 'https://hyphsworld.com/login.html';
+  const AUTH_REDIRECT_URL = 'https://hyphsworld.com/account.html';
 
   let cfgPromise = null;
   let clientPromise = null;
