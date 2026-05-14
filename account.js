@@ -14,6 +14,9 @@
   const avatarBoyInput = document.getElementById('avatarBoy');
   const avatarGirlInput = document.getElementById('avatarGirl');
 
+  let pointRefreshInFlight = false;
+  let lastBadgeRenderAt = 0;
+
   const funnyLines = {
     duckFine: [
       'Duck Sauce added a fake $01 convenience fee. Buck immediately rejected it.',
@@ -77,13 +80,25 @@
   }
 
   async function refreshPoints() {
+    if (pointRefreshInFlight) {
+      renderPoints();
+      renderBadgeSummary();
+      return getPoints();
+    }
+
+    pointRefreshInFlight = true;
     try {
       if (window.HWPoints && typeof window.HWPoints.refresh === 'function') {
         await window.HWPoints.refresh();
       }
-    } catch (error) {}
+    } catch (error) {
+    } finally {
+      pointRefreshInFlight = false;
+    }
+
     renderPoints();
     renderBadgeSummary();
+    return getPoints();
   }
 
   function renderPoints() {
@@ -106,7 +121,11 @@
     return panel;
   }
 
-  function renderBadgeSummary() {
+  function renderBadgeSummary(force) {
+    const now = Date.now();
+    if (!force && now - lastBadgeRenderAt < 250) return;
+    lastBadgeRenderAt = now;
+
     const panel = ensureBadgePanel();
     if (!panel || !window.HWCoolBadges || typeof window.HWCoolBadges.state !== 'function') return;
 
@@ -148,7 +167,7 @@
     }
     if (logoutBtn) logoutBtn.disabled = true;
     renderPoints();
-    renderBadgeSummary();
+    renderBadgeSummary(true);
     setAvatarChoice(localStorage.getItem('hyphsworld.avatarType') || 'boy');
     if (window.HWUserWidget) window.HWUserWidget.refresh();
     show('No active ID. Buck says login before touching account management.', 'error');
@@ -176,8 +195,6 @@
       return;
     }
 
-    await refreshPoints();
-
     const user = await HWAuth.getCurrentUser();
     if (!user) {
       setLoggedOutView();
@@ -195,6 +212,7 @@
     setText('accountName', user.displayName);
     setText('accountDuck', user.duckStatus);
     setText('accountBuck', user.buckClearance);
+
     await refreshPoints();
     if (window.HWUserWidget) window.HWUserWidget.refresh();
     show('Account loaded. Cool Points are locked to this ID.', 'success');
@@ -254,7 +272,7 @@
       if (action === 'resetPoints' || action === 'protectedPoints') {
         show(pick(funnyLines.protectedPoints), 'warn');
         renderPoints();
-        renderBadgeSummary();
+        renderBadgeSummary(true);
         if (window.HWUserWidget) window.HWUserWidget.refresh();
         return;
       }
