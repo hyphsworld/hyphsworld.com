@@ -2,6 +2,7 @@
   const msgEl = document.getElementById('message');
   const next = new URLSearchParams(location.search).get('next') || 'account.html';
   const googleLoginBtn = document.getElementById('googleLoginBtn');
+  const GOOGLE_REDIRECT_URL = 'https://hyphsworld.com/account.html';
 
   function show(text, type='') {
     if (!msgEl) return;
@@ -35,8 +36,7 @@
       try {
         googleLoginBtn.disabled = true;
         show('Opening Google ID tunnel…','success');
-        const redirectTo = new URL(next, window.location.origin).href;
-        await HWAuth.signInWithGoogle({ redirectTo });
+        await HWAuth.signInWithGoogle({ redirectTo: GOOGLE_REDIRECT_URL });
       } catch (err) {
         googleLoginBtn.disabled = false;
         show(err.message || 'Google login failed','error');
