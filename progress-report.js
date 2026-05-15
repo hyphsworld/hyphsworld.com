@@ -10,6 +10,9 @@
     { id: 'chrome_legend', name: 'Chrome Legend', description: 'Maximum aura. Permanent system status.', threshold: 10000, icon: '💎' }
   ];
 
+  var rendering = false;
+  var lastRenderAt = 0;
+
   function readStorage(key) {
     try { return localStorage.getItem(key) || sessionStorage.getItem(key); }
     catch (error) { return null; }
@@ -22,13 +25,18 @@
     }, 0);
   }
 
-  async function getPoints() {
-    if (window.HWPoints && typeof window.HWPoints.refresh === 'function') {
+  async function getPoints(options) {
+    var shouldRefresh = options && options.refresh === true;
+
+    if (window.HWPoints) {
       try {
-        await window.HWPoints.refresh();
-        return window.HWPoints.get();
+        if (shouldRefresh && typeof window.HWPoints.refresh === 'function') {
+          await window.HWPoints.refresh();
+        }
+        if (typeof window.HWPoints.get === 'function') return window.HWPoints.get();
       } catch (error) {}
     }
+
     return fallbackPoints();
   }
 
@@ -82,9 +90,9 @@
       '</div>';
   }
 
-  async function render(root) {
+  async function render(root, options) {
     if (!root) return;
-    var total = await getPoints();
+    var total = await getPoints(options || {});
     var progressState;
 
     if (window.HWCoolBadges && typeof window.HWCoolBadges.renderInto === 'function') {
@@ -94,7 +102,7 @@
       renderFallback(root, progressState);
     }
 
-    if (window.HWCoolBadges && typeof window.HWCoolBadges.rememberUnlocks === 'function') {
+    if (options && options.checkUnlocks && window.HWCoolBadges && typeof window.HWCoolBadges.rememberUnlocks === 'function') {
       var fresh = window.HWCoolBadges.rememberUnlocks(progressState) || [];
       if (fresh.length && typeof window.HWCoolBadges.showUnlockToast === 'function') {
         window.HWCoolBadges.showUnlockToast(fresh[fresh.length - 1]);
@@ -106,13 +114,29 @@
     var reports = Array.prototype.slice.call(document.querySelectorAll('[data-hw-progress-report]'));
     if (!reports.length) return;
 
-    function refreshAll() {
-      reports.forEach(function (root) { render(root); });
+    async function refreshAll(options) {
+      var now = Date.now();
+      var opts = options || {};
+      if (rendering) return;
+      if (!opts.force && now - lastRenderAt < 700) return;
+      rendering = true;
+      lastRenderAt = now;
+      try {
+        for (var i = 0; i < reports.length; i += 1) {
+          await render(reports[i], opts);
+        }
+      } finally {
+        rendering = false;
+      }
     }
 
-    refreshAll();
-    document.addEventListener('hyph:points-updated', refreshAll);
-    window.setInterval(refreshAll, 10000);
+    refreshAll({ refresh: true, checkUnlocks: true, force: true });
+    document.addEventListener('hyph:points-updated', function () {
+      refreshAll({ refresh: false, checkUnlocks: true });
+    });
+    window.setInterval(function () {
+      refreshAll({ refresh: true, checkUnlocks: false });
+    }, 60000);
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
