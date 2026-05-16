@@ -52,12 +52,16 @@
     return after < before;
   }
 
-  function spinSlots(card) {
-    const reels = card ? Array.from(card.querySelectorAll(".slot-window span")) : [];
-    const symbols = ["🍒", "7", "🍋", "⭐", "💎", "🍀"];
-    reels.forEach((reel) => {
-      reel.textContent = symbols[Math.floor(Math.random() * symbols.length)];
-    });
+  function routeSlots(action) {
+    if (!window.HWCasinoEngine) {
+      toast("Slots engine still loading. Try again in a second.", true);
+      return;
+    }
+
+    window.HWCasinoEngine.openSlots();
+    if (action === "spin") {
+      window.setTimeout(() => window.HWCasinoEngine.spinSlots(), 180);
+    }
   }
 
   async function handleRoomAction(button) {
@@ -69,6 +73,11 @@
     const room = card.dataset.room || "casino";
     const cost = parseInt(card.dataset.cost, 10) || 0;
 
+    if (room === "slots") {
+      routeSlots(action);
+      return;
+    }
+
     if (action === "preview") {
       toast(room.replace(/-/g, " ") + " room is multiplayer-ready. Live table engine coming next.", false);
       return;
@@ -78,15 +87,6 @@
     button.disabled = true;
 
     try {
-      if (action === "spin") {
-        const ok = await spendCoolPoints(cost, "casino_slots_spin");
-        if (ok) {
-          spinSlots(card);
-          toast("Slots spun for " + cost + " Cool Points.", false);
-        }
-        return;
-      }
-
       if (action === "buyin") {
         const ok = await spendCoolPoints(cost, "casino_" + room + "_buyin");
         if (ok) toast(room.replace(/-/g, " ") + " buy-in saved with Cool Points.", false);
