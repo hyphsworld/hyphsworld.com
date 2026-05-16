@@ -1,22 +1,25 @@
 /* HYPHSWORLD Cash Run score bridge
    Connects the standalone Cash Run build to HYPHSWORLD local best score,
-   Cool Points, and account-backed HWAuth when available.
+   Cool Points, account-backed HWAuth, and the secure Supabase submit_game_run RPC.
 */
 (function () {
   'use strict';
 
-  var GAME_KEY = 'cash-run';
+  var GAME_KEY = 'cash_run';
+  var LEGACY_GAME_KEY = 'cash-run';
   var BEST_SCORE_KEY = 'hyphsworld.cashRun.bestScore';
   var LAST_SCORE_KEY = 'hyphsworld.cashRun.lastScore';
   var LAST_REWARD_SCORE_KEY = 'hyphsworld.cashRun.lastRewardedScore';
+  var PENDING_RUNS_KEY = 'hyphsworld.cashRun.pendingRuns.v1';
   var SCORE_EVENT_NAME = 'hyph:cash-run-score-saved';
   var SCAN_MS = 1200;
   var MIN_SAVE_SCORE = 1;
-  var MAX_REASONABLE_SCORE = 9999999;
+  var MAX_REASONABLE_SCORE = 250000;
 
   var lastSeenScore = 0;
   var lastSavedScore = readNumber(BEST_SCORE_KEY, 0);
   var scanTimer = null;
+  var syncingPending = false;
 
   function readNumber(key, fallback) {
     try {
@@ -30,6 +33,21 @@
   function writeNumber(key, value) {
     try {
       localStorage.setItem(key, String(Math.max(0, parseInt(value, 10) || 0)));
+    } catch (error) {}
+  }
+
+  function readJson(key, fallback) {
+    try {
+      var raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : fallback;
+    } catch (error) {
+      return fallback;
+    }
+  }
+
+  function writeJson(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
     } catch (error) {}
   }
 
@@ -128,23 +146,101 @@
   function pointsForScore(score, previousBest) {
     var delta = Math.max(0, score - previousBest);
     if (!delta) return 0;
-    return Math.max(1, Math.min(100, Math.floor(delta / 10) || 1));
+    return Math.max(1, Math.min(250000, delta));
   }
 
-  async function awardPoints(points, score) {
-    if (!points) return;
+  async function getSupabaseClient() {
     try {
-      if (window.HWAuth && typeof window.HWAuth.addPoints === 'function') {
-        await window.HWAuth.addPoints(points, 'cash_run_high_score:' + score);
-        return;
+      if (window.HWAuth && typeof window.HWAuth.getClient === 'function') {
+        return await window.HWAuth.getClient();
       }
     } catch (error) {}
+    return null;
+  }
 
+  async function submitGameRun(score, points, source, previousBest) {
+    var sb = await getSupabaseClient();
+    if (!sb) return null;
+
+    var payload = {
+      p_game_key: GAME_KEY,
+      p_score: score,
+      p_points_delta: points,
+      p_metadata: {
+        source: source || 'bridge',
+        legacy_game_key: LEGACY_GAME_KEY,
+        previous_best: previousBest || 0,
+        user_agent: navigator.userAgent,
+        saved_at: new Date().toISOString()
+      }
+    };
+
+    var result = await sb.rpc('submit_game_run', payload);
+    if (result.error) throw result.error;
+    return Array.isArray(result.data) ? result.data[0] : result.data;
+  }
+
+  function queuePendingRun(run) {
+    var queue = readJson(PENDING_RUNS_KEY, []);
+    if (!Array.isArray(queue)) queue = [];
+    queue.push(run);
+    writeJson(PENDING_RUNS_KEY, queue.slice(-25));
+  }
+
+  async function syncPendingRuns() {
+    if (syncingPending) return;
+    syncingPending = true;
+    try {
+      var queue = readJson(PENDING_RUNS_KEY, []);
+      if (!Array.isArray(queue) || !queue.length) return;
+      var remaining = [];
+      for (var i = 0; i < queue.length; i += 1) {
+        var run = queue[i];
+        try {
+          await submitGameRun(run.score, run.points, run.source || 'pending-sync', run.previousBest || 0);
+        } catch (error) {
+          remaining.push(run);
+        }
+      }
+      writeJson(PENDING_RUNS_KEY, remaining);
+      if (queue.length && !remaining.length) hudMessage('Pending runs synced to Cool Points');
+    } finally {
+      syncingPending = false;
+    }
+  }
+
+  function updateLocalFallback(points) {
+    if (!points) return;
     try {
       var key = 'hyphsworld.coolPoints.total';
       var current = parseInt(localStorage.getItem(key), 10) || 0;
       localStorage.setItem(key, String(current + points));
     } catch (error) {}
+  }
+
+  async function awardPoints(points, score, source, previousBest) {
+    if (!points) return null;
+
+    try {
+      var rpcResult = await submitGameRun(score, points, source, previousBest);
+      if (rpcResult && typeof rpcResult.points !== 'undefined') {
+        try { localStorage.setItem('hyphsworld.coolPoints.total', String(rpcResult.points)); } catch (error) {}
+        return rpcResult;
+      }
+    } catch (error) {
+      queuePendingRun({ score: score, points: points, source: source || 'bridge', previousBest: previousBest || 0, queuedAt: new Date().toISOString() });
+      console.warn('HYPHSWORLD Cash Run RPC save queued:', error && (error.message || error));
+    }
+
+    try {
+      if (window.HWAuth && typeof window.HWAuth.addPoints === 'function') {
+        await window.HWAuth.addPoints(points, 'cash_run_high_score:' + score);
+        return null;
+      }
+    } catch (error) {}
+
+    updateLocalFallback(points);
+    return null;
   }
 
   async function saveScore(score, source) {
@@ -161,13 +257,18 @@
       lastSavedScore = score;
       writeNumber(BEST_SCORE_KEY, score);
       writeNumber(LAST_REWARD_SCORE_KEY, score);
-      await awardPoints(points, score);
-      hudMessage('Best Score Saved: ' + score + '  +' + points + ' Cool Points');
+      var accountResult = await awardPoints(points, score, source, previousBest);
+      if (accountResult) {
+        hudMessage('Run Banked: +' + points + ' CP  Balance: ' + accountResult.points + '  Rank: ' + accountResult.rank_title);
+      } else {
+        hudMessage('Best Score Saved: ' + score + '  +' + points + ' Cool Points');
+      }
       window.dispatchEvent(new CustomEvent(SCORE_EVENT_NAME, {
-        detail: { game: GAME_KEY, score: score, previousBest: previousBest, points: points, source: source || 'bridge' }
+        detail: { game: GAME_KEY, score: score, previousBest: previousBest, points: points, source: source || 'bridge', account: accountResult || null }
       }));
     } else {
       hudMessage('Run Saved: ' + score + '  Best: ' + lastSavedScore);
+      syncPendingRuns();
     }
   }
 
@@ -178,6 +279,8 @@
 
   function patchStorage() {
     var originalSetItem = Storage.prototype.setItem;
+    if (Storage.prototype.__hyphsworldCashRunPatched) return;
+    Storage.prototype.__hyphsworldCashRunPatched = true;
     Storage.prototype.setItem = function (key, value) {
       originalSetItem.apply(this, arguments);
       if (this === localStorage && /cash|score|high|best|points/i.test(String(key || ''))) {
@@ -191,7 +294,8 @@
     window.HWCashRunScore = {
       save: function (score) { return saveScore(score, 'api'); },
       best: function () { return lastSavedScore; },
-      scan: scan
+      scan: scan,
+      syncPending: syncPendingRuns
     };
   }
 
@@ -201,8 +305,10 @@
     exposeApi();
     patchStorage();
     scan();
-    scanTimer = window.setInterval(scan, SCAN_MS);
+    syncPendingRuns();
+    scanTimer = window.setInterval(function () { scan(); syncPendingRuns(); }, SCAN_MS);
     window.addEventListener('beforeunload', scan);
+    window.addEventListener('online', syncPendingRuns);
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
