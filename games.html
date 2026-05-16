@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="homepage-upgrades.css" />
   <link rel="stylesheet" href="leaderboard-widgets.css" />
   <link rel="stylesheet" href="games.css" />
+  <link rel="stylesheet" href="casino-engine.css" />
   <link rel="stylesheet" href="transport-system.css" />
   <link rel="stylesheet" href="global-button-pop.css" />
   <link rel="stylesheet" href="progress-report.css" />
@@ -55,27 +56,27 @@
 
     <section class="casino-table-grid" aria-label="Multiplayer casino rooms">
       <article class="casino-room poker" data-room="poker" data-cost="25">
-        <span class="room-badge">Multiplayer Ready</span>
+        <span class="room-badge">CPU + Multiplayer Ready</span>
         <h2>🂡 Poker Table</h2>
-        <p>Green felt table, player seats, and Cool Points buy-in. Multiplayer room wiring comes next.</p>
+        <p>Green felt table, player seats, and Cool Points buy-in. CPU practice comes next, then live multiplayer.</p>
         <div class="table-icons"><span>A♠</span><span>K♥</span><span>Q♣</span><span>J♦</span></div>
         <div class="room-actions"><button class="room-btn" type="button" data-room-action="preview">Enter Table</button><button class="room-btn secondary" type="button" data-room-action="buyin">25 CP Buy-In</button></div>
       </article>
 
       <article class="casino-room domino" data-room="dominoes" data-cost="15">
-        <span class="room-badge">Table Game</span>
+        <span class="room-badge">CPU + Table Game</span>
         <h2>🎲 Domino Table</h2>
-        <p>Classic domino table setup with a multiplayer lane. Cool Points stay synced to your ID.</p>
+        <p>Classic domino table setup with a CPU quick-play lane and multiplayer-ready room state.</p>
         <div class="table-icons domino-icons"><span>6|6</span><span>5|4</span><span>3|2</span><span>0|6</span></div>
         <div class="room-actions"><button class="room-btn" type="button" data-room-action="preview">Enter Table</button><button class="room-btn secondary" type="button" data-room-action="buyin">15 CP Buy-In</button></div>
       </article>
 
       <article class="casino-room slots" data-room="slots" data-cost="5">
-        <span class="room-badge">Vintage Machine</span>
+        <span class="room-badge">Server Engine Live</span>
         <h2>🎰 Slots</h2>
-        <p>Old-school slot cabinet energy with fruit reels. Every spin uses Cool Points only.</p>
+        <p>Old-school slot cabinet energy with Supabase-backed reels. Every spin uses Cool Points only.</p>
         <div class="slot-window"><span>🍒</span><span>7</span><span>🍋</span></div>
-        <div class="room-actions"><button class="room-btn" type="button" data-room-action="spin">Spin 5 CP</button><button class="room-btn secondary" type="button" data-room-action="preview">Preview</button></div>
+        <div class="room-actions"><button class="room-btn" type="button" data-room-action="spin">Spin 5 CP</button><button class="room-btn secondary" type="button" data-room-action="preview">Open Machine</button></div>
       </article>
 
       <article class="casino-room cashrun" data-room="cash-run" data-cost="0">
@@ -88,7 +89,7 @@
     </section>
 
     <section class="casino-note">
-      <strong>System rule:</strong> All games use HYPHSWORLD Cool Points through HWPoints. Poker, dominoes, and slots are lobby-ready previews until the multiplayer engines are wired. Cash Run is live now.
+      <strong>System rule:</strong> All games use HYPHSWORLD Cool Points through HWPoints. Slots are server-backed now. Poker and dominoes are staged for CPU quick-play, then multiplayer sync.
     </section>
 
     <section class="hw-progress-report" data-hw-progress-report aria-label="HYPHSWORLD progress report"></section>
@@ -109,6 +110,7 @@
   <script src="cool-points.js"></script>
   <script src="cool-badges.js"></script>
   <script src="leaderboard-widgets.js"></script>
+  <script src="casino-engine.js"></script>
   <script src="games.js"></script>
   <script src="progress-report.js"></script>
   <script src="site-analytics.js"></script>
