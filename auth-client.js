@@ -3,6 +3,8 @@
 
   const CONFIG_FILE = 'supabase-config.js';
   const CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+  const FALLBACK_SUPABASE_URL = 'https://yuhxtdkhsltaqiagrtys.supabase.co';
+  const FALLBACK_SUPABASE_KEY = 'sb_publishable_oYdN-75W3b7k3m1zLukI-A_BKWVDD5e';
   const LOCAL_SESSION = 'hw_auth_session_v1';
   const LOCAL_USERS = 'hw_mock_users_v1';
   const POINTS_KEY = 'hyphsworld.coolPoints.total';
@@ -46,13 +48,19 @@
     cfgPromise = (async () => {
       if (!global.HW_SUPABASE_CONFIG) { try { await loadScript(CONFIG_FILE); } catch {} }
       const c = global.HW_SUPABASE_CONFIG || {};
-      return { url: String(c.url || '').trim(), anonKey: String(c.anonKey || c.anon_key || '').trim(), table: c.profileTable || PROFILE_TABLE };
+      const configuredUrl = String(c.url || '').trim();
+      const configuredKey = String(c.anonKey || c.anon_key || c.publishableKey || c.publishable_key || '').trim();
+      return {
+        url: isPlaceholder(configuredUrl) ? FALLBACK_SUPABASE_URL : configuredUrl,
+        anonKey: isPlaceholder(configuredKey) ? FALLBACK_SUPABASE_KEY : configuredKey,
+        table: c.profileTable || PROFILE_TABLE
+      };
     })();
     return cfgPromise;
   }
 
   async function getClient() {
-    if (client) return client;
+    if (client && typeof client.rpc === 'function') return client;
     if (clientPromise) return clientPromise;
     clientPromise = (async () => {
       const c = await getConfig();
@@ -60,6 +68,10 @@
       if (!global.supabase || !global.supabase.createClient) await loadScript(CDN);
       if (!global.supabase || !global.supabase.createClient) return null;
       client = global.supabase.createClient(c.url, c.anonKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
+      if (!client || typeof client.rpc !== 'function') {
+        console.warn('HYPHSWORLD Supabase client did not initialize with rpc support.');
+        return null;
+      }
       return client;
     })();
     return clientPromise;
