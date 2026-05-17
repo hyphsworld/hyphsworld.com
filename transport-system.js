@@ -9,8 +9,8 @@
     'vault.html':{title:'LEVEL 1 VAULT TRANSPORT',line:'Duck Sauce: "Buck scanning the route. Hold still while the portal checks your access."'},
     'games.html':{title:'CASINO FLOOR',line:'Duck Sauce: "Casino floor opening. Poker, dominoes, slots, Cash Run, and Cool Points only."'},
     'leaderboard.html':{title:'RANKING SYNC',line:'Duck Sauce: "Synchronizing Cool Points. The board knows who really been moving."'},
-    'shop.html':{title:'CASINO REROUTE',line:'Duck Sauce: "Old shop lane retired. Sending you to the Casino floor instead."'},
-    'merch.html':{title:'CASINO REROUTE',line:'Duck Sauce: "Merch floor retired. Casino lobby is the active route now."'},
+    'shop.html':{title:'MERCH FLOOR',line:'Duck Sauce: "Merch floor opening. Fresh drops and checkout lanes are live."'},
+    'merch.html':{title:'MERCH FLOOR',line:'Duck Sauce: "Merch floor opening. Fresh drops and checkout lanes are live."'},
     'app-player.html':{title:'FULL PLAYER LINK',line:'Duck Sauce: "Signal lock achieved. Real listener room incoming."'},
     'auth.html':{title:'ID VERIFICATION',line:'Duck Sauce: "Identity scan running. Create the ID so progress follows you."'},
     'account.html':{title:'ACCOUNT ACCESS',line:'Duck Sauce: "Cool Points syncing. Account tunnel opening."'},
@@ -42,16 +42,7 @@
     return overlay;
   }
 
-  function rerouteRetired(url){
-    const lower=url.pathname.toLowerCase();
-    if(lower.endsWith('/shop.html')||lower.endsWith('/merch.html')){
-      return new URL('games.html',location.origin + location.pathname.replace(/[^/]*$/,''));
-    }
-    return url;
-  }
-
   function activateTransport(url){
-    url=rerouteRetired(url);
     const overlay=ensureOverlay();
     const data=getDestination(url.pathname);
     const title=document.getElementById('hwTransportTitle');
