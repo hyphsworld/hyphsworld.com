@@ -8,31 +8,22 @@
     return (item.textContent || '').trim().toLowerCase();
   }
 
-  function removeMerchLinks() {
-    var selectors = [
-      'a[href="shop.html"]',
-      'a[href="merch.html"]',
-      'a[href="/shop.html"]',
-      'a[href="/merch.html"]',
-      '.main-nav a[href*="shop"]',
-      '.main-nav a[href*="merch"]',
-      '.button-row a[href*="shop"]',
-      '.button-row a[href*="merch"]',
-      '.mobile-menu-panel a[href*="shop"]',
-      '.mobile-menu-panel a[href*="merch"]'
+  function restoreMerchLinks() {
+    var navTargets = [
+      document.querySelector('.main-nav'),
+      document.getElementById('mobile-menu-panel')
     ];
 
-    selectors.forEach(function (selector) {
-      document.querySelectorAll(selector).forEach(function (link) {
-        link.remove();
-      });
-    });
+    navTargets.forEach(function (nav) {
+      if (!nav) return;
+      var hasMerch = nav.querySelector('a[href="shop.html"], a[href="merch.html"], a[href="/shop.html"], a[href="/merch.html"]');
+      if (hasMerch) return;
 
-    document.querySelectorAll('a, button').forEach(function (item) {
-      var label = text(item);
-      if (label === 'merch' || label === 'shop' || label.indexOf('merch floor') !== -1) {
-        item.remove();
-      }
+      var link = document.createElement('a');
+      link.href = 'shop.html';
+      link.textContent = 'Merch';
+      link.className = 'nav-link merch-nav-link';
+      nav.appendChild(link);
     });
   }
 
@@ -67,7 +58,7 @@
   }
 
   function cleanLobbyRoutes() {
-    removeMerchLinks();
+    restoreMerchLinks();
     normalizeCasinoLinks();
     directO1Links();
   }
