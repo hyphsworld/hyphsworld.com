@@ -13,8 +13,11 @@
   let spinBtn;
   let machine;
 
-  function getSupabaseClient() {
-    return window.HWAuth && typeof window.HWAuth.getClient === 'function' ? window.HWAuth.getClient() : null;
+  async function getSupabaseClient() {
+    if (!window.HWAuth || typeof window.HWAuth.getClient !== 'function') return null;
+    const maybeClient = window.HWAuth.getClient();
+    const resolvedClient = maybeClient && typeof maybeClient.then === 'function' ? await maybeClient : maybeClient;
+    return resolvedClient && typeof resolvedClient.rpc === 'function' ? resolvedClient : null;
   }
 
   function getPoints() {
@@ -160,20 +163,17 @@
     if (spinning) return;
     ensurePanel();
 
-    const client = getSupabaseClient();
-    if (!client) {
-      setText(resultEl, 'Login system still loading. Try again in a second.');
-      return;
-    }
-
     spinning = true;
     if (spinBtn) spinBtn.disabled = true;
     if (machine) machine.classList.remove('is-win', 'is-loss');
-    setText(resultEl, 'Calling Supabase engine...');
+    setText(resultEl, 'Connecting to Supabase engine...');
     setText(payoutEl, '—');
     setText(netEl, '—');
 
     try {
+      const client = await getSupabaseClient();
+      if (!client) throw new Error('Supabase client not ready. Reload the casino page and try again.');
+      setText(resultEl, 'Calling Supabase engine...');
       const { data, error } = await client.rpc('spin_slots');
       if (error) throw error;
       const payload = data || {};
