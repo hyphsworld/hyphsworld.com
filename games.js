@@ -77,7 +77,7 @@
     return data || null;
   }
 
-  function setRoomStatus(card, message) {
+  function setRoomStatus(card, message, payload) {
     if (!card || !message) return;
     let status = card.querySelector("[data-room-status]");
     if (!status) {
@@ -88,7 +88,24 @@
       status.style.marginTop = "12px";
       card.appendChild(status);
     }
+
     status.textContent = message;
+
+    const oldLink = card.querySelector("[data-open-table-room]");
+    if (oldLink) oldLink.remove();
+
+    if (payload && payload.roomId) {
+      const link = document.createElement("a");
+      link.href = "table-room.html?room=" + encodeURIComponent(payload.roomId);
+      link.textContent = "Open Table Room";
+      link.setAttribute("data-open-table-room", "");
+      link.className = "room-btn";
+      link.style.display = "inline-flex";
+      link.style.justifyContent = "center";
+      link.style.marginTop = "12px";
+      link.style.width = "100%";
+      card.appendChild(link);
+    }
   }
 
   function markTableBuyInsAsPreviewOnly() {
@@ -126,8 +143,8 @@
       const payload = await enterTableRoom(room);
       if (payload && payload.ok) {
         const roomLabel = payload.roomCode || payload.roomId;
-        setRoomStatus(card, titleRoom(room) + " room ready: " + roomLabel);
-        toast(titleRoom(room) + " preview room created. Buy-in stays locked until gameplay is live.", false);
+        setRoomStatus(card, titleRoom(room) + " room ready: " + roomLabel, payload);
+        toast(titleRoom(room) + " preview room created. Tap Open Table Room.", false);
       }
     } catch (error) {
       toast(error.message || "Table room missed. Try again.", true);
