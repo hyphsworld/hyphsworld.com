@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/games/cash-run/static/css/main.510934b5.css",
+    "main.css": "/games/cash-run/static/css/main.8112df5d.css",
     "main.js": "/games/cash-run/static/js/main.76109d80.js",
     "index.html": "/games/cash-run/index.html",
-    "main.510934b5.css.map": "/games/cash-run/static/css/main.510934b5.css.map",
+    "main.8112df5d.css.map": "/games/cash-run/static/css/main.8112df5d.css.map",
     "main.76109d80.js.map": "/games/cash-run/static/js/main.76109d80.js.map"
   },
   "entrypoints": [
-    "static/css/main.510934b5.css",
+    "static/css/main.8112df5d.css",
     "static/js/main.76109d80.js"
   ]
 }
