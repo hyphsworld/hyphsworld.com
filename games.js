@@ -10,7 +10,7 @@
     el.style.display = "block";
     el.style.background = bad ? "linear-gradient(135deg,#ff6b6b,#ffd166)" : "linear-gradient(135deg,#75ff75,#dfff75)";
     clearTimeout(window.__casinoToastTimer);
-    window.__casinoToastTimer = setTimeout(() => { el.style.display = "none"; }, 3200);
+    window.__casinoToastTimer = setTimeout(() => { el.style.display = "none"; }, 3400);
   }
 
   function getPoints() {
@@ -60,7 +60,7 @@
     }
   }
 
-  async function enterTableRoom(room, cost) {
+  async function enterTableRoom(room) {
     const client = await getSupabaseClient();
     if (!client) {
       toast("Login system still loading. Refresh and try again.", true);
@@ -70,7 +70,7 @@
     const gameKey = room === "domino" ? "dominoes" : room;
     const { data, error } = await client.rpc("enter_game_room", {
       p_game_key: gameKey,
-      p_buy_in: cost
+      p_buy_in: 0
     });
 
     if (error) throw error;
@@ -91,6 +91,13 @@
     status.textContent = message;
   }
 
+  function markTableBuyInsAsPreviewOnly() {
+    document.querySelectorAll('.casino-room[data-room="poker"] [data-room-action="buyin"], .casino-room[data-room="dominoes"] [data-room-action="buyin"]').forEach((button) => {
+      button.textContent = button.textContent.replace("Buy-In", "Locked Until Gameplay");
+      button.setAttribute("aria-label", "Gameplay screen must be built before Cool Points buy-in is enabled");
+    });
+  }
+
   async function handleRoomAction(button) {
     if (actionLocked) return;
     const card = button.closest(".casino-room");
@@ -98,7 +105,6 @@
 
     const action = button.dataset.roomAction || "preview";
     const room = card.dataset.room || "casino";
-    const cost = parseInt(card.dataset.cost, 10) || 0;
 
     if (room === "slots") {
       routeSlots(action);
@@ -107,33 +113,21 @@
 
     if (room === "cash-run") return;
 
+    if (action === "buyin") {
+      setRoomStatus(card, titleRoom(room) + " buy-in is locked until the playable table screen is built.");
+      toast(titleRoom(room) + " buy-in paused. No Cool Points charged until gameplay exists.", true);
+      return;
+    }
+
     actionLocked = true;
     button.disabled = true;
 
     try {
-      if (action === "preview") {
-        const payload = await enterTableRoom(room, 0);
-        if (payload && payload.ok) {
-          setRoomStatus(card, titleRoom(room) + " room ready: " + payload.roomId);
-          toast(titleRoom(room) + " room created. CPU play is next.", false);
-        }
-        return;
-      }
-
-      if (action === "buyin") {
-        const before = getPoints();
-        if (before < cost) {
-          toast("Need " + cost + " Cool Points. Current balance: " + before + ".", true);
-          return;
-        }
-
-        const payload = await enterTableRoom(room, cost);
-        if (payload && payload.ok) {
-          if (window.HWPoints && typeof window.HWPoints.refresh === "function") await window.HWPoints.refresh();
-          renderBalance(typeof payload.balance === "number" ? payload.balance : undefined);
-          setRoomStatus(card, titleRoom(room) + " buy-in accepted. Room: " + payload.roomId);
-          toast(titleRoom(room) + " table live. Buy-in accepted: " + cost + " CP.", false);
-        }
+      const payload = await enterTableRoom(room);
+      if (payload && payload.ok) {
+        const roomLabel = payload.roomCode || payload.roomId;
+        setRoomStatus(card, titleRoom(room) + " room ready: " + roomLabel);
+        toast(titleRoom(room) + " preview room created. Buy-in stays locked until gameplay is live.", false);
       }
     } catch (error) {
       toast(error.message || "Table room missed. Try again.", true);
@@ -148,6 +142,7 @@
     const authLink = document.getElementById("gamesAuthLink");
     if (year) year.textContent = new Date().getFullYear();
 
+    markTableBuyInsAsPreviewOnly();
     await refreshBalance();
 
     if (window.HWAuth && authLink) {
