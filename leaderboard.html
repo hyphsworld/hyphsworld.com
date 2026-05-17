@@ -83,7 +83,25 @@
     <section class="leaderboard-hero">
       <p class="eyebrow">HYPHSWORLD // LIVE RANKINGS</p>
       <h1>Leaderboards</h1>
-      <p>Cool Points, Vault movement, and game scores now have a real home. No emails shown, no private data shown — just player names, avatars, levels, and scores.</p>
+      <p>Cool Points, Vault movement, and game scores now have a real home. No emails shown, no private data shown, just player names, avatars, levels, and scores.</p>
+    </section>
+
+    <section class="hw-player-name-panel" data-hw-player-name-panel aria-label="Save leaderboard player name">
+      <article class="hw-player-name-card">
+        <div>
+          <span class="hw-leaderboard-kicker">PUBLIC PLAYER NAME</span>
+          <h2>Save Your Leaderboard Name</h2>
+          <p>Your public name shows on Cool Points and game score boards. No emails shown.</p>
+        </div>
+        <form class="hw-player-name-form" data-hw-player-name-form>
+          <label for="hwPlayerNameInput">Player Name</label>
+          <div class="hw-player-name-row">
+            <input id="hwPlayerNameInput" data-hw-player-name-input type="text" maxlength="24" autocomplete="nickname" placeholder="Example: Hyph Runner" />
+            <button class="hw-board-btn is-active" type="submit">Save Name</button>
+          </div>
+          <p class="hw-player-name-message" data-hw-player-name-message>Log in to save your public leaderboard name.</p>
+        </form>
+      </article>
     </section>
 
     <section class="hw-mini-widgets" data-hw-mini-widgets aria-label="HYPHSWORLD live stats">
