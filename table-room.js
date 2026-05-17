@@ -1,11 +1,11 @@
 (function () {
   "use strict";
 
-  const CARD_SETS = [
-    ["A♠", "K♥", "Q♣", "J♦", "10♠"],
-    ["9♣", "9♦", "7♥", "4♠", "2♣"],
-    ["A♥", "A♦", "8♣", "6♠", "3♥"],
-    ["K♠", "Q♠", "10♠", "8♠", "5♠"]
+  const POKER_PREVIEWS = [
+    { label: "Two Pair", board: ["A♠", "Q♠", "9♦", "A♦", "10♦"], player: ["4♥", "3♠"], cpu: [["K♣", "K♦"], ["7♠", "7♥"], ["J♣", "8♦"], ["5♣", "5♥"], ["2♦", "2♣"]] },
+    { label: "Flush Draw", board: ["K♠", "Q♠", "10♠", "8♣", "5♠"], player: ["A♠", "3♠"], cpu: [["9♥", "9♣"], ["6♦", "6♣"], ["J♥", "4♦"], ["Q♦", "2♣"], ["7♣", "7♦"]] },
+    { label: "Pair", board: ["9♣", "9♦", "7♥", "4♠", "2♣"], player: ["A♥", "K♦"], cpu: [["3♣", "3♦"], ["8♠", "8♥"], ["10♣", "6♦"], ["Q♥", "5♣"], ["J♦", "2♠"]] },
+    { label: "High Card", board: ["A♥", "J♣", "8♦", "6♠", "3♥"], player: ["K♠", "Q♦"], cpu: [["4♥", "4♣"], ["5♠", "5♦"], ["10♥", "2♦"], ["9♠", "7♦"], ["6♣", "3♣"]] }
   ];
 
   const DOMINO_SETS = [
@@ -17,7 +17,9 @@
 
   let mode = "poker";
   let roomId = "";
+  let roomCode = "Preview";
   let previewIndex = 0;
+  let player = { name: "Player Seat", avatar: "🧢", points: 0 };
 
   function $(id) { return document.getElementById(id); }
 
@@ -31,15 +33,8 @@
     window.__tableToastTimer = setTimeout(() => { el.style.display = "none"; }, 3200);
   }
 
-  function setText(id, value) {
-    const el = $(id);
-    if (el) el.textContent = String(value);
-  }
-
-  function roomParam() {
-    const params = new URLSearchParams(window.location.search);
-    return params.get("room") || params.get("roomId") || "";
-  }
+  function setText(id, value) { const el = $(id); if (el) el.textContent = String(value); }
+  function roomParam() { const params = new URLSearchParams(window.location.search); return params.get("room") || params.get("roomId") || ""; }
 
   async function getSupabaseClient() {
     if (!window.HWAuth || typeof window.HWAuth.getClient !== "function") return null;
@@ -56,7 +51,10 @@
   async function refreshBalance() {
     try {
       if (window.HWPoints && typeof window.HWPoints.refresh === "function") await window.HWPoints.refresh();
-      if (window.HWPoints && typeof window.HWPoints.get === "function") setText("tableBalance", window.HWPoints.get());
+      if (window.HWPoints && typeof window.HWPoints.get === "function") {
+        player.points = window.HWPoints.get();
+        setText("tableBalance", player.points);
+      }
     } catch (error) {}
   }
 
@@ -66,15 +64,23 @@
     return "poker";
   }
 
-  function modeLabel() {
-    return mode === "dominoes" ? "Dominoes" : "Poker";
+  function modeLabel() { return mode === "dominoes" ? "Dominoes" : "Poker"; }
+  function cardHtml(card) { return '<span class="play-card">' + card + '</span>'; }
+  function miniCards(cards) { return '<div class="seat-cards">' + cards.map((card) => '<span class="seat-mini-card">' + card + '</span>').join("") + '</div>'; }
+
+  function seatHtml(cls, avatar, name, points, bet, cards) {
+    return '<article class="table-seat ' + cls + '">' +
+      '<div class="seat-head"><span class="seat-avatar">' + avatar + '</span><div><div class="seat-name">' + name + '</div><div class="seat-points">' + points + ' CP</div></div></div>' +
+      '<span class="seat-bet">● ' + bet + '</span>' +
+      miniCards(cards || ["▢", "▢"]) +
+    '</article>';
   }
 
   function renderHeader(room) {
     const label = modeLabel();
     setText("tableTitle", label + " Table");
     setText("roomMode", "Free Preview");
-    setText("roomCode", room?.room_code || room?.roomCode || roomId || "Preview");
+    setText("roomCode", room?.room_code || room?.roomCode || roomCode || roomId || "Preview");
     setText("previewPot", "0 CP");
     setText("tableIntro", label + " room is open in free preview. No Cool Points are charged until the full gameplay loop is built.");
     setText("tableStatus", label + " preview loaded. Choose Start Preview to light up the felt.");
@@ -85,21 +91,32 @@
   async function renderPlayer() {
     const user = await getCurrentUser();
     if (user) {
-      setText("playerName", user.displayName || user.username || "Player Seat");
-      setText("playerAvatar", user.avatarIcon || "🧢");
+      player.name = user.displayName || user.username || "Player Seat";
+      player.avatar = user.avatarIcon || "🧢";
+      setText("playerName", player.name);
+      setText("playerAvatar", player.avatar);
     }
     await refreshBalance();
   }
 
   function renderPokerPreview() {
-    const cards = CARD_SETS[previewIndex % CARD_SETS.length];
+    const hand = POKER_PREVIEWS[previewIndex % POKER_PREVIEWS.length];
     const zone = $("playZone");
     if (!zone) return;
-    zone.innerHTML = '<div class="card-line">' + cards.map((card) => '<span class="play-card">' + card + '</span>').join("") + '</div>';
-    setText("tableStatus", "Poker preview hand dealt. CP stays untouched until Start Hand is built.");
-    setText("cpuStatus", "CPU checks the felt and waits.");
-    setText("playerStatus", "Preview cards dealt. No wager active.");
-    toast("Poker preview dealt. No Cool Points charged.", false);
+    zone.innerHTML = '<div class="poker-table-shell">' +
+      '<div class="table-felt-logo">HW</div>' +
+      seatHtml('seat-top', '🤖', 'CPU 01', 200, 'D 200', hand.cpu[0]) +
+      seatHtml('seat-left-top', '🛸', 'CPU 02', 200, 'D 200', hand.cpu[1]) +
+      seatHtml('seat-right-top', '😎', 'CPU 03', 99999, 'D 200', hand.cpu[2]) +
+      seatHtml('seat-left-bottom', '👾', 'CPU 04', 200, 'D 200', hand.cpu[3]) +
+      seatHtml('seat-right-bottom', '🧪', 'CPU 05', 200, 'D 200', hand.cpu[4]) +
+      seatHtml('seat-player', player.avatar, player.name, player.points, 'Preview', hand.player) +
+      '<div class="community-zone"><div class="hand-badge">' + hand.label + '</div><div class="community-cards">' + hand.board.map(cardHtml).join("") + '</div><div class="pot-badge">Pot: 0 CP Preview</div></div>' +
+    '</div>';
+    setText("tableStatus", "Poker preview table dealt. Six seats, center board, zero Cool Points charged.");
+    setText("cpuStatus", "CPU seats are active in preview mode.");
+    setText("playerStatus", "Preview hand dealt. No wager active.");
+    toast("Poker table preview dealt. No CP charged.", false);
     previewIndex += 1;
   }
 
@@ -107,7 +124,7 @@
     const tiles = DOMINO_SETS[previewIndex % DOMINO_SETS.length];
     const zone = $("playZone");
     if (!zone) return;
-    zone.innerHTML = '<div class="domino-line">' + tiles.map((tile) => '<span class="domino-tile">' + tile + '</span>').join("") + '</div>';
+    zone.innerHTML = '<div class="domino-table-shell"><div class="domino-board"><div class="domino-label">CPU Tray</div><div class="domino-rack"><span class="domino-tile">▦</span><span class="domino-tile">▦</span><span class="domino-tile">▦</span></div><div class="domino-label">Center Chain</div><div class="domino-chain">' + tiles.map((tile) => '<span class="domino-tile">' + tile + '</span>').join("") + '</div><div class="domino-label">' + player.name + ' Tray</div><div class="domino-rack"><span class="domino-tile">6|6</span><span class="domino-tile">5|4</span><span class="domino-tile">3|2</span></div></div></div>';
     setText("tableStatus", "Domino preview round staged. CP stays untouched until Start Round is built.");
     setText("cpuStatus", "CPU stacks tiles and waits.");
     setText("playerStatus", "Preview tray loaded. No wager active.");
@@ -124,52 +141,33 @@
     toast("Preview reset.", false);
   }
 
-  function startPreview() {
-    if (mode === "dominoes") renderDominoPreview();
-    else renderPokerPreview();
-  }
+  function startPreview() { if (mode === "dominoes") renderDominoPreview(); else renderPokerPreview(); }
 
   async function loadRoom() {
     roomId = roomParam();
     const client = await getSupabaseClient();
-
     if (!roomId || !client) {
-      mode = "poker";
-      renderHeader(null);
-      await renderPlayer();
-      if (!roomId) setText("tableStatus", "No room ID found. Showing offline Poker preview.");
-      return;
+      mode = "poker"; renderHeader(null); await renderPlayer(); if (!roomId) setText("tableStatus", "No room ID found. Showing offline Poker preview."); return;
     }
-
     try {
       const { data, error } = await client.from("game_rooms").select("id,room_code,game_type,status,created_at").eq("id", roomId).maybeSingle();
       if (error) throw error;
       mode = normalizeMode(data?.game_type);
+      roomCode = data?.room_code || roomId;
       renderHeader(data);
       await renderPlayer();
     } catch (error) {
-      mode = "poker";
-      renderHeader(null);
-      await renderPlayer();
-      setText("tableStatus", error.message || "Room lookup missed. Showing safe preview mode.");
-      toast("Room lookup missed. Safe preview loaded.", true);
+      mode = "poker"; renderHeader(null); await renderPlayer(); setText("tableStatus", error.message || "Room lookup missed. Showing safe preview mode."); toast("Room lookup missed. Safe preview loaded.", true);
     }
   }
 
   function bind() {
-    const year = $("year");
-    if (year) year.textContent = new Date().getFullYear();
-    const preview = $("previewDealBtn");
-    const reset = $("resetTableBtn");
+    const year = $("year"); if (year) year.textContent = new Date().getFullYear();
+    const preview = $("previewDealBtn"); const reset = $("resetTableBtn");
     if (preview) preview.addEventListener("click", startPreview);
     if (reset) reset.addEventListener("click", resetPreview);
   }
 
-  async function boot() {
-    bind();
-    await loadRoom();
-  }
-
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
-  else boot();
+  async function boot() { bind(); await loadRoom(); }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
 })();
