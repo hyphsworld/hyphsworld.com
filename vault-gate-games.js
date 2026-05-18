@@ -8,7 +8,7 @@
   const LEVEL_ONE_TRANSPORT_V6_KEY = 'HW_LEVEL1_TRANSPORT_V6';
   const LOBBY_UNLOCK_KEY = 'HW_LOBBY_BOUNCE_UNLOCKED';
   const SOUND_KEY = 'hyphsworld.arcade.sound.enabled';
-  const REWARD_FUNCTION = 'vault-game-reward';
+  const REWARD_FUNCTION_URL = 'https://yuhxtdkhsltaqiagrtys.supabase.co/functions/v1/vault-game-reward';
 
   const lobbyTracks = {
     withMe: { title: 'WITH ME', meta: 'Hyph Life — prod by KMT', visible: true, sources: ['01_WITH_ME.MP3', '01_WITH_ME.mp3', 'with-me.mp3', 'WITH ME.mp3', 'With Me.mp3'] },
@@ -72,25 +72,42 @@
     if (!window.HWAuth || typeof window.HWAuth.getClient !== 'function') return null;
     try {
       const maybeClient = window.HWAuth.getClient();
-      const client = maybeClient && typeof maybeClient.then === 'function' ? await maybeClient : maybeClient;
-      return client && typeof client.functions === 'object' ? client : null;
+      return maybeClient && typeof maybeClient.then === 'function' ? await maybeClient : maybeClient;
     } catch (error) { return null; }
+  }
+
+  async function getAccessToken() {
+    const client = await getSupabaseClient();
+    if (!client || !client.auth || typeof client.auth.getSession !== 'function') return '';
+    try {
+      const { data } = await client.auth.getSession();
+      return data && data.session && data.session.access_token ? data.session.access_token : '';
+    } catch (error) { return ''; }
   }
 
   async function addPoints(amount, reason = 'vault_slots') {
     const value = Math.max(0, Number.parseInt(amount, 10) || 0);
     if (!value) return renderPoints(getPoints());
-    const client = await getSupabaseClient();
-    if (client && client.functions && typeof client.functions.invoke === 'function') {
-      try {
-        const { data, error } = await client.functions.invoke(REWARD_FUNCTION, { body: { amount: value, reason, metadata: { page: location.pathname } } });
-        if (error) throw error;
-        if (data && data.ok && typeof data.balance === 'number') return renderPoints(data.balance);
-      } catch (error) {
-        setGateStatus('SAVE BLOCKED', 'LOGIN CHECK', 'Reward server did not confirm. Sign in again if points do not stick.');
-      }
+    const token = await getAccessToken();
+    if (!token) {
+      setGateStatus('SAVE BLOCKED', 'SIGN IN', 'Login session missing. Sign in again before earning saved vault rewards.');
+      return getPoints();
     }
-    return renderPoints(getPoints() + value);
+    try {
+      const response = await fetch(REWARD_FUNCTION_URL, {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: value, reason, metadata: { page: location.pathname } })
+      });
+      const data = await response.json().catch(() => null);
+      if (!response.ok || !data || !data.ok || typeof data.balance !== 'number') {
+        throw new Error(data && data.error ? data.error : 'Reward server did not confirm.');
+      }
+      return renderPoints(data.balance);
+    } catch (error) {
+      setGateStatus('SAVE BLOCKED', 'SERVER CHECK', 'Reward server did not confirm. Refresh/sign in before transport.');
+      return getPoints();
+    }
   }
 
   function setSlotStatus(message) { const el = $('#gateSlotStatus'); if (el) el.textContent = message; }
@@ -198,10 +215,15 @@
 
   async function finishSlotSpin(reels, result, payout, spinBtn) {
     reels.forEach((reel, index) => { reel.textContent = result[index]; reel.classList.remove('is-spinning'); });
-    await addPoints(payout, 'vault_slots');
-    setSlotStatus(payout >= 35 ? `Duck Jackpot! +${payout} Cool Points saved.` : payout >= 12 ? `Nice match. +${payout} Cool Points saved.` : `Small play bonus. +${payout} Cool Points saved.`);
+    const before = getPoints();
+    const after = await addPoints(payout, 'vault_slots');
+    if (after > before) {
+      setSlotStatus(payout >= 35 ? `Duck Jackpot! +${payout} Cool Points saved.` : payout >= 12 ? `Nice match. +${payout} Cool Points saved.` : `Small play bonus. +${payout} Cool Points saved.`);
+      setGateStatus('ARCADE LIVE', 'POINTS SAVED', 'Vault slot points saved through the reward server.');
+    } else {
+      setSlotStatus('Save blocked. Refresh/sign in before transport.');
+    }
     sound(payout >= 12 ? 'win' : 'tap');
-    setGateStatus('ARCADE LIVE', 'POINTS SAVED', 'Vault slot points now save through the reward server.');
     busySlot = false;
     if (spinBtn) spinBtn.disabled = false;
   }
@@ -254,13 +276,14 @@
       card.textContent = cardIndex === winningCardIndex ? '01' : value;
       card.classList.add(cardIndex === winningCardIndex ? 'is-revealed' : 'is-miss');
     });
-    if (index === winningCardIndex) {
-      await addPoints(25, 'vault_pick_table');
-      setCardStatus('You found 01. +25 Cool Points saved.');
-      sound('win');
+    const before = getPoints();
+    const reward = index === winningCardIndex ? 25 : 5;
+    const after = await addPoints(reward, 'vault_pick_table');
+    if (after > before) {
+      if (index === winningCardIndex) { setCardStatus('You found 01. +25 Cool Points saved.'); sound('win'); }
+      else { setCardStatus('Not 01, but you still earned +5 Cool Points saved. Tap Play Again.'); sound('miss'); }
     } else {
-      await addPoints(5, 'vault_pick_table');
-      setCardStatus('Not 01, but you still earned +5 Cool Points saved. Tap Play Again.');
+      setCardStatus('Save blocked. Refresh/sign in before transport.');
       sound('miss');
     }
   }
@@ -307,8 +330,12 @@
     if (!audio) return;
     playRequested = true;
     if (!audio.src) loadTrack(activeTrackId, activeSourceIndex);
-    try { await audio.play(); await addPoints(activeTrackId === hiddenTrackId ? 10 : 2, 'vault_lobby_music'); setPlayerStatus(`${currentTrack().title} playing. +2 Cool Points saved.`); }
-    catch (error) { setPlayerStatus('Browser blocked autoplay. Tap Play again.'); }
+    try {
+      await audio.play();
+      const before = getPoints();
+      const after = await addPoints(activeTrackId === hiddenTrackId ? 10 : 2, 'vault_lobby_music');
+      setPlayerStatus(after > before ? `${currentTrack().title} playing. Cool Points saved.` : `${currentTrack().title} playing. Save blocked, refresh/sign in before transport.`);
+    } catch (error) { setPlayerStatus('Browser blocked autoplay. Tap Play again.'); }
   }
   function pauseTrack() { const audio = $('#gateAudio'); if (audio) audio.pause(); setPlayerStatus('Lobby Music paused.'); }
   function selectTrack(trackId) { hiddenTrackTriggered = false; loadTrack(trackId, 0); }
@@ -325,7 +352,7 @@
     await addPoints(25, 'vault_level_unlock');
     sound('unlock');
     setGateStatus('LEVEL 1 READY', 'UNLOCKED', 'Hidden Track 06 cleared the lobby route. Level 1 transport is ready.');
-    setPlayerStatus('BOUNCE OUT finished. LEVEL 1 UNLOCKED. +25 Cool Points saved.');
+    setPlayerStatus('BOUNCE OUT finished. LEVEL 1 UNLOCKED. Reward save attempted.');
     const unlockLink = $('#lobbyLevelOneUnlock');
     if (unlockLink) unlockLink.hidden = false;
   }
