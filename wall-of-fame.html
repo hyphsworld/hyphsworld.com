@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wall of Fame | HYPHSWORLD</title>
+  <meta name="description" content="Locked HYPHSWORLD Wall of Fame archive. Unlock photo maps, music covers, merch walls, rare photos, and legend rooms with Cool Points." />
+  <meta name="theme-color" content="#7b2cff" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="global-button-pop.css" />
+  <link rel="stylesheet" href="wall-of-fame.css" />
+</head>
+<body class="wall-page">
+  <header class="wof-header">
+    <a class="wof-brand" href="index.html"><span>AMS WEST PRESENTS</span><strong>WALL OF FAME</strong></a>
+    <nav class="wof-nav" aria-label="Wall navigation">
+      <a href="index.html">Home</a>
+      <a href="vault.html">Vault</a>
+      <a href="leaderboard.html">Leaderboards</a>
+      <a href="games.html">Casino</a>
+      <a href="account.html">Account</a>
+    </nav>
+  </header>
+
+  <main class="wof-main">
+    <section class="wof-hero">
+      <div class="wof-scan-card">
+        <p class="wof-kicker">LOCKED ROOM // COOL POINTS CLEARANCE</p>
+        <h1>Wall of Fame</h1>
+        <p class="wof-copy">A hidden archive for HYPHSWORLD photos, covers, merch mockups, lore shots, and award-wall moments. Stack points, open rooms, light up the map.</p>
+        <div class="wof-scorebar">
+          <span>Your Cool Points</span>
+          <strong id="wof-points">0</strong>
+        </div>
+        <div class="wof-status" id="wof-status">Checking clearance...</div>
+        <div class="wof-actions">
+          <a class="wof-btn primary" href="account.html">Manage ID</a>
+          <a class="wof-btn" href="games.html">Earn Points</a>
+          <a class="wof-btn" href="vault.html">Back to Vault</a>
+        </div>
+      </div>
+      <aside class="wof-duck-panel">
+        <img src="duck-sauce.png" alt="Duck Sauce" onerror="this.style.display='none'" />
+        <p id="wof-duck-line">Duck Sauce: This wall got pictures you ain’t even supposed to stare at yet.</p>
+      </aside>
+    </section>
+
+    <section class="wof-unlock-track" aria-label="Wall of Fame unlock levels">
+      <article data-tier="500"><strong>500 CP</strong><span>Wall Door</span></article>
+      <article data-tier="1000"><strong>1,000 CP</strong><span>Picture Map</span></article>
+      <article data-tier="2500"><strong>2,500 CP</strong><span>Music Archive</span></article>
+      <article data-tier="5000"><strong>5,000 CP</strong><span>Rare Photos</span></article>
+      <article data-tier="10000"><strong>10,000 CP</strong><span>Legend Wall</span></article>
+    </section>
+
+    <section class="wof-map" id="wof-map" aria-label="Locked photo map">
+      <div class="wof-section-title">
+        <p class="wof-kicker">PHOTO MAP</p>
+        <h2>Archive Pins</h2>
+        <p>Locked pins glow when your Cool Points clear the room threshold.</p>
+      </div>
+      <div class="wof-grid" id="wof-grid"></div>
+    </section>
+  </main>
+
+  <template id="wof-card-template">
+    <article class="wof-card">
+      <div class="wof-lock">LOCKED</div>
+      <img alt="" loading="lazy" />
+      <div class="wof-card-copy">
+        <span></span>
+        <h3></h3>
+        <p></p>
+      </div>
+    </article>
+  </template>
+
+  <script src="auth-client.js"></script>
+  <script src="cool-points.js"></script>
+  <script src="wall-of-fame.js"></script>
+</body>
+</html>
