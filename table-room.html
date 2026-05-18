@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Table Room | HYPHSWORLD</title>
-  <meta name="description" content="HYPHSWORLD poker and domino table room preview with CPU seat, green felt table, and Cool Points-safe gameplay staging." />
+  <title>HYPHSWORLD Hold'em Table</title>
+  <meta name="description" content="HYPHSWORLD Hold'em preview with CPU seat, green felt table, and Cool Points-safe gameplay staging." />
   <meta name="theme-color" content="#00ff66" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="global-button-pop.css" />
@@ -19,21 +19,21 @@
 
   <main class="table-room-main">
     <section class="table-room-hero">
-      <span class="table-kicker">Table Room / Free Preview</span>
-      <h1 id="tableTitle">Loading Table</h1>
-      <p id="tableIntro">Pulling the room from HYPHSWORLD backend. Buy-ins stay locked until the gameplay loop is real.</p>
+      <span class="table-kicker">Hold'em Table / Free Preview</span>
+      <h1 id="tableTitle">Loading Hold'em</h1>
+      <p id="tableIntro">Cards auto-deal when the room opens. Check, Raise, or Fold against CPU 01. Cool Points stay in safe preview mode.</p>
       <div class="table-room-meta">
         <span class="table-pill">Room: <strong id="roomCode">...</strong></span>
-        <span class="table-pill">Mode: <strong id="roomMode">Preview</strong></span>
+        <span class="table-pill">Mode: <strong id="roomMode">Hold'em Preview</strong></span>
         <span class="table-pill">Cool Points: <strong id="tableBalance">0</strong></span>
       </div>
     </section>
 
-    <section class="felt-stage" aria-label="HYPHSWORLD table preview">
+    <section class="felt-stage" aria-label="HYPHSWORLD Hold'em table preview">
       <div class="seat-row">
         <article class="seat-card">
           <div class="player-avatar" aria-hidden="true">🤖</div>
-          <h2>CPU Opponent</h2>
+          <h2>CPU 01</h2>
           <p id="cpuStatus">Waiting at the table.</p>
         </article>
 
@@ -51,16 +51,16 @@
       </div>
 
       <div class="play-zone" id="playZone">
-        <p>Choose a preview action to light up the table.</p>
+        <p>Cards are about to hit the felt.</p>
       </div>
     </section>
 
     <div class="table-actions">
-      <button class="table-btn" type="button" id="previewDealBtn">Start Preview</button>
-      <button class="table-btn secondary" type="button" id="holdBtn">Hold</button>
-      <button class="table-btn secondary" type="button" id="hitBtn">Hit</button>
-      <button class="table-btn secondary" type="button" id="stayBtn">Stay</button>
-      <button class="table-btn secondary" type="button" id="resetTableBtn">Reset Preview</button>
+      <button class="table-btn secondary" type="button" id="previewDealBtn">New Hand</button>
+      <button class="table-btn secondary" type="button" id="holdBtn">Fold</button>
+      <button class="table-btn" type="button" id="hitBtn">Check</button>
+      <button class="table-btn" type="button" id="stayBtn">Raise</button>
+      <button class="table-btn secondary" type="button" id="resetTableBtn">Reset</button>
       <a class="table-btn secondary" href="games.html">Back To Casino</a>
     </div>
 
@@ -69,13 +69,13 @@
 
   <div class="table-toast" id="tableToast"></div>
 
-  <footer class="site-footer"><span>© <span id="year"></span> AMS WEST LLC</span><span>Table rooms are in free preview until gameplay is live</span></footer>
+  <footer class="site-footer"><span>© <span id="year"></span> AMS WEST LLC</span><span>Hold'em rooms are in free preview until full wagers are live</span></footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js?v=table-room-v2"></script>
-  <script src="auth-client.js?v=table-room-v2"></script>
-  <script src="cool-points.js?v=table-room-v2"></script>
-  <script src="table-room.js?v=table-room-v2"></script>
+  <script src="supabase-config.js?v=table-room-v3"></script>
+  <script src="auth-client.js?v=table-room-v3"></script>
+  <script src="cool-points.js?v=table-room-v3"></script>
+  <script src="table-room.js?v=table-room-v3"></script>
   <script src="site-analytics.js"></script>
 </body>
 </html>
