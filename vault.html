@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <title>Lobby | HYPHSWORLD</title>
-  <meta name="description" content="Animated HYPHSWORLD Lobby access pad with BuckTheBodyguard, Duck Sauce, scanner movement, code entry, casino game links, lobby video, Games access, and Level 1 transport." />
+  <meta name="description" content="Animated HYPHSWORLD Lobby access pad with BuckTheBodyguard, Duck Sauce, scanner movement, code entry, casino game links, lobby music, lobby video, Games access, and Level 1 transport." />
 
   <link rel="stylesheet" href="vault.css" />
   <link rel="stylesheet" href="vault-cyber-access.css" />
@@ -38,7 +38,7 @@
 
   <section class="lobby-video-section" aria-label="Lobby video preview">
     <article class="lobby-video-card">
-      <div class="lobby-video-head"><div><span class="lobby-video-badge">LOBBY SCREEN // YOUTUBE PLAYER</span><h2>Lobby Screen</h2><p>The Lobby top screen is now locked to the live YouTube embed while the scanner, casino links, and Level 1 transport stay active underneath.</p></div></div>
+      <div class="lobby-video-head"><div><span class="lobby-video-badge">LOBBY SCREEN // YOUTUBE PLAYER</span><h2>Lobby Screen</h2><p>The Lobby top screen is now locked to the live YouTube embed while the scanner, casino links, music, and Level 1 transport stay active underneath.</p></div></div>
       <div class="lobby-video-shell" data-lobby-player="ecAxMIms3mY"><iframe width="560" height="315" src="https://www.youtube.com/embed/ecAxMIms3mY?si=2bmcXgxheoAhRMWI&amp;rel=0&amp;modestbranding=1" title="HYPHSWORLD Lobby video player" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe><div class="lobby-video-strip"><small>NOW SHOWING</small><span>Lobby Player // HYPHSWORLD Signal</span></div></div>
     </article>
   </section>
@@ -85,10 +85,43 @@
         </div>
       </div>
     </section>
+
+    <section class="gate-arcade" aria-label="Lobby music">
+      <div class="gate-arcade-card">
+        <div class="gate-arcade-head"><div><p class="tagline">LOBBY // MUSIC STILL LIVE</p><h2>Gate Radio</h2><p>The lobby music and hidden-track lane are restored without bringing back the broken arcade games.</p></div></div>
+        <div class="gate-game-grid">
+          <article class="gate-game-panel"><p class="tagline">MEDIA PLAYER</p><h3>Lobby Music</h3><p>Keep the lobby moving before transport. Hidden Track 06 can wake Level 1 once the route script is restored.</p><div class="gate-player-screen"><span class="gate-player-title" id="gatePlayerTitle">HAM</span><p class="gate-player-meta" id="gatePlayerMeta">Hyph Life — prod by 1ManBand</p><audio id="gateAudio" controls preload="metadata"><source src="HAM.mp3" type="audio/mpeg" /><source src="ham.mp3" type="audio/mpeg" /></audio><p class="gate-game-status" id="gatePlayerStatus">Gate radio restored.</p></div><div class="gate-mini-actions"><button class="gate-track-btn is-active" type="button" data-track-src="HAM.mp3" data-track-title="HAM" data-track-meta="Hyph Life — prod by 1ManBand">HAM</button><button class="gate-track-btn" type="button" data-track-src="TIME.mp3" data-track-title="TIME" data-track-meta="SIXX FIGGAZ x HYPH LIFE">TIME</button><button class="gate-track-btn" type="button" data-track-src="25-8.mp3" data-track-title="25/8" data-track-meta="Young Tez — prod by Marty McPhresh">25/8</button></div></article>
+          <article class="gate-game-panel"><p class="tagline">HIDDEN ROUTE</p><h3>Track 06</h3><p>The hidden-track concept stays part of the lobby. Duck Sauce Slots v2 will reconnect this route after the points system is stable.</p><div class="gate-mini-actions"><a class="gate-game-btn" href="quarantine-mixtape.html">Enter Level 1</a></div></article>
+          <article class="gate-game-panel"><p class="tagline">VIDEO FILES</p><h3>Lobby MP4 Ready</h3><p>Upload the MP4 files and this panel can become the local video player without touching the scanner.</p><video controls playsinline preload="metadata" style="width:100%;border-radius:18px;background:#050505;"><source src="lobby-video.mp4" type="video/mp4" /></video></article>
+        </div>
+      </div>
+    </section>
   </main>
 
   <section id="scanOverlay" class="scan-overlay" aria-hidden="true"><div class="overlay-noise"></div><div class="scan-window"><button id="closeOverlay" class="close-overlay" type="button" aria-label="Close scan">×</button><div class="scan-visual" id="scanVisual"><div class="scan-grid"></div><div class="scan-door-big"><div class="big-door left"></div><div class="big-door right"></div><span class="big-door-bar a"></span><span class="big-door-bar b"></span><span class="big-door-bar c"></span></div><div class="scan-person"><span class="scan-head"></span><span class="scan-torso"></span><span class="scan-arm left"></span><span class="scan-arm right"></span><span class="scan-leg left"></span><span class="scan-leg right"></span><span class="real-scan-beam"></span><span class="particle p1"></span><span class="particle p2"></span><span class="particle p3"></span><span class="particle p4"></span><span class="particle p5"></span><span class="particle p6"></span></div><div class="smoke"><span></span><span></span><span></span><span></span><span></span></div><div class="granted-badge" id="grantedBadge">ACCESS GRANTED</div><div class="transport-tunnel"><span class="ring r1"></span><span class="ring r2"></span><span class="ring r3"></span><span class="ring r4"></span><span class="core"></span><span class="flash"></span></div></div><div class="scan-copy"><p class="tagline">HYPHSWORLD SECURITY</p><h2 id="scanTitle">Body Scan</h2><p id="scanMessage">Scanner warming up...</p><div class="progress-track"><div id="progressBar" class="progress-bar"></div></div><ul id="scanLog" class="scan-log"></ul><a id="manualEnter" class="manual-enter" href="quarantine-mixtape.html" hidden>Enter Level 1</a></div></div></section>
 
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var audio = document.getElementById('gateAudio');
+      var title = document.getElementById('gatePlayerTitle');
+      var meta = document.getElementById('gatePlayerMeta');
+      var status = document.getElementById('gatePlayerStatus');
+      document.querySelectorAll('[data-track-src]').forEach(function (button) {
+        button.addEventListener('click', function () {
+          document.querySelectorAll('[data-track-src]').forEach(function (item) { item.classList.remove('is-active'); });
+          button.classList.add('is-active');
+          if (title) title.textContent = button.dataset.trackTitle || button.textContent.trim();
+          if (meta) meta.textContent = button.dataset.trackMeta || 'Lobby Music';
+          if (audio) {
+            audio.src = button.dataset.trackSrc;
+            audio.load();
+            audio.play().catch(function () {});
+          }
+          if (status) status.textContent = (button.dataset.trackTitle || button.textContent.trim()) + ' loaded.';
+        });
+      });
+    });
+  </script>
   <script src="auth-client.js" defer></script><script src="cool-points.js" defer></script><script src="vault.js" defer></script><script src="duck-helper.js?v=global-duck-20260509-slick-talk-1" defer></script>
 </body>
 </html>
