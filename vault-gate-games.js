@@ -8,6 +8,7 @@
   const LEVEL_ONE_TRANSPORT_V6_KEY = 'HW_LEVEL1_TRANSPORT_V6';
   const LOBBY_UNLOCK_KEY = 'HW_LOBBY_BOUNCE_UNLOCKED';
   const SOUND_KEY = 'hyphsworld.arcade.sound.enabled';
+  const REWARD_FUNCTION = 'vault-game-reward';
 
   const lobbyTracks = {
     withMe: { title: 'WITH ME', meta: 'Hyph Life — prod by KMT', visible: true, sources: ['01_WITH_ME.MP3', '01_WITH_ME.mp3', 'with-me.mp3', 'WITH ME.mp3', 'With Me.mp3'] },
@@ -59,8 +60,6 @@
     return Math.max(numberFrom(safeGet(POINTS_KEY)), numberFrom(safeGet(LEGACY_POINTS_KEY)));
   }
 
-  function setPoints(value) { return renderPoints(value); }
-
   async function refreshSharedPoints() {
     if (window.HWPoints && typeof window.HWPoints.refresh === 'function') {
       try { await window.HWPoints.refresh(); renderPoints(window.HWPoints.get()); return true; } catch (error) {}
@@ -69,24 +68,27 @@
     return false;
   }
 
-  async function addPoints(amount, reason = 'vault_gate_game') {
+  async function getSupabaseClient() {
+    if (!window.HWAuth || typeof window.HWAuth.getClient !== 'function') return null;
+    try {
+      const maybeClient = window.HWAuth.getClient();
+      const client = maybeClient && typeof maybeClient.then === 'function' ? await maybeClient : maybeClient;
+      return client && typeof client.functions === 'object' ? client : null;
+    } catch (error) { return null; }
+  }
+
+  async function addPoints(amount, reason = 'vault_slots') {
     const value = Math.max(0, Number.parseInt(amount, 10) || 0);
     if (!value) return renderPoints(getPoints());
-    if (window.HWPoints) {
+    const client = await getSupabaseClient();
+    if (client && client.functions && typeof client.functions.invoke === 'function') {
       try {
-        if (typeof window.HWPoints.add === 'function') {
-          const next = await window.HWPoints.add(value, { reason, source: 'vault-gate-games' });
-          if (typeof next === 'number') return renderPoints(next);
-          await refreshSharedPoints();
-          return getPoints();
-        }
-        if (typeof window.HWPoints.reward === 'function') {
-          const next = await window.HWPoints.reward(value, reason, { source: 'vault-gate-games' });
-          if (typeof next === 'number') return renderPoints(next);
-          await refreshSharedPoints();
-          return getPoints();
-        }
-      } catch (error) {}
+        const { data, error } = await client.functions.invoke(REWARD_FUNCTION, { body: { amount: value, reason, metadata: { page: location.pathname } } });
+        if (error) throw error;
+        if (data && data.ok && typeof data.balance === 'number') return renderPoints(data.balance);
+      } catch (error) {
+        setGateStatus('SAVE BLOCKED', 'LOGIN CHECK', 'Reward server did not confirm. Sign in again if points do not stick.');
+      }
     }
     return renderPoints(getPoints() + value);
   }
@@ -105,17 +107,20 @@
     if (consoleMessage) consoleMessage.textContent = message;
   }
 
-  function ensureSound() {
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (audioCtx.state === 'suspended') audioCtx.resume();
-    soundEnabled = true;
-    safeSet(SOUND_KEY, 'true');
+  async function ensureSound() {
+    if (!window.AudioContext && !window.webkitAudioContext) return false;
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') await audioCtx.resume();
+      soundEnabled = true;
+      safeSet(SOUND_KEY, 'true');
+      return true;
+    } catch (error) { return false; }
   }
 
   function tone(freq, duration = 0.08, type = 'sine', gain = 0.035) {
-    if (!soundEnabled || !window.AudioContext && !window.webkitAudioContext) return;
+    if (!soundEnabled || !audioCtx) return;
     try {
-      if (!audioCtx) ensureSound();
       const osc = audioCtx.createOscillator();
       const vol = audioCtx.createGain();
       osc.type = type;
@@ -129,7 +134,8 @@
     } catch (error) {}
   }
 
-  function sound(name) {
+  async function sound(name) {
+    if (!soundEnabled) await ensureSound();
     if (name === 'tap') tone(520, 0.05, 'triangle', 0.02);
     if (name === 'spin') tone(220 + Math.random() * 360, 0.035, 'square', 0.018);
     if (name === 'win') { tone(520, 0.08, 'triangle', 0.035); setTimeout(() => tone(720, 0.09, 'triangle', 0.035), 90); setTimeout(() => tone(940, 0.10, 'triangle', 0.035), 185); }
@@ -152,15 +158,19 @@
     button.id = 'gateSoundToggle';
     button.className = 'gate-sound-toggle';
     button.type = 'button';
-    button.textContent = 'Sound Off';
-    button.addEventListener('click', () => {
-      ensureSound();
-      sound('unlock');
-      button.textContent = 'Sound On';
-      setGateStatus('ARCADE LIVE', 'SOUND ON', 'Simple arcade sounds are on. Tap, spin, win, and unlock cues are active.');
+    button.textContent = safeGet(SOUND_KEY) === 'true' ? 'Sound On' : 'Sound Off';
+    button.addEventListener('click', async () => {
+      const ok = await ensureSound();
+      if (ok) {
+        button.textContent = 'Sound On';
+        await sound('unlock');
+        setGateStatus('ARCADE LIVE', 'SOUND ON', 'Sound confirmed. Tap, spin, win, and unlock cues are active.');
+      } else {
+        button.textContent = 'Sound Blocked';
+        setGateStatus('SOUND BLOCKED', 'TAP AGAIN', 'Browser blocked the audio context. Tap Sound again or tap Spin.');
+      }
     });
     arcadeHead.appendChild(button);
-    if (safeGet(SOUND_KEY) === 'true') { soundEnabled = true; button.textContent = 'Sound On'; }
   }
 
   function simplifyCopy() {
@@ -191,7 +201,7 @@
     await addPoints(payout, 'vault_slots');
     setSlotStatus(payout >= 35 ? `Duck Jackpot! +${payout} Cool Points saved.` : payout >= 12 ? `Nice match. +${payout} Cool Points saved.` : `Small play bonus. +${payout} Cool Points saved.`);
     sound(payout >= 12 ? 'win' : 'tap');
-    setGateStatus('ARCADE LIVE', 'POINTS SAVED', 'Vault slot points now sync through the shared Cool Points system.');
+    setGateStatus('ARCADE LIVE', 'POINTS SAVED', 'Vault slot points now save through the reward server.');
     busySlot = false;
     if (spinBtn) spinBtn.disabled = false;
   }
@@ -200,7 +210,7 @@
     const reels = $$('.gate-reel');
     const spinBtn = $('#gateSpinBtn');
     if (busySlot || !reels.length) return;
-    ensureSound();
+    sound('tap');
     busySlot = true;
     if (spinBtn) spinBtn.disabled = true;
     setSlotStatus('Spinning...');
@@ -236,7 +246,6 @@
 
   async function pickCard(button, index) {
     if (!button || button.disabled) return;
-    ensureSound();
     sound('tap');
     const cards = $$('.gate-card');
     cards.forEach((card) => { card.disabled = true; });
