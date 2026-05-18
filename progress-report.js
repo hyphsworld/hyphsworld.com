@@ -27,16 +27,12 @@
 
   async function getPoints(options) {
     var shouldRefresh = options && options.refresh === true;
-
     if (window.HWPoints) {
       try {
-        if (shouldRefresh && typeof window.HWPoints.refresh === 'function') {
-          await window.HWPoints.refresh();
-        }
+        if (shouldRefresh && typeof window.HWPoints.refresh === 'function') await window.HWPoints.refresh();
         if (typeof window.HWPoints.get === 'function') return window.HWPoints.get();
       } catch (error) {}
     }
-
     return fallbackPoints();
   }
 
@@ -48,72 +44,55 @@
     var previousThreshold = current ? current.threshold : 0;
     var nextThreshold = next ? next.threshold : previousThreshold;
     var progress = next ? Math.round(((total - previousThreshold) / Math.max(1, nextThreshold - previousThreshold)) * 100) : 100;
+    return { points: total, badges: FALLBACK_BADGES.slice(), unlocked: unlocked, current: current, next: next, progress: Math.max(0, Math.min(100, progress)), needed: next ? Math.max(0, next.threshold - total) : 0 };
+  }
 
-    return {
-      points: total,
-      badges: FALLBACK_BADGES.slice(),
-      unlocked: unlocked,
-      current: current,
-      next: next,
-      progress: Math.max(0, Math.min(100, progress)),
-      needed: next ? Math.max(0, next.threshold - total) : 0
-    };
+  function stat(label, value) {
+    return '<article class="profile-stat"><span>' + label + '</span><strong>' + value + '</strong></article>';
   }
 
   function renderFallback(root, progressState) {
     var current = progressState.current;
     var next = progressState.next;
+    var rank = current ? current.name : 'Signal Seeker';
+    var inventory = progressState.unlocked.length ? progressState.unlocked : [{ icon: '🔑', name: 'Starter Key', threshold: 0 }, { icon: '🟢', name: 'Crew Ready Badge', threshold: 0 }];
 
     root.innerHTML = '' +
-      '<div class="hyf-progress-hud">' +
+      '<div class="hyf-progress-hud hyf-profile-layout">' +
         '<div class="hud-scanline"></div>' +
-        '<div class="hud-header"><span>HYF CORE</span><span>PROGRESS ONLINE</span></div>' +
-        '<div class="hud-main">' +
-          '<p class="hud-label">Cool Points Balance</p>' +
-          '<h2>' + progressState.points.toLocaleString() + '</h2>' +
-          '<p class="hud-current-badge">' + (current ? current.icon + ' ' + current.name : 'No badge detected') + '</p>' +
+        '<div class="profile-topline"><span>Player Profile</span><a href="games.html">Play Casino</a></div>' +
+        '<h2 class="profile-rank">' + rank + '</h2>' +
+        '<div class="hud-progress-track profile-track"><div class="hud-progress-fill" style="width:' + progressState.progress + '%"></div></div>' +
+        '<p class="hud-next-copy profile-next">' + (next ? 'Next rank: ' + next.name + ' needs ' + progressState.needed.toLocaleString() + ' CP.' : 'All ranks unlocked. Chrome legend status online.') + '</p>' +
+        '<div class="profile-stat-grid">' +
+          stat('Cool Points', progressState.points.toLocaleString()) +
+          stat('Rank', rank) +
+          stat('Progress', progressState.progress + '%') +
+          stat('Unlocked', progressState.unlocked.length.toLocaleString()) +
+          stat('Next CP', next ? next.threshold.toLocaleString() : 'MAX') +
+          stat('Tier', current ? 'Active' : 'Free Play') +
         '</div>' +
-        '<div class="hud-progress-row"><span>' + (next ? 'Next Badge: ' + next.name : 'Badge Grid Complete') + '</span><span>' + progressState.progress + '%</span></div>' +
-        '<div class="hud-progress-track"><div class="hud-progress-fill" style="width:' + progressState.progress + '%"></div></div>' +
-        '<p class="hud-next-copy">' + (next ? progressState.needed.toLocaleString() + ' points until ' + next.name : 'All badges unlocked. Chrome legend status online.') + '</p>' +
-        '<div class="hud-badge-grid">' +
-          progressState.badges.map(function (badge) {
-            var unlocked = progressState.points >= badge.threshold;
-            return '<article class="cool-badge ' + (unlocked ? 'is-unlocked' : 'is-locked') + '">' +
-              '<div class="cool-badge-icon">' + (unlocked ? badge.icon : '🔒') + '</div>' +
-              '<h3>' + badge.name + '</h3>' +
-              '<p>' + badge.description + '</p>' +
-              '<small>' + badge.threshold.toLocaleString() + ' pts</small>' +
-            '</article>';
-          }).join('') +
-        '</div>' +
+        '<div class="profile-inventory"><h3>Inventory</h3><div class="profile-chip-row">' +
+          inventory.map(function (badge) { return '<span class="profile-chip">' + badge.icon + ' ' + badge.name + ' x1</span>'; }).join('') +
+        '</div></div>' +
+        '<div class="profile-prize-card"><span>Reward Points</span><strong>' + progressState.points.toLocaleString() + ' / 100,000</strong><p>Member rewards require HYPHSWORLD ID access.</p><a href="account.html">Manage Rewards</a></div>' +
       '</div>';
   }
 
   async function render(root, options) {
     if (!root) return;
     var total = await getPoints(options || {});
-    var progressState;
-
-    if (window.HWCoolBadges && typeof window.HWCoolBadges.renderInto === 'function') {
-      progressState = window.HWCoolBadges.renderInto(root, total);
-    } else {
-      progressState = fallbackState(total);
-      renderFallback(root, progressState);
-    }
-
+    var progressState = fallbackState(total);
+    renderFallback(root, progressState);
     if (options && options.checkUnlocks && window.HWCoolBadges && typeof window.HWCoolBadges.rememberUnlocks === 'function') {
       var fresh = window.HWCoolBadges.rememberUnlocks(progressState) || [];
-      if (fresh.length && typeof window.HWCoolBadges.showUnlockToast === 'function') {
-        window.HWCoolBadges.showUnlockToast(fresh[fresh.length - 1]);
-      }
+      if (fresh.length && typeof window.HWCoolBadges.showUnlockToast === 'function') window.HWCoolBadges.showUnlockToast(fresh[fresh.length - 1]);
     }
   }
 
   function init() {
     var reports = Array.prototype.slice.call(document.querySelectorAll('[data-hw-progress-report]'));
     if (!reports.length) return;
-
     async function refreshAll(options) {
       var now = Date.now();
       var opts = options || {};
@@ -121,22 +100,12 @@
       if (!opts.force && now - lastRenderAt < 700) return;
       rendering = true;
       lastRenderAt = now;
-      try {
-        for (var i = 0; i < reports.length; i += 1) {
-          await render(reports[i], opts);
-        }
-      } finally {
-        rendering = false;
-      }
+      try { for (var i = 0; i < reports.length; i += 1) await render(reports[i], opts); }
+      finally { rendering = false; }
     }
-
     refreshAll({ refresh: true, checkUnlocks: true, force: true });
-    document.addEventListener('hyph:points-updated', function () {
-      refreshAll({ refresh: false, checkUnlocks: true });
-    });
-    window.setInterval(function () {
-      refreshAll({ refresh: true, checkUnlocks: false });
-    }, 60000);
+    document.addEventListener('hyph:points-updated', function () { refreshAll({ refresh: false, checkUnlocks: true }); });
+    window.setInterval(function () { refreshAll({ refresh: true, checkUnlocks: false }); }, 60000);
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
