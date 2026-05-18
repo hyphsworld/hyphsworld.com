@@ -39,9 +39,58 @@
   function safeSet(key, value) { try { localStorage.setItem(key, String(value)); } catch (error) {} }
   function safeSessionSet(key, value) { try { sessionStorage.setItem(key, String(value)); } catch (error) {} }
   function numberFrom(value) { const parsed = Number.parseInt(value, 10); return Number.isFinite(parsed) && parsed > 0 ? parsed : 0; }
-  function getPoints() { return Math.max(numberFrom(safeGet(POINTS_KEY)), numberFrom(safeGet(LEGACY_POINTS_KEY))); }
-  function setPoints(value) { const next = Math.max(0, Number.parseInt(value, 10) || 0); safeSet(POINTS_KEY, next); safeSet(LEGACY_POINTS_KEY, next); const el = $('#gateCredits'); if (el) el.textContent = String(next); return next; }
-  function addPoints(amount) { return setPoints(getPoints() + amount); }
+
+  function renderPoints(value) {
+    const next = Math.max(0, Number.parseInt(value, 10) || 0);
+    safeSet(POINTS_KEY, next);
+    safeSet(LEGACY_POINTS_KEY, next);
+    ['#gateCredits', '#casinoPoints', '#coolPointsBalance', '[data-cool-points-balance]'].forEach((selector) => {
+      $$(selector).forEach((el) => { el.textContent = String(next); });
+    });
+    document.dispatchEvent(new CustomEvent('hyph:points-updated', { detail: { points: next, source: 'vault-gate-games' } }));
+    return next;
+  }
+
+  function getPoints() {
+    if (window.HWPoints && typeof window.HWPoints.get === 'function') {
+      const shared = Number.parseInt(window.HWPoints.get(), 10);
+      if (Number.isFinite(shared) && shared >= 0) return shared;
+    }
+    return Math.max(numberFrom(safeGet(POINTS_KEY)), numberFrom(safeGet(LEGACY_POINTS_KEY)));
+  }
+
+  function setPoints(value) { return renderPoints(value); }
+
+  async function refreshSharedPoints() {
+    if (window.HWPoints && typeof window.HWPoints.refresh === 'function') {
+      try { await window.HWPoints.refresh(); renderPoints(window.HWPoints.get()); return true; } catch (error) {}
+    }
+    renderPoints(getPoints());
+    return false;
+  }
+
+  async function addPoints(amount, reason = 'vault_gate_game') {
+    const value = Math.max(0, Number.parseInt(amount, 10) || 0);
+    if (!value) return renderPoints(getPoints());
+    if (window.HWPoints) {
+      try {
+        if (typeof window.HWPoints.add === 'function') {
+          const next = await window.HWPoints.add(value, { reason, source: 'vault-gate-games' });
+          if (typeof next === 'number') return renderPoints(next);
+          await refreshSharedPoints();
+          return getPoints();
+        }
+        if (typeof window.HWPoints.reward === 'function') {
+          const next = await window.HWPoints.reward(value, reason, { source: 'vault-gate-games' });
+          if (typeof next === 'number') return renderPoints(next);
+          await refreshSharedPoints();
+          return getPoints();
+        }
+      } catch (error) {}
+    }
+    return renderPoints(getPoints() + value);
+  }
+
   function setSlotStatus(message) { const el = $('#gateSlotStatus'); if (el) el.textContent = message; }
   function setCardStatus(message) { const el = $('#gateCardStatus'); if (el) el.textContent = message; }
   function setPlayerStatus(message) { const el = $('#gatePlayerStatus'); if (el) el.textContent = message; }
@@ -111,10 +160,7 @@
       setGateStatus('ARCADE LIVE', 'SOUND ON', 'Simple arcade sounds are on. Tap, spin, win, and unlock cues are active.');
     });
     arcadeHead.appendChild(button);
-    if (safeGet(SOUND_KEY) === 'true') {
-      soundEnabled = true;
-      button.textContent = 'Sound On';
-    }
+    if (safeGet(SOUND_KEY) === 'true') { soundEnabled = true; button.textContent = 'Sound On'; }
   }
 
   function simplifyCopy() {
@@ -140,6 +186,16 @@
     setCardStatus('Pick 1, 2, or 3. Find 01 for +25 Cool Points.');
   }
 
+  async function finishSlotSpin(reels, result, payout, spinBtn) {
+    reels.forEach((reel, index) => { reel.textContent = result[index]; reel.classList.remove('is-spinning'); });
+    await addPoints(payout, 'vault_slots');
+    setSlotStatus(payout >= 35 ? `Duck Jackpot! +${payout} Cool Points saved.` : payout >= 12 ? `Nice match. +${payout} Cool Points saved.` : `Small play bonus. +${payout} Cool Points saved.`);
+    sound(payout >= 12 ? 'win' : 'tap');
+    setGateStatus('ARCADE LIVE', 'POINTS SAVED', 'Vault slot points now sync through the shared Cool Points system.');
+    busySlot = false;
+    if (spinBtn) spinBtn.disabled = false;
+  }
+
   function spinSlot() {
     const reels = $$('.gate-reel');
     const spinBtn = $('#gateSpinBtn');
@@ -162,13 +218,7 @@
         if (roll < 0.22) { result = ['🦆', '🦆', '🦆']; payout = 35; }
         else if (roll < 0.52) { const symbol = randomSymbol(); result = [symbol, symbol, randomSymbol()].sort(() => Math.random() - 0.5); payout = 12; }
         else { result = [randomSymbol(), randomSymbol(), randomSymbol()]; payout = 3; }
-        reels.forEach((reel, index) => { reel.textContent = result[index]; reel.classList.remove('is-spinning'); });
-        addPoints(payout);
-        setSlotStatus(payout >= 35 ? `Duck Jackpot! +${payout} Cool Points.` : payout >= 12 ? `Nice match. +${payout} Cool Points.` : `Small play bonus. +${payout} Cool Points.`);
-        sound(payout >= 12 ? 'win' : 'tap');
-        setGateStatus('ARCADE LIVE', 'SIMPLE MODE', 'Simple games are active: tap, play, earn, repeat.');
-        busySlot = false;
-        if (spinBtn) spinBtn.disabled = false;
+        finishSlotSpin(reels, result, payout, spinBtn);
       }
     }, 82);
   }
@@ -184,7 +234,7 @@
     setCardStatus('Pick 1, 2, or 3. Find 01 for +25 Cool Points.');
   }
 
-  function pickCard(button, index) {
+  async function pickCard(button, index) {
     if (!button || button.disabled) return;
     ensureSound();
     sound('tap');
@@ -196,12 +246,12 @@
       card.classList.add(cardIndex === winningCardIndex ? 'is-revealed' : 'is-miss');
     });
     if (index === winningCardIndex) {
-      addPoints(25);
-      setCardStatus('You found 01. +25 Cool Points.');
+      await addPoints(25, 'vault_pick_table');
+      setCardStatus('You found 01. +25 Cool Points saved.');
       sound('win');
     } else {
-      addPoints(5);
-      setCardStatus('Not 01, but you still earned +5 Cool Points. Tap Play Again.');
+      await addPoints(5, 'vault_pick_table');
+      setCardStatus('Not 01, but you still earned +5 Cool Points saved. Tap Play Again.');
       sound('miss');
     }
   }
@@ -248,13 +298,13 @@
     if (!audio) return;
     playRequested = true;
     if (!audio.src) loadTrack(activeTrackId, activeSourceIndex);
-    try { await audio.play(); addPoints(activeTrackId === hiddenTrackId ? 10 : 2); setPlayerStatus(`${currentTrack().title} playing. +2 Cool Points.`); }
+    try { await audio.play(); await addPoints(activeTrackId === hiddenTrackId ? 10 : 2, 'vault_lobby_music'); setPlayerStatus(`${currentTrack().title} playing. +2 Cool Points saved.`); }
     catch (error) { setPlayerStatus('Browser blocked autoplay. Tap Play again.'); }
   }
   function pauseTrack() { const audio = $('#gateAudio'); if (audio) audio.pause(); setPlayerStatus('Lobby Music paused.'); }
   function selectTrack(trackId) { hiddenTrackTriggered = false; loadTrack(trackId, 0); }
 
-  function grantLevelOneFromHiddenTrack() {
+  async function grantLevelOneFromHiddenTrack() {
     const grantedAt = Date.now();
     const nonce = Math.random().toString(36).slice(2);
     safeSessionSet('hyphsworld_vault_access', 'granted');
@@ -263,10 +313,10 @@
     safeSessionSet(LEVEL_ONE_TRANSPORT_V6_KEY, JSON.stringify({ level: 'level-one', route: 'quarantine-mixtape', href: LEVEL_ONE_DESTINATION, grantedAt, nonce, source: 'lobby-hidden-track-bounce-out' }));
     safeSet(LOBBY_UNLOCK_KEY, 'true');
     safeSet('vault_level_1_unlocked', 'true');
-    addPoints(25);
+    await addPoints(25, 'vault_level_unlock');
     sound('unlock');
     setGateStatus('LEVEL 1 READY', 'UNLOCKED', 'Hidden Track 06 cleared the lobby route. Level 1 transport is ready.');
-    setPlayerStatus('BOUNCE OUT finished. LEVEL 1 UNLOCKED. +25 Cool Points.');
+    setPlayerStatus('BOUNCE OUT finished. LEVEL 1 UNLOCKED. +25 Cool Points saved.');
     const unlockLink = $('#lobbyLevelOneUnlock');
     if (unlockLink) unlockLink.hidden = false;
   }
@@ -303,9 +353,9 @@
     if (resetCardsBtn) resetCardsBtn.addEventListener('click', resetCards);
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', async () => {
     injectSimplifiedStyles();
-    setPoints(getPoints());
+    await refreshSharedPoints();
     resetCards();
     simplifyCopy();
     addSoundToggle();
