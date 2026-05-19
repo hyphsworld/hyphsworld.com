@@ -14,6 +14,7 @@
 
   let state = { ready:false,user:null,profile:null,points:0,lifetimePoints:0,rankTitle:'Guest',avatarIcon:'🧢',source:'local' };
   let supabaseClient = null;
+  let pendingQueue = [];
 
   function number(value){ const n=Number(value||0); return Number.isFinite(n)?Math.max(0,Math.floor(n)):0; }
   function emit(name){ window.dispatchEvent(new CustomEvent(name,{detail:getState()})); }
@@ -101,6 +102,7 @@
 
   async function add(amount,reason,metadata){
     const delta=Math.floor(Number(amount||0)); if(!delta) return getState();
+    if(!state.ready){ pendingQueue.push({amount:delta,reason,metadata}); }
     if(state.user && window.HWAuth && typeof window.HWAuth.addPoints==='function'){
       try{ await window.HWAuth.addPoints(delta,reason||'site_action',metadata||{}); return refresh(); }catch(error){}
     }
@@ -108,8 +110,16 @@
   }
   async function spend(amount,reason,metadata){ return add(-Math.abs(Number(amount||0)),reason||'spend',metadata||{}); }
 
+  async function flushPending(){
+    if(!pendingQueue.length || !state.ready) return;
+    const queue=pendingQueue.slice(); pendingQueue=[];
+    for(const item of queue){ await add(item.amount,item.reason,item.metadata); }
+  }
+
   window.HWPoints={__globalEngineV1:true,refresh,add,spend,getState,render};
-  document.addEventListener('DOMContentLoaded',refresh);
-  window.addEventListener('load',refresh);
+  document.addEventListener('hyph:points:add',(event)=>{ const detail=event.detail||{}; add(detail.amount||detail.points||0,detail.reason||'lobby_event',detail.metadata||{}); });
+  document.addEventListener('hw:points:add',(event)=>{ const detail=event.detail||{}; add(detail.amount||detail.points||0,detail.reason||'site_event',detail.metadata||{}); });
+  document.addEventListener('DOMContentLoaded',async()=>{ await refresh(); flushPending(); });
+  window.addEventListener('load',async()=>{ await refresh(); flushPending(); });
   window.addEventListener('storage',(event)=>{ if([STORAGE_KEY,'coolPoints'].includes(event.key)) refresh(); });
 })();
