@@ -24,6 +24,7 @@
 
   const DEFAULT_DESTINATION = "quarantine-mixtape.html";
   const DEFAULT_ROUTE = "quarantine-mixtape";
+  const LOCAL_BODY_SCAN_CODE = "AMSWEST";
   const LEGACY_ACCESS_KEY = "hyphsworld_vault_access";
   const LEGACY_ACCESS_TIME_KEY = "hyphsworld_vault_access_time";
   const TRANSPORT_READY_KEY = "HW_LEVEL1_TRANSPORT_READY";
@@ -40,7 +41,7 @@
     "“Buck too serious. I would’ve let you in off vibes.”",
     "“Type the code clean. This ain’t a microwave.”",
     "“I ran off with the points but Buck got receipts.”",
-    "“Room code lit. Tell the squad pull up.”"
+    "“Bounce Out gave you the code. Don’t tell Buck I said it.”"
   ];
 
   const buckLines = [
@@ -49,36 +50,35 @@
     "“Access depends on clearance, not confidence.”",
     "“I see everything touching this gate.”",
     "“Duck can run, but Supabase logs it.”",
-    "“Lobby rooms are active. No fake motion.”"
+    "“AMSWEST clearance is accepted at this gate.”"
   ];
 
   const passSteps = [
     { delay: 0, progress: 12, status: "SCANNING", title: "Body Scan", message: "Buck: “Scanner live. Do not move.”", log: "SCAN BAR ACTIVE", visual: "scanning" },
-    { delay: 850, progress: 34, status: "SCANNING", title: "Body Scan", message: "Duck Sauce: “The lights dancing now.”", log: "BODY TARGET LOCKED", visual: "scanning" },
-    { delay: 1700, progress: 61, status: "VERIFYING", title: "Code Check", message: "Buck: “Code is being verified off-site.”", log: "SUPABASE CHECK RUNNING", visual: "scanning" },
+    { delay: 850, progress: 34, status: "SCANNING", title: "Body Scan", message: "Duck Sauce: “The body target locked in.”", log: "BODY TARGET LOCKED", visual: "scanning" },
+    { delay: 1700, progress: 61, status: "VERIFYING", title: "Code Check", message: "Buck: “AMSWEST clearance accepted.”", log: "AMSWEST CODE VERIFIED", visual: "scanning" },
     { delay: 2450, progress: 82, status: "APPROVED", title: "Access Granted", message: "Duck Sauce: “Aight, you in. Don’t act regular.”", log: "ACCESS GRANTED", visual: "granted" },
-    { delay: 3300, progress: 100, status: "TRANSPORT", title: "Transport", message: "Portal opening. Player route ready.", log: "TRANSPORT TUNNEL ONLINE", visual: "transporting" }
+    { delay: 3300, progress: 100, status: "TRANSPORT", title: "Transport", message: "Portal opening. Level 1 route ready.", log: "TRANSPORT TUNNEL ONLINE", visual: "transporting" }
   ];
 
   const failSteps = [
     { delay: 0, progress: 18, status: "SCANNING", title: "Body Scan", message: "Buck: “Checking it now.”", log: "SCAN STARTED", visual: "scanning" },
-    { delay: 850, progress: 46, status: "VERIFYING", title: "Code Check", message: "Duck Sauce: “That code got fake shoes on.”", log: "SERVER CHECK DENIED", visual: "scanning" },
+    { delay: 850, progress: 46, status: "VERIFYING", title: "Code Check", message: "Duck Sauce: “That code got fake shoes on.”", log: "CODE DENIED", visual: "scanning" },
     { delay: 1600, progress: 0, status: "DENIED", title: "Access Denied", message: "Buck: “Denied. Back up from the rope.”", log: "ACCESS DENIED", visual: "" }
   ];
 
-  function $(id) {
-    return document.getElementById(id);
-  }
+  function $(id) { return document.getElementById(id); }
+  function setText(id, value) { const el = $(id); if (el) el.textContent = value; }
+  function setStatus(status, pad, message) { setText("gateStatus", status); setText("padStatus", pad); setText("consoleMessage", message); }
+  function normalizeCode(code) { return String(code || "").trim().replace(/[^a-z0-9]/gi, "").toUpperCase(); }
+  function localCodeGranted(code) { return normalizeCode(code) === LOCAL_BODY_SCAN_CODE; }
 
-  function setText(id, value) {
-    const el = $(id);
-    if (el) el.textContent = value;
-  }
-
-  function setStatus(status, pad, message) {
-    setText("gateStatus", status);
-    setText("padStatus", pad);
-    setText("consoleMessage", message);
+  function injectScanBodyStyles() {
+    if (document.getElementById("hwScanBodyFix")) return;
+    const style = document.createElement("style");
+    style.id = "hwScanBodyFix";
+    style.textContent = `.body-target,.scan-person{display:block!important;opacity:1!important;visibility:visible!important;position:absolute!important;left:50%!important;top:50%!important;transform:translate(-50%,-50%)!important;width:150px!important;height:250px!important;z-index:9!important}.body-target span,.scan-person span{display:block!important;position:absolute!important;background:linear-gradient(180deg,#39ff7a,#1ffcff)!important;box-shadow:0 0 18px rgba(57,255,122,.65)!important}.body-target .head,.scan-head{width:52px!important;height:52px!important;border-radius:999px!important;left:49px!important;top:0!important}.body-target .torso,.scan-torso{width:74px!important;height:92px!important;border-radius:28px!important;left:38px!important;top:62px!important}.body-target .arm,.scan-arm{width:24px!important;height:88px!important;border-radius:999px!important;top:70px!important}.body-target .arm.left,.scan-arm.left{left:4px!important;transform:rotate(14deg)!important}.body-target .arm.right,.scan-arm.right{right:4px!important;transform:rotate(-14deg)!important}.body-target .leg,.scan-leg{width:28px!important;height:92px!important;border-radius:999px!important;top:152px!important}.body-target .leg.left,.scan-leg.left{left:43px!important}.body-target .leg.right,.scan-leg.right{right:43px!important}.scan-visual.scanning .real-scan-beam,.idle-scan-beam{display:block!important;position:absolute!important;left:0!important;right:0!important;top:40%!important;height:10px!important;background:linear-gradient(90deg,transparent,#fff,#39ff7a,#1ffcff,transparent)!important;box-shadow:0 0 24px #39ff7a!important;z-index:12!important;animation:hwScanBeam 1.25s linear infinite!important}@keyframes hwScanBeam{0%{top:12%}100%{top:84%}}`;
+    document.head.appendChild(style);
   }
 
   function loadScript(src) {
@@ -91,14 +91,10 @@
         setTimeout(resolve, 250);
         return;
       }
-
       const script = document.createElement("script");
       script.src = src;
       script.async = false;
-      script.onload = () => {
-        script.dataset.loaded = "true";
-        resolve();
-      };
+      script.onload = () => { script.dataset.loaded = "true"; resolve(); };
       script.onerror = () => reject(new Error("Could not load " + src));
       document.head.appendChild(script);
     });
@@ -112,75 +108,35 @@
 
   async function getSupabaseClient() {
     if (supabaseClientPromise) return supabaseClientPromise;
-
     supabaseClientPromise = (async () => {
-      if (!window.HW_SUPABASE_CONFIG) {
-        await loadScript(SUPABASE_CONFIG_FILE);
-      }
-
+      if (!window.HW_SUPABASE_CONFIG) await loadScript(SUPABASE_CONFIG_FILE);
       const config = window.HW_SUPABASE_CONFIG || {};
       if (!configReady(config)) throw new Error("Supabase is not configured.");
-
-      if (!window.supabase || !window.supabase.createClient) {
-        await loadScript(SUPABASE_CDN);
-      }
-
-      if (!window.supabase || !window.supabase.createClient) {
-        throw new Error("Supabase client did not load.");
-      }
-
-      return window.supabase.createClient(config.url, config.anonKey, {
-        auth: {
-          persistSession: true,
-          autoRefreshToken: true,
-          detectSessionInUrl: true
-        }
-      });
+      if (!window.supabase || !window.supabase.createClient) await loadScript(SUPABASE_CDN);
+      if (!window.supabase || !window.supabase.createClient) throw new Error("Supabase client did not load.");
+      return window.supabase.createClient(config.url, config.anonKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
     })();
-
     return supabaseClientPromise;
   }
 
   async function verifyVaultCode(code) {
+    if (localCodeGranted(code)) return { granted: true, destination: DEFAULT_DESTINATION, route: DEFAULT_ROUTE, levelKey: "level_1", source: "bonus_track" };
     const sb = await getSupabaseClient();
     const { data: sessionData } = await sb.auth.getSession();
-
-    if (!sessionData?.session?.access_token) {
-      return { granted: false, error: "LOGIN_REQUIRED" };
-    }
-
-    const { data, error } = await sb.functions.invoke(VERIFY_FUNCTION, {
-      body: { code }
-    });
-
-    if (error) {
-      return { granted: false, error: error.message || "VERIFY_FAILED" };
-    }
-
+    if (!sessionData?.session?.access_token) return { granted: false, error: "LOGIN_REQUIRED" };
+    const { data, error } = await sb.functions.invoke(VERIFY_FUNCTION, { body: { code } });
+    if (error) return { granted: false, error: error.message || "VERIFY_FAILED" };
     return data || { granted: false, error: "EMPTY_RESPONSE" };
   }
 
-  function rotateChatter() {
-    const duck = duckLines[Math.floor(Math.random() * duckLines.length)];
-    const buck = buckLines[Math.floor(Math.random() * buckLines.length)];
-
-    setText("duckLine", duck);
-    setText("buckLine", buck);
-  }
+  function rotateChatter() { setText("duckLine", duckLines[Math.floor(Math.random() * duckLines.length)]); setText("buckLine", buckLines[Math.floor(Math.random() * buckLines.length)]); }
 
   function openOverlay() {
+    injectScanBodyStyles();
     const overlay = $("scanOverlay");
     const visual = $("scanVisual");
-
-    if (overlay) {
-      overlay.classList.add("is-active");
-      overlay.setAttribute("aria-hidden", "false");
-    }
-
-    if (visual) {
-      visual.className = "scan-visual";
-    }
-
+    if (overlay) { overlay.classList.add("is-active"); overlay.setAttribute("aria-hidden", "false"); }
+    if (visual) visual.className = "scan-visual scanning";
     setText("scanTitle", "Body Scan");
     setText("scanMessage", "Scanner warming up...");
     if ($("progressBar")) $("progressBar").style.width = "0%";
@@ -188,43 +144,21 @@
     if ($("manualEnter")) $("manualEnter").hidden = true;
   }
 
-  function closeOverlay() {
-    const overlay = $("scanOverlay");
-    if (overlay) {
-      overlay.classList.remove("is-active");
-      overlay.setAttribute("aria-hidden", "true");
-    }
-  }
-
-  function addLog(text) {
-    const log = $("scanLog");
-    if (!log) return;
-
-    const li = document.createElement("li");
-    li.textContent = text;
-    log.appendChild(li);
-  }
+  function closeOverlay() { const overlay = $("scanOverlay"); if (overlay) { overlay.classList.remove("is-active"); overlay.setAttribute("aria-hidden", "true"); } }
+  function addLog(text) { const log = $("scanLog"); if (!log) return; const li = document.createElement("li"); li.textContent = text; log.appendChild(li); }
 
   function runSteps(steps) {
     const visual = $("scanVisual");
-
     steps.forEach((step) => {
       setTimeout(() => {
         setStatus(step.status, step.visual ? "ACTIVE" : "LOCKED", step.message);
         setText("scanTitle", step.title);
         setText("scanMessage", step.message);
-
         if ($("progressBar")) $("progressBar").style.width = `${step.progress}%`;
-
-        if (visual) {
-          visual.classList.remove("scanning", "granted", "transporting");
-          if (step.visual) visual.classList.add(step.visual);
-        }
-
+        if (visual) { visual.classList.remove("scanning", "granted", "transporting"); if (step.visual) visual.classList.add(step.visual); }
         addLog(step.log);
       }, step.delay);
     });
-
     const last = steps[steps.length - 1] ? steps[steps.length - 1].delay : 0;
     return new Promise((resolve) => setTimeout(resolve, last + 650));
   }
@@ -235,141 +169,64 @@
     const destination = result?.destination || DEFAULT_DESTINATION;
     const route = result?.route || DEFAULT_ROUTE;
     const level = result?.levelKey || "level_1";
-
     try {
       sessionStorage.setItem(LEGACY_ACCESS_KEY, "granted");
       sessionStorage.setItem(LEGACY_ACCESS_TIME_KEY, String(grantedAt));
-      sessionStorage.setItem(TRANSPORT_READY_KEY, JSON.stringify({
-        level,
-        route: destination,
-        href: destination,
-        grantedAt,
-        nonce
-      }));
-      sessionStorage.setItem(TRANSPORT_V6_KEY, JSON.stringify({
-        level,
-        route,
-        href: destination,
-        grantedAt,
-        nonce
-      }));
+      sessionStorage.setItem(TRANSPORT_READY_KEY, JSON.stringify({ level, route: destination, href: destination, grantedAt, nonce }));
+      sessionStorage.setItem(TRANSPORT_V6_KEY, JSON.stringify({ level, route, href: destination, grantedAt, nonce }));
     } catch (error) {}
-
     return destination;
   }
 
   function friendlyError(error) {
     const text = String(error || "").toUpperCase();
-    if (text.includes("LOGIN_REQUIRED") || text.includes("JWT") || text.includes("SESSION")) {
-      return "Buck needs you logged in before the gate can verify clearance.";
-    }
-    if (text.includes("DENIED") || text.includes("FORBIDDEN")) {
-      return "Buck denied the gate. Try the correct code.";
-    }
-    return "Gate server did not clear it. Try again after refresh.";
+    if (text.includes("LOGIN_REQUIRED") || text.includes("JWT") || text.includes("SESSION")) return "Buck needs you logged in for server clearance. Bonus track code AMSWEST still works here.";
+    if (text.includes("DENIED") || text.includes("FORBIDDEN")) return "Buck denied the gate. Try the hidden bonus code.";
+    return "Gate server did not clear it. Try AMSWEST or refresh.";
   }
 
   async function handleSubmit(event) {
     event.preventDefault();
-
     const input = $("accessCode");
     const button = document.querySelector(".scan-button");
-
     if (!input) return;
-
     const code = input.value.trim();
-
-    if (!code) {
-      setStatus("STANDBY", "MOVING", "Duck Sauce: “Type the code first. I can’t scan blank air.”");
-      input.focus();
-      return;
-    }
-
+    if (!code) { setStatus("STANDBY", "MOVING", "Duck Sauce: “Type the code first. I can’t scan blank air.”"); input.focus(); return; }
     if (button) button.disabled = true;
-
     openOverlay();
-    setStatus("SCANNING", "ACTIVE", "Buck is running the scanner. Supabase is checking clearance.");
-
+    setStatus("SCANNING", "ACTIVE", "Buck is running the scanner. Checking clearance.");
     let result = { granted: false, error: "VERIFY_FAILED" };
-
-    try {
-      result = await verifyVaultCode(code);
-    } catch (error) {
-      result = { granted: false, error: error?.message || "VERIFY_FAILED" };
-    }
-
+    try { result = await verifyVaultCode(code); } catch (error) { result = { granted: false, error: error?.message || "VERIFY_FAILED" }; }
     input.value = "";
-
     if (!result.granted) {
       await runSteps(failSteps);
-      setTimeout(() => {
-        closeOverlay();
-        setStatus("DENIED", "MOVING", friendlyError(result.error));
-        if (button) button.disabled = false;
-        input.focus();
-      }, 900);
+      setTimeout(() => { closeOverlay(); setStatus("DENIED", "MOVING", friendlyError(result.error)); if (button) button.disabled = false; input.focus(); }, 900);
       return;
     }
-
     const destination = grantTransport(result);
-
-    if (window.HWAuth && typeof window.HWAuth.getCurrentUser === "function") {
-      try { await window.HWAuth.getCurrentUser(); } catch (error) {}
-    }
-
+    try { if (window.HWAuth && typeof window.HWAuth.getCurrentUser === "function") await window.HWAuth.getCurrentUser(); } catch (error) {}
     await runSteps(passSteps);
-
     const manual = $("manualEnter");
-    if (manual) {
-      manual.href = destination;
-      manual.hidden = false;
-    }
-
-    setTimeout(() => {
-      window.location.href = destination;
-    }, 900);
+    if (manual) { manual.href = destination; manual.hidden = false; }
+    setTimeout(() => { window.location.href = destination; }, 900);
   }
 
   function bind() {
+    injectScanBodyStyles();
     const form = $("gateForm");
     const clear = $("clearCode");
     const close = $("closeOverlay");
     const manual = $("manualEnter");
-
     if (manual) manual.href = DEFAULT_DESTINATION;
     if (form) form.addEventListener("submit", handleSubmit);
-
-    if (clear) {
-      clear.addEventListener("click", () => {
-        const input = $("accessCode");
-        if (input) {
-          input.value = "";
-          input.focus();
-        }
-        setStatus("STANDBY", "MOVING", "Terminal cleared. Pad still live.");
-      });
-    }
-
+    if (clear) clear.addEventListener("click", () => { const input = $("accessCode"); if (input) { input.value = ""; input.focus(); } setStatus("STANDBY", "MOVING", "Terminal cleared. Pad still live."); });
     if (close) close.addEventListener("click", closeOverlay);
-
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") closeOverlay();
-    });
-
+    document.addEventListener("keydown", (event) => { if (event.key === "Escape") closeOverlay(); });
     const overlay = $("scanOverlay");
-    if (overlay) {
-      overlay.addEventListener("click", (event) => {
-        if (event.target === overlay) closeOverlay();
-      });
-    }
-
+    if (overlay) overlay.addEventListener("click", (event) => { if (event.target === overlay) closeOverlay(); });
     rotateChatter();
     setInterval(rotateChatter, 4200);
   }
 
-  document.addEventListener("DOMContentLoaded", () => {
-    bind();
-    setStatus("STANDBY", "MOVING", "Pad is live. Enter code and run the scan.");
-    window.HYPHSWORLD_ACCESS_PAD_LIVE = true;
-  });
+  document.addEventListener("DOMContentLoaded", () => { bind(); setStatus("STANDBY", "MOVING", "Bonus track code ready. Enter AMSWEST and run the scan."); window.HYPHSWORLD_ACCESS_PAD_LIVE = true; });
 })();
