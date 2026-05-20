@@ -39,7 +39,16 @@
   function safeSessionSet(key, value) { try { sessionStorage.setItem(key, String(value)); } catch (error) {} }
   function setPlayerStatus(message) { const el = $('#gatePlayerStatus'); if (el) el.textContent = message; }
   function setGateStatus(status, pad, message) { const gateStatus = $('#gateStatus'); const padStatus = $('#padStatus'); const consoleMessage = $('#consoleMessage'); if (gateStatus) gateStatus.textContent = status; if (padStatus) padStatus.textContent = pad; if (consoleMessage) consoleMessage.textContent = message; }
-  function addPoints(amount, reason) { document.dispatchEvent(new CustomEvent(POINTS_EVENT, { detail: { amount, reason: reason || 'lobby_casino' } })); }
+  function addPoints(amount, reason) {
+    const cleanAmount = Number(amount || 0);
+    const cleanReason = reason || 'lobby_casino';
+    if (!cleanAmount) return;
+    if (window.HWPointsFollowFixV1 && typeof window.HWPointsFollowFixV1.add === 'function') {
+      window.HWPointsFollowFixV1.add(cleanAmount, cleanReason, { source: 'vault_gate_games' });
+      return;
+    }
+    document.dispatchEvent(new CustomEvent(POINTS_EVENT, { detail: { amount: cleanAmount, reason: cleanReason, metadata: { source: 'vault_gate_games_fallback' } } }));
+  }
 
   function injectNoBlankFix() {
     if (document.getElementById('hwNoBlankFix')) return;
