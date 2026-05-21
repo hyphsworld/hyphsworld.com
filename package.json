@@ -5,16 +5,9 @@
   "description": "Diagnostics tooling for the HYPHSWORLD / AMS WEST static site.",
   "scripts": {
     "diagnostics": "npm run lint:html && npm run lint:css && npm run lint:js",
-    "lint:html": "html-validate \"**/*.html\"",
-    "lint:css": "stylelint \"**/*.css\"",
-    "lint:js": "eslint \"**/*.js\""
+    "lint:html": "node scripts/lint-html.js",
+    "lint:css": "node scripts/lint-css.js",
+    "lint:js": "node scripts/lint-js.js"
   },
-  "devDependencies": {
-    "@eslint/js": "latest",
-    "eslint": "latest",
-    "globals": "latest",
-    "html-validate": "latest",
-    "stylelint": "latest",
-    "stylelint-config-standard": "latest"
-  }
+  "devDependencies": {}
 }
