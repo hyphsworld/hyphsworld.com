@@ -211,7 +211,7 @@
             <audio id="quarantine-audio" preload="metadata"></audio>
           </div>
 
-          <div class="progress-wrap" aria-label="Quarantine track progress">
+          <div class="progress-wrap">
             <span id="quarantine-current">0:00</span>
             <input id="quarantine-progress" type="range" min="0" max="100" value="0" aria-label="Audio progress" />
             <span id="quarantine-duration">0:00</span>
@@ -228,7 +228,7 @@
           <form id="level2GateForm" class="level-two-gate-form">
             <label for="level2AccessCode">Level 2 access code</label>
             <div class="level-two-input-row">
-              <input id="level2AccessCode" type="password" autocomplete="off" placeholder="ENTER LEVEL 2 CODE" />
+              <input id="level2AccessCode" type="password" autocomplete="current-password" placeholder="ENTER LEVEL 2 CODE" />
               <button id="level2UnlockButton" type="submit">Open Level 2</button>
               <button id="level2ClearCode" class="clear-level-two" type="button">Clear</button>
             </div>
@@ -239,7 +239,7 @@
     </section>
   </main>
 
-  <div id="access-denied" class="access-denied-overlay" aria-hidden="true">
+  <div id="access-denied" class="access-denied-overlay" hidden>
     <div class="access-denied-card section-card">
       <p class="eyebrow">Buck Said Hold Up</p>
       <h2>SCAN REQUIRED</h2>
