@@ -167,7 +167,8 @@
       if (!window.HWMultiplayerInvites || typeof window.HWMultiplayerInvites.joinTable !== "function") throw new Error("Multiplayer helper still loading.");
       const result = await window.HWMultiplayerInvites.joinTable(code);
       const roomId = result && result.room && result.room.id;
-      if (status) status.textContent = "Joined. Sending you to the live table...";
+      if (window.HWAuth && typeof window.HWAuth.addPoints === "function") { try { await window.HWAuth.addPoints(8, "multiplayer_quick_join"); } catch (error) {} }
+      if (status) status.textContent = "Joined. +8 Cool Points. Sending you to the live table...";
       if (roomId) window.location.href = "table-room.html?room=" + encodeURIComponent(roomId) + "&joined=1";
       else window.location.href = "games.html?room=" + encodeURIComponent(result.roomCode || code) + "&joined=1";
     } catch (error) {
