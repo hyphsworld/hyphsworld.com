@@ -15,10 +15,16 @@
     return `${location.origin}${location.pathname.replace(/[^/]*$/, '')}`;
   }
 
+  function casinoLink(roomCode, inviteCode = '') {
+    const room = encodeURIComponent(roomCode || '');
+    const invite = inviteCode ? `&invite=${encodeURIComponent(inviteCode)}` : '';
+    return `${basePath()}games.html?room=${room}${invite}&join=1`;
+  }
+
   function lobbyLink(roomCode, inviteCode = '') {
     const room = encodeURIComponent(roomCode || '');
     const invite = inviteCode ? `&invite=${encodeURIComponent(inviteCode)}` : '';
-    return `${basePath()}vault.html?room=${room}${invite}&join=1#multiplayer`;
+    return `${basePath()}vault.html?room=${room}${invite}&join=1&stay=1#multiplayer`;
   }
 
   function copyText(text) {
@@ -105,22 +111,24 @@
     }, { onConflict: 'room_id' });
 
     const inviteCode = makeCode('INV');
+    const directLink = casinoLink(room.room_code, inviteCode);
     await sb.from('invites').insert({
       invite_code: inviteCode,
       invite_type: 'multiplayer',
       created_by: user.id,
       room_id: room.id,
-      target_url: `vault.html?room=${encodeURIComponent(room.room_code)}&invite=${encodeURIComponent(inviteCode)}&join=1#multiplayer`,
+      target_url: `games.html?room=${encodeURIComponent(room.room_code)}&invite=${encodeURIComponent(inviteCode)}&join=1`,
       max_uses: 8,
       reward_points: 5,
-      metadata: { gameType }
+      metadata: { gameType, directJoin: true }
     });
 
     return {
       room,
       roomCode: room.room_code,
       inviteCode,
-      inviteLink: lobbyLink(room.room_code, inviteCode)
+      inviteLink: directLink,
+      fallbackLobbyLink: lobbyLink(room.room_code, inviteCode)
     };
   }
 
@@ -159,7 +167,7 @@
     return {
       room,
       roomCode: room.room_code,
-      inviteLink: lobbyLink(room.room_code)
+      inviteLink: casinoLink(room.room_code)
     };
   }
 
@@ -170,5 +178,5 @@
     return data || [];
   }
 
-  window.HWMultiplayerInvites = { createTable, joinTable, listPlayers, copyText, lobbyLink };
+  window.HWMultiplayerInvites = { createTable, joinTable, listPlayers, copyText, lobbyLink, casinoLink };
 })();
