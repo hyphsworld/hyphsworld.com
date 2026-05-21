@@ -15,6 +15,12 @@
     return `${location.origin}${location.pathname.replace(/[^/]*$/, '')}`;
   }
 
+  function lobbyLink(roomCode, inviteCode = '') {
+    const room = encodeURIComponent(roomCode || '');
+    const invite = inviteCode ? `&invite=${encodeURIComponent(inviteCode)}` : '';
+    return `${basePath()}vault.html?room=${room}${invite}&join=1#multiplayer`;
+  }
+
   function copyText(text) {
     if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text);
     const input = document.createElement('input');
@@ -43,15 +49,26 @@
     return clientPromise;
   }
 
+  async function delay(ms) {
+    return new Promise((resolve) => window.setTimeout(resolve, ms));
+  }
+
   async function getUser() {
-    if (window.HWAuth && typeof window.HWAuth.getCurrentUser === 'function') {
-      const user = await window.HWAuth.getCurrentUser();
-      if (user && (user.userId || user.id)) return { id: user.userId || user.id, displayName: user.displayName || user.username || 'Player' };
+    for (let attempt = 0; attempt < 12; attempt += 1) {
+      if (window.HWAuth && typeof window.HWAuth.getCurrentUser === 'function') {
+        try {
+          const user = await window.HWAuth.getCurrentUser();
+          if (user && (user.userId || user.id)) return { id: user.userId || user.id, displayName: user.displayName || user.username || 'Player' };
+        } catch (error) {}
+      }
+      try {
+        const sb = await getClient();
+        const { data } = await sb.auth.getUser();
+        if (data && data.user) return { id: data.user.id, displayName: data.user.email || 'Player' };
+      } catch (error) {}
+      await delay(350);
     }
-    const sb = await getClient();
-    const { data } = await sb.auth.getUser();
-    if (!data || !data.user) throw new Error('Login required to create or join tables.');
-    return { id: data.user.id, displayName: data.user.email || 'Player' };
+    throw new Error('Login required to create or join tables.');
   }
 
   async function createTable(gameType = 'blackjack') {
@@ -66,36 +83,44 @@
       max_players: 4
     }).select('*').single();
     if (roomError) throw roomError;
-    await sb.from('game_players').upsert({
-      room_id: room.id,
-      user_id: user.id,
-      seat_number: 1,
-      status: 'joined',
-      score: 0,
-      bet: 0
-    }, { onConflict: 'room_id,user_id' });
+
+    const { data: existingHost } = await sb.from('game_players').select('*').eq('room_id', room.id).eq('user_id', user.id).maybeSingle();
+    if (!existingHost) {
+      const { error: playerError } = await sb.from('game_players').insert({
+        room_id: room.id,
+        user_id: user.id,
+        seat_number: 1,
+        status: 'joined',
+        score: 0,
+        bet: 0
+      });
+      if (playerError) throw playerError;
+    }
+
     await sb.from('game_state').upsert({
       room_id: room.id,
       state: { mode: gameType, players: [user.id], createdFrom: 'hyphsworld_lobby' },
       version: 1,
       updated_by: user.id
     }, { onConflict: 'room_id' });
+
     const inviteCode = makeCode('INV');
     await sb.from('invites').insert({
       invite_code: inviteCode,
       invite_type: 'multiplayer',
       created_by: user.id,
       room_id: room.id,
-      target_url: `games.html?room=${encodeURIComponent(room.room_code)}`,
+      target_url: `vault.html?room=${encodeURIComponent(room.room_code)}&invite=${encodeURIComponent(inviteCode)}&join=1#multiplayer`,
       max_uses: 8,
       reward_points: 5,
       metadata: { gameType }
     });
+
     return {
       room,
       roomCode: room.room_code,
       inviteCode,
-      inviteLink: `${basePath()}games.html?room=${encodeURIComponent(room.room_code)}&invite=${encodeURIComponent(inviteCode)}`
+      inviteLink: lobbyLink(room.room_code, inviteCode)
     };
   }
 
@@ -107,19 +132,34 @@
     const { data: room, error: roomError } = await sb.from('game_rooms').select('*').eq('room_code', clean).maybeSingle();
     if (roomError) throw roomError;
     if (!room) throw new Error('Room not found.');
-    const { count } = await sb.from('game_players').select('id', { count: 'exact', head: true }).eq('room_id', room.id);
-    await sb.from('game_players').upsert({
-      room_id: room.id,
-      user_id: user.id,
-      seat_number: (count || 0) + 1,
-      status: 'joined',
-      score: 0,
-      bet: 0
-    }, { onConflict: 'room_id,user_id' });
+
+    const { data: existingPlayer, error: existingError } = await sb.from('game_players').select('*').eq('room_id', room.id).eq('user_id', user.id).maybeSingle();
+    if (existingError) throw existingError;
+
+    if (!existingPlayer) {
+      const { data: players } = await sb.from('game_players').select('seat_number').eq('room_id', room.id).order('seat_number', { ascending: true });
+      const taken = new Set((players || []).map((player) => Number(player.seat_number || 0)));
+      let seatNumber = 1;
+      while (taken.has(seatNumber)) seatNumber += 1;
+      const { error: insertError } = await sb.from('game_players').insert({
+        room_id: room.id,
+        user_id: user.id,
+        seat_number: seatNumber,
+        status: 'joined',
+        score: 0,
+        bet: 0
+      });
+      if (insertError) throw insertError;
+    }
+
+    try {
+      await sb.from('game_rooms').update({ status: 'playing', updated_at: new Date().toISOString() }).eq('id', room.id);
+    } catch (error) {}
+
     return {
       room,
       roomCode: room.room_code,
-      inviteLink: `${basePath()}games.html?room=${encodeURIComponent(room.room_code)}`
+      inviteLink: lobbyLink(room.room_code)
     };
   }
 
@@ -130,5 +170,5 @@
     return data || [];
   }
 
-  window.HWMultiplayerInvites = { createTable, joinTable, listPlayers, copyText };
+  window.HWMultiplayerInvites = { createTable, joinTable, listPlayers, copyText, lobbyLink };
 })();
