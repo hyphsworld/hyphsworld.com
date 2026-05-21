@@ -24,7 +24,8 @@
     return /games\.html$/i.test(window.location.pathname || '') || document.body.classList.contains('games-page');
   }
 
-  function casinoUrl(roomCode) {
+  function casinoUrl(roomCode, roomId) {
+    if (roomId) return `table-room.html?room=${encodeURIComponent(roomId)}&joined=1`;
     return `games.html?room=${encodeURIComponent(roomCode)}&joined=1`;
   }
 
@@ -69,7 +70,7 @@
       setText('#multiTableStatus', 'Joining invite table...');
       const result = await window.HWMultiplayerInvites.joinTable(code);
       const finalCode = result.roomCode || code;
-      const floorUrl = casinoUrl(finalCode);
+      const floorUrl = casinoUrl(finalCode, result.room && result.room.id);
       setText('#roomCodeDisplay', `Room: ${finalCode}`);
       setText('#inviteLinkDisplay', result.inviteLink || 'Joined table.');
       const open = $('#openCasinoBtn');

@@ -154,6 +154,28 @@
     }
   }
 
+
+
+  async function quickJoinRoom(event) {
+    event.preventDefault();
+    const input = document.getElementById("quickJoinCode");
+    const status = document.getElementById("quickJoinStatus");
+    const code = String(input && input.value || "").trim().toUpperCase();
+    if (!code) { if (status) status.textContent = "Enter a room code first."; return; }
+    try {
+      if (status) status.textContent = "Joining room...";
+      if (!window.HWMultiplayerInvites || typeof window.HWMultiplayerInvites.joinTable !== "function") throw new Error("Multiplayer helper still loading.");
+      const result = await window.HWMultiplayerInvites.joinTable(code);
+      const roomId = result && result.room && result.room.id;
+      if (window.HWAuth && typeof window.HWAuth.addPoints === "function") { try { await window.HWAuth.addPoints(8, "multiplayer_quick_join"); } catch (error) {} }
+      if (status) status.textContent = "Joined. +8 Cool Points. Sending you to the live table...";
+      if (roomId) window.location.href = "table-room.html?room=" + encodeURIComponent(roomId) + "&joined=1";
+      else window.location.href = "games.html?room=" + encodeURIComponent(result.roomCode || code) + "&joined=1";
+    } catch (error) {
+      if (status) status.textContent = error.message || "Could not join room.";
+    }
+  }
+
   async function boot() {
     const year = document.getElementById("year");
     const authLink = document.getElementById("gamesAuthLink");
@@ -177,6 +199,9 @@
     });
 
     document.addEventListener("hyph:points-updated", renderBalance);
+
+    const quickJoinForm = document.getElementById("quickJoinForm");
+    if (quickJoinForm) quickJoinForm.addEventListener("submit", quickJoinRoom);
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
