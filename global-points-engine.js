@@ -6,7 +6,7 @@
 
   if (window.HWPoints && window.HWPoints.__globalEngineV1) return;
 
-  const POINT_EVENTS = ['hw:points-ready', 'hw:points-change'];
+  const POINT_EVENTS = ['hw:points-ready', 'hw:points-change', 'hyph:points-updated'];
   const STORAGE_KEY = 'hyphsworld.coolPoints.total';
   const LEGACY_KEYS = ['coolPoints', 'hyphsworld_points', 'HW_COOL_POINTS'];
   const SUPABASE_URL = window.HW_SUPABASE_URL || 'https://yuhxtdkhsltaqiagrtys.supabase.co';
@@ -17,14 +17,26 @@
   let pendingQueue = [];
 
   function number(value){ const n=Number(value||0); return Number.isFinite(n)?Math.max(0,Math.floor(n)):0; }
-  function emit(name){ window.dispatchEvent(new CustomEvent(name,{detail:getState()})); }
+  function emit(name){
+    const snapshot = getState();
+    window.dispatchEvent(new CustomEvent(name,{detail:snapshot}));
+    if (name === 'hw:points-change') {
+      document.dispatchEvent(new CustomEvent('hyph:points-updated', { detail: { points: snapshot.points, source: snapshot.source, profile: snapshot.profile || null } }));
+    }
+  }
   function getState(){ return Object.assign({},state); }
 
   function getLocalPoints(){
     const values=[localStorage.getItem(STORAGE_KEY)].concat(LEGACY_KEYS.map((key)=>localStorage.getItem(key)));
     return values.reduce((max,value)=>Math.max(max,number(value)),0);
   }
-  function setLocalPoints(points){ const value=String(number(points)); localStorage.setItem(STORAGE_KEY,value); localStorage.setItem('coolPoints',value); }
+  function setLocalPoints(points){
+    const value=String(number(points));
+    localStorage.setItem(STORAGE_KEY,value);
+    localStorage.setItem('coolPoints',value);
+    localStorage.setItem('hyphsworld_points',value);
+    localStorage.setItem('HW_COOL_POINTS',value);
+  }
   function cleanLegacyGuestPoints(){ LEGACY_KEYS.forEach((key)=>{ if(key!=='coolPoints') localStorage.removeItem(key); }); }
 
   function getSupabase(){
@@ -116,7 +128,9 @@
     for(const item of queue){ await add(item.amount,item.reason,item.metadata); }
   }
 
-  window.HWPoints={__globalEngineV1:true,refresh,add,spend,getState,render};
+  function get(){ return number(state.points); }
+
+  window.HWPoints={__globalEngineV1:true,refresh,add,spend,get,getState,render};
   document.addEventListener('hyph:points:add',(event)=>{ const detail=event.detail||{}; add(detail.amount||detail.points||0,detail.reason||'lobby_event',detail.metadata||{}); });
   document.addEventListener('hw:points:add',(event)=>{ const detail=event.detail||{}; add(detail.amount||detail.points||0,detail.reason||'site_event',detail.metadata||{}); });
   document.addEventListener('DOMContentLoaded',async()=>{ await refresh(); flushPending(); });
