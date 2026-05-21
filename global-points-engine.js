@@ -128,7 +128,14 @@
     for(const item of queue){ await add(item.amount,item.reason,item.metadata); }
   }
 
-  function get(){ return number(state.points); }
+  function get(){
+    if(!state.ready){
+      const cached=getLocalPoints();
+      if(cached>number(state.points)) state.points=cached;
+      return cached;
+    }
+    return number(state.points);
+  }
 
   window.HWPoints={__globalEngineV1:true,refresh,add,spend,get,getState,render};
   document.addEventListener('hyph:points:add',(event)=>{ const detail=event.detail||{}; add(detail.amount||detail.points||0,detail.reason||'lobby_event',detail.metadata||{}); });
