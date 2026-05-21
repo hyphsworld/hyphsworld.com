@@ -15,6 +15,15 @@
     return params.get('join') === '1' && !!roomFromUrl();
   }
 
+  function shouldStayLobby() {
+    const params = new URLSearchParams(window.location.search || '');
+    return params.get('stay') === '1' || params.get('stayLobby') === '1';
+  }
+
+  function casinoUrl(roomCode) {
+    return `games.html?room=${encodeURIComponent(roomCode)}&joined=1`;
+  }
+
   function setText(selector, text) {
     const el = $(selector);
     if (el) el.textContent = text;
@@ -43,14 +52,20 @@
       setText('#multiTableStatus', 'Joining invite table...');
       const result = await window.HWMultiplayerInvites.joinTable(code);
       const finalCode = result.roomCode || code;
+      const floorUrl = casinoUrl(finalCode);
       setText('#roomCodeDisplay', finalCode);
       setText('#inviteLinkDisplay', result.inviteLink || 'Joined table.');
       const open = $('#openCasinoBtn');
-      if (open) open.href = `games.html?room=${encodeURIComponent(finalCode)}`;
-      setText('#multiTableStatus', 'Joined same table. Open Casino Floor when ready.');
+      if (open) open.href = floorUrl;
+      setText('#multiTableStatus', 'Joined same table. Pulling up to Casino Floor...');
       if (result.room && result.room.id) {
         await refresh(result.room.id);
         window.setInterval(() => refresh(result.room.id), 7000);
+      }
+      if (!shouldStayLobby()) {
+        window.setTimeout(() => {
+          window.location.href = floorUrl;
+        }, 1400);
       }
     } catch (error) {
       setText('#multiTableStatus', error.message || 'Could not join invite table. Sign in, then reload invite link.');
