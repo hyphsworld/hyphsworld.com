@@ -12,7 +12,8 @@
   const SUPABASE_URL = window.HW_SUPABASE_URL || 'https://yuhxtdkhsltaqiagrtys.supabase.co';
   const SUPABASE_ANON_KEY = window.HW_SUPABASE_ANON_KEY || window.SUPABASE_ANON_KEY || '';
 
-  let state = { ready:false,user:null,profile:null,points:0,lifetimePoints:0,rankTitle:'Guest',avatarIcon:'🧢',source:'local' };
+  const initialLocalPoints = getLocalPoints();
+  let state = { ready:false,user:null,profile:null,points:initialLocalPoints,lifetimePoints:initialLocalPoints,rankTitle:'Guest',avatarIcon:'🧢',source:'local' };
   let supabaseClient = null;
   let pendingQueue = [];
 
