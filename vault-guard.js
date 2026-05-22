@@ -56,7 +56,10 @@
     const denied = document.getElementById('access-denied');
     const main = document.querySelector('.quarantine-main');
 
-    if (main) main.removeAttribute('aria-hidden');
+    if (main) {
+      main.removeAttribute('aria-hidden');
+      main.removeAttribute('inert');
+    }
 
     if (denied) {
       denied.classList.remove('is-active');
@@ -68,7 +71,10 @@
     const denied = document.getElementById('access-denied');
     const main = document.querySelector('.quarantine-main');
 
-    if (main) main.setAttribute('aria-hidden', 'true');
+    if (main) {
+      main.setAttribute('aria-hidden', 'true');
+      main.setAttribute('inert', '');
+    }
 
     if (denied) {
       denied.classList.add('is-active');
