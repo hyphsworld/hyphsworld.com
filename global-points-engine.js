@@ -12,8 +12,8 @@
   const SUPABASE_URL = window.HW_SUPABASE_URL || 'https://yuhxtdkhsltaqiagrtys.supabase.co';
   const SUPABASE_ANON_KEY = window.HW_SUPABASE_ANON_KEY || window.SUPABASE_ANON_KEY || '';
 
-  const initialLocalPoints = getLocalPoints();
-  let state = { ready:false,user:null,profile:null,points:initialLocalPoints,lifetimePoints:initialLocalPoints,rankTitle:'Guest',avatarIcon:'🧢',source:'local' };
+  const initialLocal = readLocalPoints();
+  let state = { ready:false,user:null,profile:null,points:initialLocal.points,lifetimePoints:initialLocal.points,rankTitle:'Guest',avatarIcon:'🧢',source:'local',hasLocalCache:initialLocal.found };
   let supabaseClient = null;
   let pendingQueue = [];
 
@@ -27,10 +27,13 @@
   }
   function getState(){ return Object.assign({},state); }
 
-  function getLocalPoints(){
+  function readLocalPoints(){
     const values=[localStorage.getItem(STORAGE_KEY)].concat(LEGACY_KEYS.map((key)=>localStorage.getItem(key)));
-    return values.reduce((max,value)=>Math.max(max,number(value)),0);
+    const found=values.some((value)=>value!==null);
+    const points=values.reduce((max,value)=>Math.max(max,number(value)),0);
+    return { points, found };
   }
+  function getLocalPoints(){ return readLocalPoints().points; }
   function setLocalPoints(points){
     const value=String(number(points));
     localStorage.setItem(STORAGE_KEY,value);
@@ -103,11 +106,11 @@
     const user=await getCurrentUser();
     const profile=await fetchProfile(user);
     if(user && profile){
-      state={ready:true,user,profile,points:number(profile.points),lifetimePoints:number(profile.lifetime_points),rankTitle:profile.rank_title||'Lobby Rookie',avatarIcon:profile.avatar_icon||'🧢',source:'supabase'};
+      state={ready:true,user,profile,points:number(profile.points),lifetimePoints:number(profile.lifetime_points),rankTitle:profile.rank_title||'Lobby Rookie',avatarIcon:profile.avatar_icon||'🧢',source:'supabase',hasLocalCache:true};
       setLocalPoints(state.points); cleanLegacyGuestPoints();
     } else {
       const localPoints=getLocalPoints();
-      state={ready:true,user:null,profile:null,points:localPoints,lifetimePoints:localPoints,rankTitle:'Guest',avatarIcon:'🧢',source:'local'};
+      state={ready:true,user:null,profile:null,points:localPoints,lifetimePoints:localPoints,rankTitle:'Guest',avatarIcon:'🧢',source:'local',hasLocalCache:true};
       setLocalPoints(localPoints);
     }
     render(); emit(POINT_EVENTS[0]); emit(POINT_EVENTS[1]); return getState();
@@ -131,9 +134,13 @@
 
   function get(){
     if(!state.ready){
-      const cached=getLocalPoints();
-      if(cached>number(state.points)) state.points=cached;
-      return cached;
+      const cached=readLocalPoints();
+      if(cached.found){
+        if(cached.points>number(state.points)) state.points=cached.points;
+        state.hasLocalCache=true;
+        return cached.points;
+      }
+      return state.hasLocalCache ? number(state.points) : null;
     }
     return number(state.points);
   }
