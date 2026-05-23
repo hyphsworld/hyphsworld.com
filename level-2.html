@@ -36,8 +36,21 @@
     .feature{padding:22px;min-height:260px;display:flex;flex-direction:column;justify-content:space-between}.feature h2{margin:12px 0 8px;font-size:1.5rem}.feature p{margin:0 0 8px;color:var(--muted);line-height:1.5}
     .cover-zone{min-height:160px;border-radius:22px;border:1px dashed rgba(31,252,255,.45);background:radial-gradient(circle at 20% 20%,rgba(57,255,122,.25),transparent 30%),radial-gradient(circle at 80% 30%,rgba(255,39,93,.20),transparent 32%),rgba(0,0,0,.42);display:grid;place-items:center;font-size:2.4rem;font-weight:1000;letter-spacing:-.06em;text-align:center;text-transform:uppercase}
     .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+    .neon-grid{position:absolute;inset:0;pointer-events:none;opacity:.45;background-image:linear-gradient(rgba(31,252,255,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(184,77,255,.11) 1px,transparent 1px);background-size:34px 34px;mask-image:radial-gradient(circle at center,black 25%,transparent 80%)}
+    .orb{position:absolute;border-radius:50%;filter:blur(2px);pointer-events:none;opacity:.6}
+    .orb-a{width:170px;height:170px;top:40px;left:-45px;background:radial-gradient(circle,rgba(31,252,255,.65),transparent 70%)}
+    .orb-b{width:210px;height:210px;right:-55px;bottom:50px;background:radial-gradient(circle,rgba(184,77,255,.58),transparent 72%)}
+    .level2-lab{display:grid;grid-template-columns:1.15fr .85fr;gap:18px;margin-top:18px}
+    .lab-panel{padding:22px;min-height:250px}
+    .tech-list{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:10px}
+    .tech-list li{padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:rgba(0,0,0,.28);font-weight:700;color:var(--muted)}
+    .reactor{min-height:210px;border-radius:22px;border:1px solid rgba(31,252,255,.45);background:radial-gradient(circle at center,rgba(31,252,255,.23),rgba(0,0,0,.4) 45%),conic-gradient(from 0deg,rgba(184,77,255,.3),rgba(57,255,122,.35),rgba(255,39,93,.28),rgba(184,77,255,.3));display:grid;place-items:center;position:relative;overflow:hidden}
+    .reactor:before{content:"";position:absolute;inset:18px;border-radius:50%;border:2px dashed rgba(255,255,255,.35);animation:spin 16s linear infinite}
+    .reactor b{position:relative;font-size:2rem;letter-spacing:.16em;text-shadow:0 0 18px rgba(31,252,255,.45)}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
     .toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%) translateY(120px);background:#0b0b0b;border:1px solid var(--cyan);color:#fff;padding:13px 16px;border-radius:999px;box-shadow:0 0 22px rgba(31,252,255,.35);z-index:50;font-weight:900;transition:.25s ease}.toast.show{transform:translateX(-50%) translateY(0)}
-    @media(max-width:900px){.grid{grid-template-columns:1fr}.status-grid{grid-template-columns:1fr 1fr}.hero-main:after{font-size:9rem}}@media(max-width:560px){.status-grid{grid-template-columns:1fr}.hero-main{padding:24px}}
+    @media(max-width:900px){.grid,.level2-lab{grid-template-columns:1fr}.status-grid{grid-template-columns:1fr 1fr}.hero-main:after{font-size:9rem}}@media(max-width:560px){.status-grid{grid-template-columns:1fr}.hero-main{padding:24px}}
   </style>
 </head>
 
@@ -58,9 +71,10 @@
   <main>
     <section class="wrap hero">
       <div class="card hero-main">
+        <div class="neon-grid" aria-hidden="true"></div><div class="orb orb-a" aria-hidden="true"></div><div class="orb orb-b" aria-hidden="true"></div>
         <span class="kicker">ACCESS GRANTED // FLOOR 02</span>
         <h1>HYPHSWORLD 5</h1>
-        <p class="sub">Level 2 is no longer blank. This is the premium floor for HYPHSWORLD 5 pressure: music, motion, rollout energy, and saved Cool Points that carry across the Vault.</p>
+        <p class="sub">Level 2 just evolved into a next-gen vault chamber: cinematic neon systems, reactive panels, and premium HYPHSWORLD 5 energy powered by saved Cool Points across the Vault.</p>
         <div class="transport-sync-card" aria-label="Saved Cool Points balance">
           <span>Saved Cool Points</span>
           <strong class="js-cool-points" data-hw-points>0</strong>
@@ -98,6 +112,29 @@
         </article>
       </div>
     </section>
+
+    <section class="wrap section">
+      <div class="level2-lab">
+        <article class="card lab-panel">
+          <span class="kicker">Future Systems</span>
+          <h2>Vault AI Stack</h2>
+          <p class="sub">Level 2 now feels like a true futuristic command floor with reactive visuals, high-energy progression cues, and stronger motivation loops for members pushing to higher vault status.</p>
+          <ul class="tech-list">
+            <li>Neon Grid Interface // cinematic sci-fi atmosphere</li>
+            <li>Reactor Core Pulse // premium floor identity</li>
+            <li>Fast Earn Buttons // more action, more progression</li>
+          </ul>
+          <div class="actions"><button class="pill" type="button" data-point-add="12" data-point-reason="Future systems sync">Sync Future +12</button></div>
+        </article>
+        <article class="card lab-panel">
+          <span class="kicker">Core Reactor</span>
+          <div class="reactor"><b>LEVEL 02</b></div>
+          <p class="sub">This core tracks your momentum. Keep stacking Cool Points and take that energy back into Casino and the next drop cycle.</p>
+          <div class="actions"><a class="pill" href="casino.html">Route To Casino</a></div>
+        </article>
+      </div>
+    </section>
+
   </main>
 
   <div class="toast" id="hw-toast" role="status" aria-live="polite"></div>
