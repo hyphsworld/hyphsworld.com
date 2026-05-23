@@ -9,6 +9,7 @@
   const POINT_EVENTS = ['hw:points-ready', 'hw:points-change', 'hyph:points-updated'];
   const STORAGE_KEY = 'hyphsworld.coolPoints.total';
   const LEGACY_KEYS = ['coolPoints', 'hyphsworld_points', 'HW_COOL_POINTS'];
+  const PENDING_DELTA_KEY = 'hyphsworld.coolPoints.pendingDelta';
   const SUPABASE_URL = window.HW_SUPABASE_URL || 'https://yuhxtdkhsltaqiagrtys.supabase.co';
   const SUPABASE_ANON_KEY = window.HW_SUPABASE_ANON_KEY || window.SUPABASE_ANON_KEY || '';
 
@@ -37,6 +38,9 @@
     localStorage.setItem('hyphsworld_points',value);
     localStorage.setItem('HW_COOL_POINTS',value);
   }
+  function getPendingDelta(){ return number(localStorage.getItem(PENDING_DELTA_KEY)); }
+  function setPendingDelta(value){ localStorage.setItem(PENDING_DELTA_KEY,String(number(value))); }
+  function clearPendingDelta(){ localStorage.removeItem(PENDING_DELTA_KEY); }
   function cleanLegacyGuestPoints(){ LEGACY_KEYS.forEach((key)=>{ if(key!=='coolPoints') localStorage.removeItem(key); }); }
 
   function getSupabase(){
@@ -102,7 +106,13 @@
     const user=await getCurrentUser();
     const profile=await fetchProfile(user);
     if(user && profile){
-      state={ready:true,user,profile,points:number(profile.points),lifetimePoints:number(profile.lifetime_points),rankTitle:profile.rank_title||'Lobby Rookie',avatarIcon:profile.avatar_icon||'🧢',source:'supabase'};
+      const localPoints=getLocalPoints();
+      const profilePoints=number(profile.points);
+      const pendingDelta=getPendingDelta();
+      const expectedLocal=Math.max(0,profilePoints+pendingDelta);
+      const resolvedPoints=(pendingDelta && localPoints>=expectedLocal)?localPoints:profilePoints;
+      state={ready:true,user,profile,points:resolvedPoints,lifetimePoints:Math.max(number(profile.lifetime_points),resolvedPoints),rankTitle:profile.rank_title||'Lobby Rookie',avatarIcon:profile.avatar_icon||'🧢',source:'supabase'};
+      if(resolvedPoints<=profilePoints) clearPendingDelta();
       setLocalPoints(state.points); cleanLegacyGuestPoints();
     } else {
       const localPoints=getLocalPoints();
@@ -115,10 +125,11 @@
   async function add(amount,reason,metadata){
     const delta=Math.floor(Number(amount||0)); if(!delta) return getState();
     if(!state.ready){ pendingQueue.push({amount:delta,reason,metadata}); }
+    const next=Math.max(0,number(state.points)+delta); state.points=next; state.lifetimePoints=Math.max(number(state.lifetimePoints),next); setLocalPoints(next); render(); emit(POINT_EVENTS[1]);
     if(state.user && window.HWAuth && typeof window.HWAuth.addPoints==='function'){
-      try{ await window.HWAuth.addPoints(delta,reason||'site_action',metadata||{}); return refresh(); }catch(error){}
+      try{ setPendingDelta(getPendingDelta()+delta); await window.HWAuth.addPoints(delta,reason||'site_action',metadata||{}); return refresh(); }catch(error){}
     }
-    const next=Math.max(0,number(state.points)+delta); state.points=next; state.lifetimePoints=Math.max(number(state.lifetimePoints),next); setLocalPoints(next); render(); emit(POINT_EVENTS[1]); return getState();
+    return getState();
   }
   async function spend(amount,reason,metadata){ return add(-Math.abs(Number(amount||0)),reason||'spend',metadata||{}); }
 
@@ -128,7 +139,14 @@
     for(const item of queue){ await add(item.amount,item.reason,item.metadata); }
   }
 
-  function get(){ return number(state.points); }
+  function get(){
+    if(!state.ready){
+      const cached=getLocalPoints();
+      if(cached>number(state.points)) state.points=cached;
+      return cached;
+    }
+    return number(state.points);
+  }
 
   window.HWPoints={__globalEngineV1:true,refresh,add,spend,get,getState,render};
   document.addEventListener('hyph:points:add',(event)=>{ const detail=event.detail||{}; add(detail.amount||detail.points||0,detail.reason||'lobby_event',detail.metadata||{}); });
