@@ -57,6 +57,8 @@ export default function HowToPlay() {
                         <div><span style={{ color: "#ffd84a" }}>⚡ Speed</span> — short burst of speed.</div>
                         <div><span style={{ color: "#6cf2ff" }}>🛡 Shield</span> — soaks one hit.</div>
                         <div><span style={{ color: "#d36cff" }}>x2 Double</span> — doubles all points for a bit.</div>
+                        <div><span style={{ color: "#ff6b3a" }}>💣 Bomb</span> — wipes ALL enemies on screen (200pt each).</div>
+                        <div><span style={{ color: "#ff5577" }}>♥ Extra Life</span> — +1 life (rare drop).</div>
                     </div>
                 </Section>
 

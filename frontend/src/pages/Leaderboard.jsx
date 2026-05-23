@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchLeaderboard } from "../lib/api";
-import { ArrowLeft, Trophy, Loader2, RefreshCcw } from "lucide-react";
+import {
+    fetchLeaderboard,
+    adminDeleteEntry,
+    adminUpdateEntry,
+    adminClearAll,
+} from "../lib/api";
+import { useAuth } from "../lib/auth";
+import { ArrowLeft, Trophy, Loader2, RefreshCcw, Trash2, Pencil, Eraser, LogIn, LogOut, Check, X } from "lucide-react";
 
 const formatTime = (iso) => {
     if (!iso) return "—";
@@ -18,9 +24,13 @@ const formatTime = (iso) => {
 
 export default function Leaderboard() {
     const navigate = useNavigate();
+    const { admin, logout } = useAuth();
     const [rows, setRows] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [editingId, setEditingId] = useState(null);
+    const [editName, setEditName] = useState("");
+    const [busy, setBusy] = useState(false);
 
     const load = async () => {
         setLoading(true);
@@ -37,20 +47,83 @@ export default function Leaderboard() {
 
     useEffect(() => { load(); }, []);
 
+    const handleDelete = async (id) => {
+        if (!window.confirm("Delete this entry?")) return;
+        setBusy(true);
+        try {
+            await adminDeleteEntry(id);
+            setRows((prev) => prev.filter((r) => r.id !== id));
+        } catch (e) {
+            alert("Delete failed: " + (e.response?.data?.detail || e.message));
+        } finally { setBusy(false); }
+    };
+
+    const startEdit = (row) => { setEditingId(row.id); setEditName(row.name); };
+    const cancelEdit = () => { setEditingId(null); setEditName(""); };
+
+    const saveEdit = async () => {
+        if (!editingId) return;
+        const trimmed = editName.trim().toUpperCase().replace(/[^A-Z0-9_]/g, "").slice(0, 12);
+        if (!trimmed) { alert("Name cannot be empty"); return; }
+        setBusy(true);
+        try {
+            const updated = await adminUpdateEntry(editingId, { name: trimmed });
+            setRows((prev) => prev.map((r) => (r.id === editingId ? { ...r, name: updated.name } : r)));
+            cancelEdit();
+        } catch (e) {
+            alert("Update failed: " + (e.response?.data?.detail || e.message));
+        } finally { setBusy(false); }
+    };
+
+    const handleClearAll = async () => {
+        const phrase = window.prompt('Type "WIPE" to clear ALL entries from the leaderboard:');
+        if (phrase !== "WIPE") return;
+        setBusy(true);
+        try {
+            await adminClearAll();
+            setRows([]);
+        } catch (e) {
+            alert("Clear failed: " + (e.response?.data?.detail || e.message));
+        } finally { setBusy(false); }
+    };
+
     return (
         <div className="cr-page cr-bg-noir cr-grain" data-testid="leaderboard-page">
             <div className="w-full max-w-3xl">
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center justify-between mb-6 gap-2 flex-wrap">
                     <button onClick={() => navigate("/")} className="cr-btn" style={{ fontSize: "0.95rem", padding: "0.45rem 0.9rem" }} data-testid="leaderboard-back-btn">
                         <ArrowLeft className="inline mr-1" size={14} /> Back
                     </button>
-                    <h1 className="font-arcade text-5xl sm:text-6xl cr-glow-gold flex items-center gap-3" data-testid="leaderboard-title">
-                        <Trophy size={36} /> HALL OF HUSTLERS
+                    <h1 className="font-arcade text-4xl sm:text-5xl cr-glow-gold flex items-center gap-3" data-testid="leaderboard-title">
+                        <Trophy size={32} /> HALL OF HUSTLERS
                     </h1>
-                    <button onClick={load} className="cr-btn" style={{ fontSize: "0.95rem", padding: "0.45rem 0.9rem" }} data-testid="leaderboard-refresh-btn">
-                        <RefreshCcw className="inline mr-1" size={14} /> Refresh
-                    </button>
+                    <div className="flex gap-2">
+                        <button onClick={load} className="cr-btn" style={{ fontSize: "0.95rem", padding: "0.45rem 0.9rem" }} data-testid="leaderboard-refresh-btn">
+                            <RefreshCcw className="inline mr-1" size={14} /> Refresh
+                        </button>
+                        {admin ? (
+                            <button onClick={logout} className="cr-btn" style={{ fontSize: "0.95rem", padding: "0.45rem 0.9rem" }} data-testid="leaderboard-logout-btn">
+                                <LogOut className="inline mr-1" size={14} /> Logout
+                            </button>
+                        ) : (
+                            <button onClick={() => navigate("/admin")} className="cr-btn" style={{ fontSize: "0.95rem", padding: "0.45rem 0.9rem", opacity: 0.6 }} data-testid="leaderboard-admin-btn">
+                                <LogIn className="inline mr-1" size={14} /> Admin
+                            </button>
+                        )}
+                    </div>
                 </div>
+
+                {admin && (
+                    <div className="cr-card mb-3 flex items-center justify-between flex-wrap gap-3" data-testid="admin-bar">
+                        <div className="font-mono text-sm">
+                            <span className="cr-tag" style={{ color: "var(--cr-cash-bright)", borderColor: "var(--cr-cash-bright)" }}>ADMIN</span>
+                            <span className="ml-2" style={{ color: "var(--cr-ink-dim)" }}>{admin.email}</span>
+                        </div>
+                        <button onClick={handleClearAll} disabled={busy} className="cr-btn" style={{ fontSize: "0.9rem", padding: "0.4rem 0.8rem", color: "var(--cr-blood)", borderColor: "var(--cr-blood)" }} data-testid="admin-clear-all-btn">
+                            <Eraser className="inline mr-1" size={14} /> Clear All
+                        </button>
+                    </div>
+                )}
 
                 <div className="cr-card">
                     <div className="cr-lb-row header" data-testid="leaderboard-header">
@@ -89,11 +162,59 @@ export default function Leaderboard() {
                                     className="inline-block w-3 h-3 rounded-full"
                                     style={{ background: r.character === "girl" ? "#d36cff" : "#4a8de8" }}
                                 />
-                                <span style={{ letterSpacing: "0.06em" }}>{r.name}</span>
+                                {editingId === r.id ? (
+                                    <input
+                                        value={editName}
+                                        onChange={(e) => setEditName(e.target.value.toUpperCase())}
+                                        maxLength={12}
+                                        data-testid={`admin-edit-input-${r.id}`}
+                                        className="font-mono px-2 py-1 rounded uppercase"
+                                        style={{ background: "rgba(0,0,0,0.4)", border: "1px solid rgba(245,241,232,0.3)", color: "var(--cr-ink)", width: 110 }}
+                                        autoFocus
+                                    />
+                                ) : (
+                                    <span style={{ letterSpacing: "0.06em" }}>{r.name}</span>
+                                )}
+                                {admin && editingId !== r.id && (
+                                    <button
+                                        onClick={() => startEdit(r)}
+                                        disabled={busy}
+                                        className="ml-1 opacity-60 hover:opacity-100"
+                                        title="Edit name"
+                                        data-testid={`admin-edit-btn-${r.id}`}
+                                    >
+                                        <Pencil size={12} />
+                                    </button>
+                                )}
+                                {admin && editingId === r.id && (
+                                    <>
+                                        <button onClick={saveEdit} disabled={busy} className="ml-1" data-testid={`admin-save-btn-${r.id}`}>
+                                            <Check size={14} className="cr-glow-cash" />
+                                        </button>
+                                        <button onClick={cancelEdit} disabled={busy} data-testid={`admin-cancel-btn-${r.id}`}>
+                                            <X size={14} className="cr-glow-blood" />
+                                        </button>
+                                    </>
+                                )}
                             </div>
                             <div style={{ color: "var(--cr-gold)" }}>{r.level}</div>
-                            <div className="cr-glow-cash">${String(r.score).padStart(6, "0")}</div>
-                            <div className="col-time text-xs" style={{ color: "var(--cr-ink-dim)" }}>{formatTime(r.timestamp)}</div>
+                            <div className="cr-glow-cash flex items-center gap-2">
+                                <span>${String(r.score).padStart(6, "0")}</span>
+                            </div>
+                            <div className="col-time text-xs flex items-center gap-2" style={{ color: "var(--cr-ink-dim)" }}>
+                                <span>{formatTime(r.timestamp)}</span>
+                                {admin && (
+                                    <button
+                                        onClick={() => handleDelete(r.id)}
+                                        disabled={busy}
+                                        className="opacity-60 hover:opacity-100"
+                                        title="Delete entry"
+                                        data-testid={`admin-delete-btn-${r.id}`}
+                                    >
+                                        <Trash2 size={12} className="cr-glow-blood" />
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     ))}
                 </div>

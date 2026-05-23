@@ -116,6 +116,7 @@ export class CashRunEngine {
         this.frightChain = 0;
         this.activePower = null;
         this._floatTexts = [];
+        this._screenShake = 0;
 
         this.onStateChange?.({
             level: this.level, score: this.score, lives: this.lives, theme,
@@ -335,6 +336,33 @@ export class CashRunEngine {
             if (pu.col === tc && pu.row === tr &&
                 Math.abs(p.col - tc) < 0.4 && Math.abs(p.row - tr) < 0.4) {
                 this._powerUpsActive.splice(i, 1);
+
+                if (pu.type === "bomb") {
+                    // Wipe all active enemies (set to eyes/return) and award bonus
+                    let wiped = 0;
+                    for (const e of this.enemies) {
+                        if (e.state !== "eyes") {
+                            e.state = "eyes";
+                            wiped++;
+                        }
+                    }
+                    const pts = 200 * Math.max(1, wiped);
+                    this._addScore(pts);
+                    this._popText(`BOOM +${pts}`, tc, tr, "#ff6b3a");
+                    this._screenShake = 0.6;
+                    audio.eatEnemy();
+                    return;
+                }
+                if (pu.type === "life") {
+                    this.lives = Math.min(this.lives + 1, 9);
+                    this.onLifeLost?.(this.lives); // re-emit so HUD updates
+                    this._addScore(50);
+                    this._popText("+1 LIFE", tc, tr, "#ff5577");
+                    audio.levelUp();
+                    return;
+                }
+
+                // Timed buff (speed / shield / double)
                 this.activePower = { type: pu.type, time: 6 };
                 this._addScore(25);
                 this._popText("+25", tc, tr, "#ffd84a");
@@ -517,9 +545,21 @@ export class CashRunEngine {
         const ctx = this.ctx;
         const t = this.theme;
 
+        // Screen shake offset (for bomb impact)
+        let sx = 0, sy = 0;
+        if (this._screenShake > 0) {
+            sx = (Math.random() - 0.5) * 8 * this._screenShake;
+            sy = (Math.random() - 0.5) * 8 * this._screenShake;
+            this._screenShake -= 0.04;
+            if (this._screenShake < 0) this._screenShake = 0;
+        }
+
         // Background floor
         ctx.fillStyle = t.bg;
         ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+
+        ctx.save();
+        ctx.translate(sx, sy);
 
         // Floor grid alternating tiles
         for (let r = 0; r < ROWS; r++) {
@@ -533,7 +573,7 @@ export class CashRunEngine {
         // Walls
         this._drawWalls(ctx, t);
 
-        // Pellets (cash bundles) / power (cash stack)
+        // Pellets (cash bundles) / power (cash stack) — with neon glow
         const tnow = performance.now();
         for (let r = 0; r < ROWS; r++) {
             for (let c = 0; c < COLS; c++) {
@@ -541,20 +581,24 @@ export class CashRunEngine {
                 const cx = c * TILE + TILE / 2;
                 const cy = r * TILE + TILE / 2;
                 if (v === T.PELLET) {
-                    // Tiny dollar bill
+                    // Cash bill with subtle glow
+                    ctx.save();
+                    ctx.shadowColor = "#7ee895";
+                    ctx.shadowBlur = 4;
                     ctx.fillStyle = "#3a8a4f";
                     ctx.fillRect(cx - 4, cy - 2, 8, 4);
                     ctx.fillStyle = "#5cc46f";
                     ctx.fillRect(cx - 4, cy - 2, 8, 1);
                     ctx.fillStyle = "#d4af37";
                     ctx.fillRect(cx - 1, cy - 1, 2, 2);
+                    ctx.restore();
                 } else if (v === T.POWER) {
                     const pulse = 0.6 + Math.sin(tnow / 180) * 0.4;
                     const wob = Math.sin(tnow / 220 + c) * 1.2;
                     ctx.save();
                     ctx.translate(cx, cy + wob);
                     ctx.shadowColor = "#d4af37";
-                    ctx.shadowBlur = 12 * pulse;
+                    ctx.shadowBlur = 18 * pulse;
                     // Cash stack — three stacked bills + gold band
                     ctx.fillStyle = "#3a8a4f";
                     ctx.fillRect(-7, -6, 14, 12);
@@ -593,6 +637,11 @@ export class CashRunEngine {
         // Player
         this._drawPlayer(ctx);
 
+        ctx.restore();
+
+        // CRT scanline overlay — sweeping horizontal line + static lines
+        this._drawScanlines(ctx);
+
         // Ready overlay
         if (this._readyTimer > 0) {
             ctx.fillStyle = "rgba(0,0,0,0.5)";
@@ -625,28 +674,59 @@ export class CashRunEngine {
                 const x = c * TILE, y = r * TILE;
                 ctx.fillStyle = t.wall;
                 ctx.fillRect(x, y, TILE, TILE);
-                // Edge highlights — top + left lighter, bottom right darker
+                // Neon edge highlights
                 ctx.fillStyle = t.wallEdge;
                 ctx.fillRect(x, y, TILE, 2);
                 ctx.fillRect(x, y, 2, TILE);
-                ctx.fillStyle = "rgba(0,0,0,0.35)";
+                ctx.fillStyle = "rgba(0,0,0,0.4)";
                 ctx.fillRect(x, y + TILE - 2, TILE, 2);
                 ctx.fillRect(x + TILE - 2, y, 2, TILE);
+                // Inner accent line — gives "neon-tube" feel
+                ctx.fillStyle = t.wallEdge;
+                ctx.globalAlpha = 0.25;
+                ctx.fillRect(x + 4, y + 4, TILE - 8, 1);
+                ctx.globalAlpha = 1;
             }
         }
+    }
+
+    _drawScanlines(ctx) {
+        // Static horizontal scanlines
+        ctx.save();
+        ctx.globalAlpha = 0.05;
+        ctx.fillStyle = "#000";
+        for (let y = 0; y < CANVAS_H; y += 3) {
+            ctx.fillRect(0, y, CANVAS_W, 1);
+        }
+        // Sweeping bright band
+        const sweepY = (performance.now() / 22) % (CANVAS_H + 40) - 20;
+        const grad = ctx.createLinearGradient(0, sweepY - 20, 0, sweepY + 20);
+        grad.addColorStop(0, "rgba(255,255,255,0)");
+        grad.addColorStop(0.5, "rgba(255,255,255,0.05)");
+        grad.addColorStop(1, "rgba(255,255,255,0)");
+        ctx.fillStyle = grad;
+        ctx.globalAlpha = 1;
+        ctx.fillRect(0, sweepY - 20, CANVAS_W, 40);
+        // Vignette
+        const radial = ctx.createRadialGradient(CANVAS_W/2, CANVAS_H/2, CANVAS_H * 0.3, CANVAS_W/2, CANVAS_H/2, CANVAS_H * 0.7);
+        radial.addColorStop(0, "rgba(0,0,0,0)");
+        radial.addColorStop(1, "rgba(0,0,0,0.45)");
+        ctx.fillStyle = radial;
+        ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+        ctx.restore();
     }
 
     _drawPowerUp(ctx, pu) {
         const cx = pu.col * TILE + TILE / 2;
         const cy = pu.row * TILE + TILE / 2;
         const wob = Math.sin(performance.now() / 200 + pu.col) * 1.5;
+        const pulse = 0.6 + Math.sin(performance.now() / 200 + pu.col) * 0.4;
         ctx.save();
         ctx.translate(cx, cy + wob);
         if (pu.type === "speed") {
             ctx.fillStyle = "#ffd84a";
             ctx.shadowColor = "#ffd84a";
-            ctx.shadowBlur = 10;
-            // lightning bolt
+            ctx.shadowBlur = 14 * pulse;
             ctx.beginPath();
             ctx.moveTo(-3, -7); ctx.lineTo(3, -2); ctx.lineTo(-1, -1);
             ctx.lineTo(3, 7);   ctx.lineTo(-3, 2); ctx.lineTo(1, 1);
@@ -655,25 +735,65 @@ export class CashRunEngine {
         } else if (pu.type === "shield") {
             ctx.fillStyle = "#6cf2ff";
             ctx.shadowColor = "#6cf2ff";
-            ctx.shadowBlur = 10;
+            ctx.shadowBlur = 14 * pulse;
             ctx.beginPath();
             ctx.moveTo(0, -8);
             ctx.lineTo(7, -4); ctx.lineTo(7, 3);
             ctx.lineTo(0, 8);
             ctx.lineTo(-7, 3); ctx.lineTo(-7, -4);
             ctx.closePath(); ctx.fill();
-            ctx.fillStyle = "rgba(255,255,255,0.4)";
+            ctx.fillStyle = "rgba(255,255,255,0.45)";
             ctx.beginPath();
             ctx.arc(-2, -2, 2.2, 0, Math.PI * 2); ctx.fill();
         } else if (pu.type === "double") {
             ctx.fillStyle = "#d36cff";
             ctx.shadowColor = "#d36cff";
-            ctx.shadowBlur = 10;
+            ctx.shadowBlur = 14 * pulse;
             ctx.font = "bold 13px 'IBM Plex Mono', monospace";
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
             ctx.fillText("x2", 0, 0);
+        } else if (pu.type === "bomb") {
+            // Glowing bomb — circle with fuse
+            ctx.shadowColor = "#ff6b3a";
+            ctx.shadowBlur = 18 * pulse;
+            ctx.fillStyle = "#222";
+            ctx.beginPath();
+            ctx.arc(0, 1, 6, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = "#ff6b3a";
+            ctx.beginPath();
+            ctx.arc(0, 1, 6, 0, Math.PI * 2);
+            ctx.stroke();
+            // Fuse
+            ctx.strokeStyle = "#ffd84a";
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(0, -5);
+            ctx.quadraticCurveTo(3, -8, 5, -10);
+            ctx.stroke();
+            // Spark
+            ctx.fillStyle = "#fff5c8";
+            ctx.beginPath();
+            ctx.arc(5, -10, 1.6, 0, Math.PI * 2);
+            ctx.fill();
+        } else if (pu.type === "life") {
+            // Pulsing pink heart
+            ctx.shadowColor = "#ff5577";
+            ctx.shadowBlur = 18 * pulse;
+            ctx.fillStyle = "#ff5577";
+            ctx.beginPath();
+            ctx.moveTo(0, 6);
+            ctx.bezierCurveTo(-9, -1, -6, -9, 0, -4);
+            ctx.bezierCurveTo(6, -9, 9, -1, 0, 6);
+            ctx.closePath();
+            ctx.fill();
+            ctx.fillStyle = "rgba(255,255,255,0.55)";
+            ctx.beginPath();
+            ctx.arc(-2.5, -3, 1.6, 0, Math.PI * 2);
+            ctx.fill();
         }
+        ctx.shadowBlur = 0;
         ctx.restore();
     }
 

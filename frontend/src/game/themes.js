@@ -102,4 +102,4 @@ export function getDifficulty(level, mode = "normal") {
 }
 
 // Power-up types (rotated)
-export const POWERUP_TYPES = ["speed", "shield", "double"];
+export const POWERUP_TYPES = ["speed", "shield", "double", "bomb", "life"];
