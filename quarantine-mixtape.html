@@ -8,254 +8,44 @@
   <meta name="theme-color" content="#00ff66" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="homepage-upgrades.css" />
+  <script>window.HW_SUPABASE_URL='https://yuhxtdkhsltaqiagrtys.supabase.co';window.HW_SUPABASE_ANON_KEY='sb_publishable_oYdN-75W3b7k3m1zLukI-A_BKWVDD5e';window.SUPABASE_ANON_KEY=window.HW_SUPABASE_ANON_KEY;window.HW_SUPABASE_CONFIG={url:window.HW_SUPABASE_URL,anonKey:window.HW_SUPABASE_ANON_KEY,profileTable:'profiles'};</script>
   <style>
-    .level-one-screen-card{
-      position:relative;
-      overflow:hidden;
-      margin:0 0 24px;
-      border:1px solid rgba(31,252,255,.34);
-      border-radius:30px;
-      padding:clamp(16px,4vw,24px);
-      background:
-        radial-gradient(circle at 14% 12%, rgba(57,255,122,.24), transparent 32%),
-        radial-gradient(circle at 82% 16%, rgba(255,79,216,.26), transparent 34%),
-        radial-gradient(circle at 50% 100%, rgba(255,228,92,.12), transparent 38%),
-        linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.028));
-      box-shadow:0 0 34px rgba(31,252,255,.14),0 18px 60px rgba(0,0,0,.28);
-    }
-    .level-one-screen-card::before{
-      content:"LEVEL 1 SCREEN  LEVEL 1 SCREEN  LEVEL 1 SCREEN";
-      position:absolute;
-      left:-18px;
-      right:-18px;
-      bottom:10px;
-      color:transparent;
-      -webkit-text-stroke:1px rgba(255,228,92,.16);
-      text-stroke:1px rgba(255,228,92,.16);
-      font-size:clamp(2.2rem,7vw,5.4rem);
-      font-weight:1000;
-      letter-spacing:-.08em;
-      line-height:.85;
-      transform:rotate(-3deg);
-      pointer-events:none;
-      opacity:.75;
-    }
-    .level-one-screen-head{
-      position:relative;
-      z-index:2;
-      display:flex;
-      align-items:flex-end;
-      justify-content:space-between;
-      gap:14px;
-      flex-wrap:wrap;
-      margin-bottom:14px;
-    }
-    .level-one-screen-head h2{
-      margin:6px 0 0;
-      color:#fff;
-      font-size:clamp(2rem,7vw,4.8rem);
-      line-height:.86;
-      letter-spacing:-.07em;
-      text-transform:uppercase;
-      text-shadow:4px 4px 0 rgba(255,43,214,.38),0 0 22px rgba(31,252,255,.20);
-    }
-    .level-one-screen-head p{
-      max-width:680px;
-      margin:0;
-      color:#d9efe5;
-      font-weight:850;
-      line-height:1.45;
-    }
-    .level-one-screen-badge{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      border-radius:999px;
-      padding:9px 12px;
-      color:#060606;
-      background:linear-gradient(90deg,#39ff7a,#1ffcff,#ffe45c,#ff4fd8);
-      font-size:.74rem;
-      font-weight:1000;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-      box-shadow:0 0 22px rgba(31,252,255,.18);
-    }
-    .level-one-video-frame{
-      position:relative;
-      z-index:2;
-      overflow:hidden;
-      border:2px solid rgba(31,252,255,.32);
-      border-radius:24px;
-      background:#050505;
-      box-shadow:0 0 28px rgba(0,0,0,.44),inset 0 0 30px rgba(57,255,122,.06);
-    }
-    .level-one-video-frame::before{
-      content:"";
-      position:absolute;
-      inset:0;
-      z-index:2;
-      pointer-events:none;
-      background:linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px);
-      background-size:100% 6px;
-      mix-blend-mode:screen;
-      opacity:.22;
-    }
-    .level-one-video-frame iframe{
-      display:block;
-      width:100%;
-      aspect-ratio:16/9;
-      height:auto;
-      border:0;
-      background:#000;
-    }
-    .level-one-screen-strip{
-      position:relative;
-      z-index:2;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      flex-wrap:wrap;
-      padding:12px 14px;
-      border-top:1px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.72);
-      color:#fff;
-      font-weight:900;
-    }
-    .level-one-screen-strip small{
-      color:#9fffd0;
-      font-weight:1000;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-    }
-    .level-two-gate-card{
-      margin-top:24px;
-      border:1px solid rgba(255,255,255,.18);
-      border-radius:28px;
-      padding:22px;
-      background:
-        radial-gradient(circle at 15% 18%, rgba(57,255,122,.20), transparent 30%),
-        radial-gradient(circle at 85% 20%, rgba(31,252,255,.18), transparent 32%),
-        linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.035));
-      box-shadow:0 0 28px rgba(57,255,122,.16);
-    }
-    .level-two-gate-card h2{margin:8px 0 8px;font-size:clamp(2rem,6vw,4rem);line-height:.9;letter-spacing:-.055em;text-transform:uppercase}
-    .level-two-gate-card p{color:#d9efe5;line-height:1.55}
-    .level-two-gate-form{display:grid;gap:12px;margin-top:16px}
-    .level-two-gate-form label{font-weight:1000;text-transform:uppercase;letter-spacing:.08em;font-size:.78rem;color:#39ff7a}
-    .level-two-input-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    .level-two-input-row input{flex:1;min-width:210px;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:14px 16px;background:#050505;color:#fff;font-weight:900;outline:none;box-shadow:inset 0 0 18px rgba(31,252,255,.08)}
-    .level-two-input-row button{border:0;border-radius:999px;padding:14px 18px;font-weight:1000;cursor:pointer;color:#050505;background:linear-gradient(90deg,#39ff7a,#1ffcff,#ffe45c)}
-    .level-two-input-row .clear-level-two{background:linear-gradient(90deg,#ff275d,#b84dff);color:#fff}
-    .level-two-status{margin-top:12px;padding:12px 14px;border-radius:18px;background:rgba(0,0,0,.38);border:1px solid rgba(255,255,255,.12);font-weight:900;color:#fff}
-    .level-two-unlocking .level-two-gate-card{animation:falconPulse .8s infinite alternate}.level-two-granted .level-two-gate-card{box-shadow:0 0 44px rgba(57,255,122,.42)}
-    @keyframes falconPulse{from{filter:saturate(1)}to{filter:saturate(1.8) brightness(1.08)}}
+    .level-one-points-card{position:relative;z-index:3;margin:0 0 18px;padding:16px;border-radius:24px;border:1px solid rgba(57,255,122,.32);background:linear-gradient(135deg,rgba(57,255,122,.16),rgba(31,252,255,.10),rgba(255,79,216,.12));box-shadow:0 0 26px rgba(57,255,122,.13)}
+    .level-one-points-card span{display:block;color:#d9efe5;font-weight:1000;text-transform:uppercase;font-size:.72rem;letter-spacing:.12em}.level-one-points-card strong{display:block;margin-top:3px;color:#39ff7a;font-size:clamp(2rem,8vw,3.6rem);line-height:1;font-weight:1000}.level-one-screen-card{position:relative;overflow:hidden;margin:0 0 24px;border:1px solid rgba(31,252,255,.34);border-radius:30px;padding:clamp(16px,4vw,24px);background:radial-gradient(circle at 14% 12%, rgba(57,255,122,.24), transparent 32%),radial-gradient(circle at 82% 16%, rgba(255,79,216,.26), transparent 34%),radial-gradient(circle at 50% 100%, rgba(255,228,92,.12), transparent 38%),linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.028));box-shadow:0 0 34px rgba(31,252,255,.14),0 18px 60px rgba(0,0,0,.28)}
+    .level-one-screen-card::before{content:"LEVEL 1 SCREEN  LEVEL 1 SCREEN  LEVEL 1 SCREEN";position:absolute;left:-18px;right:-18px;bottom:10px;color:transparent;-webkit-text-stroke:1px rgba(255,228,92,.16);text-stroke:1px rgba(255,228,92,.16);font-size:clamp(2.2rem,7vw,5.4rem);font-weight:1000;letter-spacing:-.08em;line-height:.85;transform:rotate(-3deg);pointer-events:none;opacity:.75}.level-one-screen-head{position:relative;z-index:2;display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:14px}.level-one-screen-head h2{margin:6px 0 0;color:#fff;font-size:clamp(2rem,7vw,4.8rem);line-height:.86;letter-spacing:-.07em;text-transform:uppercase;text-shadow:4px 4px 0 rgba(255,43,214,.38),0 0 22px rgba(31,252,255,.20)}.level-one-screen-head p{max-width:680px;margin:0;color:#d9efe5;font-weight:850;line-height:1.45}.level-one-screen-badge{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:9px 12px;color:#060606;background:linear-gradient(90deg,#39ff7a,#1ffcff,#ffe45c,#ff4fd8);font-size:.74rem;font-weight:1000;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 0 22px rgba(31,252,255,.18)}.level-one-video-frame{position:relative;z-index:2;overflow:hidden;border:2px solid rgba(31,252,255,.32);border-radius:24px;background:#050505;box-shadow:0 0 28px rgba(0,0,0,.44),inset 0 0 30px rgba(57,255,122,.06)}.level-one-video-frame::before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px);background-size:100% 6px;mix-blend-mode:screen;opacity:.22}.level-one-video-frame iframe{display:block;width:100%;aspect-ratio:16/9;height:auto;border:0;background:#000}.level-one-screen-strip{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:12px 14px;border-top:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.72);color:#fff;font-weight:900}.level-one-screen-strip small{color:#9fffd0;font-weight:1000;letter-spacing:.08em;text-transform:uppercase}.level-two-gate-card{margin-top:24px;border:1px solid rgba(255,255,255,.18);border-radius:28px;padding:22px;background:radial-gradient(circle at 15% 18%, rgba(57,255,122,.20), transparent 30%),radial-gradient(circle at 85% 20%, rgba(31,252,255,.18), transparent 32%),linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.035));box-shadow:0 0 28px rgba(57,255,122,.16)}
+    .level-two-gate-card h2{margin:8px 0 8px;font-size:clamp(2rem,6vw,4rem);line-height:.9;letter-spacing:-.055em;text-transform:uppercase}.level-two-gate-card p{color:#d9efe5;line-height:1.55}.level-two-gate-form{display:grid;gap:12px;margin-top:16px}.level-two-gate-form label{font-weight:1000;text-transform:uppercase;letter-spacing:.08em;font-size:.78rem;color:#39ff7a}.level-two-input-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.level-two-input-row input{flex:1;min-width:210px;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:14px 16px;background:#050505;color:#fff;font-weight:900;outline:none;box-shadow:inset 0 0 18px rgba(31,252,255,.08)}.level-two-input-row button{border:0;border-radius:999px;padding:14px 18px;font-weight:1000;cursor:pointer;color:#050505;background:linear-gradient(90deg,#39ff7a,#1ffcff,#ffe45c)}.level-two-input-row .clear-level-two{background:linear-gradient(90deg,#ff275d,#b84dff);color:#fff}.level-two-status{margin-top:12px;padding:12px 14px;border-radius:18px;background:rgba(0,0,0,.38);border:1px solid rgba(255,255,255,.12);font-weight:900;color:#fff}.level-two-unlocking .level-two-gate-card{animation:falconPulse .8s infinite alternate}.level-two-granted .level-two-gate-card{box-shadow:0 0 44px rgba(57,255,122,.42)}@keyframes falconPulse{from{filter:saturate(1)}to{filter:saturate(1.8) brightness(1.08)}}
   </style>
 </head>
 <body>
   <header class="site-header">
     <a class="brand-lockup" href="index.html"><span>AMS WEST PRESENTS</span><strong>HYPHSWORLD</strong></a>
-    <nav class="main-nav" aria-label="Main navigation">
-      <a href="index.html">Home</a>
-      <a href="vault.html">Vault</a>
-      <a href="app-player.html">Full Player</a>
-      <a href="shop.html">Merch</a>
-    </nav>
+    <nav class="main-nav" aria-label="Main navigation"><a href="index.html">Home</a><a href="vault.html">Vault</a><a href="app-player.html">Full Player</a><a href="shop.html">Merch</a></nav>
   </header>
 
   <main class="quarantine-main">
-    <section class="ticker" aria-label="Quarantine ticker">
-      <div class="ticker-track">
-        <span>LEVEL 1 OPEN</span><b>✦</b><span>QUARANTINE MIXTAPE</span><b>✦</b><span>HIDDEN ERA</span><b>✦</b><span>DUCK SAUCE TRANSPORT COMPLETE</span><b>✦</b><span>FALCON CODE OPENS LEVEL 2</span><b>✦</b>
-        <span>LEVEL 1 OPEN</span><b>✦</b><span>QUARANTINE MIXTAPE</span><b>✦</b><span>HIDDEN ERA</span><b>✦</b><span>DUCK SAUCE TRANSPORT COMPLETE</span><b>✦</b><span>FALCON CODE OPENS LEVEL 2</span><b>✦</b>
-      </div>
-    </section>
-
+    <section class="ticker" aria-label="Quarantine ticker"><div class="ticker-track"><span>LEVEL 1 OPEN</span><b>✦</b><span>QUARANTINE MIXTAPE</span><b>✦</b><span>HIDDEN ERA</span><b>✦</b><span>DUCK SAUCE TRANSPORT COMPLETE</span><b>✦</b><span>FALCON CODE OPENS LEVEL 2</span><b>✦</b><span>LEVEL 1 OPEN</span><b>✦</b><span>QUARANTINE MIXTAPE</span><b>✦</b><span>HIDDEN ERA</span><b>✦</b><span>DUCK SAUCE TRANSPORT COMPLETE</span><b>✦</b><span>FALCON CODE OPENS LEVEL 2</span><b>✦</b></div></section>
     <section class="section-pad">
       <div class="phone-shell quarantine-shell">
-        <section class="level-one-screen-card" aria-label="Level 1 featured video screen">
-          <div class="level-one-screen-head">
-            <div>
-              <span class="level-one-screen-badge">LEVEL 1 MP4 SCREEN // FEATURE VIDEO</span>
-              <h2>Now Showing</h2>
-            </div>
-            <p>Duck Sauce got the Level 1 screen active. This slot can run the YouTube feature now, then later switch into private Vault MP4s, hidden trailers, or Cool Points unlock videos.</p>
-          </div>
-          <div class="level-one-video-frame">
-            <iframe width="560" height="315" src="https://www.youtube.com/embed/0x66VFgcnYU?si=IGkdWfGY5fQ7MpQU" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-            <div class="level-one-screen-strip"><small>LEVEL 1 SIGNAL</small><span>Featured video linked into the Quarantine room</span></div>
-          </div>
-        </section>
-
-        <div class="quarantine-hero">
-          <div>
-            <img id="quarantine-cover" class="quarantine-cover" src="quarantine-mixtape.jpg" alt="The Quarantine Mixtape artwork" />
-          </div>
-          <div>
-            <p class="eyebrow">Vault Level 1</p>
-            <h1 class="vault-title">THE QUARANTINE MIXTAPE</h1>
-            <p class="lead">Hidden era unlocked. This room is built for the mixtape files: MP3s, artwork, and the order listing. Duck Sauce says do not skip track one like you own the building.</p>
-            <div class="button-row compact-actions">
-              <button id="quarantine-play" class="btn btn-primary" type="button">Play Level 1</button>
-              <button id="quarantine-pause" class="btn btn-soft" type="button">Pause</button>
-              <a class="btn btn-hot" href="vault.html">Back To Gate</a>
-            </div>
-          </div>
-        </div>
-
-        <section class="quarantine-player-card">
-          <div class="now-playing-card">
-            <span id="quarantine-chip" class="track-chip">LEVEL 1</span>
-            <h3 id="quarantine-title">Quarantine Mixtape</h3>
-            <p id="quarantine-meta">Pick a track below.</p>
-            <audio id="quarantine-audio" preload="metadata"></audio>
-          </div>
-
-          <div class="progress-wrap">
-            <span id="quarantine-current">0:00</span>
-            <input id="quarantine-progress" type="range" min="0" max="100" value="0" aria-label="Audio progress" />
-            <span id="quarantine-duration">0:00</span>
-          </div>
-
-          <p id="quarantine-status" class="status-line">Transport complete. Choose a track.</p>
-          <div id="quarantine-track-list" class="quarantine-track-list"></div>
-        </section>
-
-        <section id="level2-gate" class="level-two-gate-card" aria-label="Level 2 Falcon access gate">
-          <p class="eyebrow">Level 2 Code Terminal</p>
-          <h2>Falcon Lane</h2>
-          <p>Level 2 stays hidden until this terminal clears. Enter the Level 2 code and the HYPHSWORLD 5 floor opens with the cold Falcon route.</p>
-          <form id="level2GateForm" class="level-two-gate-form">
-            <label for="level2AccessCode">Level 2 access code</label>
-            <div class="level-two-input-row">
-              <input id="level2AccessCode" type="password" autocomplete="current-password" placeholder="ENTER LEVEL 2 CODE" />
-              <button id="level2UnlockButton" type="submit">Open Level 2</button>
-              <button id="level2ClearCode" class="clear-level-two" type="button">Clear</button>
-            </div>
-          </form>
-          <div id="level2GateStatus" class="level-two-status">Buck: Level 2 is locked. Duck Sauce: “Falcon lane cold until the right code hit.”</div>
-        </section>
+        <section class="level-one-points-card" aria-label="Saved Cool Points balance"><span>Saved Cool Points</span><strong data-hw-points>0</strong></section>
+        <section class="level-one-screen-card" aria-label="Level 1 featured video screen"><div class="level-one-screen-head"><div><span class="level-one-screen-badge">LEVEL 1 MP4 SCREEN // FEATURE VIDEO</span><h2>Now Showing</h2></div><p>Duck Sauce got the Level 1 screen active. This slot can run the YouTube feature now, then later switch into private Vault MP4s, hidden trailers, or Cool Points unlock videos.</p></div><div class="level-one-video-frame"><iframe width="560" height="315" src="https://www.youtube.com/embed/0x66VFgcnYU?si=IGkdWfGY5fQ7MpQU" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe><div class="level-one-screen-strip"><small>LEVEL 1 SIGNAL</small><span>Featured video linked into the Quarantine room</span></div></div></section>
+        <div class="quarantine-hero"><div><img id="quarantine-cover" class="quarantine-cover" src="quarantine-mixtape.jpg" alt="The Quarantine Mixtape artwork" /></div><div><p class="eyebrow">Vault Level 1</p><h1 class="vault-title">THE QUARANTINE MIXTAPE</h1><p class="lead">Hidden era unlocked. This room is built for the mixtape files: MP3s, artwork, and the order listing. Duck Sauce says do not skip track one like you own the building.</p><div class="button-row compact-actions"><button id="quarantine-play" class="btn btn-primary" type="button">Play Level 1</button><button id="quarantine-pause" class="btn btn-soft" type="button">Pause</button><a class="btn btn-hot" href="vault.html">Back To Gate</a></div></div></div>
+        <section class="quarantine-player-card"><div class="now-playing-card"><span id="quarantine-chip" class="track-chip">LEVEL 1</span><h3 id="quarantine-title">Quarantine Mixtape</h3><p id="quarantine-meta">Pick a track below.</p><audio id="quarantine-audio" preload="metadata"></audio></div><div class="progress-wrap"><span id="quarantine-current">0:00</span><input id="quarantine-progress" type="range" min="0" max="100" value="0" aria-label="Audio progress" /><span id="quarantine-duration">0:00</span></div><p id="quarantine-status" class="status-line">Transport complete. Choose a track.</p><div id="quarantine-track-list" class="quarantine-track-list"></div></section>
+        <section id="level2-gate" class="level-two-gate-card" aria-label="Level 2 Falcon access gate"><p class="eyebrow">Level 2 Code Terminal</p><h2>Falcon Lane</h2><p>Level 2 stays hidden until this terminal clears. Enter the Level 2 code and the HYPHSWORLD 5 floor opens with the cold Falcon route.</p><form id="level2GateForm" class="level-two-gate-form"><label for="level2AccessCode">Level 2 access code</label><div class="level-two-input-row"><input id="level2AccessCode" type="password" autocomplete="current-password" placeholder="ENTER LEVEL 2 CODE" /><button id="level2UnlockButton" type="submit">Open Level 2</button><button id="level2ClearCode" class="clear-level-two" type="button">Clear</button></div></form><div id="level2GateStatus" class="level-two-status">Buck: Level 2 is locked. Duck Sauce: “Falcon lane cold until the right code hit.”</div></section>
       </div>
     </section>
   </main>
 
-  <div id="access-denied" class="access-denied-overlay" hidden>
-    <div class="access-denied-card section-card">
-      <p class="eyebrow">Buck Said Hold Up</p>
-      <h2>SCAN REQUIRED</h2>
-      <p class="lead">Level 1 needs Vault transport first. Run the scanner, get cleared, then come back through the tunnel.</p>
-      <a class="btn btn-primary" href="vault.html">Run Vault Scan</a>
-    </div>
-  </div>
-
-  <footer class="site-footer">
-    <span>© <span id="year"></span> AMS WEST LLC</span>
-    <span>Level 1 — Quarantine Mixtape</span>
-  </footer>
-
-  <script src="quarantine-tracks.js"></script>
-  <script src="quarantine-player.js"></script>
-  <script src="level-2-access.js"></script>
-  <script src="vault-guard.js" defer></script>
+  <div id="access-denied" class="access-denied-overlay" hidden><div class="access-denied-card section-card"><p class="eyebrow">Buck Said Hold Up</p><h2>SCAN REQUIRED</h2><p class="lead">Level 1 needs Vault transport first. Run the scanner, get cleared, then come back through the tunnel.</p><a class="btn btn-primary" href="vault.html">Run Vault Scan</a></div></div>
+  <footer class="site-footer"><span>© <span id="year"></span> AMS WEST LLC</span><span>Level 1 — Quarantine Mixtape</span></footer>
+  <script src="supabase-config.js?v=level-sync-20260522"></script>
+  <script src="auth-client.js?v=level-sync-20260522"></script>
+  <script src="cool-points.js?v=level-sync-20260522"></script>
+  <script src="global-points-engine.js?v=level-sync-20260522"></script>
+  <script src="global-points-follow-fix.js?v=level-sync-20260522"></script>
+  <script src="user-widget.js?v=level-sync-20260522"></script>
+  <script src="quarantine-tracks.js?v=level-sync-20260522"></script>
+  <script src="quarantine-player.js?v=level-sync-20260522"></script>
+  <script src="level-2-access.js?v=level-sync-20260522"></script>
+  <script src="vault-guard.js?v=level-sync-20260522" defer></script>
 </body>
 </html>
