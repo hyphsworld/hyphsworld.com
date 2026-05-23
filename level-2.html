@@ -8,6 +8,7 @@
   <meta name="description" content="HYPHSWORLD Vault Level 2: HYPHSWORLD 5 floor with saved Cool Points and premium access energy." />
 
   <link rel="stylesheet" href="styles.css" />
+  <script>window.HW_SUPABASE_URL='https://yuhxtdkhsltaqiagrtys.supabase.co';window.HW_SUPABASE_ANON_KEY='sb_publishable_oYdN-75W3b7k3m1zLukI-A_BKWVDD5e';window.SUPABASE_ANON_KEY=window.HW_SUPABASE_ANON_KEY;window.HW_SUPABASE_CONFIG={url:window.HW_SUPABASE_URL,anonKey:window.HW_SUPABASE_ANON_KEY,profileTable:'profiles'};</script>
 
   <style>
     :root{--bg:#060607;--ink:#fff;--muted:#ccd6d2;--green:#39ff7a;--red:#ff275d;--yellow:#ffe45c;--cyan:#1ffcff;--purple:#b84dff;--line:rgba(255,255,255,.16);--shadow:0 0 30px rgba(184,77,255,.22)}
@@ -29,6 +30,8 @@
     .sub{position:relative;z-index:1;max-width:780px;color:var(--muted);font-size:1.05rem;line-height:1.55}
     .status-grid{position:relative;z-index:1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:22px}
     .stat{padding:16px;border-radius:22px;background:rgba(0,0,0,.38);border:1px solid var(--line)}.stat b{display:block;font-size:1.6rem;color:var(--cyan)}.stat span{color:var(--muted);font-weight:800;text-transform:uppercase;font-size:.72rem}
+    .transport-sync-card{position:relative;z-index:1;margin-top:16px;padding:16px;border-radius:24px;border:1px solid rgba(57,255,122,.32);background:linear-gradient(135deg,rgba(57,255,122,.16),rgba(31,252,255,.10),rgba(184,77,255,.12));box-shadow:0 0 26px rgba(57,255,122,.13)}
+    .transport-sync-card span{display:block;color:var(--muted);font-weight:900;text-transform:uppercase;font-size:.72rem;letter-spacing:.12em}.transport-sync-card strong{display:block;margin-top:3px;color:var(--green);font-size:clamp(2rem,8vw,3.8rem);line-height:1;font-weight:1000}
     .section{padding:18px 0 54px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
     .feature{padding:22px;min-height:260px;display:flex;flex-direction:column;justify-content:space-between}.feature h2{margin:12px 0 8px;font-size:1.5rem}.feature p{margin:0 0 8px;color:var(--muted);line-height:1.5}
     .cover-zone{min-height:160px;border-radius:22px;border:1px dashed rgba(31,252,255,.45);background:radial-gradient(circle at 20% 20%,rgba(57,255,122,.25),transparent 30%),radial-gradient(circle at 80% 30%,rgba(255,39,93,.20),transparent 32%),rgba(0,0,0,.42);display:grid;place-items:center;font-size:2.4rem;font-weight:1000;letter-spacing:-.06em;text-align:center;text-transform:uppercase}
@@ -58,11 +61,15 @@
         <span class="kicker">ACCESS GRANTED // FLOOR 02</span>
         <h1>HYPHSWORLD 5</h1>
         <p class="sub">Level 2 is no longer blank. This is the premium floor for HYPHSWORLD 5 pressure: music, motion, rollout energy, and saved Cool Points that carry across the Vault.</p>
+        <div class="transport-sync-card" aria-label="Saved Cool Points balance">
+          <span>Saved Cool Points</span>
+          <strong class="js-cool-points" data-hw-points>0</strong>
+        </div>
         <div class="status-grid">
           <div class="stat"><b>02</b><span>Floor</span></div>
           <div class="stat"><b>Live</b><span>Status</span></div>
           <div class="stat"><b>H5</b><span>Drop Zone</span></div>
-          <div class="stat"><b class="js-cool-points">0</b><span>Cool Points Saved</span></div>
+          <div class="stat"><b class="js-cool-points" data-hw-points>0</b><span>Cool Points Saved</span></div>
         </div>
         <div class="actions">
           <button class="pill" type="button" data-point-add="10" data-point-reason="Level 2 check-in">Claim Level 2 Points</button>
@@ -94,8 +101,12 @@
   </main>
 
   <div class="toast" id="hw-toast" role="status" aria-live="polite"></div>
-  <script src="auth-client.js"></script>
-  <script src="level-2-access.js"></script>
-  <script src="cool-points.js"></script>
+  <script src="supabase-config.js?v=level-sync-20260522"></script>
+  <script src="auth-client.js?v=level-sync-20260522"></script>
+  <script src="cool-points.js?v=level-sync-20260522"></script>
+  <script src="global-points-engine.js?v=level-sync-20260522"></script>
+  <script src="global-points-follow-fix.js?v=level-sync-20260522"></script>
+  <script src="user-widget.js?v=level-sync-20260522"></script>
+  <script src="level-2-access.js?v=level-sync-20260522"></script>
 </body>
 </html>
