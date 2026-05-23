@@ -113,7 +113,8 @@
       const expectedLocal=Math.max(0,profilePoints+pendingDelta);
       const resolvedPoints=(pendingDelta && localPoints>=expectedLocal)?localPoints:profilePoints;
       state={ready:true,user,profile,points:resolvedPoints,lifetimePoints:Math.max(number(profile.lifetime_points),resolvedPoints),rankTitle:profile.rank_title||'Lobby Rookie',avatarIcon:profile.avatar_icon||'🧢',source:'supabase'};
-      if(resolvedPoints<=profilePoints) clearPendingDelta();
+      const pendingResolved = pendingDelta>0 ? profilePoints>=localPoints : pendingDelta<0 ? profilePoints<=localPoints : true;
+      if(pendingResolved) clearPendingDelta();
       setLocalPoints(state.points); cleanLegacyGuestPoints();
     } else {
       const localPoints=getLocalPoints();
@@ -128,7 +129,13 @@
     if(!state.ready){ pendingQueue.push({amount:delta,reason,metadata}); }
     const next=Math.max(0,number(state.points)+delta); state.points=next; state.lifetimePoints=Math.max(number(state.lifetimePoints),next); setLocalPoints(next); render(); emit(POINT_EVENTS[1]);
     if(state.user && window.HWAuth && typeof window.HWAuth.addPoints==='function'){
-      try{ setPendingDelta(getPendingDelta()+delta); await window.HWAuth.addPoints(delta,reason||'site_action',metadata||{}); return refresh(); }catch(error){}
+      try{
+        setPendingDelta(getPendingDelta()+delta);
+        await window.HWAuth.addPoints(delta,reason||'site_action',metadata||{});
+        return refresh();
+      }catch(error){
+        setPendingDelta(getPendingDelta()-delta);
+      }
     }
     return getState();
   }
