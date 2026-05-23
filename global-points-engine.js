@@ -133,5 +133,7 @@
   document.addEventListener('hw:points:add',(event)=>{ const detail=event.detail||{}; add(detail.amount||detail.points||0,detail.reason||'site_event',detail.metadata||{}); });
   document.addEventListener('DOMContentLoaded',async()=>{ await refresh(); flushPending(); });
   window.addEventListener('load',async()=>{ await refresh(); flushPending(); });
-  window.addEventListener('storage',(event)=>{ if([STORAGE_KEY,'coolPoints'].includes(event.key)) refresh(); });
+  window.addEventListener('storage',(event)=>{
+    if ([STORAGE_KEY].concat(LEGACY_KEYS).includes(event.key)) refresh();
+  });
 })();
