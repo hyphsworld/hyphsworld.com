@@ -38,9 +38,9 @@
     localStorage.setItem('hyphsworld_points',value);
     localStorage.setItem('HW_COOL_POINTS',value);
   }
-  function parsePendingDelta(value){ const n=Number(value); return Number.isFinite(n)?Math.floor(n):0; }
-  function getPendingDelta(){ return parsePendingDelta(localStorage.getItem(PENDING_DELTA_KEY)); }
-  function setPendingDelta(value){ localStorage.setItem(PENDING_DELTA_KEY,String(parsePendingDelta(value))); }
+  function signedInt(value){ const n=Number(value); return Number.isFinite(n)?Math.trunc(n):0; }
+  function getPendingDelta(){ return signedInt(localStorage.getItem(PENDING_DELTA_KEY)); }
+  function setPendingDelta(value){ localStorage.setItem(PENDING_DELTA_KEY,String(signedInt(value))); }
   function clearPendingDelta(){ localStorage.removeItem(PENDING_DELTA_KEY); }
   function cleanLegacyGuestPoints(){ LEGACY_KEYS.forEach((key)=>{ if(key!=='coolPoints') localStorage.removeItem(key); }); }
 
@@ -124,7 +124,7 @@
   }
 
   async function add(amount,reason,metadata){
-    const delta=Math.floor(Number(amount||0)); if(!delta) return getState();
+    const delta=signedInt(amount); if(!delta) return getState();
     if(!state.ready){ pendingQueue.push({amount:delta,reason,metadata}); }
     const next=Math.max(0,number(state.points)+delta); state.points=next; state.lifetimePoints=Math.max(number(state.lifetimePoints),next); setLocalPoints(next); render(); emit(POINT_EVENTS[1]);
     if(state.user && window.HWAuth && typeof window.HWAuth.addPoints==='function'){
