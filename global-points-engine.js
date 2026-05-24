@@ -16,6 +16,16 @@
   let supabaseClient = null;
   let pendingQueue = [];
 
+  let refreshTimer = null;
+
+  function scheduleLiveRefresh(){
+    if (refreshTimer) return;
+    refreshTimer = window.setInterval(()=>{
+      if (document.hidden) return;
+      refresh();
+    }, 12000);
+  }
+
   function number(value){ const n=Number(value||0); return Number.isFinite(n)?Math.max(0,Math.floor(n)):0; }
   function emit(name){
     const snapshot = getState();
@@ -103,6 +113,7 @@
     const profile=await fetchProfile(user);
     if(user && profile){
       state={ready:true,user,profile,points:number(profile.points),lifetimePoints:number(profile.lifetime_points),rankTitle:profile.rank_title||'Lobby Rookie',avatarIcon:profile.avatar_icon||'🧢',source:'supabase'};
+      scheduleLiveRefresh();
       setLocalPoints(state.points); cleanLegacyGuestPoints();
     } else {
       const localPoints=getLocalPoints();
@@ -136,4 +147,6 @@
   document.addEventListener('DOMContentLoaded',async()=>{ await refresh(); flushPending(); });
   window.addEventListener('load',async()=>{ await refresh(); flushPending(); });
   window.addEventListener('storage',(event)=>{ if([STORAGE_KEY,'coolPoints'].includes(event.key)) refresh(); });
+  document.addEventListener('visibilitychange',()=>{ if(!document.hidden) refresh(); });
+  window.addEventListener('focus',refresh);
 })();

@@ -6,6 +6,9 @@
   const PROJECT_URL = window.HW_SUPABASE_URL || 'https://yuhxtdkhsltaqiagrtys.supabase.co';
   const ANON_KEY = window.HW_SUPABASE_ANON_KEY || window.SUPABASE_ANON_KEY || '';
   let clientPromise = null;
+  let cachedUser = null;
+  let cachedUserAt = 0;
+  let authSyncStarted = false;
 
   function makeCode(prefix = 'AMS') {
     return `${prefix}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
@@ -55,24 +58,48 @@
     return clientPromise;
   }
 
+  async function startAuthSync() {
+    if (authSyncStarted) return;
+    authSyncStarted = true;
+    try {
+      const sb = await getClient();
+      if (sb && sb.auth && typeof sb.auth.onAuthStateChange === 'function') {
+        sb.auth.onAuthStateChange(() => {
+          cachedUser = null;
+          cachedUserAt = 0;
+        });
+      }
+    } catch (error) {}
+  }
+
   async function delay(ms) {
     return new Promise((resolve) => window.setTimeout(resolve, ms));
   }
 
   async function getUser() {
-    for (let attempt = 0; attempt < 12; attempt += 1) {
+    startAuthSync();
+    if (cachedUser && (Date.now() - cachedUserAt) < 120000) return cachedUser;
+    for (let attempt = 0; attempt < 4; attempt += 1) {
       if (window.HWAuth && typeof window.HWAuth.getCurrentUser === 'function') {
         try {
           const user = await window.HWAuth.getCurrentUser();
-          if (user && (user.userId || user.id)) return { id: user.userId || user.id, displayName: user.displayName || user.username || 'Player' };
+          if (user && (user.userId || user.id)) {
+            cachedUser = { id: user.userId || user.id, displayName: user.displayName || user.username || 'Player' };
+            cachedUserAt = Date.now();
+            return cachedUser;
+          }
         } catch (error) {}
       }
       try {
         const sb = await getClient();
         const { data } = await sb.auth.getUser();
-        if (data && data.user) return { id: data.user.id, displayName: data.user.email || 'Player' };
+        if (data && data.user) {
+          cachedUser = { id: data.user.id, displayName: data.user.email || 'Player' };
+          cachedUserAt = Date.now();
+          return cachedUser;
+        }
       } catch (error) {}
-      await delay(350);
+      await delay(250);
     }
     throw new Error('Login required to create or join tables.');
   }
@@ -87,7 +114,7 @@
       host_id: user.id,
       status: 'waiting',
       max_players: 4
-    }).select('*').single();
+    }).select('id,room_code,game_type,status,max_players,host_id').single();
     if (roomError) throw roomError;
 
     const { data: existingHost } = await sb.from('game_players').select('*').eq('room_id', room.id).eq('user_id', user.id).maybeSingle();
@@ -137,12 +164,16 @@
     if (!clean) throw new Error('Enter a room code first.');
     const sb = await getClient();
     const user = await getUser();
-    const { data: room, error: roomError } = await sb.from('game_rooms').select('*').eq('room_code', clean).maybeSingle();
+    const { data: room, error: roomError } = await sb.from('game_rooms').select('id,room_code,game_type,status,max_players,host_id').eq('room_code', clean).maybeSingle();
     if (roomError) throw roomError;
     if (!room) throw new Error('Room not found.');
 
     const { data: existingPlayer, error: existingError } = await sb.from('game_players').select('*').eq('room_id', room.id).eq('user_id', user.id).maybeSingle();
     if (existingError) throw existingError;
+    if (!existingPlayer && Number(room.max_players || 0) > 0) {
+      const { count: seatCount } = await sb.from('game_players').select('id', { count: 'exact', head: true }).eq('room_id', room.id);
+      if (Number(seatCount || 0) >= Number(room.max_players)) throw new Error('Room is full. Try another table code.');
+    }
 
     if (!existingPlayer) {
       const { data: players } = await sb.from('game_players').select('seat_number').eq('room_id', room.id).order('seat_number', { ascending: true });
