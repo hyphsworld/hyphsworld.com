@@ -101,7 +101,11 @@ async def submit_score(payload: LeaderboardSubmit):
 
 @api_router.get("/leaderboard", response_model=List[LeaderboardEntry])
 async def get_leaderboard(limit: int = 50):
-    database = require_database()
+    if db is None:
+        logger.warning("Leaderboard requested while database is not configured; returning empty list")
+        return []
+
+    database = db
     if limit < 1:
         limit = 50
     if limit > 200:
@@ -123,7 +127,11 @@ async def get_leaderboard(limit: int = 50):
 @api_router.get("/leaderboard/rank")
 async def get_rank(score: int):
     """Return how many entries beat this score (rank = count + 1)."""
-    database = require_database()
+    if db is None:
+        logger.warning("Rank requested while database is not configured; returning default rank")
+        return {"rank": 1, "score": score}
+
+    database = db
     higher = await database.leaderboard.count_documents({"score": {"$gt": score}})
     return {"rank": higher + 1, "score": score}
 
