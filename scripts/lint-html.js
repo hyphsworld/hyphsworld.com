@@ -12,14 +12,30 @@ function walk(dir, out=[]) {
   return out;
 }
 
-const files = walk(process.cwd());
+const repoRoot = process.cwd();
+const files = walk(repoRoot);
 const issues = [];
+
 for (const file of files) {
   const src = fs.readFileSync(file, 'utf8');
-  if (!src.includes('<!DOCTYPE html>')) issues.push(`${file}: missing <!DOCTYPE html>`);
-  const dupIds = [...src.matchAll(/id\s*=\s*"([^"]+)"/g)].map(m=>m[1]);
+  if (!/^\s*<!doctype html>/i.test(src)) issues.push(`${file}: missing <!DOCTYPE html>`);
+
+  const ids = [...src.matchAll(/id\s*=\s*"([^"]+)"/g)].map(m => m[1]);
   const seen = new Set();
-  for (const id of dupIds) { if (seen.has(id)) issues.push(`${file}: duplicate id ${id}`); else seen.add(id); }
+  for (const id of ids) {
+    if (seen.has(id)) issues.push(`${file}: duplicate id ${id}`);
+    seen.add(id);
+  }
+
+  const refs = [...src.matchAll(/(?:src|href)\s*=\s*"([^"]+)"/g)].map(m => m[1]);
+  for (const ref of refs) {
+    if (/^(https?:|mailto:|tel:|#|data:|javascript:)/i.test(ref)) continue;
+    const cleaned = ref.split('?')[0].split('#')[0];
+    if (!cleaned) continue;
+    const rel = cleaned.startsWith('/') ? cleaned.slice(1) : path.join(path.relative(repoRoot, path.dirname(file)), cleaned);
+    const localPath = path.join(repoRoot, rel);
+    if (!fs.existsSync(localPath)) issues.push(`${file}: missing local asset ${cleaned}`);
+  }
 }
 
 if (issues.length) {
