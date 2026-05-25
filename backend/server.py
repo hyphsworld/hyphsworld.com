@@ -27,6 +27,7 @@ mongo_url = os.environ.get('MONGO_URL')
 db_name = os.environ.get('DB_NAME', 'cash_run')
 client: Optional[AsyncIOMotorClient] = None
 db = None
+in_memory_leaderboard: List[dict] = []
 
 if mongo_url:
     client = AsyncIOMotorClient(mongo_url)
@@ -76,7 +77,6 @@ async def health():
 
 @api_router.post("/leaderboard", response_model=LeaderboardEntry)
 async def submit_score(payload: LeaderboardSubmit):
-    database = require_database()
     name = payload.name.strip().upper()[:12]
     if not name:
         raise HTTPException(status_code=400, detail="Name cannot be empty")
@@ -95,13 +95,26 @@ async def submit_score(payload: LeaderboardSubmit):
     doc = entry.model_dump()
     doc['timestamp'] = doc['timestamp'].isoformat()
 
-    await database.leaderboard.insert_one(doc)
+    if db is None:
+        in_memory_leaderboard.append(doc)
+        in_memory_leaderboard.sort(key=lambda row: row.get('score', 0), reverse=True)
+        if len(in_memory_leaderboard) > 500:
+            del in_memory_leaderboard[500:]
+        logger.warning("Stored leaderboard entry in memory because database is not configured")
+        return entry
+
+    await db.leaderboard.insert_one(doc)
     return entry
 
 
 @api_router.get("/leaderboard", response_model=List[LeaderboardEntry])
 async def get_leaderboard(limit: int = 50):
-    database = require_database()
+    if db is None:
+        logger.warning("Leaderboard requested while database is not configured; serving in-memory entries")
+        rows = in_memory_leaderboard[:limit]
+        return [LeaderboardEntry(**row) for row in rows]
+
+    database = db
     if limit < 1:
         limit = 50
     if limit > 200:
@@ -123,8 +136,12 @@ async def get_leaderboard(limit: int = 50):
 @api_router.get("/leaderboard/rank")
 async def get_rank(score: int):
     """Return how many entries beat this score (rank = count + 1)."""
-    database = require_database()
-    higher = await database.leaderboard.count_documents({"score": {"$gt": score}})
+    if db is None:
+        logger.warning("Rank requested while database is not configured; using in-memory entries")
+        higher = sum(1 for row in in_memory_leaderboard if int(row.get("score", 0)) > score)
+        return {"rank": higher + 1, "score": score}
+
+    higher = await db.leaderboard.count_documents({"score": {"$gt": score}})
     return {"rank": higher + 1, "score": score}
 
 
