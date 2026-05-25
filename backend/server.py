@@ -50,9 +50,11 @@ class LeaderboardEntry(BaseModel):
 
 
 class LeaderboardSubmit(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
     name: str = Field(..., min_length=1, max_length=12)
-    score: int = Field(..., ge=0)
-    level: int = Field(..., ge=1)
+    score: int = Field(default=0, ge=0)
+    level: int = Field(default=1, ge=1)
     character: str = Field(default="boy")
 
 
@@ -121,7 +123,7 @@ async def get_leaderboard(limit: int = 50):
 
 
 @api_router.get("/leaderboard/rank")
-async def get_rank(score: int):
+async def get_rank(score: int = 0):
     """Return how many entries beat this score (rank = count + 1)."""
     database = require_database()
     higher = await database.leaderboard.count_documents({"score": {"$gt": score}})
