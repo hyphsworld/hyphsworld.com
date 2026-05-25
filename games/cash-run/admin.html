@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cash Run Admin</title>
+  <style>
+    body{font-family:Arial,sans-serif;background:#0b0f13;color:#e7f7ff;margin:0;padding:24px}
+    .wrap{max-width:900px;margin:0 auto}
+    .card{background:#121a22;border:1px solid #243545;border-radius:12px;padding:16px;margin-bottom:14px}
+    input,button{padding:10px;border-radius:8px;border:1px solid #2b4458;background:#0d151d;color:#e7f7ff}
+    button{cursor:pointer;background:#1b2d3b}
+    .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .mono{font-family:monospace;white-space:pre-wrap}
+    label{display:block;margin-top:10px;font-size:13px;color:#9bc0d8}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Cash Run Admin Console</h1>
+  <div class="card">
+    <label>Backend Base URL</label>
+    <input id="baseUrl" value="/api" style="width:100%" />
+    <label>Admin Token</label>
+    <input id="adminToken" placeholder="Paste ADMIN_TOKEN" style="width:100%" />
+    <div class="row">
+      <button id="saveToken">Save Token</button>
+      <button id="clearToken">Clear Token</button>
+      <button id="fetchMe">Fetch /auth/me</button>
+      <button id="adminLogin">Ping /auth/login</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Leaderboard Admin Actions</h3>
+    <label>Entry ID</label>
+    <input id="entryId" placeholder="leaderboard entry id" style="width:100%" />
+    <div class="row">
+      <button id="deleteEntry">Delete Entry</button>
+      <button id="clearAll">Clear Leaderboard</button>
+    </div>
+    <label>Edit Name</label><input id="editName" placeholder="name" />
+    <label>Edit Score</label><input id="editScore" placeholder="score" type="number" />
+    <label>Edit Level</label><input id="editLevel" placeholder="level" type="number" />
+    <label>Edit Character</label><input id="editCharacter" placeholder="boy|girl" />
+    <div class="row"><button id="editEntry">Edit Entry</button></div>
+  </div>
+
+  <div class="card mono" id="out">Ready.</div>
+</div>
+<script src="admin.js"></script>
+</body>
+</html>
