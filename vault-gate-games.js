@@ -39,14 +39,26 @@
   function safeSessionSet(key, value) { try { sessionStorage.setItem(key, String(value)); } catch (error) {} }
   function setPlayerStatus(message) { const el = $('#gatePlayerStatus'); if (el) el.textContent = message; }
   function setGateStatus(status, pad, message) { const gateStatus = $('#gateStatus'); const padStatus = $('#padStatus'); const consoleMessage = $('#consoleMessage'); if (gateStatus) gateStatus.textContent = status; if (padStatus) padStatus.textContent = pad; if (consoleMessage) consoleMessage.textContent = message; }
-  function addPoints(amount, reason) {
+  async function addPoints(amount, reason) {
     const cleanAmount = Number(amount || 0);
     const cleanReason = reason || 'lobby_casino';
     if (!cleanAmount) return;
-    if (window.HWPointsFollowFixV1 && typeof window.HWPointsFollowFixV1.add === 'function') {
-      window.HWPointsFollowFixV1.add(cleanAmount, cleanReason, { source: 'vault_gate_games' });
-      return;
-    }
+
+    try {
+      if (window.HWPoints && typeof window.HWPoints.add === 'function') {
+        await window.HWPoints.add(cleanAmount, cleanReason, { source: 'vault_gate_games' });
+        if (window.HWPoints && typeof window.HWPoints.refresh === 'function') await window.HWPoints.refresh();
+        return;
+      }
+    } catch (error) {}
+
+    try {
+      if (window.HWPointsFollowFixV1 && typeof window.HWPointsFollowFixV1.add === 'function') {
+        await window.HWPointsFollowFixV1.add(cleanAmount, cleanReason, { source: 'vault_gate_games' });
+        return;
+      }
+    } catch (error) {}
+
     document.dispatchEvent(new CustomEvent(POINTS_EVENT, { detail: { amount: cleanAmount, reason: cleanReason, metadata: { source: 'vault_gate_games_fallback' } } }));
   }
 
@@ -84,7 +96,7 @@
   function spinNeonSlots() { if (slotSpinning) return; slotSpinning = true; const panel = $('.neon-slots-panel'); const reels = ['neonReel1', 'neonReel2', 'neonReel3'].map((id) => $('#' + id)).filter(Boolean); const spinBtn = $('#neonSpinBtn'); const slotStatus = $('#neonSlotStatus'); const icons = ['💚', '💡', '❇️', '💎', '🎰', '🟢', '⚡', '🔊']; const finalIcons = reels.map(() => icons[Math.floor(Math.random() * icons.length)]); if (spinBtn) spinBtn.disabled = true; if (panel) panel.classList.add('is-spinning'); reels.forEach((reel) => reel.classList.add('is-spinning')); if (slotStatus) slotStatus.textContent = 'Neon reels spinning...'; let ticks = 0; const timer = window.setInterval(() => { ticks += 1; reels.forEach((reel) => { reel.textContent = icons[Math.floor(Math.random() * icons.length)]; }); if (ticks >= 18) { window.clearInterval(timer); reels.forEach((reel, index) => { window.setTimeout(() => { reel.textContent = finalIcons[index]; reel.classList.remove('is-spinning'); if (index === reels.length - 1) { if (panel) panel.classList.remove('is-spinning'); const jackpot = finalIcons.every((icon) => icon === finalIcons[0]); const reward = jackpot ? 25 : 5; addPoints(reward, jackpot ? 'neon_slots_jackpot' : 'neon_slots_spin'); setPlayerStatus(jackpot ? 'NEON JACKPOT counted for Cool Points.' : 'Neon slot spin counted for Cool Points.'); if (slotStatus) slotStatus.textContent = jackpot ? '+25 Cool Points. Neon jackpot.' : '+5 Cool Points. Neon light spin logged.'; if (spinBtn) spinBtn.disabled = false; slotSpinning = false; } }, index * 260); }); } }, 70); }
   async function createRealTable() { const status = $('#multiTableStatus'); const code = $('#roomCodeDisplay'); const link = $('#inviteLinkDisplay'); const open = $('#openCasinoBtn'); const players = $('#playersList'); if (!window.HWMultiplayerInvites) { if (status) status.textContent = 'Multiplayer helper still loading. Tap again.'; return; } try { if (status) status.textContent = 'Creating table...'; const result = await window.HWMultiplayerInvites.createTable('poker'); activeInviteLink = result.inviteLink || ''; if (code) code.textContent = result.roomCode || 'TABLE READY'; if (link) link.textContent = activeInviteLink || 'Invite link ready.'; if (open && result.room && result.room.id) open.href = `table-room.html?room=${encodeURIComponent(result.room.id)}`; else if (open && result.roomCode) open.href = `games.html?room=${encodeURIComponent(result.roomCode)}&join=1`; if (players) players.innerHTML = '<li>Seat 1: Host joined</li>'; if (status) status.textContent = 'Table live. +12 Cool Points. Copy the invite link.'; addPoints(12, 'multiplayer_table_created'); } catch (error) { if (status) status.textContent = error.message || 'Login required to create table.'; } }
   async function copyInvite() { const status = $('#multiTableStatus'); if (!activeInviteLink) { activeInviteLink = $('#inviteLinkDisplay')?.textContent || ''; } if (!activeInviteLink || activeInviteLink === 'Create a table first.') { if (status) status.textContent = 'Create a table first.'; return; } try { if (window.HWMultiplayerInvites) await window.HWMultiplayerInvites.copyText(activeInviteLink); if (status) status.textContent = 'Invite link copied. Send it.'; } catch (error) { if (status) status.textContent = 'Copy failed. Hold the link and copy it.'; } }
-  function initAudio() { const audio = $('#gateAudio'); const progress = $('#gatePlayerProgress'); if (!audio) return; audio.addEventListener('timeupdate', () => { if (audio.duration && progress) progress.value = String((audio.currentTime / audio.duration) * 100); }); audio.addEventListener('ended', handleTrackEnded); audio.addEventListener('error', () => { const track = currentTrack(); const nextSource = activeSourceIndex + 1; if (nextSource < (track.sources || []).length) { loadTrack(activeTrackId, nextSource); if (playRequested) playActiveTrack(); return; } setPlayerStatus(`MP3 not found for ${track.title}.`); }); if (progress) progress.addEventListener('input', () => { if (audio.duration) audio.currentTime = (Number(progress.value) / 100) * audio.duration; }); }
+  function initAudio() { const audio = $('#gateAudio'); const progress = $('#gatePlayerProgress'); if (!audio) return; audio.setAttribute('playsinline', ''); audio.setAttribute('webkit-playsinline', ''); audio.addEventListener('timeupdate', () => { if (audio.duration && progress) progress.value = String((audio.currentTime / audio.duration) * 100); }); audio.addEventListener('ended', handleTrackEnded); audio.addEventListener('error', () => { const track = currentTrack(); const nextSource = activeSourceIndex + 1; if (nextSource < (track.sources || []).length) { loadTrack(activeTrackId, nextSource); if (playRequested) playActiveTrack(); return; } setPlayerStatus(`MP3 not found for ${track.title}.`); }); if (progress) progress.addEventListener('input', () => { if (audio.duration) audio.currentTime = (Number(progress.value) / 100) * audio.duration; }); }
   function bindLobbyPlayer() { const playBtn = $('#gatePlayBtn'); const pauseBtn = $('#gatePauseBtn'); const neonSound = $('#neonSoundBtn'); if (playBtn) playBtn.addEventListener('click', playActiveTrack); if (pauseBtn) pauseBtn.addEventListener('click', pauseTrack); if (neonSound) neonSound.addEventListener('click', () => { selectTrack('neonLights'); playActiveTrack(); addPoints(2, 'neon_lights_play'); }); trackButtons.forEach((button) => button.addEventListener('click', () => selectTrack(button.dataset.gateTrack))); }
   function bindCasino() { const spin = $('#neonSpinBtn'); if (spin) spin.addEventListener('click', spinNeonSlots); const hit = $('#blackjackHit'); const stand = $('#blackjackStand'); const fresh = $('#blackjackNew'); if (fresh) fresh.addEventListener('click', newBlackjackHand); if (hit) hit.addEventListener('click', hitBlackjack); if (stand) stand.addEventListener('click', standBlackjack); const create = $('#createTableBtn'); const copy = $('#copyInviteBtn'); if (create) create.addEventListener('click', createRealTable); if (copy) copy.addEventListener('click', copyInvite); newBlackjackHand(); }
 
