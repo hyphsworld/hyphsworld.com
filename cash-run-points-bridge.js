@@ -61,7 +61,7 @@
     const hud = document.createElement('aside');
     hud.id = 'hwCashRunBridgeHud';
     hud.innerHTML = '<strong>Cash Run Bridge</strong><span>Global Cool Points linked</span><small>Best: <b id="hwCashRunBest">0</b></small>';
-    hud.style.cssText = 'position:fixed;left:12px;top:12px;z-index:2147483646;display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 10px;border-radius:16px;border:1px solid rgba(57,255,122,.35);background:rgba(0,0,0,.72);backdrop-filter:blur(10px);color:#fff;font:900 11px/1 Arial,Helvetica,sans-serif;box-shadow:0 12px 32px rgba(0,0,0,.28);text-transform:uppercase;letter-spacing:.04em';
+    hud.style.cssText = 'position:fixed;left:12px;top:max(12px,env(safe-area-inset-top));z-index:2147483646;display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 10px;border-radius:16px;border:1px solid rgba(57,255,122,.35);background:rgba(0,0,0,.72);backdrop-filter:blur(10px);color:#fff;font:900 11px/1 Arial,Helvetica,sans-serif;box-shadow:0 12px 32px rgba(0,0,0,.28);text-transform:uppercase;letter-spacing:.04em;max-width:min(58vw,360px);pointer-events:none';
     document.body.appendChild(hud);
     setText('#hwCashRunBest', bestScore);
   }
