@@ -1,0 +1,235 @@
+/* HYPHSWORLD Cash Run Points Bridge
+   Bridges the embedded Cash Run build into the same HWPoints account/global pipeline.
+   It does not replace the game. It watches for score/cash/run signals and awards Cool Points safely.
+*/
+(function () {
+  'use strict';
+
+  if (window.HWCashRunBridgeV1) return;
+
+  const STORAGE_PREFIX = 'hyphsworld.cashRun.bridge.';
+  const SESSION_AWARDED_KEY = STORAGE_PREFIX + 'awardedRuns';
+  const BEST_SCORE_KEY = STORAGE_PREFIX + 'bestScore';
+  const LAST_AWARD_KEY = STORAGE_PREFIX + 'lastAwardAt';
+  const SCAN_INTERVAL = 1800;
+  const MIN_AWARD_GAP_MS = 8000;
+
+  let bestScore = number(localStorage.getItem(BEST_SCORE_KEY));
+  let lastCandidate = { score: 0, source: 'boot', at: Date.now() };
+  let lastAwardAt = number(sessionStorage.getItem(LAST_AWARD_KEY));
+  let scanner = null;
+  let observer = null;
+
+  function number(value) {
+    const n = Number(String(value || '').replace(/[^0-9.-]/g, ''));
+    return Number.isFinite(n) ? Math.max(0, Math.floor(n)) : 0;
+  }
+
+  function readJson(key, fallback) {
+    try { return JSON.parse(sessionStorage.getItem(key) || 'null') || fallback; } catch (error) { return fallback; }
+  }
+
+  function writeJson(key, value) {
+    try { sessionStorage.setItem(key, JSON.stringify(value)); } catch (error) {}
+  }
+
+  function setText(selector, value) {
+    const el = document.querySelector(selector);
+    if (el) el.textContent = String(value);
+  }
+
+  function toast(message) {
+    let box = document.getElementById('hwCashRunBridgeToast');
+    if (!box) {
+      box = document.createElement('div');
+      box.id = 'hwCashRunBridgeToast';
+      box.style.cssText = 'position:fixed;left:50%;bottom:76px;z-index:2147483647;transform:translateX(-50%) translateY(18px);opacity:0;max-width:min(92vw,620px);padding:12px 16px;border-radius:999px;border:1px solid rgba(57,255,122,.55);background:linear-gradient(135deg,rgba(0,0,0,.92),rgba(16,64,30,.92));color:#fff;font:900 13px/1.35 Arial,Helvetica,sans-serif;box-shadow:0 18px 44px rgba(0,0,0,.38),0 0 22px rgba(57,255,122,.18);transition:.22s ease;pointer-events:none;text-align:center';
+      document.body.appendChild(box);
+    }
+    box.textContent = message;
+    box.style.opacity = '1';
+    box.style.transform = 'translateX(-50%) translateY(0)';
+    clearTimeout(box._timer);
+    box._timer = setTimeout(function () {
+      box.style.opacity = '0';
+      box.style.transform = 'translateX(-50%) translateY(18px)';
+    }, 3600);
+  }
+
+  function ensureHud() {
+    if (document.getElementById('hwCashRunBridgeHud')) return;
+    const hud = document.createElement('aside');
+    hud.id = 'hwCashRunBridgeHud';
+    hud.innerHTML = '<strong>Cash Run Bridge</strong><span>Global Cool Points linked</span><small>Best: <b id="hwCashRunBest">0</b></small>';
+    hud.style.cssText = 'position:fixed;left:12px;top:12px;z-index:2147483646;display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 10px;border-radius:16px;border:1px solid rgba(57,255,122,.35);background:rgba(0,0,0,.72);backdrop-filter:blur(10px);color:#fff;font:900 11px/1 Arial,Helvetica,sans-serif;box-shadow:0 12px 32px rgba(0,0,0,.28);text-transform:uppercase;letter-spacing:.04em';
+    document.body.appendChild(hud);
+    setText('#hwCashRunBest', bestScore);
+  }
+
+  function pointsAwardFor(score) {
+    if (score <= 0) return 0;
+    if (score < 50) return 2;
+    if (score < 150) return 5;
+    if (score < 350) return 10;
+    if (score < 700) return 18;
+    if (score < 1200) return 25;
+    return 40;
+  }
+
+  function runFingerprint(score, source) {
+    const bucket = Math.floor(Date.now() / 45000);
+    return [bucket, source || 'cash_run', score].join(':');
+  }
+
+  function hasAwarded(fingerprint) {
+    const awarded = readJson(SESSION_AWARDED_KEY, {});
+    return Boolean(awarded[fingerprint]);
+  }
+
+  function markAwarded(fingerprint) {
+    const awarded = readJson(SESSION_AWARDED_KEY, {});
+    awarded[fingerprint] = Date.now();
+    const keys = Object.keys(awarded).slice(-50);
+    const trimmed = {};
+    keys.forEach(function (key) { trimmed[key] = awarded[key]; });
+    writeJson(SESSION_AWARDED_KEY, trimmed);
+  }
+
+  async function refreshGlobalPoints() {
+    try {
+      if (window.HWPoints && typeof window.HWPoints.refresh === 'function') await window.HWPoints.refresh();
+    } catch (error) {}
+  }
+
+  async function award(score, source) {
+    score = number(score);
+    if (!score) return 0;
+
+    lastCandidate = { score: score, source: source || 'cash_run', at: Date.now() };
+    if (score > bestScore) {
+      bestScore = score;
+      try { localStorage.setItem(BEST_SCORE_KEY, String(bestScore)); } catch (error) {}
+      setText('#hwCashRunBest', bestScore);
+    }
+
+    const now = Date.now();
+    if (now - lastAwardAt < MIN_AWARD_GAP_MS) return 0;
+
+    const fingerprint = runFingerprint(score, source);
+    if (hasAwarded(fingerprint)) return 0;
+
+    const amount = pointsAwardFor(score);
+    if (!amount) return 0;
+
+    lastAwardAt = now;
+    try { sessionStorage.setItem(LAST_AWARD_KEY, String(lastAwardAt)); } catch (error) {}
+    markAwarded(fingerprint);
+
+    try {
+      if (window.HWPoints && typeof window.HWPoints.add === 'function') {
+        await window.HWPoints.add(amount, 'cash_run_score', { score: score, source: source || 'cash_run_bridge' });
+      } else if (window.HWAuth && typeof window.HWAuth.addPoints === 'function') {
+        await window.HWAuth.addPoints(amount, 'cash_run_score');
+      } else {
+        document.dispatchEvent(new CustomEvent('hyph:points:add', { detail: { amount: amount, reason: 'cash_run_score', metadata: { score: score, source: source || 'cash_run_bridge' } } }));
+      }
+      await refreshGlobalPoints();
+      toast('Cash Run score ' + score + ' linked. +' + amount + ' Cool Points sent global.');
+      return amount;
+    } catch (error) {
+      toast('Cash Run score seen, but points sync needs reload. Score: ' + score);
+      return 0;
+    }
+  }
+
+  function scoreFromText(text) {
+    const clean = String(text || '').replace(/\s+/g, ' ').trim();
+    if (!clean) return 0;
+    const patterns = [
+      /(?:score|cash|bag|bags|coins|money|points)\D{0,16}(\d{1,7})/i,
+      /(\d{1,7})\D{0,16}(?:score|cash|bag|bags|coins|money|points)/i,
+      /game\s*over[\s\S]{0,120}?(\d{1,7})/i
+    ];
+    for (const pattern of patterns) {
+      const match = clean.match(pattern);
+      if (match) return number(match[1]);
+    }
+    return 0;
+  }
+
+  function scanDom() {
+    const root = document.getElementById('root') || document.body;
+    const text = root ? root.innerText || root.textContent || '' : '';
+    const score = scoreFromText(text);
+    if (score) lastCandidate = { score: score, source: 'dom_scan', at: Date.now() };
+    if (/game\s*over|final\s*score|you\s*(won|lost)|try\s*again|restart/i.test(text) && score) award(score, 'dom_game_over');
+  }
+
+  function hookStorage() {
+    const originalSetItem = Storage.prototype.setItem;
+    if (Storage.prototype.__hwCashRunBridgeSetItem) return;
+    Storage.prototype.__hwCashRunBridgeSetItem = true;
+    Storage.prototype.setItem = function (key, value) {
+      const result = originalSetItem.apply(this, arguments);
+      try {
+        const joined = String(key || '') + ' ' + String(value || '');
+        if (/cash|run|score|coin|bag|point|game/i.test(joined)) {
+          const score = Math.max(number(value), scoreFromText(joined));
+          if (score) {
+            lastCandidate = { score: score, source: 'storage:' + key, at: Date.now() };
+            if (/final|game|over|best|score|cash/i.test(joined)) award(score, 'storage:' + key);
+          }
+        }
+      } catch (error) {}
+      return result;
+    };
+  }
+
+  function hookMessages() {
+    window.addEventListener('message', function (event) {
+      const data = event.data || {};
+      const text = typeof data === 'string' ? data : JSON.stringify(data);
+      if (!/cash|run|score|coin|bag|point|game/i.test(text)) return;
+      const score = number(data.score || data.points || data.cash || data.coins || data.bags) || scoreFromText(text);
+      if (score) {
+        lastCandidate = { score: score, source: 'postmessage', at: Date.now() };
+        if (/game\s*over|final|complete|finished|cash_run_score/i.test(text)) award(score, 'postmessage');
+      }
+    });
+  }
+
+  function bindKeyboardFallback() {
+    window.addEventListener('keydown', function (event) {
+      if (!event.altKey || !event.shiftKey || event.key.toLowerCase() !== 'c') return;
+      const score = lastCandidate.score || bestScore;
+      if (score) award(score, 'manual_cash_run_bridge');
+      else toast('Cash Run bridge ready. Play first, then Alt+Shift+C can force-sync the detected score.');
+    });
+  }
+
+  function boot() {
+    ensureHud();
+    hookStorage();
+    hookMessages();
+    bindKeyboardFallback();
+    refreshGlobalPoints();
+    try {
+      observer = new MutationObserver(function () { scanDom(); });
+      observer.observe(document.body, { subtree: true, childList: true, characterData: true });
+    } catch (error) {}
+    scanner = setInterval(scanDom, SCAN_INTERVAL);
+    scanDom();
+    toast('Cash Run is connected to global Cool Points.');
+  }
+
+  window.HWCashRunBridgeV1 = {
+    award: award,
+    scan: scanDom,
+    getBest: function () { return bestScore; },
+    getLastCandidate: function () { return Object.assign({}, lastCandidate); },
+    stop: function () { if (scanner) clearInterval(scanner); if (observer) observer.disconnect(); }
+  };
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+})();
