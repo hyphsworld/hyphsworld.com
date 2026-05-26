@@ -23,7 +23,17 @@
   }
 
   function guest(points) {
-    try { sessionStorage.setItem(GUEST_KEY, String(number(points))); } catch (error) {}
+    const value = String(number(points));
+    try { sessionStorage.setItem(GUEST_KEY, value); } catch (error) {}
+    try { localStorage.setItem(GUEST_KEY, value); } catch (error) {}
+  }
+
+  function readGuestPoints() {
+    const sessionValue = number(sessionStorage.getItem(GUEST_KEY));
+    const localGuestValue = number(localStorage.getItem(GUEST_KEY));
+    const localMirrorValue = number(localStorage.getItem(STORAGE_KEY));
+    const legacyValue = number(localStorage.getItem('coolPoints'));
+    return Math.max(sessionValue, localGuestValue, localMirrorValue, legacyValue);
   }
 
   function render(points, accountBacked) {
@@ -61,8 +71,9 @@
           return points;
         }
       }
-      const local = number(sessionStorage.getItem(GUEST_KEY));
+      const local = readGuestPoints();
       guest(local);
+      mirror(local);
       render(local, false);
       return local;
     } finally {
@@ -85,7 +96,7 @@
           return saved;
         }
       }
-      const next = Math.max(0, number(sessionStorage.getItem(GUEST_KEY)) + delta);
+      const next = Math.max(0, readGuestPoints() + delta);
       guest(next);
       render(next, false);
       return next;
