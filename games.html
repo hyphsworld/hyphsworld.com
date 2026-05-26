@@ -26,7 +26,7 @@
   </header>
   <main>
     <section class="ticker" aria-label="HYPHSWORLD casino ticker"><div class="ticker-track"><span>MULTIPLAYER CASINO LOBBY</span><b>✦</b><span>COOL POINTS ONLY</span><b>✦</b><span>POKER TABLE</span><b>✦</b><span>DOMINO TABLE</span><b>✦</b><span>VINTAGE SLOTS</span><b>✦</b><span>CASH RUN</span><b>✦</b><span>MULTIPLAYER CASINO LOBBY</span><b>✦</b><span>COOL POINTS ONLY</span><b>✦</b><span>POKER TABLE</span><b>✦</b><span>DOMINO TABLE</span><b>✦</b><span>VINTAGE SLOTS</span><b>✦</b><span>CASH RUN</span><b>✦</b></div></section>
-    <section class="casino-hero"><span class="casino-kicker">Casino / Multiplayer Lobby</span><h1>Casino Floor</h1><p>Table-game energy, vintage slot machine flavor, and multiplayer-ready rooms. Every move uses the same saved HYPHSWORLD Cool Points system. No side chips. No fake local currency.</p><div class="casino-balance">Cool Points Balance: <strong id="casinoCoolPoints">0</strong></div><div class="casino-actions"><a class="casino-chip primary" href="games/cash-run/">🏃 Play Cash Run</a><a class="casino-chip" href="leaderboard.html">🏆 Leaderboard</a><a class="casino-chip" href="account.html">🟢 Manage ID</a></div></section>
+    <section class="casino-hero"><span class="casino-kicker">Casino / Multiplayer Lobby</span><h1>Casino Floor</h1><p>Table-game energy, vintage slot machine flavor, and multiplayer-ready rooms. Every move uses the same saved HYPHSWORLD Cool Points system. No side chips. No fake local currency.</p><div class="casino-balance">Cool Points Balance: <strong id="casinoCoolPoints" data-hw-points>0</strong></div><div class="casino-actions"><a class="casino-chip primary" href="games/cash-run/">🏃 Play Cash Run</a><a class="casino-chip" href="leaderboard.html">🏆 Leaderboard</a><a class="casino-chip" href="account.html">🟢 Manage ID</a></div></section>
     <section class="casino-table-grid" aria-label="Multiplayer casino rooms"><article class="casino-room poker" data-room="poker" data-cost="25"><span class="room-badge">CPU + Multiplayer Ready</span><h2>🂡 Poker Table</h2><p>Green felt table, player seats, and Cool Points buy-in. CPU practice comes next, then live multiplayer.</p><div class="table-icons"><span>A♠</span><span>K♥</span><span>Q♣</span><span>J♦</span></div><div class="room-actions"><button class="room-btn" type="button" data-room-action="preview">Enter Table</button><button class="room-btn secondary" type="button" data-room-action="buyin">25 CP Buy-In</button></div></article>
       <article class="casino-room domino" data-room="dominoes" data-cost="15"><span class="room-badge">CPU + Table Game</span><h2>🎲 Domino Table</h2><p>Classic domino table setup with a CPU quick-play lane and multiplayer-ready room state.</p><div class="table-icons domino-icons"><span>6|6</span><span>5|4</span><span>3|2</span><span>0|6</span></div><div class="room-actions"><button class="room-btn" type="button" data-room-action="preview">Enter Table</button><button class="room-btn secondary" type="button" data-room-action="buyin">15 CP Buy-In</button></div></article>
       <article class="casino-room slots" data-room="slots" data-cost="5"><span class="room-badge">Server Engine Live</span><h2>🎰 Slots</h2><p>Old-school slot cabinet energy with Supabase-backed reels. Every spin uses Cool Points only.</p><div class="slot-window"><span>🍒</span><span>7</span><span>🍋</span></div><div class="room-actions"><button class="room-btn" type="button" data-room-action="spin">Spin 5 CP</button><button class="room-btn secondary" type="button" data-room-action="preview">Open Machine</button></div></article>
@@ -42,22 +42,25 @@
       <p id="quickJoinStatus" style="margin-top:8px;font-weight:900;color:#dfff75"></p>
       <p style="margin:6px 0 0;color:rgba(244,255,244,.78);font-weight:800">Reward boost: +8 Cool Points when you successfully join a friend table.</p>
     </section>
-    
+
     <section class="hw-progress-report" data-hw-progress-report aria-label="HYPHSWORLD progress report"></section>
-    <section class="hw-leaderboard-wrap" data-hw-leaderboard data-default-mode="games" data-limit="8" aria-label="Casino leaderboard preview"><article class="hw-leaderboard-card"><div class="hw-leaderboard-head"><div><span class="hw-leaderboard-kicker">CASINO BOARD</span><h2>Multiplayer Rankings</h2><p>Cool Points and scores feed the board when users are signed in.</p></div><div class="hw-leaderboard-actions"><button class="hw-board-btn is-active" type="button" data-hw-board-mode="games">Game Scores</button><button class="hw-board-btn" type="button" data-hw-board-mode="points">Cool Points</button><a class="hw-board-btn" href="leaderboard.html">Full Board</a></div></div><div class="hw-leaderboard-list" data-hw-leaderboard-list><div class="hw-leaderboard-empty">Loading casino board...</div></div></article></section>
+    <section class="hw-leaderboard-wrap" data-hw-leaderboard data-default-mode="games" data-limit="8" aria-label="Casino leaderboard preview"><article class="hw-leaderboard-card"><div class="hw-leaderboard-head"><div><span class="hw-leaderboard-kicker">CASINO BOARD</span><h2>Multiplayer Rankings</h2><p>Cool Points and scores feed the board when users are signed in.</p></div><div class="hw-leaderboard-actions"><button class="hw-board-btn is-active" type="button" data-hw-board-mode="games">Game Scores</button><button class="hw-board-btn" type="button" data-hw-board-mode="points">Cool Points</button><a class="hw-board-btn" href="leaderboard.html">Full Board</a></div></div><div class="hw-board-list" data-hw-board-list><div class="hw-board-empty">Loading board...</div></div></article></section>
   </main>
   <div class="casino-toast" id="casinoToast"></div>
   <footer class="site-footer"><span>© <span id="year"></span> AMS WEST LLC</span><span>Casino access runs on HYPHSWORLD Cool Points</span></footer>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js?v=direct-casino-config-20260521"></script>
-  <script src="auth-client.js?v=direct-casino-config-20260521"></script>
-  <script src="cool-points.js?v=direct-casino-config-20260521"></script>
+  <script src="supabase-config.js?v=global-consumer-diagnostic-20260525"></script>
+  <script src="auth-client.js?v=global-consumer-diagnostic-20260525"></script>
+  <script src="cool-points.js?v=global-consumer-diagnostic-20260525"></script>
+  <script src="global-points-engine.js?v=global-consumer-diagnostic-20260525"></script>
+  <script src="global-points-follow-fix.js?v=global-consumer-diagnostic-20260525"></script>
+  <script src="user-widget.js?v=global-consumer-diagnostic-20260525"></script>
   <script src="cool-badges.js"></script>
   <script src="leaderboard-widgets.js"></script>
-  <script src="casino-engine.js?v=direct-casino-config-20260521"></script>
+  <script src="casino-engine.js?v=global-consumer-diagnostic-20260525"></script>
   <script src="multiplayer-invites.js?v=direct-casino-config-20260521"></script>
   <script src="multiplayer-auto-join.js?v=direct-casino-floor-20260521"></script>
-  <script src="games.js?v=direct-casino-config-20260521"></script>
+  <script src="games.js?v=global-consumer-diagnostic-20260525"></script>
   <script src="progress-report.js"></script>
   <script src="site-analytics.js"></script>
   <script>document.addEventListener('DOMContentLoaded',function(){var year=document.getElementById('year');if(year)year.textContent=new Date().getFullYear();});</script>
