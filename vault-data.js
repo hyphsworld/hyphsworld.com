@@ -33,21 +33,23 @@ window.HYPHSWORLD_VAULT = {
     {
       id: "floor2",
       title: "LEVEL 2",
-      subtitle: "HYPHSWORLD 5",
+      subtitle: "HIDDEN CASINO",
       badge: "CURRENT PRESSURE",
       status: "OPEN",
       theme: "hyphsworld5",
       art: "assets/hyphsworld-5.jpg",
       mp4: "",
-      description: "Premium floor. Repeat traffic, featured drops, and rollout heat.",
+      description: "Level 2 is now the hidden casino floor. Every table and spin routes through global Cool Points.",
       tracks: [
         { title: "HYPHSWORLD 5 Intro", artist: "Hyph Life", producer: "AMS WEST", file: "music/hyphsworld-5-intro.mp3" },
         { title: "No Trace", artist: "Hyph Life", producer: "AMS WEST", file: "music/no-trace.mp3" },
         { title: "TIME", artist: "SIXX FIGGAZ x HYPH LIFE", producer: "AMS WEST", file: "music/time.mp3" },
-        { title: "In The Streets", artist: "HYPH LIFE x B3LLYGANG HERSCH", producer: "CUZ ZAID", file: "music/in-the-streets.mp3" }
+        { title: "In The Streets", artist: "HYPH LIFE x B3LLYGANG HERSCH", producer: "CUZ ZAID", file: "music/in-the-streets.mp3" },
+        { title: "With Me", artist: "Hyph Life", producer: "KMT", file: "music/with-me.mp3" },
+        { title: "ETG", artist: "BooGotGluu & Hyph Life", producer: "AMS WEST", file: "music/etg.mp3" }
       ],
-      next: "casino.html",
-      casino: "casino.html"
+      next: "games.html",
+      casino: "games.html"
     }
   ]
 };
