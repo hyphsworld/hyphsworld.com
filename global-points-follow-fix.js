@@ -98,6 +98,7 @@
       }
       const next = Math.max(0, readGuestPoints() + delta);
       guest(next);
+      mirror(next);
       render(next, false);
       return next;
     } finally {
