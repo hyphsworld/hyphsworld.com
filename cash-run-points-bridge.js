@@ -1,6 +1,7 @@
 /* HYPHSWORLD Cash Run Points Bridge
    Bridges the embedded Cash Run build into the same HWPoints account/global pipeline.
-   It does not replace the game. It watches for score/cash/run signals and awards Cool Points safely.
+   It does not replace the game. It watches for native Cash Run events, score/cash/run signals,
+   and awards Cool Points safely.
 */
 (function () {
   'use strict';
@@ -76,9 +77,9 @@
     return 40;
   }
 
-  function runFingerprint(score, source) {
-    const bucket = Math.floor(Date.now() / 45000);
-    return [bucket, source || 'cash_run', score].join(':');
+  function runFingerprint(score, source, runId) {
+    const stableRun = runId || Math.floor(Date.now() / 45000);
+    return [stableRun, source || 'cash_run', score].join(':');
   }
 
   function hasAwarded(fingerprint) {
@@ -101,11 +102,12 @@
     } catch (error) {}
   }
 
-  async function award(score, source) {
+  async function award(score, source, metadata) {
     score = number(score);
+    metadata = metadata || {};
     if (!score) return 0;
 
-    lastCandidate = { score: score, source: source || 'cash_run', at: Date.now() };
+    lastCandidate = { score: score, source: source || 'cash_run', at: Date.now(), metadata: metadata };
     if (score > bestScore) {
       bestScore = score;
       try { localStorage.setItem(BEST_SCORE_KEY, String(bestScore)); } catch (error) {}
@@ -115,7 +117,7 @@
     const now = Date.now();
     if (now - lastAwardAt < MIN_AWARD_GAP_MS) return 0;
 
-    const fingerprint = runFingerprint(score, source);
+    const fingerprint = runFingerprint(score, source, metadata.runId);
     if (hasAwarded(fingerprint)) return 0;
 
     const amount = pointsAwardFor(score);
@@ -125,13 +127,15 @@
     try { sessionStorage.setItem(LAST_AWARD_KEY, String(lastAwardAt)); } catch (error) {}
     markAwarded(fingerprint);
 
+    const payload = Object.assign({ score: score, source: source || 'cash_run_bridge' }, metadata);
+
     try {
       if (window.HWPoints && typeof window.HWPoints.add === 'function') {
-        await window.HWPoints.add(amount, 'cash_run_score', { score: score, source: source || 'cash_run_bridge' });
+        await window.HWPoints.add(amount, 'cash_run_score', payload);
       } else if (window.HWAuth && typeof window.HWAuth.addPoints === 'function') {
         await window.HWAuth.addPoints(amount, 'cash_run_score');
       } else {
-        document.dispatchEvent(new CustomEvent('hyph:points:add', { detail: { amount: amount, reason: 'cash_run_score', metadata: { score: score, source: source || 'cash_run_bridge' } } }));
+        document.dispatchEvent(new CustomEvent('hyph:points:add', { detail: { amount: amount, reason: 'cash_run_score', metadata: payload } }));
       }
       await refreshGlobalPoints();
       toast('Cash Run score ' + score + ' linked. +' + amount + ' Cool Points sent global.');
@@ -177,7 +181,7 @@
           const score = Math.max(number(value), scoreFromText(joined));
           if (score) {
             lastCandidate = { score: score, source: 'storage:' + key, at: Date.now() };
-            if (/final|game|over|best|score|cash/i.test(joined)) award(score, 'storage:' + key);
+            if (/final|game|over|best|score|cash/i.test(joined)) award(score, 'storage:' + key, { storageKey: key });
           }
         }
       } catch (error) {}
@@ -185,15 +189,36 @@
     };
   }
 
+  function handleNativeSignal(detail, source, shouldAward) {
+    detail = detail || {};
+    const score = number(detail.finalScore || detail.score || detail.points || detail.cash || detail.coins || detail.bags);
+    if (!score) return;
+    lastCandidate = { score: score, source: source, at: Date.now(), metadata: detail };
+    if (shouldAward) award(score, source, detail);
+  }
+
+  function hookNativeEvents() {
+    const passiveEvents = ['start', 'score', 'state', 'life', 'pause', 'resume', 'stop'];
+    passiveEvents.forEach(function (name) {
+      window.addEventListener('hw:cashrun:' + name, function (event) {
+        handleNativeSignal(event.detail || {}, 'native_' + name, false);
+      });
+    });
+
+    window.addEventListener('hw:cashrun:gameover', function (event) {
+      handleNativeSignal(event.detail || {}, 'native_game_over', true);
+    });
+  }
+
   function hookMessages() {
     window.addEventListener('message', function (event) {
       const data = event.data || {};
       const text = typeof data === 'string' ? data : JSON.stringify(data);
-      if (!/cash|run|score|coin|bag|point|game/i.test(text)) return;
-      const score = number(data.score || data.points || data.cash || data.coins || data.bags) || scoreFromText(text);
+      if (!/cash|run|score|coin|bag|point|game|hw:cashrun/i.test(text)) return;
+      const score = number(data.finalScore || data.score || data.points || data.cash || data.coins || data.bags) || scoreFromText(text);
       if (score) {
-        lastCandidate = { score: score, source: 'postmessage', at: Date.now() };
-        if (/game\s*over|final|complete|finished|cash_run_score/i.test(text)) award(score, 'postmessage');
+        lastCandidate = { score: score, source: 'postmessage', at: Date.now(), metadata: data };
+        if (/game\s*over|final|complete|finished|cash_run_score|hw:cashrun:gameover/i.test(text)) award(score, 'postmessage', data);
       }
     });
   }
@@ -202,7 +227,7 @@
     window.addEventListener('keydown', function (event) {
       if (!event.altKey || !event.shiftKey || event.key.toLowerCase() !== 'c') return;
       const score = lastCandidate.score || bestScore;
-      if (score) award(score, 'manual_cash_run_bridge');
+      if (score) award(score, 'manual_cash_run_bridge', lastCandidate.metadata || {});
       else toast('Cash Run bridge ready. Play first, then Alt+Shift+C can force-sync the detected score.');
     });
   }
@@ -210,6 +235,7 @@
   function boot() {
     ensureHud();
     hookStorage();
+    hookNativeEvents();
     hookMessages();
     bindKeyboardFallback();
     refreshGlobalPoints();
