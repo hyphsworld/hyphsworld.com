@@ -1,0 +1,73 @@
+:root {
+  /* HYPHSWORLD foundation */
+  --hw-ink-black: #050806;
+  --hw-deep-black: #000000;
+  --hw-cash-green: #39ff6a;
+  --hw-gate-green: #00c853;
+  --hw-ams-red: #ff253a;
+  --hw-cream-ink: #f5f1e8;
+  --hw-muted-concrete: #8f968f;
+
+  /* Bright accents */
+  --hw-neon-lime: #b6ff00;
+  --hw-signal-yellow: #ffd447;
+  --hw-sky-neon: #27d8ff;
+  --hw-purple-glow: #a855ff;
+  --hw-hot-pink: #ff4fd8;
+  --hw-chrome-gray: #c8d0c8;
+
+  /* Hidden Casino reward layer */
+  --hw-casino-black: #050805;
+  --hw-glass-black: #0b120e;
+  --hw-vault-green: #39ff14;
+  --hw-lime-access: #66ff00;
+  --hw-vip-pink: #ff4fa3;
+  --hw-chip-cyan: #19e6ff;
+  --hw-chip-yellow: #ffe600;
+  --hw-casino-red: #ff2756;
+  --hw-purple-haze: #b026ff;
+  --hw-reward-mint: #1effa3;
+  --hw-soft-chrome: #d9e1dc;
+  --hw-fog-gray: #9ba69f;
+
+  /* Gradients */
+  --hw-gradient-access: linear-gradient(90deg, var(--hw-lime-access), var(--hw-reward-mint), var(--hw-chip-cyan));
+  --hw-gradient-vip: linear-gradient(90deg, var(--hw-neon-lime), var(--hw-chip-yellow), var(--hw-vip-pink));
+  --hw-gradient-casino-floor: linear-gradient(135deg, rgba(57, 255, 20, 0.18), rgba(255, 79, 216, 0.18), rgba(25, 230, 255, 0.14));
+  --hw-gradient-haze: radial-gradient(circle at 20% 10%, rgba(57, 255, 20, 0.22), transparent 28%), radial-gradient(circle at 85% 20%, rgba(25, 230, 255, 0.22), transparent 24%), radial-gradient(circle at 50% 90%, rgba(176, 38, 255, 0.28), transparent 32%);
+
+  /* Surfaces */
+  --hw-surface-glass: rgba(11, 18, 14, 0.82);
+  --hw-surface-card: rgba(5, 8, 6, 0.92);
+  --hw-surface-panel: rgba(12, 29, 20, 0.78);
+  --hw-border-soft: rgba(245, 241, 232, 0.18);
+  --hw-border-green: rgba(57, 255, 20, 0.72);
+
+  /* Shadows and glow */
+  --hw-glow-green: 0 0 22px rgba(57, 255, 20, 0.42);
+  --hw-glow-pink: 0 0 22px rgba(255, 79, 163, 0.42);
+  --hw-glow-cyan: 0 0 22px rgba(25, 230, 255, 0.38);
+  --hw-glow-yellow: 0 0 20px rgba(255, 230, 0, 0.35);
+  --hw-shadow-card: 0 22px 70px rgba(0, 0, 0, 0.45);
+
+  /* Shape */
+  --hw-radius-sm: 12px;
+  --hw-radius-md: 20px;
+  --hw-radius-lg: 32px;
+  --hw-radius-pill: 999px;
+
+  /* Spacing */
+  --hw-space-1: 0.25rem;
+  --hw-space-2: 0.5rem;
+  --hw-space-3: 0.75rem;
+  --hw-space-4: 1rem;
+  --hw-space-5: 1.5rem;
+  --hw-space-6: 2rem;
+  --hw-space-7: 3rem;
+  --hw-space-8: 4rem;
+
+  /* Typography */
+  --hw-font-display: Impact, Haettenschweiler, 'Arial Black', sans-serif;
+  --hw-font-ui: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --hw-font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+}
