@@ -15,6 +15,68 @@ HYPHSWORLD should function like a digital entertainment city: games, music, anim
 
 The site should not feel like a pile of pages. It should feel like a world map.
 
+## Homepage order lock
+
+The main homepage must keep this four-lane order:
+
+```txt
+1. 01 Show
+2. Casino / Cash Run
+3. Tracks
+4. Podcast
+```
+
+This order is the primary public layout. Future platform sections can exist, but the front gate should keep these four lanes visible and prioritized in this sequence.
+
+### Lane 1: 01 Show
+
+Purpose:
+- Lead with the O1 Universe
+- Feature O1 Show, O1 Boyz, O1 Girlz, O1NN LIVE, characters, scene drops, and episodes
+
+Visual direction:
+- Cartoon-forward
+- Cinematic panels
+- Broadcast overlays
+- Character cards
+- Episode posters
+
+### Lane 2: Casino / Cash Run
+
+Purpose:
+- Feature Cash Run
+- Show the Hidden Casino reward layer
+- Promote Cool Points, power-ups, leaderboards, and VIP-style unlocks
+
+Visual direction:
+- Hidden Casino
+- Neon arcade
+- Casino chips
+- Cool Points wallet
+- Dark glass reward cards
+
+### Lane 3: Tracks
+
+Purpose:
+- Feature music releases, videos, playlists, campaigns, and visual drops
+
+Visual direction:
+- Cover-art rails
+- Street poster cards
+- Release badges
+- Music-player energy
+
+### Lane 4: Podcast
+
+Purpose:
+- Feature podcast episodes, clips, interviews, announcements, and live talk segments
+
+Visual direction:
+- Studio panels
+- Mic cards
+- Episode tiles
+- Live/on-air badges
+
 ## Core districts
 
 ### 1. Home / Front Gate
@@ -23,20 +85,19 @@ Path: `/`
 
 Purpose:
 - Introduce HYPHSWORLD / AMS WEST
-- Feature Cash Run
-- Promote music, videos, drops, and O1 Universe content
+- Preserve the four-lane layout: 01 Show, Casino / Cash Run, Tracks, Podcast
 - Route users into the platform districts
 
 Key sections:
 - Hero
-- Featured Game
-- Latest Drop
-- O1 Universe teaser
-- Music / video rail
-- Community / Cool Points teaser
+- 01 Show lane
+- Casino / Cash Run lane
+- Tracks lane
+- Podcast lane
+- Footer map
 
 Future concept:
-- Animated city-map style homepage where each section feels like a district entrance.
+- Animated city-map style homepage where each lane feels like a district entrance.
 
 ### 2. Games District
 
@@ -170,6 +231,7 @@ Core direction:
 - Bright skater/graffiti energy
 - Playful gate/access visuals
 - Major-label polish
+- Hidden Casino reward layer
 
 Reusable components:
 - Platform nav
@@ -180,6 +242,9 @@ Reusable components:
 - Feature rails
 - Drop cards
 - Leaderboard cards
+- Casino chips
+- Cool Points wallet cards
+- Duck Help prompts
 
 ## API direction
 
@@ -207,6 +272,7 @@ Future platform API:
 5. Run diagnostics after every platform-level change.
 6. Separate public player features from admin-only features.
 7. Keep secrets out of GitHub.
+8. Preserve homepage lane order: 01 Show, Casino / Cash Run, Tracks, Podcast.
 
 ## Immediate roadmap
 
@@ -218,7 +284,7 @@ Future platform API:
 ### Phase 2: Shell
 - Add shared header/nav.
 - Add shared footer.
-- Add homepage district layout.
+- Add homepage four-lane layout.
 
 ### Phase 3: Games Hub
 - Add `/games/` landing page.
@@ -244,7 +310,7 @@ Future platform API:
 ## Current priority
 
 Next safe files to add:
-- `docs/deployment-checklist.md`
-- `docs/brand-system.md`
+- `styles/districts.css`
+- `labs/homepage-four-lane-demo.html`
 
-No production UI rewrite should begin until these docs are in place.
+No production homepage rewrite should begin until the four-lane demo is approved.
