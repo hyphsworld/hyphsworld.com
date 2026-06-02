@@ -35,6 +35,12 @@
     .section{padding:18px 0 54px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
     .feature{padding:22px;min-height:260px;display:flex;flex-direction:column;justify-content:space-between}.feature h2{margin:12px 0 8px;font-size:1.5rem}.feature p{margin:0 0 8px;color:var(--muted);line-height:1.5}
     .cover-zone{min-height:160px;border-radius:22px;border:1px dashed rgba(31,252,255,.45);background:radial-gradient(circle at 20% 20%,rgba(57,255,122,.25),transparent 30%),radial-gradient(circle at 80% 30%,rgba(255,39,93,.20),transparent 32%),rgba(0,0,0,.42);display:grid;place-items:center;font-size:2.4rem;font-weight:1000;letter-spacing:-.06em;text-align:center;text-transform:uppercase}
+    .level-two-screen-card{position:relative;overflow:hidden;margin-top:18px;border:1px solid rgba(31,252,255,.34);border-radius:30px;padding:clamp(16px,4vw,24px);background:radial-gradient(circle at 12% 12%,rgba(57,255,122,.22),transparent 32%),radial-gradient(circle at 84% 18%,rgba(184,77,255,.24),transparent 34%),radial-gradient(circle at 50% 100%,rgba(255,228,92,.10),transparent 38%),linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.028));box-shadow:0 0 34px rgba(31,252,255,.14),0 18px 60px rgba(0,0,0,.28)}
+    .level-two-screen-card:before{content:"LEVEL 2 MP4  LEVEL 2 MP4  LEVEL 2 MP4";position:absolute;left:-18px;right:-18px;bottom:10px;color:transparent;-webkit-text-stroke:1px rgba(255,228,92,.16);text-stroke:1px rgba(255,228,92,.16);font-size:clamp(2.2rem,7vw,5.4rem);font-weight:1000;letter-spacing:-.08em;line-height:.85;transform:rotate(-3deg);pointer-events:none;opacity:.75}
+    .level-two-screen-head{position:relative;z-index:2;display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:14px}.level-two-screen-head h2{margin:6px 0 0;color:#fff;font-size:clamp(2rem,7vw,4.8rem);line-height:.86;letter-spacing:-.07em;text-transform:uppercase;text-shadow:4px 4px 0 rgba(255,39,93,.38),0 0 22px rgba(31,252,255,.20)}.level-two-screen-head p{max-width:720px;margin:0;color:var(--muted);font-weight:850;line-height:1.45}
+    .level-two-screen-badge{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:9px 12px;color:#060606;background:linear-gradient(90deg,var(--purple),var(--cyan),var(--green),var(--yellow));font-size:.74rem;font-weight:1000;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 0 22px rgba(31,252,255,.18)}
+    .level-two-video-frame{position:relative;z-index:2;overflow:hidden;border:2px solid rgba(31,252,255,.32);border-radius:24px;background:#050505;box-shadow:0 0 28px rgba(0,0,0,.44),inset 0 0 30px rgba(57,255,122,.06)}.level-two-video-frame:before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px);background-size:100% 6px;mix-blend-mode:screen;opacity:.22}.level-two-video-frame iframe{display:block;width:100%;aspect-ratio:16/9;height:auto;border:0;background:#000}
+    .level-two-screen-strip{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:12px 14px;border-top:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.72);color:#fff;font-weight:900}.level-two-screen-strip small{color:#9fffd0;font-weight:1000;letter-spacing:.08em;text-transform:uppercase}
     .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
     .neon-grid{position:absolute;inset:0;pointer-events:none;opacity:.45;background-image:linear-gradient(rgba(31,252,255,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(184,77,255,.11) 1px,transparent 1px);background-size:34px 34px;mask-image:radial-gradient(circle at center,black 25%,transparent 80%)}
     .orb{position:absolute;border-radius:50%;filter:blur(2px);pointer-events:none;opacity:.6}
@@ -89,6 +95,22 @@
           <button class="pill" type="button" data-point-add="10" data-point-reason="Level 2 check-in">Claim Level 2 Points</button>
           <a class="pill" href="quarantine-mixtape.html">Back To Level 1</a>
           <a class="pill" href="casino.html">Enter Casino</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap section" aria-label="Level 2 featured video screen">
+      <div class="level-two-screen-card">
+        <div class="level-two-screen-head">
+          <div>
+            <span class="level-two-screen-badge">LEVEL 2 MP4 SCREEN // FEATURE VIDEO</span>
+            <h2>Now Showing</h2>
+          </div>
+          <p>Level 2 is embedded like the other Vault screens. This slot runs the YouTube feature now, then can upgrade into a private MP4, members-only trailer, or Cool Points unlock screen later.</p>
+        </div>
+        <div class="level-two-video-frame">
+          <iframe width="560" height="315" src="https://www.youtube.com/embed/k0bAU8VFTBM?si=ol0roVEClr0-LRm0" title="Level 2 MP4 feature video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+          <div class="level-two-screen-strip"><small>LEVEL 2 SIGNAL</small><span>Embedded feature linked into the HYPHSWORLD 5 floor</span></div>
         </div>
       </div>
     </section>

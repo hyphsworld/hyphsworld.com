@@ -23,6 +23,7 @@
   function getPoints() {
     try {
       if (window.HWPoints && typeof window.HWPoints.get === 'function') return window.HWPoints.get();
+      if (window.HWPoints && typeof window.HWPoints.getState === 'function') return window.HWPoints.getState().points;
     } catch (error) {}
     return 0;
   }
@@ -38,6 +39,23 @@
 
   function randomSymbol() {
     return SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+  }
+
+  function startAudit(game, bet, metadata) {
+    if (window.HWBetAudit && typeof window.HWBetAudit.start === 'function') {
+      return window.HWBetAudit.start({ game, action: 'spin', bet, balanceBefore: getPoints(), metadata: metadata || {} });
+    }
+    return { auditId: game + '-' + Date.now(), status: 'approved', bet, balanceBefore: getPoints() };
+  }
+
+  function resolveAudit(receipt, data) {
+    if (!receipt || !receipt.auditId || !window.HWBetAudit || typeof window.HWBetAudit.resolve !== 'function') return;
+    window.HWBetAudit.resolve(receipt.auditId, data || {});
+  }
+
+  function rejectAudit(receipt, error) {
+    if (!receipt || !receipt.auditId || !window.HWBetAudit || typeof window.HWBetAudit.reject !== 'function') return;
+    window.HWBetAudit.reject(receipt.auditId, { reason: error && error.message ? error.message : 'slots_error', bet: SPIN_COST, balanceAfter: getPoints() });
   }
 
   function ensurePanel() {
@@ -119,7 +137,7 @@
     updateBalance();
     setText(payoutEl, '0 CP');
     setText(netEl, '0 CP');
-    setText(resultEl, 'Ready. Spin costs 5 Cool Points.');
+    setText(resultEl, 'Ready. Spin costs 5 Cool Points. Bet audit is armed.');
     if (spinBtn) spinBtn.focus();
   }
 
@@ -163,10 +181,18 @@
     if (spinning) return;
     ensurePanel();
 
+    const audit = startAudit('server_slots', SPIN_COST, { surface: 'casino-engine' });
+    if (audit.status === 'blocked') {
+      setText(resultEl, 'Bet blocked. Not enough Cool Points for a clean 5 CP spin.');
+      setText(payoutEl, '0 CP');
+      setText(netEl, '0 CP');
+      return;
+    }
+
     spinning = true;
     if (spinBtn) spinBtn.disabled = true;
     if (machine) machine.classList.remove('is-win', 'is-loss');
-    setText(resultEl, 'Connecting to Supabase engine...');
+    setText(resultEl, 'Bet audit locked. Connecting to Supabase engine...');
     setText(payoutEl, '—');
     setText(netEl, '—');
 
@@ -188,7 +214,17 @@
         const casinoBalance = document.getElementById('casinoCoolPoints');
         if (casinoBalance) casinoBalance.textContent = String(payload.balance);
       }
+      resolveAudit(audit, {
+        status: 'resolved',
+        result: payload.result || 'spin_complete',
+        bet: SPIN_COST,
+        payout: payload.payout || 0,
+        net: typeof payload.net === 'undefined' ? (Number(payload.payout || 0) - SPIN_COST) : payload.net,
+        balanceAfter: typeof payload.balance === 'undefined' ? getPoints() : payload.balance,
+        metadata: { reels: payload.reels || [], source: 'spin_slots_rpc' }
+      });
     } catch (error) {
+      rejectAudit(audit, error);
       setText(resultEl, error.message || 'Slots engine missed. Try again.');
       if (machine) machine.classList.add('is-loss');
     } finally {
