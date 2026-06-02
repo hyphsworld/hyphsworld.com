@@ -2,7 +2,8 @@
   HYPHSWORLD Cool Points
   Account-first point system.
   - Logged-in users sync permanently through HWAuth/Supabase.
-  - Guests do not keep permanent points. Refresh/private tab/cache clear returns guests to 0.
+  - Guest/local users save on the same browser/device through localStorage.
+  - Supports both newer data-point-add buttons and older data-points earn buttons.
 */
 (function () {
   'use strict';
@@ -21,7 +22,7 @@
   const TOTAL_KEY = 'hyphsworld.coolPoints.total';
   const PROFILE_KEY = 'hyphsworld.coolPoints.profile';
   const GUEST_SESSION_KEY = 'hyphsworld.coolPoints.guestSession';
-  const OLD_KEYS = ['coolPoints', 'hyphsCoolPoints', 'hwCoolPoints', 'hyphsworldPoints', 'hyphsworld.coolpoints'];
+  const OLD_KEYS = ['coolPoints', 'hyphsCoolPoints', 'hwCoolPoints', 'hyphsworldPoints', 'hyphsworld.coolpoints', 'hyphsworld_points', 'HW_COOL_POINTS'];
 
   let points = 0;
   let hydrated = false;
@@ -40,6 +41,26 @@
     return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
   }
 
+  function getBestStoredPoints() {
+    const values = [
+      safeGet(TOTAL_KEY),
+      safeSessionGet(GUEST_SESSION_KEY),
+      safeGet(GUEST_SESSION_KEY)
+    ].concat(OLD_KEYS.map(safeGet));
+
+    return values.reduce((max, value) => Math.max(max, numberFrom(value)), 0);
+  }
+
+  function mirrorPoints(value) {
+    const next = Math.max(0, parseInt(value, 10) || 0);
+    safeSet(TOTAL_KEY, next);
+    safeSet('coolPoints', next);
+    safeSet('hyphsworld_points', next);
+    safeSet('HW_COOL_POINTS', next);
+    safeSet(GUEST_SESSION_KEY, next);
+    safeSessionSet(GUEST_SESSION_KEY, next);
+  }
+
   function getProfileName() {
     const saved =
       safeGet('hyphsworld.playerName') ||
@@ -50,17 +71,12 @@
     return saved && saved.trim() ? saved.trim() : 'Guest';
   }
 
-  function clearGuestPersistentPoints() {
-    safeRemove(TOTAL_KEY);
-    OLD_KEYS.forEach(safeRemove);
-  }
-
   function saveProfile() {
     const profile = {
       name: getProfileName(),
       points,
       accountBacked: sessionActive,
-      note: sessionActive ? 'Supabase account-backed points' : 'Guest points are temporary only',
+      note: sessionActive ? 'Supabase account-backed points' : 'Local device saved points',
       updatedAt: new Date().toISOString()
     };
     safeSet(PROFILE_KEY, JSON.stringify(profile));
@@ -83,6 +99,7 @@
 
     try {
       document.dispatchEvent(new CustomEvent('hyph:points-updated', { detail }));
+      window.dispatchEvent(new CustomEvent('hw:points-change', { detail }));
     } catch (error) {}
   }
 
@@ -96,7 +113,7 @@
   }
 
   function render(reason) {
-    document.querySelectorAll('.js-cool-points,[data-cool-points],#accountCoolPoints,#gateCredits').forEach((el) => {
+    document.querySelectorAll('.js-cool-points,[data-cool-points],[data-hw-points],#cool-points,#accountCoolPoints,#gateCredits,#wof-points').forEach((el) => {
       el.textContent = String(points);
     });
 
@@ -109,7 +126,7 @@
     if (loginLink && playerName !== 'Guest') loginLink.textContent = playerName;
 
     document.querySelectorAll('[data-points-mode]').forEach((el) => {
-      el.textContent = sessionActive ? 'Account saved' : 'Guest preview';
+      el.textContent = sessionActive ? 'Account saved' : 'Device saved';
     });
 
     saveProfile();
@@ -118,11 +135,7 @@
 
   function setDisplay(value, reason) {
     points = Math.max(0, parseInt(value, 10) || 0);
-    if (sessionActive) safeSet(TOTAL_KEY, points);
-    else {
-      clearGuestPersistentPoints();
-      safeSessionSet(GUEST_SESSION_KEY, points);
-    }
+    mirrorPoints(points);
     render(reason || 'set_display');
     return points;
   }
@@ -155,11 +168,10 @@
 
     if (sessionActive) {
       const accountPoints = await getAccountPoints();
-      setDisplay(accountPoints !== null ? accountPoints : numberFrom(safeGet(TOTAL_KEY)), 'hydrate_account');
+      setDisplay(accountPoints !== null ? accountPoints : getBestStoredPoints(), 'hydrate_account');
     } else {
       sessionActive = false;
-      clearGuestPersistentPoints();
-      setDisplay(numberFrom(safeSessionGet(GUEST_SESSION_KEY)), 'hydrate_guest');
+      setDisplay(getBestStoredPoints(), 'hydrate_guest_local');
     }
 
     hydrated = true;
@@ -184,10 +196,9 @@
     }
 
     sessionActive = false;
-    clearGuestPersistentPoints();
-    points += n;
-    setDisplay(points, 'add_guest');
-    toast(`+${n} temporary guest points — create ID to keep points`);
+    points = getBestStoredPoints() + n;
+    setDisplay(points, 'add_guest_local');
+    toast(`+${n} Cool Points${reason ? ' — ' + reason : ''}`);
     return points;
   }
 
@@ -216,8 +227,8 @@
     }
 
     sessionActive = false;
-    setDisplay(next, 'spend_guest');
-    toast(`-${n} temporary guest points spent${reason ? ' — ' + reason : ''}`);
+    setDisplay(next, 'spend_guest_local');
+    toast(`-${n} Cool Points spent${reason ? ' — ' + reason : ''}`);
     return points;
   }
 
@@ -235,7 +246,7 @@
     }
 
     sessionActive = false;
-    setDisplay(next, 'set_guest');
+    setDisplay(next, 'set_guest_local');
     return points;
   }
 
@@ -249,15 +260,31 @@
   document.addEventListener('click', (event) => {
     const addButton = event.target.closest('[data-point-add]');
     if (addButton) {
-      add(addButton.dataset.pointAdd, addButton.dataset.pointReason || '');
+      add(addButton.dataset.pointAdd, addButton.dataset.pointReason || addButton.dataset.reason || '');
+      return;
+    }
+
+    const legacyEarnButton = event.target.closest('[data-points]');
+    if (legacyEarnButton) {
+      add(legacyEarnButton.dataset.points, legacyEarnButton.dataset.reason || legacyEarnButton.dataset.pointReason || 'site_action');
       return;
     }
 
     const spendButton = event.target.closest('[data-point-spend]');
-    if (spendButton) spend(spendButton.dataset.pointSpend, spendButton.dataset.pointReason || '');
+    if (spendButton) spend(spendButton.dataset.pointSpend, spendButton.dataset.pointReason || spendButton.dataset.reason || '');
   });
 
-  window.HWPoints = {
+  document.addEventListener('hyph:points:add', (event) => {
+    const detail = event.detail || {};
+    add(detail.amount || detail.points || 0, detail.reason || 'site_event');
+  });
+
+  document.addEventListener('hw:points:add', (event) => {
+    const detail = event.detail || {};
+    add(detail.amount || detail.points || 0, detail.reason || 'site_event');
+  });
+
+  window.HWPoints = Object.assign({}, window.HWPoints || {}, {
     get: () => points,
     hydrate,
     refresh,
@@ -269,13 +296,13 @@
     profile: () => {
       try { return JSON.parse(safeGet(PROFILE_KEY) || '{}'); } catch (e) { return {}; }
     }
-  };
+  });
 
   document.addEventListener('DOMContentLoaded', () => {
     hydrate(true).then(() => render('dom_ready'));
   });
 
-  points = numberFrom(safeSessionGet(GUEST_SESSION_KEY));
-  clearGuestPersistentPoints();
+  points = getBestStoredPoints();
+  mirrorPoints(points);
   render('boot');
 })();
