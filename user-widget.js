@@ -3,6 +3,13 @@
   'use strict';
 
   const HUD_ID = 'hw-gta-hud';
+  const POINT_KEYS = [
+    'hyphsworld.coolPoints.total',
+    'hyphsworld.coolPoints.guestSession',
+    'coolPoints',
+    'hyphsworld_points',
+    'HW_COOL_POINTS'
+  ];
 
   function getLocal(key, fallback) {
     try { return localStorage.getItem(key) || fallback; } catch { return fallback; }
@@ -17,10 +24,30 @@
     return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
   }
 
+  function readStoredPoints() {
+    let max = 0;
+    POINT_KEYS.forEach((key) => { max = Math.max(max, number(getLocal(key, '0'))); });
+    try { max = Math.max(max, number(sessionStorage.getItem('hyphsworld.coolPoints.guestSession'))); } catch (error) {}
+    return max;
+  }
+
+  function currentPoints() {
+    try {
+      if (window.HWPoints && typeof window.HWPoints.get === 'function') {
+        return Math.max(number(window.HWPoints.get()), readStoredPoints());
+      }
+      if (window.HWPoints && typeof window.HWPoints.getState === 'function') {
+        const state = window.HWPoints.getState();
+        return Math.max(number(state && state.points), readStoredPoints());
+      }
+    } catch (error) {}
+    return readStoredPoints();
+  }
+
   function localProfile() {
     const name = getLocal('hyphsworld.playerName', 'Guest');
     const avatarType = getLocal('hyphsworld.avatarType', 'boy');
-    const points = number(getLocal('hyphsworld.coolPoints.total', '0'));
+    const points = currentPoints();
     return { displayName: name, avatarType, avatarIcon: avatarIcon(avatarType), coolPoints: points, provider: 'local' };
   }
 
@@ -63,9 +90,9 @@
     const p = profile || localProfile();
     const hud = ensureHud();
     const name = p.displayName || p.username || 'Guest';
-    const points = number(p.coolPoints ?? p.points ?? 0);
+    const points = currentPoints();
     const isAccount = Boolean(p.email || p.userId || p.provider === 'supabase');
-    const status = isAccount ? 'ID Active' : 'Local Guest';
+    const status = isAccount ? 'ID Active' : 'Device Saved';
 
     const pointsEl = hud.querySelector('.hw-hud-points');
     const nameEl = hud.querySelector('[data-hud-name]');
@@ -80,7 +107,7 @@
   function renderProfile(profile) {
     const p = profile || localProfile();
     const name = p.displayName || p.username || 'Guest';
-    const points = number(p.coolPoints ?? p.points ?? 0);
+    const points = currentPoints();
     const icon = p.avatarIcon || avatarIcon(p.avatarType);
 
     document.querySelectorAll('[data-user-widget]').forEach((el) => {
@@ -93,6 +120,7 @@
     document.querySelectorAll('[data-player-name]').forEach((el) => { el.textContent = name; });
     document.querySelectorAll('[data-player-avatar]').forEach((el) => { el.textContent = icon; });
     document.querySelectorAll('[data-player-points]').forEach((el) => { el.textContent = String(points); });
+    document.querySelectorAll('.hw-user-points').forEach((el) => { el.textContent = points + ' CP'; });
 
     renderHud({ ...p, displayName: name, coolPoints: points, avatarIcon: icon });
   }
@@ -104,24 +132,24 @@
         const user = await window.HWAuth.getCurrentUser();
         if (user) profile = user;
       }
-      if (window.HWPoints && typeof window.HWPoints.get === 'function') {
-        profile.coolPoints = window.HWPoints.get();
-      }
+      profile.coolPoints = currentPoints();
     } catch (error) {}
     renderProfile(profile);
     return profile;
   }
 
-  window.HWUserWidget = { refresh, render: renderProfile, renderHud };
+  window.HWUserWidget = { refresh, render: renderProfile, renderHud, getPoints: currentPoints };
 
   document.addEventListener('DOMContentLoaded', refresh);
   window.addEventListener('storage', refresh);
+  window.addEventListener('hw:points-change', refresh);
+  document.addEventListener('hyph:points-updated', refresh);
 
   document.addEventListener('click', function (event) {
-    if (event.target.closest('[data-point-add],[data-point-spend],[data-funny-action]')) {
-      setTimeout(refresh, 120);
-      setTimeout(refresh, 500);
-      setTimeout(refresh, 1200);
+    if (event.target.closest('[data-point-add],[data-point-spend],[data-points],[data-funny-action]')) {
+      setTimeout(refresh, 80);
+      setTimeout(refresh, 350);
+      setTimeout(refresh, 900);
     }
   });
 })();
