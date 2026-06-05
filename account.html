@@ -11,12 +11,19 @@
     .hw-user-chip{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 12px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(0,0,0,.35);font-weight:900;box-shadow:0 0 18px rgba(57,255,122,.16);margin-top:12px}
     .hw-user-icon{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:999px;background:linear-gradient(135deg,#39ff7a,#1ffcff,#ff4fd8);color:#050505;font-size:1rem}
     .hw-user-points{padding:5px 8px;border-radius:999px;background:#39ff7a;color:#050505;font-size:.78rem;font-weight:1000}
-    .avatar-picker{border:1px solid rgba(255,255,255,.18);border-radius:18px;padding:12px;margin:10px 0;background:rgba(0,0,0,.18)}
-    .avatar-picker legend{font-weight:900;padding:0 8px}
-    .avatar-choice-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
-    .avatar-choice-row label{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;border-radius:18px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.28);cursor:pointer;font-weight:900}
-    .avatar-choice-row input{width:auto;margin:0;accent-color:#39ff7a}
-    @media(max-width:640px){.avatar-choice-row{grid-template-columns:1fr}.hw-user-chip{border-radius:18px}}
+    .avatar-picker{border:1px solid rgba(57,255,122,.28);border-radius:22px;padding:14px;margin:10px 0;background:radial-gradient(circle at 10% 0%,rgba(57,255,122,.14),transparent 34%),rgba(0,0,0,.22);box-shadow:0 0 24px rgba(57,255,122,.08)}
+    .avatar-picker legend{font-weight:1000;padding:0 8px;letter-spacing:.04em;text-transform:uppercase}
+    .avatar-picker-note{margin:4px 0 12px;color:rgba(255,255,255,.72);font-size:.88rem;font-weight:800;line-height:1.35}
+    .avatar-choice-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:10px;margin-top:8px}
+    .avatar-choice-row label{position:relative;display:grid;place-items:center;gap:6px;min-height:86px;padding:12px;border-radius:20px;border:1px solid rgba(255,255,255,.18);background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(0,0,0,.24));cursor:pointer;font-weight:1000;text-align:center;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease,background .18s ease}
+    .avatar-choice-row label:hover{transform:translateY(-2px);border-color:rgba(57,255,122,.48);box-shadow:0 12px 28px rgba(0,0,0,.24),0 0 22px rgba(57,255,122,.12)}
+    .avatar-choice-row input{position:absolute;opacity:0;pointer-events:none}
+    .avatar-choice-row input:checked + span{transform:scale(1.12);box-shadow:0 0 0 3px rgba(57,255,122,.22),0 0 28px rgba(57,255,122,.28)}
+    .avatar-choice-row input:checked ~ strong{color:#39ff7a}
+    .avatar-choice-row label:has(input:checked){border-color:#39ff7a;background:radial-gradient(circle at 50% 0%,rgba(57,255,122,.25),transparent 56%),rgba(0,0,0,.38)}
+    .avatar-choice-row span{display:grid;place-items:center;width:42px;height:42px;border-radius:999px;background:linear-gradient(135deg,#39ff7a,#1ffcff,#ff4fd8);color:#050505;font-size:1.45rem;transition:.18s ease}
+    .avatar-choice-row strong{display:block;font-size:.78rem;color:#fff;letter-spacing:.02em}
+    @media(max-width:640px){.avatar-choice-row{grid-template-columns:repeat(2,minmax(0,1fr))}.hw-user-chip{border-radius:18px}}
   </style>
 </head>
 <body class="account-page">
@@ -46,10 +53,21 @@
             <input id="displayName" type="text" maxlength="40" placeholder="Example: Hyph Life" />
           </label>
           <fieldset class="avatar-picker">
-            <legend>Avatar Icon</legend>
-            <div class="avatar-choice-row">
-              <label><input type="radio" name="avatarType" value="boy" id="avatarBoy" checked /> 🧢 Boy</label>
-              <label><input type="radio" name="avatarType" value="girl" id="avatarGirl" /> 💅 Girl</label>
+            <legend>Identity Icon</legend>
+            <p class="avatar-picker-note">Pick your HYPHSWORLD badge: people, animals, creatures, and flex icons.</p>
+            <div class="avatar-choice-row" id="avatarChoiceRow">
+              <label><input type="radio" name="avatarType" value="boy" id="avatarBoy" checked /><span>🧢</span><strong>Man</strong></label>
+              <label><input type="radio" name="avatarType" value="girl" id="avatarGirl" /><span>💅</span><strong>Woman</strong></label>
+              <label><input type="radio" name="avatarType" value="fox" /><span>🦊</span><strong>Fox</strong></label>
+              <label><input type="radio" name="avatarType" value="lion" /><span>🦁</span><strong>Lion</strong></label>
+              <label><input type="radio" name="avatarType" value="panda" /><span>🐼</span><strong>Panda</strong></label>
+              <label><input type="radio" name="avatarType" value="wolf" /><span>🐺</span><strong>Wolf</strong></label>
+              <label><input type="radio" name="avatarType" value="alien" /><span>👽</span><strong>Alien</strong></label>
+              <label><input type="radio" name="avatarType" value="robot" /><span>🤖</span><strong>Robot</strong></label>
+              <label><input type="radio" name="avatarType" value="ghost" /><span>👻</span><strong>Ghost</strong></label>
+              <label><input type="radio" name="avatarType" value="ninja" /><span>🥷</span><strong>Ninja</strong></label>
+              <label><input type="radio" name="avatarType" value="crown" /><span>👑</span><strong>Crown</strong></label>
+              <label><input type="radio" name="avatarType" value="diamond" /><span>💎</span><strong>Diamond</strong></label>
             </div>
           </fieldset>
           <label>Duck Sauce Account Note
@@ -72,7 +90,7 @@
           <div class="status-stack">
             <p><strong>Email:</strong> <span id="accountEmail">—</span></p>
             <p><strong>Name:</strong> <span id="accountName">—</span></p>
-            <p><strong>Avatar:</strong> <span id="accountAvatar">🧢 Boy</span></p>
+            <p><strong>Icon:</strong> <span id="accountAvatar">🧢 Man</span></p>
             <p><strong>Duck Note:</strong> <span id="accountDuck">—</span></p>
             <p><strong>Buck:</strong> <span id="accountBuck">—</span></p>
           </div>
