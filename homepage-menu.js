@@ -5,6 +5,21 @@
 (function () {
   'use strict';
 
+  const avatarMap = {
+    boy: '🧢',
+    girl: '💅',
+    fox: '🦊',
+    lion: '🦁',
+    panda: '🐼',
+    wolf: '🐺',
+    alien: '👽',
+    robot: '🤖',
+    ghost: '👻',
+    ninja: '🥷',
+    crown: '👑',
+    diamond: '💎'
+  };
+
   function ready(fn) {
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
     else fn();
@@ -24,7 +39,8 @@
   }
 
   function avatarIcon(type) {
-    return String(type || '').toLowerCase() === 'girl' ? '💅' : '🧢';
+    const key = String(type || '').toLowerCase().trim();
+    return avatarMap[key] || readLocal('hyphsworld.avatarIcon', '') || '🧢';
   }
 
   function getPoints() {
@@ -95,13 +111,13 @@
     const signedIn = Boolean(options && options.signedIn);
     const name = options && options.name || 'Guest';
     const email = options && options.email || '';
-    const avatar = options && options.avatar || '🧢';
+    const avatar = options && options.avatar || avatarIcon(readLocal('hyphsworld.avatarType', 'boy'));
     const points = getPoints();
 
     statusEl.className = 'hw-login-chip ' + (signedIn ? 'is-signed-in' : 'is-guest');
     statusEl.innerHTML = signedIn
       ? '<span class="hw-login-avatar">' + avatar + '</span><span class="hw-login-copy"><strong>' + escapeHtml(name) + '</strong><small>' + points.toLocaleString() + ' CP' + (email ? ' • ' + escapeHtml(email) : '') + '</small></span>'
-      : '<span class="hw-login-avatar">🧢</span><span class="hw-login-copy"><strong>Guest Mode</strong><small>Create ID to sync Cool Points</small></span>';
+      : '<span class="hw-login-avatar">' + avatar + '</span><span class="hw-login-copy"><strong>Guest Mode</strong><small>Create ID to sync Cool Points</small></span>';
   }
 
   function escapeHtml(value) {
@@ -129,7 +145,7 @@
     if (document.getElementById('hwLoginChipStyles')) return;
     const style = document.createElement('style');
     style.id = 'hwLoginChipStyles';
-    style.textContent = '.hw-login-chip{display:inline-flex;align-items:center;justify-content:center;gap:10px;max-width:min(92vw,520px);padding:9px 12px;border-radius:999px;border:1px solid rgba(57,255,122,.34);background:rgba(0,0,0,.56);box-shadow:0 0 22px rgba(57,255,122,.14);color:#fff;text-align:left;vertical-align:middle}.hw-login-avatar{display:grid;place-items:center;width:34px;height:34px;border-radius:999px;background:linear-gradient(135deg,#39ff7a,#1ffcff,#ff4fd8);color:#050505;font-weight:1000}.hw-login-copy{display:grid;gap:2px}.hw-login-copy strong{font-size:.88rem;line-height:1;color:#fff}.hw-login-copy small{font-size:.72rem;line-height:1.2;color:#a9ff87;font-weight:800}.hw-login-chip.is-guest{border-color:rgba(255,228,92,.34);box-shadow:0 0 18px rgba(255,228,92,.12)}@media(max-width:640px){.hw-login-chip{border-radius:18px}.hw-login-copy small{max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}';
+    style.textContent = '.hw-login-chip{display:inline-flex;align-items:center;justify-content:center;gap:10px;max-width:min(92vw,560px);padding:10px 13px;border-radius:999px;border:1px solid rgba(57,255,122,.34);background:radial-gradient(circle at 10% 0%,rgba(57,255,122,.14),transparent 36%),rgba(0,0,0,.62);box-shadow:0 0 22px rgba(57,255,122,.14),0 12px 30px rgba(0,0,0,.24);color:#fff;text-align:left;vertical-align:middle}.hw-login-avatar{display:grid;place-items:center;width:38px;height:38px;border-radius:999px;background:linear-gradient(135deg,#39ff7a,#1ffcff,#ff4fd8);color:#050505;font-size:1.28rem;font-weight:1000;box-shadow:0 0 20px rgba(57,255,122,.22)}.hw-login-copy{display:grid;gap:2px}.hw-login-copy strong{font-size:.92rem;line-height:1;color:#fff}.hw-login-copy small{font-size:.72rem;line-height:1.2;color:#a9ff87;font-weight:800}.hw-login-chip.is-guest{border-color:rgba(255,228,92,.34);box-shadow:0 0 18px rgba(255,228,92,.12)}@media(max-width:640px){.hw-login-chip{border-radius:18px}.hw-login-copy small{max-width:250px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}';
     document.head.appendChild(style);
   }
 
@@ -153,7 +169,8 @@
 
     if (session && session.email) {
       const name = userNameFromSession(session, user);
-      const avatar = avatarIcon(user && user.avatarType || readLocal('hyphsworld.avatarType', 'boy'));
+      const localAvatarType = readLocal('hyphsworld.avatarType', user && user.avatarType || 'boy');
+      const avatar = avatarIcon(localAvatarType);
       renderStatusChip({ signedIn: true, name, email: session.email, avatar });
       setAccountLinks('Manage ID', 'account.html');
       if (logoutButton) logoutButton.hidden = false;
