@@ -7,14 +7,16 @@
   const profileForm = document.getElementById('profileForm');
   const logoutBtn = document.getElementById('logoutBtn');
   const coolPointsEl = document.getElementById('accountCoolPoints');
-
   const displayNameInput = document.getElementById('displayName');
   const duckStatusInput = document.getElementById('duckStatus');
   const buckClearanceInput = document.getElementById('buckClearance');
+  const avatarPreviewIcon = document.getElementById('avatarPreviewIcon');
+  const avatarPreviewText = document.getElementById('avatarPreviewText');
 
   let pointRefreshInFlight = false;
   let lastBadgeRenderAt = 0;
   let savedAccountPoints = 0;
+  let avatarSyncTimer = null;
 
   const avatarMap = {
     boy: { icon: '🧢', label: 'Man' },
@@ -32,26 +34,10 @@
   };
 
   const funnyLines = {
-    duckFine: [
-      'Duck Sauce added a fake $01 convenience fee. Buck immediately rejected it.',
-      'Duck tried to fine you for standing near the buttons. Fine dismissed.',
-      'Duck Sauce invoice generated: one bag of chips and emotional damages. Denied.'
-    ],
-    buckAudit: [
-      'Buck audit complete: account clean, shoes questionable, confidence approved.',
-      'Buck checked the clipboard twice. You are still allowed in the lobby.',
-      'Buck says: “No funny business detected. Duck is the only risk factor.”'
-    ],
-    cleanShoes: [
-      'VIP shoe check pending. Duck said the shoes are “almost expensive.”',
-      'Shoes refreshed. Buck moved the rope one inch to the left.',
-      'Duck sprayed too much cleaner. VIP chances somehow improved.'
-    ],
-    protectedPoints: [
-      'Cool Points are locked to the ID. Buck says they only leave if the account gets deleted.',
-      'Duck tried to reset the points. Buck slapped the clipboard shut. Protected.',
-      'Points protected. Logout, refresh, private tab: still yours when the ID is active.'
-    ]
+    duckFine: ['Duck Sauce added a fake $01 convenience fee. Buck immediately rejected it.', 'Duck tried to fine you for standing near the buttons. Fine dismissed.', 'Duck Sauce invoice generated: one bag of chips and emotional damages. Denied.'],
+    buckAudit: ['Buck audit complete: account clean, shoes questionable, confidence approved.', 'Buck checked the clipboard twice. You are still allowed in the lobby.', 'Buck says: “No funny business detected. Duck is the only risk factor.”'],
+    cleanShoes: ['VIP shoe check pending. Duck said the shoes are “almost expensive.”', 'Shoes refreshed. Buck moved the rope one inch to the left.', 'Duck sprayed too much cleaner. VIP chances somehow improved.'],
+    protectedPoints: ['Cool Points are locked to the ID. Buck says they only leave if the account gets deleted.', 'Duck tried to reset the points. Buck slapped the clipboard shut. Protected.', 'Points protected. Logout, refresh, private tab: still yours when the ID is active.']
   };
 
   function cleanAvatarType(type) {
@@ -59,31 +45,10 @@
     return avatarMap[key] ? key : 'boy';
   }
 
-  function avatarIcon(type) {
-    return avatarMap[cleanAvatarType(type)].icon;
-  }
-
-  function avatarLabel(type) {
-    const clean = cleanAvatarType(type);
-    return avatarMap[clean].icon + ' ' + avatarMap[clean].label;
-  }
-
-  function selectedAvatarType() {
-    const checked = document.querySelector('input[name="avatarType"]:checked');
-    return cleanAvatarType(checked ? checked.value : localStorage.getItem('hyphsworld.avatarType') || 'boy');
-  }
-
-  function setAvatarChoice(type) {
-    const clean = cleanAvatarType(type);
-    document.querySelectorAll('input[name="avatarType"]').forEach((input) => {
-      input.checked = input.value === clean;
-    });
-    setText('accountAvatar', avatarLabel(clean));
-    try {
-      localStorage.setItem('hyphsworld.avatarType', clean);
-      localStorage.setItem('hyphsworld.avatarIcon', avatarIcon(clean));
-    } catch (error) {}
-  }
+  function avatarIcon(type) { return avatarMap[cleanAvatarType(type)].icon; }
+  function avatarLabel(type) { const clean = cleanAvatarType(type); return avatarMap[clean].icon + ' ' + avatarMap[clean].label; }
+  function pick(list) { return list[Math.floor(Math.random() * list.length)]; }
+  function number(value) { const parsed = parseInt(value, 10); return Number.isFinite(parsed) && parsed > 0 ? parsed : 0; }
 
   function show(text, type) {
     if (!msgEl) return;
@@ -91,13 +56,49 @@
     msgEl.className = 'message ' + (type || '');
   }
 
-  function pick(list) {
-    return list[Math.floor(Math.random() * list.length)];
+  function setText(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value || '—';
   }
 
-  function number(value) {
-    const parsed = parseInt(value, 10);
-    return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
+  function selectedAvatarType() {
+    const checked = document.querySelector('input[name="avatarType"]:checked');
+    return cleanAvatarType(checked ? checked.value : localStorage.getItem('hyphsworld.avatarType') || 'boy');
+  }
+
+  function displayNameValue() {
+    return displayNameInput && displayNameInput.value ? displayNameInput.value : localStorage.getItem('hyphsworld.playerName') || 'Guest';
+  }
+
+  function saveLocalIdentity(displayName, avatarType) {
+    const clean = cleanAvatarType(avatarType);
+    try {
+      localStorage.setItem('hyphsworld.playerName', displayName || 'Guest');
+      localStorage.setItem('hyphsworld.avatarType', clean);
+      localStorage.setItem('hyphsworld.avatarIcon', avatarIcon(clean));
+    } catch (error) {}
+  }
+
+  function setAvatarChoice(type) {
+    const clean = cleanAvatarType(type);
+    document.querySelectorAll('input[name="avatarType"]').forEach((input) => { input.checked = input.value === clean; });
+    document.querySelectorAll('[data-avatar-pick]').forEach((button) => { button.classList.toggle('is-active', button.dataset.avatarPick === clean); });
+    if (avatarPreviewIcon) avatarPreviewIcon.textContent = avatarIcon(clean);
+    if (avatarPreviewText) avatarPreviewText.textContent = 'Current icon: ' + avatarMap[clean].label;
+    setText('accountAvatar', avatarLabel(clean));
+    saveLocalIdentity(displayNameValue(), clean);
+  }
+
+  function refreshWidgets() {
+    const avatarType = cleanAvatarType(localStorage.getItem('hyphsworld.avatarType') || selectedAvatarType());
+    const profile = {
+      displayName: displayNameValue(),
+      avatarType,
+      avatarIcon: avatarIcon(avatarType),
+      coolPoints: getPoints()
+    };
+    if (window.HWUserWidget) window.HWUserWidget.render(profile);
+    window.dispatchEvent(new CustomEvent('hyph:avatar-updated', { detail: profile }));
   }
 
   function getPoints() {
@@ -119,11 +120,7 @@
   }
 
   async function refreshPoints() {
-    if (pointRefreshInFlight) {
-      renderPoints();
-      renderBadgeSummary();
-      return getPoints();
-    }
+    if (pointRefreshInFlight) { renderPoints(); renderBadgeSummary(); return getPoints(); }
     pointRefreshInFlight = true;
     try {
       if (window.HWPoints && typeof window.HWPoints.refresh === 'function') await window.HWPoints.refresh();
@@ -136,14 +133,10 @@
     } finally {
       pointRefreshInFlight = false;
     }
-    renderPoints();
-    renderBadgeSummary();
-    return getPoints();
+    renderPoints(); renderBadgeSummary(); return getPoints();
   }
 
-  function renderPoints() {
-    if (coolPointsEl) coolPointsEl.textContent = String(getPoints());
-  }
+  function renderPoints() { if (coolPointsEl) coolPointsEl.textContent = String(getPoints()); }
 
   function ensureBadgePanel() {
     let panel = document.getElementById('accountBadgeProgress');
@@ -168,17 +161,7 @@
     const state = window.HWCoolBadges.state(getPoints());
     const current = state.current;
     const next = state.next;
-    panel.innerHTML = '' +
-      '<div class="account-badge-card"><div><span class="account-badge-kicker">Player Progress</span><h3>' +
-      (current ? current.icon + ' ' + current.name : 'No Badge Yet') +
-      '</h3><p>' +
-      (next ? state.needed.toLocaleString() + ' points until ' + next.name : 'All basic badges unlocked. Chrome legend status online.') +
-      '</p></div><strong>' + state.progress + '%</strong></div><div class="account-badge-track"><span style="width:' + state.progress + '%"></span></div>';
-  }
-
-  function setText(id, value) {
-    const el = document.getElementById(id);
-    if (el) el.textContent = value || '—';
+    panel.innerHTML = '' + '<div class="account-badge-card"><div><span class="account-badge-kicker">Player Progress</span><h3>' + (current ? current.icon + ' ' + current.name : 'No Badge Yet') + '</h3><p>' + (next ? state.needed.toLocaleString() + ' points until ' + next.name : 'All basic badges unlocked. Chrome legend status online.') + '</p></div><strong>' + state.progress + '%</strong></div><div class="account-badge-track"><span style="width:' + state.progress + '%"></span></div>';
   }
 
   function setBodyState(state) {
@@ -192,11 +175,10 @@
     if (loggedOutPanel) { loggedOutPanel.hidden = false; loggedOutPanel.classList.remove('hw-force-hidden'); }
     if (logoutBtn) logoutBtn.disabled = true;
     savedAccountPoints = 0;
-    renderPoints();
-    renderBadgeSummary(true);
+    renderPoints(); renderBadgeSummary(true);
     setAvatarChoice(localStorage.getItem('hyphsworld.avatarType') || 'boy');
-    if (window.HWUserWidget) window.HWUserWidget.refresh();
-    show('No active ID. Buck says login before touching account management.', 'error');
+    refreshWidgets();
+    show('No active ID. You can still pick an avatar. Login to sync it across devices.', 'warn');
   }
 
   function setLoggedInView() {
@@ -208,22 +190,13 @@
 
   async function renderUser() {
     setBodyState('is-loading-account');
-    if (!window.HWAuth) {
-      show('Auth unavailable. Check auth-client.js.', 'error');
-      setLoggedOutView();
-      return;
-    }
+    if (!window.HWAuth) { show('Auth unavailable. Check auth-client.js.', 'error'); setLoggedOutView(); return; }
 
     const user = await HWAuth.getCurrentUser();
-    if (!user) {
-      setLoggedOutView();
-      return;
-    }
+    if (!user) { setLoggedOutView(); return; }
 
     setLoggedInView();
-
-    const localAvatar = localStorage.getItem('hyphsworld.avatarType') || user.avatarType || 'boy';
-    const avatarType = cleanAvatarType(localAvatar);
+    const avatarType = cleanAvatarType(localStorage.getItem('hyphsworld.avatarType') || user.avatarType || 'boy');
     const displayName = user.displayName || '';
     savedAccountPoints = number(user.coolPoints || user.points || user.lifetimePoints || getPoints() || 0);
 
@@ -237,18 +210,41 @@
     setText('accountDuck', user.duckStatus);
     setText('accountBuck', user.buckClearance);
 
-    renderPoints();
-    await refreshPoints();
-    if (window.HWUserWidget) window.HWUserWidget.refresh();
-    show('Account loaded. Pick an icon, save it, and Buck stamps the badge.', 'success');
+    renderPoints(); await refreshPoints(); refreshWidgets();
+    show('Account loaded. Avatar can be changed anytime.', 'success');
   }
 
-  function saveLocalIdentity(displayName, avatarType) {
+  async function syncAvatarNow(avatarType, quiet) {
+    const clean = cleanAvatarType(avatarType);
+    setAvatarChoice(clean);
+    refreshWidgets();
+
+    if (!window.HWAuth || typeof window.HWAuth.getCurrentUser !== 'function' || typeof window.HWAuth.updateProfile !== 'function') {
+      if (!quiet) show('Avatar updated on this device. Login to sync it across devices.', 'warn');
+      return;
+    }
+
     try {
-      localStorage.setItem('hyphsworld.playerName', displayName || 'Guest');
-      localStorage.setItem('hyphsworld.avatarType', cleanAvatarType(avatarType));
-      localStorage.setItem('hyphsworld.avatarIcon', avatarIcon(avatarType));
-    } catch (error) {}
+      const user = await window.HWAuth.getCurrentUser();
+      if (!user) {
+        if (!quiet) show('Avatar updated on this device. Login to sync it across devices.', 'warn');
+        return;
+      }
+      await window.HWAuth.updateProfile({
+        displayName: displayNameValue(),
+        duckStatus: duckStatusInput ? duckStatusInput.value : user.duckStatus || '',
+        buckClearance: buckClearanceInput ? buckClearanceInput.value : user.buckClearance || 'Lobby clearance only',
+        avatarType: clean
+      });
+      if (!quiet) show('Avatar updated and synced to your HYPHSWORLD ID.', 'success');
+    } catch (error) {
+      if (!quiet) show('Avatar updated on this device. Account sync will retry next time you save.', 'warn');
+    }
+  }
+
+  function queueAvatarSync(avatarType) {
+    clearTimeout(avatarSyncTimer);
+    avatarSyncTimer = setTimeout(() => syncAvatarNow(avatarType, true), 450);
   }
 
   function bindProfileForm() {
@@ -257,6 +253,9 @@
       event.preventDefault();
       const avatarType = selectedAvatarType();
       const displayName = displayNameInput ? displayNameInput.value : '';
+      saveLocalIdentity(displayName || 'Guest', avatarType);
+      setAvatarChoice(avatarType);
+      refreshWidgets();
       try {
         const user = await HWAuth.updateProfile({
           displayName,
@@ -265,34 +264,33 @@
           avatarType
         });
         saveLocalIdentity(user.displayName || displayName || 'Guest', avatarType);
-        setAvatarChoice(avatarType);
         await renderUser();
         if (window.HWPoints) window.HWPoints.render('account_profile_saved');
-        if (window.HWUserWidget) window.HWUserWidget.refresh();
-        show('Identity saved. New HYPHSWORLD icon active.', 'success');
+        refreshWidgets();
+        show('Account saved. Avatar synced.', 'success');
       } catch (error) {
-        saveLocalIdentity(displayName || 'Guest', avatarType);
-        setAvatarChoice(avatarType);
-        if (window.HWUserWidget) window.HWUserWidget.refresh();
-        show('Icon saved on this device. Account sync may need another tap later.', 'warn');
+        show('Saved on this device. Login or reconnect to sync across devices.', 'warn');
       }
     });
   }
 
   function bindAvatarPreview() {
+    document.addEventListener('click', (event) => {
+      const picker = event.target.closest('[data-avatar-pick]');
+      if (!picker) return;
+      const avatarType = cleanAvatarType(picker.dataset.avatarPick);
+      setAvatarChoice(avatarType);
+      refreshWidgets();
+      show('Avatar changed to ' + avatarMap[avatarType].label + '.', 'success');
+      queueAvatarSync(avatarType);
+    });
+
     document.querySelectorAll('input[name="avatarType"]').forEach((input) => {
       input.addEventListener('change', () => {
         const avatarType = selectedAvatarType();
         setAvatarChoice(avatarType);
-        saveLocalIdentity(displayNameInput ? displayNameInput.value || 'Guest' : 'Guest', avatarType);
-        if (window.HWUserWidget) {
-          window.HWUserWidget.render({
-            displayName: displayNameInput ? displayNameInput.value || 'Guest' : 'Guest',
-            avatarType,
-            avatarIcon: avatarIcon(avatarType),
-            coolPoints: getPoints()
-          });
-        }
+        refreshWidgets();
+        queueAvatarSync(avatarType);
       });
     });
   }
@@ -302,15 +300,8 @@
       const button = event.target.closest('[data-funny-action]');
       if (!button) return;
       const action = button.dataset.funnyAction;
-      if (action === 'resetPoints' || action === 'protectedPoints') {
-        show(pick(funnyLines.protectedPoints), 'warn');
-        renderPoints();
-        renderBadgeSummary(true);
-        if (window.HWUserWidget) window.HWUserWidget.refresh();
-        return;
-      }
-      const lines = funnyLines[action] || ['Duck Sauce pressed a button. Nothing official happened.'];
-      show(pick(lines), 'success');
+      if (action === 'resetPoints' || action === 'protectedPoints') { show(pick(funnyLines.protectedPoints), 'warn'); renderPoints(); renderBadgeSummary(true); refreshWidgets(); return; }
+      show(pick(funnyLines[action] || ['Duck Sauce pressed a button. Nothing official happened.']), 'success');
     });
   }
 
@@ -327,26 +318,14 @@
     });
   }
 
-  document.addEventListener('hyph:points-updated', (event) => {
-    const detail = event.detail || {};
-    const next = number(detail.points);
-    if (next > 0) savedAccountPoints = next;
-    renderPoints();
-    renderBadgeSummary();
-  });
-
-  window.addEventListener('hw:points-change', (event) => {
-    const detail = event.detail || {};
-    const next = number(detail.points);
-    if (next > 0) savedAccountPoints = next;
-    renderPoints();
-    renderBadgeSummary();
-  });
+  document.addEventListener('hyph:points-updated', (event) => { const detail = event.detail || {}; const next = number(detail.points); if (next > 0) savedAccountPoints = next; renderPoints(); renderBadgeSummary(); refreshWidgets(); });
+  window.addEventListener('hw:points-change', (event) => { const detail = event.detail || {}; const next = number(detail.points); if (next > 0) savedAccountPoints = next; renderPoints(); renderBadgeSummary(); refreshWidgets(); });
 
   setBodyState('is-loading-account');
   bindProfileForm();
   bindAvatarPreview();
   bindFunnyManagements();
   bindLogout();
+  setAvatarChoice(localStorage.getItem('hyphsworld.avatarType') || 'boy');
   renderUser();
 })();
