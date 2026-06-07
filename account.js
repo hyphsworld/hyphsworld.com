@@ -8,6 +8,10 @@
   const logoutBtn = document.getElementById('logoutBtn');
   const coolPointsEl = document.getElementById('accountCoolPoints');
   const displayNameInput = document.getElementById('displayName');
+  const displayNameStudio = document.getElementById('displayNameStudio');
+  const saveDisplayNameBtn = document.getElementById('saveDisplayNameBtn');
+  const displayPreviewIcon = document.getElementById('displayPreviewIcon');
+  const displayPreviewText = document.getElementById('displayPreviewText');
   const duckStatusInput = document.getElementById('duckStatus');
   const buckClearanceInput = document.getElementById('buckClearance');
   const avatarPreviewIcon = document.getElementById('avatarPreviewIcon');
@@ -17,6 +21,7 @@
   let lastBadgeRenderAt = 0;
   let savedAccountPoints = 0;
   let avatarSyncTimer = null;
+  let displaySyncTimer = null;
 
   const avatarMap = {
     boy: { icon: '🧢', label: 'Man' },
@@ -45,6 +50,11 @@
     return avatarMap[key] ? key : 'boy';
   }
 
+  function cleanDisplayName(name) {
+    const value = String(name || '').replace(/\s+/g, ' ').trim().slice(0, 40);
+    return value || 'Guest';
+  }
+
   function avatarIcon(type) { return avatarMap[cleanAvatarType(type)].icon; }
   function avatarLabel(type) { const clean = cleanAvatarType(type); return avatarMap[clean].icon + ' ' + avatarMap[clean].label; }
   function pick(list) { return list[Math.floor(Math.random() * list.length)]; }
@@ -67,16 +77,28 @@
   }
 
   function displayNameValue() {
-    return displayNameInput && displayNameInput.value ? displayNameInput.value : localStorage.getItem('hyphsworld.playerName') || 'Guest';
+    const studioValue = displayNameStudio && displayNameStudio.value ? displayNameStudio.value : '';
+    const formValue = displayNameInput && displayNameInput.value ? displayNameInput.value : '';
+    return cleanDisplayName(studioValue || formValue || localStorage.getItem('hyphsworld.playerName') || 'Guest');
   }
 
   function saveLocalIdentity(displayName, avatarType) {
     const clean = cleanAvatarType(avatarType);
+    const name = cleanDisplayName(displayName);
     try {
-      localStorage.setItem('hyphsworld.playerName', displayName || 'Guest');
+      localStorage.setItem('hyphsworld.playerName', name);
       localStorage.setItem('hyphsworld.avatarType', clean);
       localStorage.setItem('hyphsworld.avatarIcon', avatarIcon(clean));
     } catch (error) {}
+  }
+
+  function syncDisplayInputs(name) {
+    const clean = cleanDisplayName(name);
+    if (displayNameStudio && displayNameStudio.value !== clean) displayNameStudio.value = clean;
+    if (displayNameInput && displayNameInput.value !== clean) displayNameInput.value = clean;
+    if (displayPreviewText) displayPreviewText.textContent = clean;
+    setText('accountName', clean);
+    return clean;
   }
 
   function setAvatarChoice(type) {
@@ -84,6 +106,7 @@
     document.querySelectorAll('input[name="avatarType"]').forEach((input) => { input.checked = input.value === clean; });
     document.querySelectorAll('[data-avatar-pick]').forEach((button) => { button.classList.toggle('is-active', button.dataset.avatarPick === clean); });
     if (avatarPreviewIcon) avatarPreviewIcon.textContent = avatarIcon(clean);
+    if (displayPreviewIcon) displayPreviewIcon.textContent = avatarIcon(clean);
     if (avatarPreviewText) avatarPreviewText.textContent = 'Current icon: ' + avatarMap[clean].label;
     setText('accountAvatar', avatarLabel(clean));
     saveLocalIdentity(displayNameValue(), clean);
@@ -91,14 +114,17 @@
 
   function refreshWidgets() {
     const avatarType = cleanAvatarType(localStorage.getItem('hyphsworld.avatarType') || selectedAvatarType());
+    const displayName = displayNameValue();
     const profile = {
-      displayName: displayNameValue(),
+      displayName,
       avatarType,
       avatarIcon: avatarIcon(avatarType),
       coolPoints: getPoints()
     };
+    syncDisplayInputs(displayName);
     if (window.HWUserWidget) window.HWUserWidget.render(profile);
     window.dispatchEvent(new CustomEvent('hyph:avatar-updated', { detail: profile }));
+    window.dispatchEvent(new CustomEvent('hyph:display-name-updated', { detail: profile }));
   }
 
   function getPoints() {
@@ -176,9 +202,10 @@
     if (logoutBtn) logoutBtn.disabled = true;
     savedAccountPoints = 0;
     renderPoints(); renderBadgeSummary(true);
+    syncDisplayInputs(localStorage.getItem('hyphsworld.playerName') || 'Guest');
     setAvatarChoice(localStorage.getItem('hyphsworld.avatarType') || 'boy');
     refreshWidgets();
-    show('No active ID. You can still pick an avatar. Login to sync it across devices.', 'warn');
+    show('No active ID. You can still change name and avatar. Login to sync across devices.', 'warn');
   }
 
   function setLoggedInView() {
@@ -197,10 +224,10 @@
 
     setLoggedInView();
     const avatarType = cleanAvatarType(localStorage.getItem('hyphsworld.avatarType') || user.avatarType || 'boy');
-    const displayName = user.displayName || '';
+    const displayName = cleanDisplayName(user.displayName || localStorage.getItem('hyphsworld.playerName') || 'Guest');
     savedAccountPoints = number(user.coolPoints || user.points || user.lifetimePoints || getPoints() || 0);
 
-    if (displayNameInput) displayNameInput.value = displayName;
+    syncDisplayInputs(displayName);
     if (duckStatusInput) duckStatusInput.value = user.duckStatus || '';
     if (buckClearanceInput) buckClearanceInput.value = user.buckClearance || 'Lobby clearance only';
 
@@ -211,67 +238,85 @@
     setText('accountBuck', user.buckClearance);
 
     renderPoints(); await refreshPoints(); refreshWidgets();
-    show('Account loaded. Avatar can be changed anytime.', 'success');
+    show('Account loaded. Display name and avatar can be changed anytime.', 'success');
   }
 
-  async function syncAvatarNow(avatarType, quiet) {
-    const clean = cleanAvatarType(avatarType);
-    setAvatarChoice(clean);
+  async function syncProfileNow(options) {
+    const avatarType = cleanAvatarType(options && options.avatarType || selectedAvatarType());
+    const displayName = cleanDisplayName(options && options.displayName || displayNameValue());
+
+    saveLocalIdentity(displayName, avatarType);
+    syncDisplayInputs(displayName);
+    setAvatarChoice(avatarType);
     refreshWidgets();
 
     if (!window.HWAuth || typeof window.HWAuth.getCurrentUser !== 'function' || typeof window.HWAuth.updateProfile !== 'function') {
-      if (!quiet) show('Avatar updated on this device. Login to sync it across devices.', 'warn');
+      if (!options || !options.quiet) show('Saved on this device. Login to sync across devices.', 'warn');
       return;
     }
 
     try {
       const user = await window.HWAuth.getCurrentUser();
       if (!user) {
-        if (!quiet) show('Avatar updated on this device. Login to sync it across devices.', 'warn');
+        if (!options || !options.quiet) show('Saved on this device. Login to sync across devices.', 'warn');
         return;
       }
       await window.HWAuth.updateProfile({
-        displayName: displayNameValue(),
+        displayName,
         duckStatus: duckStatusInput ? duckStatusInput.value : user.duckStatus || '',
         buckClearance: buckClearanceInput ? buckClearanceInput.value : user.buckClearance || 'Lobby clearance only',
-        avatarType: clean
+        avatarType
       });
-      if (!quiet) show('Avatar updated and synced to your HYPHSWORLD ID.', 'success');
+      if (!options || !options.quiet) show('Profile updated and synced to your HYPHSWORLD ID.', 'success');
     } catch (error) {
-      if (!quiet) show('Avatar updated on this device. Account sync will retry next time you save.', 'warn');
+      if (!options || !options.quiet) show('Saved on this device. Account sync will retry next time you save.', 'warn');
     }
   }
 
   function queueAvatarSync(avatarType) {
     clearTimeout(avatarSyncTimer);
-    avatarSyncTimer = setTimeout(() => syncAvatarNow(avatarType, true), 450);
+    avatarSyncTimer = setTimeout(() => syncProfileNow({ avatarType, quiet: true }), 450);
+  }
+
+  function queueDisplaySync(displayName) {
+    clearTimeout(displaySyncTimer);
+    displaySyncTimer = setTimeout(() => syncProfileNow({ displayName, quiet: true }), 650);
   }
 
   function bindProfileForm() {
     if (!profileForm) return;
     profileForm.addEventListener('submit', async (event) => {
       event.preventDefault();
-      const avatarType = selectedAvatarType();
-      const displayName = displayNameInput ? displayNameInput.value : '';
-      saveLocalIdentity(displayName || 'Guest', avatarType);
-      setAvatarChoice(avatarType);
-      refreshWidgets();
-      try {
-        const user = await HWAuth.updateProfile({
-          displayName,
-          duckStatus: duckStatusInput ? duckStatusInput.value : '',
-          buckClearance: buckClearanceInput ? buckClearanceInput.value : '',
-          avatarType
-        });
-        saveLocalIdentity(user.displayName || displayName || 'Guest', avatarType);
-        await renderUser();
-        if (window.HWPoints) window.HWPoints.render('account_profile_saved');
-        refreshWidgets();
-        show('Account saved. Avatar synced.', 'success');
-      } catch (error) {
-        show('Saved on this device. Login or reconnect to sync across devices.', 'warn');
-      }
+      await syncProfileNow({ displayName: displayNameValue(), avatarType: selectedAvatarType(), quiet: false });
     });
+  }
+
+  function bindDisplayNameStudio() {
+    if (displayNameStudio) {
+      displayNameStudio.addEventListener('input', () => {
+        const name = cleanDisplayName(displayNameStudio.value);
+        saveLocalIdentity(name, selectedAvatarType());
+        syncDisplayInputs(name);
+        refreshWidgets();
+        queueDisplaySync(name);
+      });
+    }
+
+    if (displayNameInput) {
+      displayNameInput.addEventListener('input', () => {
+        const name = cleanDisplayName(displayNameInput.value);
+        saveLocalIdentity(name, selectedAvatarType());
+        syncDisplayInputs(name);
+        refreshWidgets();
+        queueDisplaySync(name);
+      });
+    }
+
+    if (saveDisplayNameBtn) {
+      saveDisplayNameBtn.addEventListener('click', () => {
+        syncProfileNow({ displayName: displayNameValue(), avatarType: selectedAvatarType(), quiet: false });
+      });
+    }
   }
 
   function bindAvatarPreview() {
@@ -323,9 +368,11 @@
 
   setBodyState('is-loading-account');
   bindProfileForm();
+  bindDisplayNameStudio();
   bindAvatarPreview();
   bindFunnyManagements();
   bindLogout();
+  syncDisplayInputs(localStorage.getItem('hyphsworld.playerName') || 'Guest');
   setAvatarChoice(localStorage.getItem('hyphsworld.avatarType') || 'boy');
   renderUser();
 })();
