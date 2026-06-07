@@ -54,6 +54,74 @@ body.vault-page * {
   word-break: normal;
 }
 
+/* Scanner alignment polish: keep the body centered and upright. */
+.cyber-vault-live .body-target,
+.cyber-vault-live .scan-person {
+  left: 50%;
+  transform-origin: center center;
+}
+
+.cyber-vault-live .body-target {
+  width: 150px;
+  height: 292px;
+  transform: translate(-50%, -50%);
+  animation: none;
+}
+
+.cyber-vault-live .body-target .head {
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+}
+
+.cyber-vault-live .body-target .torso {
+  left: 50%;
+  top: 64px;
+  transform: translateX(-50%);
+}
+
+.cyber-vault-live .body-target .arm.left {
+  left: 20px;
+  top: 74px;
+  height: 106px;
+  transform: rotate(0deg);
+}
+
+.cyber-vault-live .body-target .arm.right {
+  right: 20px;
+  top: 74px;
+  height: 106px;
+  transform: rotate(0deg);
+}
+
+.cyber-vault-live .body-target .leg.left {
+  left: 45px;
+  top: 172px;
+  height: 104px;
+  transform: rotate(0deg);
+}
+
+.cyber-vault-live .body-target .leg.right {
+  right: 45px;
+  top: 172px;
+  height: 104px;
+  transform: rotate(0deg);
+}
+
+.cyber-vault-live .pad-topper {
+  grid-template-columns: 16px minmax(0, 1fr) 16px;
+  justify-items: center;
+  text-align: center;
+}
+
+.cyber-vault-live .pad-topper strong {
+  display: block;
+  width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.2;
+}
+
 @media (max-width: 900px) {
   .vault-header {
     width: 100%;
@@ -177,7 +245,7 @@ body.vault-page * {
   }
 
   .pad-topper {
-    grid-template-columns: 12px 1fr 12px;
+    grid-template-columns: 12px minmax(0, 1fr) 12px;
     gap: 8px;
     font-size: 11px;
     letter-spacing: .10em;
@@ -277,5 +345,27 @@ body.vault-page * {
 
   .body-target {
     transform: translate(-50%, -50%) scale(.86);
+  }
+
+  .cyber-vault-live .body-target {
+    width: 138px;
+    height: 268px;
+    transform: translate(-50%, -50%) scale(.86);
+  }
+
+  .cyber-vault-live .body-target .arm.left {
+    left: 18px;
+  }
+
+  .cyber-vault-live .body-target .arm.right {
+    right: 18px;
+  }
+
+  .cyber-vault-live .body-target .leg.left {
+    left: 42px;
+  }
+
+  .cyber-vault-live .body-target .leg.right {
+    right: 42px;
   }
 }
