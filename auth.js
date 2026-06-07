@@ -10,6 +10,7 @@
   const form = document.getElementById('oneAuthForm');
   const emailInput = document.getElementById('authEmail');
   const passwordInput = document.getElementById('authPassword');
+  const togglePasswordBtn = document.getElementById('togglePassword');
   const submitBtn = document.getElementById('oneAuthSubmit');
   const GOOGLE_REDIRECT_URL = 'https://hyphsworld.com/account.html';
 
@@ -51,6 +52,14 @@
     if (submitBtn) submitBtn.textContent = mode === 'signup' ? 'Create ID' : 'Login';
     if (passwordInput) passwordInput.setAttribute('autocomplete', mode === 'signup' ? 'new-password' : 'current-password');
     show(mode === 'signup' ? 'Create one HYPHSWORLD ID. Use it everywhere.' : 'Login with your existing HYPHSWORLD ID.', '');
+  }
+
+  function togglePassword() {
+    if (!passwordInput || !togglePasswordBtn) return;
+    const showing = passwordInput.type === 'text';
+    passwordInput.type = showing ? 'password' : 'text';
+    togglePasswordBtn.textContent = showing ? 'See' : 'Hide';
+    togglePasswordBtn.setAttribute('aria-pressed', showing ? 'false' : 'true');
   }
 
   async function submitAuth(event) {
@@ -112,6 +121,7 @@
 
     if (modeSignin) modeSignin.addEventListener('click', () => setMode('signin'));
     if (modeSignup) modeSignup.addEventListener('click', () => setMode('signup'));
+    if (togglePasswordBtn) togglePasswordBtn.addEventListener('click', togglePassword);
     if (googleLoginBtn) googleLoginBtn.addEventListener('click', googleLogin);
     if (form) form.addEventListener('submit', submitAuth);
   }
