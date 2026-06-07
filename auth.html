@@ -3,50 +3,58 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HYPHSWORLD | Create ID</title>
+  <title>HYPHSWORLD | Create / Login</title>
   <link rel="stylesheet" href="auth.css" />
   <script src="site-analytics.js" defer></script>
+  <style>
+    .one-id-card{max-width:720px;margin:0 auto}.one-id-panel{display:grid;gap:14px;padding:18px;border:1px solid rgba(69,255,54,.28);border-radius:22px;background:radial-gradient(circle at 10% 0%,rgba(69,255,54,.12),transparent 38%),rgba(13,17,23,.88)}.one-id-panel h2{margin:0;font-size:clamp(1.6rem,5vw,2.6rem);line-height:.95;text-transform:uppercase}.one-id-helper{margin:0;color:var(--muted);font-weight:800;line-height:1.45}.one-id-tabs{display:flex;gap:8px;flex-wrap:wrap;padding:6px;border:1px solid rgba(255,255,255,.12);border-radius:999px;background:rgba(0,0,0,.28)}.one-id-tabs button{flex:1;min-width:130px;background:transparent;color:#fff;border:1px solid transparent}.one-id-tabs button.is-active{background:linear-gradient(90deg,var(--green),var(--cyan),var(--yellow));color:#050505}.one-id-submit{min-height:52px;background:linear-gradient(90deg,var(--green),var(--cyan),var(--yellow));font-size:1rem;text-transform:uppercase;letter-spacing:.08em}.one-id-google{background:#fff;color:#050505;border:1px solid rgba(255,255,255,.2)}.one-id-small{font-size:.86rem;color:var(--muted);line-height:1.45;margin:0}.one-id-links{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.one-id-links a{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);color:#fff}.mode-signup [data-signin-copy]{display:none}.mode-signin [data-signup-copy]{display:none}@media(max-width:640px){.one-id-tabs{border-radius:18px}.one-id-tabs button{min-width:100%}}
+  </style>
 </head>
 <body>
   <main class="auth-shell">
-    <section class="card">
+    <section class="card one-id-card mode-signin" id="authCard">
       <p class="mini-kicker">AMS WEST ID CHECK</p>
-      <h1>Create ID</h1>
-      <p class="sub">Real account entry point for this browser. Buck checks the badge. Duck Sauce asks unnecessary questions.</p>
+      <h1>One HYPHSWORLD ID</h1>
+      <p class="sub">One signup. One login. One account for Cool Points, avatars, badges, Daily Spin, and vault progress.</p>
 
       <div id="message" class="message" role="status" aria-live="polite"></div>
 
-      <div class="panel auth-google-panel">
-        <h2>Fast ID</h2>
-        <p class="sub">Use Google to create or open your HYPHSWORLD ID, then Cool Points, badges, and progress can save to your account.</p>
-        <button id="googleLoginBtn" class="google-login-btn" type="button"><span>G</span> Continue with Google</button>
-      </div>
+      <section class="one-id-panel" aria-label="HYPHSWORLD identity form">
+        <div class="one-id-tabs" role="tablist" aria-label="Choose login or signup">
+          <button id="modeSignin" type="button" class="is-active" aria-selected="true">Login</button>
+          <button id="modeSignup" type="button" aria-selected="false">Create ID</button>
+        </div>
 
-      <div class="grid">
-        <form id="signupForm" class="panel">
-          <h2>Sign Up</h2>
-          <label>Email <input id="signupEmail" type="email" autocomplete="email" required /></label>
-          <label>Password <input id="signupPassword" type="password" minlength="6" autocomplete="new-password" required /></label>
-          <button type="submit">Create ID</button>
+        <div>
+          <h2 data-signin-copy>Welcome Back</h2>
+          <h2 data-signup-copy>Create Your ID</h2>
+          <p class="one-id-helper" data-signin-copy>Use the same email and password every time. Buck checks one badge only.</p>
+          <p class="one-id-helper" data-signup-copy>New users create one HYPHSWORLD ID. Points and rewards stay tied to it.</p>
+        </div>
+
+        <button id="googleLoginBtn" class="one-id-google" type="button">Continue with Google</button>
+
+        <form id="oneAuthForm" autocomplete="on">
+          <label>Email
+            <input id="authEmail" type="email" autocomplete="email" required />
+          </label>
+          <label>Password
+            <input id="authPassword" type="password" minlength="6" autocomplete="current-password" required />
+          </label>
+          <button id="oneAuthSubmit" class="one-id-submit" type="submit">Login</button>
         </form>
 
-        <form id="signinForm" class="panel">
-          <h2>Sign In</h2>
-          <label>Email <input id="signinEmail" type="email" autocomplete="email" required /></label>
-          <label>Password <input id="signinPassword" type="password" autocomplete="current-password" required /></label>
-          <button type="submit">Login</button>
-          <p class="sub" style="margin-top:12px;"><a href="forgot-password.html">Forgot password?</a></p>
-        </form>
-      </div>
+        <p class="one-id-small">Use <strong>Login</strong> if you already have an ID. Use <strong>Create ID</strong> only once. No duplicate sign-in maze.</p>
+      </section>
 
-      <div class="actions">
+      <div class="one-id-links">
         <a href="index.html">Back Home</a>
-        <a href="account.html">Manage Account</a>
-        <a href="forgot-password.html">Reset Password</a>
-        <button id="walletBtn" type="button" disabled title="Wallet linking comes after backend setup">Link Wallet (Soon)</button>
+        <a href="account.html">Manage ID</a>
+        <a href="forgot-password.html">Forgot Password</a>
       </div>
     </section>
   </main>
+
   <script src="supabase-config.js"></script>
   <script src="auth-client.js"></script>
   <script src="cool-points.js"></script>
