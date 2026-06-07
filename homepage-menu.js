@@ -20,6 +20,9 @@
     diamond: '💎'
   };
 
+  const AUTH_LABEL = 'Create / Login';
+  const AUTH_URL = 'auth.html';
+
   function ready(fn) {
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
     else fn();
@@ -91,6 +94,17 @@
     });
   }
 
+  function normalizeAuthLinks() {
+    document.querySelectorAll('a').forEach(function (link) {
+      const href = link.getAttribute('href') || '';
+      const label = cleanText(link);
+      const isAuthDoor = href === 'login.html' || href === '/login.html' || href === 'auth.html' || href === '/auth.html' || href.startsWith('auth.html?') || label === 'sign in' || label === 'login' || label === 'create id' || label === 'create/login' || label === 'create id / login';
+      if (!isAuthDoor) return;
+      link.setAttribute('href', AUTH_URL);
+      if (!label.includes('forgot') && !label.includes('reset') && label !== 'manage id') link.textContent = AUTH_LABEL;
+    });
+  }
+
   function directO1Links() {
     document.querySelectorAll('a[href="#o1-show"]').forEach(function (link) {
       link.setAttribute('href', '#top');
@@ -102,6 +116,7 @@
     restoreMerchLinks();
     restoreDailyWheelLinks();
     normalizeCasinoLinks();
+    normalizeAuthLinks();
     directO1Links();
   }
 
@@ -127,7 +142,7 @@
     statusEl.className = 'hw-login-chip ' + (signedIn ? 'is-signed-in' : 'is-guest');
     statusEl.innerHTML = signedIn
       ? '<span class="hw-login-avatar">' + avatar + '</span><span class="hw-login-copy"><strong>' + escapeHtml(name) + '</strong><small>' + points.toLocaleString() + ' CP' + (email ? ' • ' + escapeHtml(email) : '') + '</small></span>'
-      : '<span class="hw-login-avatar">' + avatar + '</span><span class="hw-login-copy"><strong>Guest Mode</strong><small>Create ID to sync Cool Points</small></span>';
+      : '<span class="hw-login-avatar">' + avatar + '</span><span class="hw-login-copy"><strong>Guest Mode</strong><small>Use one ID to sync Cool Points</small></span>';
   }
 
   function escapeHtml(value) {
@@ -145,8 +160,8 @@
     const mobileNavAccountLink = document.getElementById('mobile-nav-account-link');
 
     if (authLink) { authLink.textContent = label; authLink.href = href; }
-    if (navAccountLink) { navAccountLink.textContent = label === 'Manage ID' ? 'Manage ID' : 'Create ID'; navAccountLink.href = href; }
-    if (mobileNavAccountLink) { mobileNavAccountLink.textContent = label === 'Manage ID' ? 'Manage ID' : 'Create ID'; mobileNavAccountLink.href = href; }
+    if (navAccountLink) { navAccountLink.textContent = label === 'Manage ID' ? 'Manage ID' : AUTH_LABEL; navAccountLink.href = href; }
+    if (mobileNavAccountLink) { mobileNavAccountLink.textContent = label === 'Manage ID' ? 'Manage ID' : AUTH_LABEL; mobileNavAccountLink.href = href; }
 
     cleanLobbyRoutes();
   }
@@ -166,7 +181,7 @@
 
     if (!window.HWAuth) {
       renderStatusChip({ signedIn: false });
-      setAccountLinks('Create ID / Login', 'auth.html');
+      setAccountLinks(AUTH_LABEL, AUTH_URL);
       if (logoutButton) logoutButton.hidden = true;
       return;
     }
@@ -186,7 +201,7 @@
       if (logoutButton) logoutButton.hidden = false;
     } else {
       renderStatusChip({ signedIn: false });
-      setAccountLinks('Create ID / Login', 'auth.html');
+      setAccountLinks(AUTH_LABEL, AUTH_URL);
       if (logoutButton) logoutButton.hidden = true;
     }
   }
@@ -213,7 +228,7 @@
         try { if (window.HWAuth) await HWAuth.signOut(); } catch (error) {}
         renderStatusChip({ signedIn: false });
         logoutButton.hidden = true;
-        setAccountLinks('Create ID / Login', 'auth.html');
+        setAccountLinks(AUTH_LABEL, AUTH_URL);
       });
     }
   }
