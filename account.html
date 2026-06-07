@@ -11,9 +11,11 @@
     .hw-user-chip{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 12px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(0,0,0,.35);font-weight:900;box-shadow:0 0 18px rgba(57,255,122,.16);margin-top:12px}
     .hw-user-icon{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:999px;background:linear-gradient(135deg,#39ff7a,#1ffcff,#ff4fd8);color:#050505;font-size:1rem}
     .hw-user-points{padding:5px 8px;border-radius:999px;background:#39ff7a;color:#050505;font-size:.78rem;font-weight:1000}
-    .avatar-picker,.avatar-studio{border:1px solid rgba(57,255,122,.28);border-radius:22px;padding:14px;margin:14px 0;background:radial-gradient(circle at 10% 0%,rgba(57,255,122,.14),transparent 34%),rgba(0,0,0,.22);box-shadow:0 0 24px rgba(57,255,122,.08)}
-    .avatar-picker legend,.avatar-studio h2{font-weight:1000;padding:0 8px;letter-spacing:.04em;text-transform:uppercase;margin:0 0 8px}
-    .avatar-picker-note,.avatar-studio p{margin:4px 0 12px;color:rgba(255,255,255,.72);font-size:.88rem;font-weight:800;line-height:1.35}
+    .identity-studio,.avatar-picker,.avatar-studio{border:1px solid rgba(57,255,122,.28);border-radius:22px;padding:14px;margin:14px 0;background:radial-gradient(circle at 10% 0%,rgba(57,255,122,.14),transparent 34%),rgba(0,0,0,.22);box-shadow:0 0 24px rgba(57,255,122,.08)}
+    .identity-studio h2,.avatar-picker legend,.avatar-studio h2{font-weight:1000;padding:0 8px;letter-spacing:.04em;text-transform:uppercase;margin:0 0 8px}
+    .identity-studio p,.avatar-picker-note,.avatar-studio p{margin:4px 0 12px;color:rgba(255,255,255,.72);font-size:.88rem;font-weight:800;line-height:1.35}
+    .display-name-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:end}
+    .display-name-row label{display:grid;gap:6px;font-weight:1000;color:#fff}.display-name-row input{min-height:48px}.display-name-row button{min-height:48px;background:linear-gradient(90deg,#39ff7a,#1ffcff,#ffe45c);color:#050505;font-weight:1000;text-transform:uppercase;letter-spacing:.06em}.display-live-preview{display:flex;align-items:center;gap:10px;margin-top:12px;padding:12px;border-radius:18px;background:rgba(0,0,0,.32);border:1px solid rgba(255,255,255,.12);font-weight:1000}.display-live-preview span:first-child{display:grid;place-items:center;width:44px;height:44px;border-radius:999px;background:linear-gradient(135deg,#39ff7a,#1ffcff,#ff4fd8);color:#050505;font-size:1.5rem}.display-live-preview strong{color:#39ff7a}
     .avatar-choice-row,.avatar-studio-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:10px;margin-top:8px}
     .avatar-choice-row label,.avatar-studio button{position:relative;display:grid;place-items:center;gap:6px;min-height:86px;padding:12px;border-radius:20px;border:1px solid rgba(255,255,255,.18);background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(0,0,0,.24));cursor:pointer;font-weight:1000;text-align:center;color:#fff;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease,background .18s ease}
     .avatar-choice-row label:hover,.avatar-studio button:hover{transform:translateY(-2px);border-color:rgba(57,255,122,.48);box-shadow:0 12px 28px rgba(0,0,0,.24),0 0 22px rgba(57,255,122,.12)}
@@ -25,7 +27,7 @@
     .avatar-choice-row strong,.avatar-studio strong{display:block;font-size:.78rem;color:#fff;letter-spacing:.02em}
     .avatar-live-preview{display:flex;align-items:center;gap:10px;margin-top:12px;padding:12px;border-radius:18px;background:rgba(0,0,0,.32);border:1px solid rgba(255,255,255,.12);font-weight:1000}
     .avatar-live-preview span:first-child{display:grid;place-items:center;width:44px;height:44px;border-radius:999px;background:linear-gradient(135deg,#39ff7a,#1ffcff,#ff4fd8);color:#050505;font-size:1.5rem}
-    @media(max-width:640px){.avatar-choice-row,.avatar-studio-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hw-user-chip{border-radius:18px}}
+    @media(max-width:640px){.display-name-row{grid-template-columns:1fr}.avatar-choice-row,.avatar-studio-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hw-user-chip{border-radius:18px}}
   </style>
 </head>
 <body class="account-page">
@@ -47,6 +49,18 @@
       </div>
 
       <div id="message" class="message" role="status" aria-live="polite"></div>
+
+      <section class="identity-studio" id="identityStudio" aria-label="Change display name anytime">
+        <h2>Display Name Studio</h2>
+        <p>Change the name users see on your HYPHSWORLD ID, homepage chip, account badge, and HUD.</p>
+        <div class="display-name-row">
+          <label>Display Name
+            <input id="displayNameStudio" type="text" maxlength="40" placeholder="Example: Hyph Life" autocomplete="nickname" />
+          </label>
+          <button id="saveDisplayNameBtn" type="button">Save Name</button>
+        </div>
+        <div class="display-live-preview"><span id="displayPreviewIcon">🧢</span><span>Current name: <strong id="displayPreviewText">Guest</strong></span></div>
+      </section>
 
       <section class="avatar-studio" id="avatarStudio" aria-label="Change avatar anytime">
         <h2>Avatar Studio</h2>
@@ -128,14 +142,14 @@
       <section id="loggedOutPanel" class="panel account-panel" hidden>
         <h2>No ID Active</h2>
         <p class="sub">Duck Sauce said you walked in with no badge. Buck is pointing at the login button.</p>
-        <a class="auth-pill" href="auth.html?next=account.html">Create ID / Login</a>
+        <a class="auth-pill" href="auth.html?next=account.html">Create / Login</a>
       </section>
 
       <div class="actions account-actions">
         <a href="index.html">Back Home</a>
         <a href="daily-wheel.html">Daily Spin</a>
         <a href="vault.html">Vault</a>
-        <a href="auth.html?next=account.html">Create/Login</a>
+        <a href="auth.html?next=account.html">Create / Login</a>
         <button id="logoutBtn" type="button">Logout</button>
       </div>
     </section>
