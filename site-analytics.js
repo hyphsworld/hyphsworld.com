@@ -1,4 +1,4 @@
-/* HYPHSWORLD / AMS WEST shared analytics + global Duck Sauce loader + page lockdown */
+/* HYPHSWORLD / AMS WEST shared analytics + global Duck Sauce loader + page lockdown + reward codes */
 (function () {
   'use strict';
 
@@ -6,6 +6,8 @@
   var SCRIPT_ID = 'hw-google-analytics-loader';
   var DUCK_SCRIPT_ID = 'hw-global-duck-helper-loader';
   var DUCK_SRC = 'duck-helper.js?v=global-duck-20260509-slick-talk-1';
+  var REWARD_SCRIPT_ID = 'hw-reward-code-widget-loader';
+  var REWARD_SRC = 'reward-code-widget.js?v=reward-code-live-20260607';
   var LOCK_STYLE_ID = 'hw-global-page-lock-style';
 
   function installGlobalPageLock() {
@@ -57,8 +59,26 @@
     document.head.appendChild(script);
   }
 
+  function loadRewardCodeWidget() {
+    if (window.__HYPHSWORLD_REWARD_WIDGET_REQUESTED__) return;
+    window.__HYPHSWORLD_REWARD_WIDGET_REQUESTED__ = true;
+
+    if (document.getElementById(REWARD_SCRIPT_ID)) return;
+
+    var path = String(window.location.pathname || '').toLowerCase();
+    var allowed = path.endsWith('/') || path.endsWith('/index.html') || path.endsWith('/vault.html') || path.endsWith('/games.html') || path.endsWith('/account.html') || path.endsWith('/daily-wheel.html');
+    if (!allowed) return;
+
+    var script = document.createElement('script');
+    script.id = REWARD_SCRIPT_ID;
+    script.defer = true;
+    script.src = REWARD_SRC;
+    document.head.appendChild(script);
+  }
+
   installGlobalPageLock();
   loadGlobalDuckSauce();
+  loadRewardCodeWidget();
 
   if (!MEASUREMENT_ID || window.__HYPHSWORLD_ANALYTICS_LOADED__) return;
   window.__HYPHSWORLD_ANALYTICS_LOADED__ = true;
