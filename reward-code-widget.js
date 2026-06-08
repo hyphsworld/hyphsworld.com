@@ -1,4 +1,4 @@
-/* HYPHSWORLD Reward Code Widget */
+/* HYPHSWORLD Reward Code Widget + My Rewards lookup */
 (function () {
   'use strict';
 
@@ -11,7 +11,7 @@
     if (document.getElementById('hwRewardCodeStyles')) return;
     const style = document.createElement('style');
     style.id = 'hwRewardCodeStyles';
-    style.textContent = '.hw-reward-code-card{width:min(980px,calc(100% - 28px));margin:18px auto;padding:18px;border-radius:26px;border:1px solid rgba(57,255,122,.34);background:radial-gradient(circle at 10% 0%,rgba(57,255,122,.18),transparent 36%),radial-gradient(circle at 90% 0%,rgba(255,79,216,.14),transparent 36%),rgba(0,0,0,.58);box-shadow:0 20px 56px rgba(0,0,0,.34),0 0 28px rgba(57,255,122,.12);color:#fff}.hw-reward-code-card[data-inline="true"]{width:100%;margin:18px 0}.hw-reward-code-card h2{margin:0 0 6px;text-transform:uppercase;letter-spacing:-.04em;line-height:.9;font-size:clamp(2rem,6vw,4.4rem);color:#ffe45c;text-shadow:3px 3px 0 rgba(255,79,216,.55)}.hw-reward-code-card p{margin:0 0 14px;color:rgba(255,255,255,.76);font-weight:850;line-height:1.45}.hw-reward-code-form{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px}.hw-reward-code-form input{min-height:52px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.52);color:#fff;padding:0 18px;font-weight:1000;text-transform:uppercase;letter-spacing:.08em}.hw-reward-code-form button{min-height:52px;border:0;border-radius:999px;padding:0 18px;background:linear-gradient(90deg,#39ff7a,#1ffcff,#ffe45c);color:#050505;font-weight:1000;text-transform:uppercase;letter-spacing:.06em;cursor:pointer}.hw-reward-code-form button:disabled{opacity:.7;cursor:not-allowed}.hw-reward-code-status{margin-top:12px;padding:11px 13px;border-radius:18px;background:rgba(0,0,0,.34);border:1px solid rgba(255,255,255,.12);color:#a9ff87;font-weight:900;word-break:break-word}.hw-reward-code-status.is-error{color:#ff9ab0;border-color:rgba(255,39,93,.34)}.hw-reward-code-status.is-success{color:#39ff7a;border-color:rgba(57,255,122,.42)}.hw-reward-code-examples{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.hw-reward-code-examples button{border:1px solid rgba(255,255,255,.15);border-radius:999px;padding:8px 10px;background:rgba(255,255,255,.09);color:#fff;font-weight:950;cursor:pointer}@media(max-width:640px){.hw-reward-code-form{grid-template-columns:1fr}.hw-reward-code-card{border-radius:22px}.hw-reward-code-form input,.hw-reward-code-form button{border-radius:18px}}';
+    style.textContent = '.hw-reward-code-card{width:min(980px,calc(100% - 28px));margin:18px auto;padding:18px;border-radius:26px;border:1px solid rgba(57,255,122,.34);background:radial-gradient(circle at 10% 0%,rgba(57,255,122,.18),transparent 36%),radial-gradient(circle at 90% 0%,rgba(255,79,216,.14),transparent 36%),rgba(0,0,0,.58);box-shadow:0 20px 56px rgba(0,0,0,.34),0 0 28px rgba(57,255,122,.12);color:#fff}.hw-reward-code-card[data-inline="true"]{width:100%;margin:18px 0}.hw-reward-code-card h2{margin:0 0 6px;text-transform:uppercase;letter-spacing:-.04em;line-height:.9;font-size:clamp(2rem,6vw,4.4rem);color:#ffe45c;text-shadow:3px 3px 0 rgba(255,79,216,.55)}.hw-reward-code-card p{margin:0 0 14px;color:rgba(255,255,255,.76);font-weight:850;line-height:1.45}.hw-reward-code-form{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px}.hw-reward-code-form input{min-height:52px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.52);color:#fff;padding:0 18px;font-weight:1000;text-transform:uppercase;letter-spacing:.08em}.hw-reward-code-form button,.hw-reward-history-btn{min-height:52px;border:0;border-radius:999px;padding:0 18px;background:linear-gradient(90deg,#39ff7a,#1ffcff,#ffe45c);color:#050505;font-weight:1000;text-transform:uppercase;letter-spacing:.06em;cursor:pointer}.hw-reward-code-form button:disabled,.hw-reward-history-btn:disabled{opacity:.7;cursor:not-allowed}.hw-reward-code-status{margin-top:12px;padding:11px 13px;border-radius:18px;background:rgba(0,0,0,.34);border:1px solid rgba(255,255,255,.12);color:#a9ff87;font-weight:900;word-break:break-word}.hw-reward-code-status.is-error{color:#ff9ab0;border-color:rgba(255,39,93,.34)}.hw-reward-code-status.is-success{color:#39ff7a;border-color:rgba(57,255,122,.42)}.hw-reward-code-examples{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.hw-reward-code-examples button{border:1px solid rgba(255,255,255,.15);border-radius:999px;padding:8px 10px;background:rgba(255,255,255,.09);color:#fff;font-weight:950;cursor:pointer}.hw-reward-history{margin-top:16px;padding:14px;border-radius:22px;border:1px solid rgba(255,228,92,.22);background:rgba(0,0,0,.28)}.hw-reward-history-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.hw-reward-history-head strong{font-size:1rem;color:#ffe45c;text-transform:uppercase;letter-spacing:.08em}.hw-reward-history-list{display:grid;gap:10px;margin-top:12px}.hw-reward-history-item{padding:12px;border-radius:18px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12)}.hw-reward-history-item strong{display:block;color:#39ff7a}.hw-reward-history-item span{display:block;color:#fff;font-weight:900}.hw-reward-history-item small{display:block;margin-top:4px;color:rgba(255,255,255,.65);font-weight:800;line-height:1.35}.hw-reward-history-empty{margin-top:12px;color:rgba(255,255,255,.7);font-weight:900}@media(max-width:640px){.hw-reward-code-form{grid-template-columns:1fr}.hw-reward-code-card{border-radius:22px}.hw-reward-code-form input,.hw-reward-code-form button,.hw-reward-history-btn{border-radius:18px;width:100%}}';
     document.head.appendChild(style);
   }
 
@@ -23,6 +23,22 @@
     if (key.includes('LIMIT')) return 'That code already hit its limit. Debug: ' + message;
     if (key.includes('INVALID') || key.includes('EXPIRED')) return 'Code not active. Check the ticker or slot hints. Debug: ' + message;
     return 'Redeem error: ' + message;
+  }
+
+  function escapeHtml(value) {
+    return String(value || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function formatDate(value) {
+    if (!value) return '';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '';
+    return date.toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
   }
 
   async function getSupabaseClient() {
@@ -41,17 +57,71 @@
     } catch (error) {}
   }
 
+  async function loadHistory(sb) {
+    const rpc = await sb.rpc('my_reward_history');
+    if (!rpc.error && Array.isArray(rpc.data)) return rpc.data;
+
+    const fallback = await sb
+      .from('reward_code_redemptions')
+      .select('code, points_awarded, redeemed_at')
+      .order('redeemed_at', { ascending: false })
+      .limit(25);
+    if (fallback.error) throw fallback.error;
+    return (fallback.data || []).map((item) => ({
+      code: item.code,
+      title: item.code,
+      points: item.points_awarded,
+      reward_type: 'points',
+      hint: '',
+      unlock_key: '',
+      redeemed_at: item.redeemed_at
+    }));
+  }
+
+  function renderHistory(list, box) {
+    if (!box) return;
+    if (!list || !list.length) {
+      box.innerHTML = '<div class="hw-reward-history-empty">No wins yet. Try DUCKSAUCE50 or watch the ticker for the next code.</div>';
+      return;
+    }
+
+    box.innerHTML = list.map((item) => {
+      const points = Number(item.points || item.points_awarded || 0) || 0;
+      const hint = item.hint ? '<small>' + escapeHtml(item.hint) + '</small>' : '';
+      const unlock = item.unlock_key ? '<small>Unlock: ' + escapeHtml(item.unlock_key) + '</small>' : '';
+      return '<article class="hw-reward-history-item"><strong>' + escapeHtml(item.code || 'REWARD') + '</strong><span>' + escapeHtml(item.title || item.reward_type || 'Reward') + ' • +' + points + ' CP</span>' + hint + unlock + '<small>' + escapeHtml(formatDate(item.redeemed_at)) + '</small></article>';
+    }).join('');
+  }
+
   function createWidget(inline) {
     const card = document.createElement('section');
     card.className = 'hw-reward-code-card';
     if (inline) card.dataset.inline = 'true';
     card.setAttribute('aria-label', 'Redeem HYPHSWORLD reward code');
-    card.innerHTML = '<h2>Reward Code</h2><p>Enter codes from the ticker, slots, Daily Spin, or O1 drops. Points save to your HYPHSWORLD ID.</p><form class="hw-reward-code-form"><input type="text" maxlength="32" autocomplete="off" inputmode="text" placeholder="DUCKSAUCE50" aria-label="Reward code" /><button type="submit">Redeem</button></form><div class="hw-reward-code-status" role="status" aria-live="polite">Try: DUCKSAUCE50, GREENLIGHT, or NEONJACKPOT.</div><div class="hw-reward-code-examples"><button type="button" data-code="DUCKSAUCE50">DUCKSAUCE50</button><button type="button" data-code="GREENLIGHT">GREENLIGHT</button><button type="button" data-code="NEONJACKPOT">NEONJACKPOT</button></div>';
+    card.innerHTML = '<h2>Reward Code</h2><p>Enter codes from the ticker, slots, Daily Spin, or O1 drops. Points save to your HYPHSWORLD ID.</p><form class="hw-reward-code-form"><input type="text" maxlength="32" autocomplete="off" inputmode="text" placeholder="DUCKSAUCE50" aria-label="Reward code" /><button type="submit">Redeem</button></form><div class="hw-reward-code-status" role="status" aria-live="polite">Try: DUCKSAUCE50, GREENLIGHT, or NEONJACKPOT.</div><div class="hw-reward-code-examples"><button type="button" data-code="DUCKSAUCE50">DUCKSAUCE50</button><button type="button" data-code="GREENLIGHT">GREENLIGHT</button><button type="button" data-code="NEONJACKPOT">NEONJACKPOT</button></div><section class="hw-reward-history" aria-label="My rewards"><div class="hw-reward-history-head"><strong>My Rewards / Wins</strong><button class="hw-reward-history-btn" type="button">Look Up Wins</button></div><div class="hw-reward-history-list"><div class="hw-reward-history-empty">Tap Look Up Wins to see redeemed codes, points, hints, and unlocks.</div></div></section>';
 
     const form = card.querySelector('form');
     const input = card.querySelector('input');
     const button = card.querySelector('button[type="submit"]');
     const status = card.querySelector('.hw-reward-code-status');
+    const historyButton = card.querySelector('.hw-reward-history-btn');
+    const historyList = card.querySelector('.hw-reward-history-list');
+
+    async function lookupWins() {
+      historyButton.disabled = true;
+      historyButton.textContent = 'Checking...';
+      try {
+        const sb = await getSupabaseClient();
+        if (!sb || typeof sb.rpc !== 'function') throw new Error('NO_SUPABASE_CLIENT_OR_LOGIN_REQUIRED');
+        const list = await loadHistory(sb);
+        renderHistory(list, historyList);
+      } catch (error) {
+        historyList.innerHTML = '<div class="hw-reward-history-empty">' + escapeHtml(readableError(error)) + '</div>';
+      } finally {
+        historyButton.disabled = false;
+        historyButton.textContent = 'Look Up Wins';
+      }
+    }
 
     card.querySelectorAll('[data-code]').forEach((chip) => {
       chip.addEventListener('click', () => {
@@ -59,6 +129,8 @@
         input.focus();
       });
     });
+
+    if (historyButton) historyButton.addEventListener('click', lookupWins);
 
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
@@ -83,6 +155,7 @@
         status.textContent = (data.title || code) + ': +' + (data.points || 0) + ' Cool Points' + (data.hint ? ' — ' + data.hint : '');
         input.value = '';
         await refreshPoints();
+        await lookupWins();
       } catch (error) {
         status.className = 'hw-reward-code-status is-error';
         status.textContent = readableError(error);
@@ -92,6 +165,7 @@
       }
     });
 
+    setTimeout(lookupWins, 900);
     return card;
   }
 
