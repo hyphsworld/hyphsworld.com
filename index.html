@@ -39,6 +39,14 @@
     .podcast-video-shell iframe{display:block;width:100%;aspect-ratio:16/9;border:0}
     .podcast-strip{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:13px 14px;background:rgba(0,0,0,.72);color:#fff;font-weight:900}
     .podcast-strip small{color:#83ff70;letter-spacing:.08em;text-transform:uppercase}
+    .support-portal-card{position:relative;overflow:hidden;border:2px solid rgba(255,228,92,.46);border-radius:30px;background:radial-gradient(circle at 8% 10%,rgba(57,255,122,.24),transparent 34%),radial-gradient(circle at 92% 8%,rgba(255,39,93,.22),transparent 36%),linear-gradient(145deg,rgba(8,12,9,.96),rgba(0,0,0,.84));box-shadow:0 22px 64px rgba(0,0,0,.42),0 0 34px rgba(255,228,92,.18);padding:clamp(18px,4vw,28px)}
+    .support-portal-card:before{content:"";position:absolute;inset:-80px auto auto -80px;width:180px;height:180px;border-radius:50%;background:rgba(31,252,255,.22);filter:blur(12px)}
+    .support-portal-card .section-title{position:relative;z-index:1}
+    .support-actions{position:relative;z-index:1;display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:16px}
+    .support-paypal-btn{display:inline-flex;align-items:center;justify-content:center;min-height:56px;padding:0 22px;border-radius:999px;background:linear-gradient(90deg,#ffe45c,#39ff7a,#1ffcff);color:#050505!important;font-weight:1000;text-transform:uppercase;letter-spacing:.08em;text-decoration:none;box-shadow:0 12px 28px rgba(0,0,0,.3),0 0 22px rgba(57,255,122,.32);border:2px solid rgba(0,0,0,.75)}
+    .support-paypal-btn:hover,.support-paypal-btn:focus-visible{transform:translateY(-1px);filter:saturate(1.18);outline:3px solid rgba(255,39,93,.65);outline-offset:3px}
+    .support-note{margin:0;color:rgba(255,255,255,.72);font-weight:850;line-height:1.45}
+    .site-footer .footer-support-link{color:#ffe45c;font-weight:1000;text-decoration:none}
   </style>
 </head>
 <body class="home-page" data-homepage-video="oPUZx7mCceg-top-episode-20260510">
@@ -62,6 +70,7 @@
       <a class="desktop-extra-link" href="leaderboard.html">Leaderboards</a>
       <a class="desktop-extra-link" href="app-player.html">Full Player</a>
       <a class="desktop-extra-link" href="#connect">Connect</a>
+      <a class="desktop-extra-link" href="#support">Send Cool Points</a>
       <a class="desktop-extra-link" href="#podcast">Podcast</a>
       <a class="desktop-extra-link nav-cta" id="nav-account-link" href="auth.html">Create ID</a>
       <div class="mobile-menu-panel" id="mobile-menu-panel">
@@ -73,6 +82,7 @@
         <a href="leaderboard.html">Leaderboards</a>
         <a href="app-player.html">Full Player</a>
         <a href="#connect">Connect</a>
+        <a href="#support">Send Cool Points</a>
         <a href="#podcast">Podcast</a>
         <a class="nav-cta" id="mobile-nav-account-link" href="auth.html">Create ID</a>
       </div>
@@ -81,7 +91,7 @@
 
   <main>
     <section class="ticker" aria-label="HYPHSWORLD ticker">
-      <div class="ticker-track"><span>WELCOME 2 HYPHSWORLD</span><b>✦</b><span>BOOGOTGLUU SPOTLIGHT LIVE</span><b>✦</b><span>PURSE 1ST NOW LOADED</span><b>✦</b><span>COVID DOSE IN ROTATION</span><b>✦</b><span>CASINO FLOOR OPEN</span><b>✦</b><span>01 SHOW FULL EPISODE NOW PLAYING</span><b>✦</b><span>PODCAST RESTORED</span><b>✦</b></div>
+      <div class="ticker-track"><span>WELCOME 2 HYPHSWORLD</span><b>✦</b><span>BOOGOTGLUU SPOTLIGHT LIVE</span><b>✦</b><span>PURSE 1ST NOW LOADED</span><b>✦</b><span>COVID DOSE IN ROTATION</span><b>✦</b><span>CASINO FLOOR OPEN</span><b>✦</b><span>01 SHOW FULL EPISODE NOW PLAYING</span><b>✦</b><span>SEND COOL POINTS VIA PAYPAL</span><b>✦</b><span>PODCAST RESTORED</span><b>✦</b></div>
     </section>
 
     <section class="hero-shell" id="top">
@@ -136,16 +146,30 @@
 
     <section id="connect" class="section-pad"><div class="phone-shell section-card connect-card"><div class="section-title"><p class="eyebrow">Tap In</p><h2>Stay Locked In</h2><p>Booking, features, interviews, business, and Vault updates.</p></div><div class="button-row compact-actions"><a class="btn btn-primary" href="mailto:tone@amsenterprisecorp.com">Email AMS WEST</a><a class="btn btn-soft" href="account.html">Manage ID</a></div></div></section>
 
+    <section id="support" class="section-pad">
+      <div class="phone-shell section-card support-portal-card">
+        <div class="section-title">
+          <p class="eyebrow">Power The Portal</p>
+          <h2>Send Cool Points</h2>
+          <p>Support HYPHSWORLD directly through PayPal. Your contribution helps fund new episodes, music, animation, live streams, and exclusive drops.</p>
+        </div>
+        <div class="support-actions">
+          <a class="support-paypal-btn" href="https://paypal.me/1Hyphsworld" target="_blank" rel="noopener noreferrer">Send Cool Points</a>
+          <p class="support-note">PayPal support opens in a new tab. No login maze, no checkout build, just fuel for the universe.</p>
+        </div>
+      </div>
+    </section>
+
     <section id="podcast" class="section-pad">
       <div class="phone-shell section-card podcast-bottom-frame">
         <div class="section-title"><p class="eyebrow">Real Life Podcast</p><h2>Saved A Guy’s Life</h2><p>The podcast is restored at the bottom of the homepage like the original layout. This story stays locked in place.</p></div>
         <div class="podcast-video-shell"><iframe src="https://www.youtube.com/embed/4jvPUvhXnBA?si=TqgEwqLK4otzl4ZR&amp;rel=0&amp;modestbranding=1" title="Hyph Life podcast: saved a guy's life" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe><div class="podcast-strip"><small>Podcast Restored</small><span>Real story // HYPHSWORLD archive</span></div></div>
-        <div class="button-row compact-actions"><a class="btn btn-primary" href="https://youtu.be/4jvPUvhXnBA?si=TqgEwqLK4otzl4ZR" target="_blank" rel="noopener">Watch on YouTube</a><a class="btn btn-soft" href="vault.html">Enter Vault</a></div>
+        <div class="button-row compact-actions"><a class="btn btn-primary" href="https://youtu.be/4jvPUvhXnBA?si=TqgEwqLK4otzl4ZR" target="_blank" rel="noopener">Watch on YouTube</a><a class="btn btn-soft" href="vault.html">Enter Vault</a><a class="btn btn-hot" href="https://paypal.me/1Hyphsworld" target="_blank" rel="noopener noreferrer">Send Cool Points</a></div>
       </div>
     </section>
   </main>
 
-  <footer class="site-footer"><span>© <span id="year"></span> AMS WEST LLC</span><span>HYPHSWORLD • Richmond, CA</span></footer>
+  <footer class="site-footer"><span>© <span id="year"></span> AMS WEST LLC</span><span>HYPHSWORLD • Richmond, CA</span><a class="footer-support-link" href="https://paypal.me/1Hyphsworld" target="_blank" rel="noopener noreferrer">Send Cool Points</a></footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=global-cashier-20260523"></script>
