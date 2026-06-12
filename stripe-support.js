@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const CHECKOUT_FUNCTION = 'create-checkout-session';
+  const CHECKOUT_FUNCTION = 'smart-task';
   const FALLBACK_PAYPAL_URL = 'https://paypal.me/1Hyphsworld';
   const DEFAULT_TIER = 'supporter5';
 
