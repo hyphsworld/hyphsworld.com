@@ -1,9 +1,9 @@
 /*
   HYPHSWORLD Cool Points
-  Account-first point system.
-  - Logged-in users sync permanently through HWAuth/Supabase.
-  - Guest/local users save on the same browser/device through localStorage.
-  - Refresh uses the highest protected balance so rewards do not roll back.
+  Account-only point system.
+  - Login once and the Supabase ID becomes the only real wallet.
+  - localStorage mirrors the account balance for display only.
+  - Logged-out visitors do not earn or spend real Cool Points.
 */
 (function () {
   'use strict';
@@ -21,8 +21,7 @@
 
   const TOTAL_KEY = 'hyphsworld.coolPoints.total';
   const PROFILE_KEY = 'hyphsworld.coolPoints.profile';
-  const GUEST_SESSION_KEY = 'hyphsworld.coolPoints.guestSession';
-  const OLD_KEYS = ['coolPoints', 'hyphsCoolPoints', 'hwCoolPoints', 'hyphsworldPoints', 'hyphsworld.coolpoints', 'hyphsworld_points', 'HW_COOL_POINTS'];
+  const CACHE_KEYS = ['coolPoints', 'hyphsworld_points', 'HW_COOL_POINTS', 'hyphsworld.coolPoints.guestSession'];
 
   let points = 0;
   let hydrated = false;
@@ -32,7 +31,6 @@
 
   function safeGet(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
   function safeSet(key, value) { try { localStorage.setItem(key, String(value)); } catch (e) {} }
-  function safeSessionGet(key) { try { return sessionStorage.getItem(key); } catch (e) { return null; } }
   function safeSessionSet(key, value) { try { sessionStorage.setItem(key, String(value)); } catch (e) {} }
 
   function numberFrom(value) {
@@ -40,19 +38,11 @@
     return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
   }
 
-  function getBestStoredPoints() {
-    const values = [safeGet(TOTAL_KEY), safeSessionGet(GUEST_SESSION_KEY), safeGet(GUEST_SESSION_KEY)].concat(OLD_KEYS.map(safeGet));
-    return values.reduce((max, value) => Math.max(max, numberFrom(value)), 0);
-  }
-
-  function mirrorPoints(value) {
+  function cachePoints(value) {
     const next = Math.max(0, parseInt(value, 10) || 0);
     safeSet(TOTAL_KEY, next);
-    safeSet('coolPoints', next);
-    safeSet('hyphsworld_points', next);
-    safeSet('HW_COOL_POINTS', next);
-    safeSet(GUEST_SESSION_KEY, next);
-    safeSessionSet(GUEST_SESSION_KEY, next);
+    CACHE_KEYS.forEach((key) => safeSet(key, next));
+    safeSessionSet('hyphsworld.coolPoints.guestSession', next);
   }
 
   function getProfileName() {
@@ -65,7 +55,7 @@
       name: getProfileName(),
       points,
       accountBacked: sessionActive,
-      note: sessionActive ? 'Supabase account-backed points' : 'Local device saved points',
+      note: sessionActive ? 'Supabase account-backed points' : 'Login required for real Cool Points',
       updatedAt: new Date().toISOString()
     };
     safeSet(PROFILE_KEY, JSON.stringify(profile));
@@ -75,6 +65,7 @@
     const detail = {
       points,
       accountBacked: sessionActive,
+      loginRequired: !sessionActive,
       reason: reason || 'render',
       profile: { name: getProfileName(), points, accountBacked: sessionActive }
     };
@@ -87,12 +78,12 @@
   }
 
   function toast(message) {
-    const el = document.getElementById('hw-toast');
+    const el = document.getElementById('hw-toast') || document.getElementById('casinoToast');
     if (!el) return;
     el.textContent = message;
     el.classList.add('show');
     clearTimeout(window.__hwToastTimer);
-    window.__hwToastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+    window.__hwToastTimer = setTimeout(() => el.classList.remove('show'), 2600);
   }
 
   function render(reason) {
@@ -104,14 +95,14 @@
     document.querySelectorAll('#hw-player-name,[data-player-name]').forEach((el) => { el.textContent = playerName; });
     const loginLink = document.getElementById('hw-login-link');
     if (loginLink && playerName !== 'Guest') loginLink.textContent = playerName;
-    document.querySelectorAll('[data-points-mode]').forEach((el) => { el.textContent = sessionActive ? 'Account saved' : 'Device saved'; });
+    document.querySelectorAll('[data-points-mode]').forEach((el) => { el.textContent = sessionActive ? 'Account saved' : 'Login required'; });
     saveProfile();
     emitUpdate(reason || 'render');
   }
 
   function setDisplay(value, reason) {
     points = Math.max(0, parseInt(value, 10) || 0);
-    mirrorPoints(points);
+    cachePoints(points);
     render(reason || 'set_display');
     return points;
   }
@@ -127,13 +118,7 @@
     try {
       if (window.HWAuth && typeof window.HWAuth.getPoints === 'function') return numberFrom(await window.HWAuth.getPoints());
     } catch (error) {}
-    return null;
-  }
-
-  async function saveAccountPointsIfHigher(bestPoints, accountPoints) {
-    if (!sessionActive || !window.HWAuth || typeof window.HWAuth.setPoints !== 'function') return;
-    if (!bestPoints || bestPoints <= numberFrom(accountPoints)) return;
-    try { await window.HWAuth.setPoints(bestPoints, 'protect_highest_points'); } catch (error) {}
+    return 0;
   }
 
   async function hydrate(force) {
@@ -146,13 +131,10 @@
 
     if (sessionActive) {
       const accountPoints = await getAccountPoints();
-      const localBest = getBestStoredPoints();
-      const best = Math.max(numberFrom(accountPoints), localBest, points);
-      setDisplay(best, 'hydrate_account_best_protected');
-      await saveAccountPointsIfHigher(best, accountPoints);
+      setDisplay(accountPoints, 'hydrate_account_only');
     } else {
       sessionActive = false;
-      setDisplay(Math.max(getBestStoredPoints(), points), 'hydrate_guest_local');
+      setDisplay(0, 'hydrate_login_required');
     }
 
     hydrated = true;
@@ -160,28 +142,30 @@
     return points;
   }
 
+  async function requireLogin() {
+    await hydrate(true);
+    if (!sessionActive) {
+      toast('Login required to save Cool Points.');
+      try { document.dispatchEvent(new CustomEvent('hyph:points-login-required', { detail: { points: 0 } })); } catch (error) {}
+      return false;
+    }
+    return true;
+  }
+
   async function add(amount, reason) {
     const n = numberFrom(amount);
     if (!n) return points;
 
-    await hydrate(true);
-    const base = Math.max(points, getBestStoredPoints());
-    const session = await getAuthSession();
-    sessionActive = Boolean(session);
+    if (!(await requireLogin())) return points;
 
-    if (sessionActive && window.HWAuth && typeof window.HWAuth.addPoints === 'function') {
-      try {
-        const next = await window.HWAuth.addPoints(n, reason || '');
-        setDisplay(Math.max(numberFrom(next), base + n), 'add_account_protected');
-        await saveAccountPointsIfHigher(points, next);
-        toast(`+${n} Cool Points${reason ? ' — ' + reason : ''}`);
-        return points;
-      } catch (error) {}
+    if (window.HWAuth && typeof window.HWAuth.addPoints === 'function') {
+      const next = await window.HWAuth.addPoints(n, reason || '');
+      setDisplay(numberFrom(next), 'add_account_only');
+      toast(`+${n} Cool Points${reason ? ' — ' + reason : ''}`);
+      return points;
     }
 
-    sessionActive = false;
-    setDisplay(base + n, 'add_guest_local');
-    toast(`+${n} Cool Points${reason ? ' — ' + reason : ''}`);
+    toast('Login required to save Cool Points.');
     return points;
   }
 
@@ -189,7 +173,7 @@
     const n = numberFrom(amount);
     if (!n) return points;
 
-    await hydrate(true);
+    if (!(await requireLogin())) return points;
 
     if (points < n) {
       toast(`Need ${n} Cool Points. Current: ${points}`);
@@ -197,40 +181,30 @@
     }
 
     const next = points - n;
-    const session = await getAuthSession();
-    sessionActive = Boolean(session);
 
-    if (sessionActive && window.HWAuth && typeof window.HWAuth.setPoints === 'function') {
-      try {
-        const saved = await window.HWAuth.setPoints(next, reason || 'spend');
-        setDisplay(saved, 'spend_account');
-        toast(`-${n} Cool Points spent${reason ? ' — ' + reason : ''}`);
-        return points;
-      } catch (error) {}
+    if (window.HWAuth && typeof window.HWAuth.setPoints === 'function') {
+      const saved = await window.HWAuth.setPoints(next, reason || 'spend');
+      setDisplay(numberFrom(saved), 'spend_account_only');
+      toast(`-${n} Cool Points spent${reason ? ' — ' + reason : ''}`);
+      return points;
     }
 
-    sessionActive = false;
-    setDisplay(next, 'spend_guest_local');
-    toast(`-${n} Cool Points spent${reason ? ' — ' + reason : ''}`);
+    toast('Login required to save Cool Points.');
     return points;
   }
 
   async function set(value) {
     const requested = Math.max(0, parseInt(value, 10) || 0);
-    const next = Math.max(requested, getBestStoredPoints(), points);
-    const session = await getAuthSession();
-    sessionActive = Boolean(session);
 
-    if (sessionActive && window.HWAuth && typeof window.HWAuth.setPoints === 'function') {
-      try {
-        const saved = await window.HWAuth.setPoints(next, 'set_points_protected');
-        setDisplay(Math.max(numberFrom(saved), next), 'set_account_protected');
-        return points;
-      } catch (error) {}
+    if (!(await requireLogin())) return points;
+
+    if (window.HWAuth && typeof window.HWAuth.setPoints === 'function') {
+      const saved = await window.HWAuth.setPoints(requested, 'set_points_account_only');
+      setDisplay(numberFrom(saved), 'set_account_only');
+      return points;
     }
 
-    sessionActive = false;
-    setDisplay(next, 'set_guest_local');
+    toast('Login required to save Cool Points.');
     return points;
   }
 
@@ -261,6 +235,7 @@
   });
 
   window.HWPoints = Object.assign({}, window.HWPoints || {}, {
+    __accountOnlyCoolPointsV2: true,
     get: () => points,
     hydrate,
     refresh,
@@ -273,7 +248,7 @@
   });
 
   document.addEventListener('DOMContentLoaded', () => { hydrate(true).then(() => render('dom_ready')); });
-  points = getBestStoredPoints();
-  mirrorPoints(points);
+  points = 0;
+  cachePoints(points);
   render('boot');
 })();
