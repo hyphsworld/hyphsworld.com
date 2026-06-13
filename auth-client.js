@@ -127,7 +127,7 @@
     const c = await getConfig();
     const meta = user.user_metadata || {};
     const current = await rowFor(user);
-    const nextPoints = explicitPoints(updates) ? readUpdatePoints(updates, current?.points ?? meta.points ?? localPoints()) : Math.max(num(current?.points ?? meta.points), localPoints());
+    const nextPoints = explicitPoints(updates) ? readUpdatePoints(updates, current?.points ?? meta.points ?? 0) : num(current?.points ?? meta.points ?? 0);
     const currentLifetime = num(current?.lifetime_points ?? meta.lifetimePoints ?? nextPoints);
     const requestedLifetime = hasOwn(updates, 'lifetimePoints') ? num(updates.lifetimePoints) : num(updates.lifetime_points);
     const nextLifetime = Math.max(currentLifetime, requestedLifetime, nextPoints);
@@ -159,7 +159,7 @@
   async function addLedger(user, amount, reason) {
     const sb = await getClient();
     if (!sb || !user || !amount) return;
-    try { await sb.from('points_ledger').insert({ user_id: user.id, amount, reason: reason || 'site_action', metadata: { source: 'hyphsworld_frontend' } }); } catch (error) {}
+    try { await sb.from('points_ledger').insert({ user_id: user.id, amount, reason: reason || 'site_action', metadata: { source: 'hyphsworld_frontend', account_only: true } }); } catch (error) {}
   }
 
   async function addVaultUnlock(user, levelKey) {
@@ -172,7 +172,7 @@
 
   async function signInWithGoogle(options = {}) {
     const sb = await getClient();
-    if (!sb) throw new Error('Google sign-in needs Supabase configuration. Use email sign-in for now.');
+    if (!sb) throw new Error('Google sign-in needs Supabase configuration.');
     const redirectTo = options.redirectTo || AUTH_REDIRECT_URL;
     const { data, error } = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo, queryParams: { access_type: 'offline', prompt: 'consent' } } });
     if (error) throw new Error(error.message || 'Google sign-in failed.');
@@ -185,7 +185,7 @@
     const sb = await getClient();
     if (!sb) return mockSignUp(email, password);
     const displayName = displayFromEmail(email);
-    const startingPoints = localPoints();
+    const startingPoints = 0;
     const startingAvatar = avatarType(textGet('hyphsworld.avatarType') || 'boy');
     const { data, error } = await sb.auth.signUp({
       email,
@@ -207,7 +207,7 @@
     if (error) throw new Error(error.message || 'Sign up failed.');
     if (data && data.user) await upsertRow(data.user, { displayName, avatarType: startingAvatar, points: startingPoints, lifetimePoints: startingPoints });
     const session = data && data.user ? sessionFromUser(data.user) : { email, userId: '', provider: 'supabase' };
-    saveLocalSession(session); saveLocalProfileName(displayName); saveLocalAvatar(startingAvatar); return session;
+    saveLocalSession(session); saveLocalProfileName(displayName); saveLocalAvatar(startingAvatar); saveLocalPoints(startingPoints); return session;
   }
 
   async function signInWithEmail(email, password) {
@@ -218,10 +218,9 @@
     if (error) throw new Error(error.message || 'Invalid credentials.');
     if (!data || !data.user) throw new Error('No user returned.');
     let row = await rowFor(data.user);
-    if (!row) row = await upsertRow(data.user, { displayName: data.user.user_metadata?.displayName || displayFromEmail(email) });
-    const bestPoints = Math.max(num(row?.points), localPoints());
-    if (bestPoints > num(row?.points)) row = await upsertRow(data.user, { points: bestPoints, lifetimePoints: bestPoints });
-    saveLocalPoints(bestPoints); saveLocalProfileName(row?.display_name || displayFromEmail(email)); saveLocalAvatar(row?.avatar_type || 'boy');
+    if (!row) row = await upsertRow(data.user, { displayName: data.user.user_metadata?.displayName || displayFromEmail(email), points: 0, lifetimePoints: 0 });
+    const accountPoints = num(row?.points);
+    saveLocalPoints(accountPoints); saveLocalProfileName(row?.display_name || displayFromEmail(email)); saveLocalAvatar(row?.avatar_type || 'boy');
     const session = sessionFromUser(data.user); saveLocalSession(session); return session;
   }
 
@@ -241,11 +240,10 @@
       const { data } = await sb.auth.getUser();
       if (!data || !data.user) return null;
       const user = data.user;
-      const row = (await rowFor(user)) || (await upsertRow(user, { displayName: user.user_metadata?.displayName || displayFromEmail(user.email) }));
-      const bestPoints = Math.max(num(row?.points ?? user.user_metadata?.points), localPoints());
+      const row = (await rowFor(user)) || (await upsertRow(user, { displayName: user.user_metadata?.displayName || displayFromEmail(user.email), points: 0, lifetimePoints: 0 }));
+      const accountPoints = num(row?.points ?? user.user_metadata?.points);
       const type = avatarType(row?.avatar_type || user.user_metadata?.avatarType || textGet('hyphsworld.avatarType') || 'boy');
-      if (bestPoints > num(row?.points)) await upsertRow(user, { points: bestPoints, lifetimePoints: bestPoints, avatarType: type });
-      saveLocalPoints(bestPoints); saveLocalProfileName(row?.display_name || user.user_metadata?.displayName || displayFromEmail(user.email)); saveLocalAvatar(type);
+      saveLocalPoints(accountPoints); saveLocalProfileName(row?.display_name || user.user_metadata?.displayName || displayFromEmail(user.email)); saveLocalAvatar(type);
       return {
         email: user.email || '',
         userId: user.id || '',
@@ -256,8 +254,8 @@
         buckClearance: row?.buck_clearance || user.user_metadata?.buckClearance || 'Lobby clearance only',
         avatarType: type,
         avatarIcon: avatarIcon(type),
-        coolPoints: bestPoints,
-        lifetimePoints: Math.max(num(row?.lifetime_points), bestPoints),
+        coolPoints: accountPoints,
+        lifetimePoints: Math.max(num(row?.lifetime_points), accountPoints),
         level1Unlocked: Boolean(row?.level_1_unlocked),
         level2Unlocked: Boolean(row?.level_2_unlocked)
       };
@@ -277,8 +275,8 @@
       buckClearance: stored.buckClearance || 'Lobby clearance only',
       avatarType: type,
       avatarIcon: avatarIcon(type),
-      coolPoints: num(stored.coolPoints ?? localPoints()),
-      lifetimePoints: num(stored.lifetimePoints ?? stored.coolPoints ?? localPoints()),
+      coolPoints: num(stored.coolPoints),
+      lifetimePoints: num(stored.lifetimePoints ?? stored.coolPoints),
       level1Unlocked: Boolean(stored.level1Unlocked),
       level2Unlocked: Boolean(stored.level2Unlocked)
     };
@@ -292,14 +290,15 @@
       const { data } = await sb.auth.getUser();
       if (!data || !data.user) throw new Error('Login required.');
       const current = await rowFor(data.user);
+      const currentPoints = num(current?.points);
       const clean = {
         displayName: String(updates.displayName || current?.display_name || displayFromEmail(data.user.email)).trim().slice(0, 40),
         duckStatus: String(updates.duckStatus || current?.duck_status || 'Duck Sauce has no official notes.').trim().slice(0, 90),
         buckClearance: String(updates.buckClearance || current?.buck_clearance || 'Lobby clearance only').trim().slice(0, 90),
         avatarType: type,
         avatarIcon: avatarIcon(type),
-        points: Math.max(num(current?.points), localPoints()),
-        lifetimePoints: Math.max(num(current?.lifetime_points), localPoints())
+        points: currentPoints,
+        lifetimePoints: Math.max(num(current?.lifetime_points), currentPoints)
       };
       await sb.auth.updateUser({ data: clean });
       await upsertRow(data.user, clean);
@@ -318,40 +317,37 @@
       buckClearance: String(updates.buckClearance || current.buckClearance || 'Lobby clearance only').trim().slice(0, 90),
       avatarType: type,
       avatarIcon: avatarIcon(type),
-      coolPoints: Math.max(num(current.coolPoints), localPoints()),
-      lifetimePoints: Math.max(num(current.lifetimePoints), num(current.coolPoints), localPoints()),
+      coolPoints: num(current.coolPoints),
+      lifetimePoints: Math.max(num(current.lifetimePoints), num(current.coolPoints)),
       updatedAt: Date.now()
     };
     saveLocalUsers(users); saveLocalProfileName(users[session.email].displayName); saveLocalAvatar(type); saveLocalPoints(users[session.email].coolPoints);
     return getCurrentUser();
   }
 
-  async function getPoints() { const user = await getCurrentUser(); return Math.max(num(user?.coolPoints), localPoints()); }
+  async function getPoints() { const user = await getCurrentUser(); return num(user?.coolPoints); }
 
   async function setPoints(value, reason) {
     const next = Math.max(0, parseInt(value, 10) || 0);
     const sb = await getClient();
     if (sb) {
       const { data } = await sb.auth.getUser();
-      if (data && data.user) {
-        const current = await rowFor(data.user);
-        const lifetime = Math.max(num(current?.lifetime_points), next);
-        saveLocalPoints(next);
-        await sb.auth.updateUser({ data: { points: next, lifetimePoints: lifetime } });
-        await upsertRow(data.user, { points: next, lifetimePoints: lifetime });
-        return next;
-      }
-    } else {
-      const session = localSession();
-      if (session?.email) {
-        const users = localUsers();
-        if (users[session.email]) {
-          users[session.email].coolPoints = next;
-          users[session.email].lifetimePoints = Math.max(num(users[session.email].lifetimePoints), next);
-          saveLocalUsers(users);
-        }
-      }
+      if (!data || !data.user) throw new Error('Login required to save Cool Points.');
+      const current = await rowFor(data.user);
+      const lifetime = Math.max(num(current?.lifetime_points), next);
+      saveLocalPoints(next);
+      await sb.auth.updateUser({ data: { points: next, lifetimePoints: lifetime } });
+      await upsertRow(data.user, { points: next, lifetimePoints: lifetime });
+      return next;
     }
+
+    const session = localSession();
+    if (!session?.email) throw new Error('Login required to save Cool Points.');
+    const users = localUsers();
+    if (!users[session.email]) throw new Error('Login required to save Cool Points.');
+    users[session.email].coolPoints = next;
+    users[session.email].lifetimePoints = Math.max(num(users[session.email].lifetimePoints), next);
+    saveLocalUsers(users);
     saveLocalPoints(next);
     return next;
   }
@@ -361,17 +357,19 @@
     const sb = await getClient();
     if (sb) {
       const { data } = await sb.auth.getUser();
-      if (data && data.user) {
-        const current = await rowFor(data.user);
-        const currentPoints = Math.max(num(current?.points), localPoints());
-        const currentLifetime = num(current?.lifetime_points ?? currentPoints);
-        const next = Math.max(0, currentPoints + n);
-        saveLocalPoints(next);
-        await upsertRow(data.user, { points: next, lifetimePoints: Math.max(currentLifetime, next) });
-        await addLedger(data.user, n, reason || 'site_action');
-        return next;
-      }
+      if (!data || !data.user) throw new Error('Login required to earn Cool Points.');
+      const current = await rowFor(data.user);
+      const currentPoints = num(current?.points);
+      const currentLifetime = num(current?.lifetime_points ?? currentPoints);
+      const next = Math.max(0, currentPoints + n);
+      saveLocalPoints(next);
+      await upsertRow(data.user, { points: next, lifetimePoints: Math.max(currentLifetime, next) });
+      await addLedger(data.user, n, reason || 'site_action');
+      return next;
     }
+
+    const session = localSession();
+    if (!session?.email) throw new Error('Login required to earn Cool Points.');
     return setPoints((await getPoints()) + n, reason);
   }
 
@@ -380,20 +378,19 @@
     const sb = await getClient();
     if (sb) {
       const { data } = await sb.auth.getUser();
-      if (data && data.user) {
-        await upsertRow(data.user, normalizedLevel === 'level_2' ? { level2Unlocked: true } : { level1Unlocked: true });
-        await addVaultUnlock(data.user, normalizedLevel);
-      }
-    } else {
-      const session = localSession();
-      if (session?.email) {
-        const users = localUsers();
-        if (users[session.email]) {
-          if (normalizedLevel === 'level_2') users[session.email].level2Unlocked = true;
-          else users[session.email].level1Unlocked = true;
-          saveLocalUsers(users);
-        }
-      }
+      if (!data || !data.user) throw new Error('Login required.');
+      await upsertRow(data.user, normalizedLevel === 'level_2' ? { level2Unlocked: true } : { level1Unlocked: true });
+      await addVaultUnlock(data.user, normalizedLevel);
+      return true;
+    }
+
+    const session = localSession();
+    if (!session?.email) throw new Error('Login required.');
+    const users = localUsers();
+    if (users[session.email]) {
+      if (normalizedLevel === 'level_2') users[session.email].level2Unlocked = true;
+      else users[session.email].level1Unlocked = true;
+      saveLocalUsers(users);
     }
     return true;
   }
@@ -407,12 +404,12 @@
   async function mockSignUp(email, password) {
     const users = localUsers();
     if (users[email]) throw new Error('Account already exists.');
-    const startingPoints = localPoints();
+    const startingPoints = 0;
     const type = avatarType(textGet('hyphsworld.avatarType') || 'boy');
     users[email] = { email, password, displayName: displayFromEmail(email), duckStatus: 'Duck Sauce has not fined this account yet.', buckClearance: 'Lobby clearance only', avatarType: type, avatarIcon: avatarIcon(type), coolPoints: startingPoints, lifetimePoints: startingPoints, createdAt: Date.now() };
     saveLocalUsers(users);
     const session = { email, userId: 'mock_' + btoa(email), provider: 'mock', createdAt: Date.now() };
-    saveLocalSession(session); saveLocalProfileName(users[email].displayName); saveLocalAvatar(type);
+    saveLocalSession(session); saveLocalProfileName(users[email].displayName); saveLocalAvatar(type); saveLocalPoints(startingPoints);
     return session;
   }
 
