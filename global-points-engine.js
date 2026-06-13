@@ -1,22 +1,20 @@
 /*
   HYPHSWORLD Global Cool Points Engine
-  Clean rewrite: one balance, every page, highest balance wins.
+  Account-only rewrite: one ID, one real balance.
 
   Rules:
-  - Device/local points are saved in localStorage + sessionStorage mirrors.
-  - Signed-in users sync through HWAuth/Supabase when available.
-  - Older profile/account values cannot overwrite a newer earned balance.
-  - Cash Run, casino, vault, and button events all use the same HWPoints API.
+  - Supabase profile points are the only real wallet after login.
+  - localStorage is display cache only, never a second bank.
+  - Logged-out visitors can browse, but point awards/spends require login.
+  - All pages use window.HWPoints for the same account-backed balance.
 */
 (function () {
   'use strict';
 
-  if (window.HWPoints && window.HWPoints.__globalEngineCleanV1) return;
+  if (window.HWPoints && window.HWPoints.__accountOnlyEngineV2) return;
 
-  const STORAGE_KEY = 'hyphsworld.coolPoints.total';
-  const GUEST_KEY = 'hyphsworld.coolPoints.guestSession';
-  const LEGACY_KEYS = ['coolPoints', 'hyphsworld_points', 'HW_COOL_POINTS'];
-  const WATCHED_STORAGE_KEYS = [STORAGE_KEY, GUEST_KEY].concat(LEGACY_KEYS);
+  const CACHE_KEY = 'hyphsworld.coolPoints.total';
+  const LEGACY_KEYS = ['coolPoints', 'hyphsworld_points', 'HW_COOL_POINTS', 'hyphsworld.coolPoints.guestSession'];
   const PROFILE_TABLE = 'profiles';
   const SUPABASE_URL = window.HW_SUPABASE_URL || 'https://yuhxtdkhsltaqiagrtys.supabase.co';
   const SUPABASE_ANON_KEY = window.HW_SUPABASE_ANON_KEY || window.SUPABASE_ANON_KEY || '';
@@ -27,9 +25,10 @@
     profile: null,
     points: 0,
     lifetimePoints: 0,
-    rankTitle: 'Guest',
+    rankTitle: 'Login Required',
     avatarIcon: '🧢',
-    source: 'boot'
+    source: 'boot',
+    accountBacked: false
   };
 
   let supabaseClient = null;
@@ -42,35 +41,14 @@
     return Number.isFinite(n) ? Math.max(0, Math.floor(n)) : 0;
   }
 
-  function readStorage(key, storage) {
-    try { return storage.getItem(key); } catch (error) { return null; }
-  }
-
   function writeStorage(key, value, storage) {
     try { storage.setItem(key, String(value)); } catch (error) {}
   }
 
-  function readLocalBalance() {
-    const values = [];
-
-    values.push(readStorage(STORAGE_KEY, localStorage));
-    values.push(readStorage(GUEST_KEY, localStorage));
-    values.push(readStorage(GUEST_KEY, sessionStorage));
-
-    LEGACY_KEYS.forEach((key) => values.push(readStorage(key, localStorage)));
-
-    return values.reduce((highest, value) => Math.max(highest, toNumber(value)), 0);
-  }
-
-  function mirrorBalance(points) {
+  function cacheAccountBalance(points) {
     const next = toNumber(points);
-
-    writeStorage(STORAGE_KEY, next, localStorage);
-    writeStorage(GUEST_KEY, next, localStorage);
-    writeStorage(GUEST_KEY, next, sessionStorage);
-
+    writeStorage(CACHE_KEY, next, localStorage);
     LEGACY_KEYS.forEach((key) => writeStorage(key, next, localStorage));
-
     return next;
   }
 
@@ -94,6 +72,7 @@
         const session = await window.HWAuth.getSession();
         const user = session && (session.user || session.data?.user);
         if (user) return { userId: user.id, id: user.id, email: user.email || '' };
+        if (session && session.userId) return session;
       } catch (error) {}
     }
 
@@ -134,10 +113,8 @@
     const next = toNumber(points);
 
     if (window.HWAuth && typeof window.HWAuth.setPoints === 'function') {
-      try {
-        await window.HWAuth.setPoints(next, reason || 'global_points_sync');
-        return next;
-      } catch (error) {}
+      await window.HWAuth.setPoints(next, reason || 'account_only_points_sync');
+      return next;
     }
 
     return next;
@@ -145,7 +122,7 @@
 
   function setState(nextState) {
     state = Object.assign({}, state, nextState, { ready: true });
-    mirrorBalance(state.points);
+    if (state.accountBacked || state.user) cacheAccountBalance(state.points);
     render();
     emit('hw:points-ready');
     emit('hw:points-change');
@@ -154,7 +131,8 @@
 
   function getState() {
     return Object.assign({}, state, {
-      points: Math.max(toNumber(state.points), readLocalBalance())
+      points: toNumber(state.points),
+      accountBacked: Boolean(state.user)
     });
   }
 
@@ -172,7 +150,8 @@
             points: snapshot.points,
             source: snapshot.source,
             profile: snapshot.profile || null,
-            accountBacked: Boolean(snapshot.user)
+            accountBacked: Boolean(snapshot.user),
+            loginRequired: !snapshot.user
           }
         }));
       } catch (error) {}
@@ -202,7 +181,7 @@
 
     hud = document.createElement('aside');
     hud.id = 'hwGlobalPointsHud';
-    hud.innerHTML = '<div class="hwgp-icon" data-hw-avatar>🧢</div><div><strong data-hw-points>0</strong><span>Cool Points</span></div><small data-hw-rank>Guest</small>';
+    hud.innerHTML = '<div class="hwgp-icon" data-hw-avatar>🧢</div><div><strong data-hw-points>0</strong><span>Cool Points</span></div><small data-hw-rank>Login Required</small>';
     document.body.appendChild(hud);
     return hud;
   }
@@ -210,9 +189,9 @@
   function render() {
     injectHudStyles();
 
-    const safePoints = Math.max(toNumber(state.points), readLocalBalance());
+    const safePoints = toNumber(state.points);
     const pointsText = safePoints.toLocaleString();
-    const rank = state.rankTitle || (state.user ? 'Lobby Rookie' : 'Guest');
+    const rank = state.user ? (state.rankTitle || 'Lobby Rookie') : 'Login Required';
     const avatar = state.avatarIcon || '🧢';
 
     document.querySelectorAll('[data-hw-points], #cool-points, #gateCredits, #wof-points, .js-cool-points, [data-cool-points], #accountCoolPoints').forEach((el) => {
@@ -221,8 +200,8 @@
 
     document.querySelectorAll('[data-hw-rank]').forEach((el) => { el.textContent = rank; });
     document.querySelectorAll('[data-hw-avatar]').forEach((el) => { el.textContent = avatar; });
-    document.querySelectorAll('[data-hw-user-state]').forEach((el) => { el.textContent = state.user ? 'LIVE ID' : 'GUEST'; });
-    document.querySelectorAll('[data-points-mode]').forEach((el) => { el.textContent = state.user ? 'Account saved' : 'Device saved'; });
+    document.querySelectorAll('[data-hw-user-state]').forEach((el) => { el.textContent = state.user ? 'LIVE ID' : 'LOGIN REQUIRED'; });
+    document.querySelectorAll('[data-points-mode]').forEach((el) => { el.textContent = state.user ? 'Account saved' : 'Login required'; });
 
     const hud = ensureHud();
     hud.querySelector('[data-hw-avatar]').textContent = avatar;
@@ -243,42 +222,65 @@
     refreshing = true;
 
     try {
-      const localPoints = readLocalBalance();
       const user = await getCurrentUser();
       const profile = await fetchProfile(user);
 
       if (user && profile) {
-        const remotePoints = toNumber(profile.points);
-        const bestPoints = Math.max(localPoints, remotePoints);
-        const lifetimePoints = Math.max(toNumber(profile.lifetime_points), bestPoints);
-
-        if (bestPoints > remotePoints) await pushAccountBalance(bestPoints, 'recover_higher_local_points');
+        const remotePoints = toNumber(profile.points ?? user.coolPoints);
+        const lifetimePoints = Math.max(toNumber(profile.lifetime_points ?? user.lifetimePoints), remotePoints);
 
         startAccountRefreshLoop();
 
         return setState({
           user,
           profile,
-          points: bestPoints,
+          points: remotePoints,
           lifetimePoints,
           rankTitle: profile.rank_title || 'Lobby Rookie',
-          avatarIcon: profile.avatar_icon || '🧢',
-          source: bestPoints > remotePoints ? 'recovered_local_to_account' : 'account_synced'
+          avatarIcon: profile.avatar_icon || user.avatarIcon || '🧢',
+          source: 'account_synced',
+          accountBacked: true
+        });
+      }
+
+      if (user && !profile) {
+        return setState({
+          user,
+          profile: null,
+          points: toNumber(user.coolPoints),
+          lifetimePoints: toNumber(user.lifetimePoints || user.coolPoints),
+          rankTitle: 'Lobby Rookie',
+          avatarIcon: user.avatarIcon || '🧢',
+          source: 'account_user_synced',
+          accountBacked: true
         });
       }
 
       return setState({
         user: null,
         profile: null,
-        points: localPoints,
-        lifetimePoints: localPoints,
-        rankTitle: 'Guest',
+        points: 0,
+        lifetimePoints: 0,
+        rankTitle: 'Login Required',
         avatarIcon: '🧢',
-        source: 'device_saved'
+        source: 'login_required',
+        accountBacked: false
       });
     } finally {
       refreshing = false;
     }
+  }
+
+  async function requireLogin() {
+    const snapshot = await refresh();
+    if (!snapshot.user) {
+      render();
+      try {
+        document.dispatchEvent(new CustomEvent('hyph:points-login-required', { detail: snapshot }));
+      } catch (error) {}
+      return null;
+    }
+    return snapshot;
   }
 
   async function add(amount, reason, metadata) {
@@ -287,45 +289,38 @@
 
     if (!state.ready) pendingQueue.push({ amount: delta, reason, metadata });
 
-    const base = Math.max(toNumber(state.points), readLocalBalance());
-    const target = Math.max(0, base + delta);
-    mirrorBalance(target);
+    const snapshot = await requireLogin();
+    if (!snapshot) return getState();
 
-    if (state.user && window.HWAuth && typeof window.HWAuth.addPoints === 'function') {
-      try {
-        const saved = toNumber(await window.HWAuth.addPoints(delta, reason || 'site_action', metadata || {}));
-        const best = Math.max(saved, target, readLocalBalance());
-        if (best > saved) await pushAccountBalance(best, reason || 'site_action_recovery');
-        mirrorBalance(best);
-        return refresh();
-      } catch (error) {}
+    if (window.HWAuth && typeof window.HWAuth.addPoints === 'function') {
+      const saved = toNumber(await window.HWAuth.addPoints(delta, reason || 'site_action', metadata || {}));
+      cacheAccountBalance(saved);
+      return refresh();
     }
 
-    return setState({
-      points: target,
-      lifetimePoints: Math.max(toNumber(state.lifetimePoints), target),
-      source: reason || 'points_added'
-    });
+    const next = toNumber(snapshot.points) + delta;
+    await pushAccountBalance(next, reason || 'site_action');
+    cacheAccountBalance(next);
+    return refresh();
   }
 
   async function spend(amount, reason, metadata) {
     const cost = Math.abs(Math.floor(Number(amount || 0)));
     if (!cost) return getState();
 
-    const current = Math.max(toNumber(state.points), readLocalBalance());
+    const snapshot = await requireLogin();
+    if (!snapshot) return getState();
+
+    const current = toNumber(snapshot.points);
     if (current < cost) {
       render();
       return getState();
     }
 
     const next = current - cost;
-    mirrorBalance(next);
-
-    if (state.user && window.HWAuth && typeof window.HWAuth.setPoints === 'function') {
-      try { await window.HWAuth.setPoints(next, reason || 'spend'); } catch (error) {}
-    }
-
-    return setState({ points: next, source: reason || 'points_spent' });
+    await pushAccountBalance(next, reason || 'spend');
+    cacheAccountBalance(next);
+    return refresh();
   }
 
   async function flushPending() {
@@ -336,17 +331,18 @@
   }
 
   function get() {
-    return Math.max(toNumber(state.points), readLocalBalance());
+    return toNumber(state.points);
   }
 
   window.HWPoints = {
-    __globalEngineCleanV1: true,
+    __accountOnlyEngineV2: true,
     refresh,
     add,
     spend,
     get,
     getState,
-    render
+    render,
+    requireLogin
   };
 
   document.addEventListener('hyph:points:add', (event) => {
@@ -387,7 +383,7 @@
   });
 
   window.addEventListener('storage', (event) => {
-    if (WATCHED_STORAGE_KEYS.includes(event.key)) refresh();
+    if (event.key === CACHE_KEY) refresh();
   });
 
   document.addEventListener('visibilitychange', () => {
