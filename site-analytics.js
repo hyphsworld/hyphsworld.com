@@ -1,4 +1,4 @@
-/* HYPHSWORLD / AMS WEST shared analytics + global Duck Sauce loader + page lockdown + reward codes + PayPal support */
+/* HYPHSWORLD / AMS WEST shared analytics + global loaders + page lockdown + reward codes + PayPal support + Points Core */
 (function () {
   'use strict';
 
@@ -8,6 +8,8 @@
   var DUCK_SRC = 'duck-helper.js?v=global-duck-20260509-slick-talk-1';
   var REWARD_SCRIPT_ID = 'hw-reward-code-widget-loader';
   var REWARD_SRC = 'reward-code-widget.js?v=reward-code-live-20260607';
+  var POINTS_SCRIPT_ID = 'hw-points-core-loader';
+  var POINTS_SRC = 'points-core.js?v=hyphs-points-core-v4-20260613';
   var LOCK_STYLE_ID = 'hw-global-page-lock-style';
   var SUPPORT_STYLE_ID = 'hw-paypal-support-style';
   var SUPPORT_CARD_ID = 'hw-paypal-support-card';
@@ -47,6 +49,17 @@
         event.preventDefault();
       }
     }, { passive: false });
+  }
+
+  function loadPointsCore() {
+    if (window.HWPoints && window.HWPoints.__hyphsPointsCoreV4) return;
+    if (document.getElementById(POINTS_SCRIPT_ID)) return;
+
+    var script = document.createElement('script');
+    script.id = POINTS_SCRIPT_ID;
+    script.defer = true;
+    script.src = POINTS_SRC;
+    document.head.appendChild(script);
   }
 
   function loadGlobalDuckSauce() {
@@ -134,6 +147,7 @@
   }
 
   installGlobalPageLock();
+  loadPointsCore();
   loadGlobalDuckSauce();
   loadRewardCodeWidget();
 
