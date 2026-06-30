@@ -561,12 +561,35 @@ export class CashRunEngine {
         ctx.save();
         ctx.translate(sx, sy);
 
-        // Floor grid alternating tiles
+        // Cyber grid background on non-wall cells
+        ctx.fillStyle = t.floor;
+        ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+        ctx.strokeStyle = t.grid || "rgba(108,242,255,0.06)";
+        ctx.lineWidth = 1;
+        ctx.globalAlpha = 0.55;
+        for (let r = 0; r <= ROWS; r++) {
+            ctx.beginPath();
+            ctx.moveTo(0, r * TILE);
+            ctx.lineTo(CANVAS_W, r * TILE);
+            ctx.stroke();
+        }
+        for (let c = 0; c <= COLS; c++) {
+            ctx.beginPath();
+            ctx.moveTo(c * TILE, 0);
+            ctx.lineTo(c * TILE, CANVAS_H);
+            ctx.stroke();
+        }
+        ctx.globalAlpha = 1;
+
+        // Alternating floor tiles (subtle)
         for (let r = 0; r < ROWS; r++) {
             for (let c = 0; c < COLS; c++) {
                 if (this.grid[r][c] === T.WALL) continue;
-                ctx.fillStyle = (r + c) % 2 === 0 ? t.floor : t.floorAlt;
+                if ((r + c) % 2 === 0) continue;
+                ctx.fillStyle = t.floorAlt;
+                ctx.globalAlpha = 0.35;
                 ctx.fillRect(c * TILE, r * TILE, TILE, TILE);
+                ctx.globalAlpha = 1;
             }
         }
 
@@ -668,24 +691,38 @@ export class CashRunEngine {
     }
 
     _drawWalls(ctx, t) {
+        // First pass: solid base
         for (let r = 0; r < ROWS; r++) {
             for (let c = 0; c < COLS; c++) {
                 if (this.grid[r][c] !== T.WALL) continue;
                 const x = c * TILE, y = r * TILE;
                 ctx.fillStyle = t.wall;
                 ctx.fillRect(x, y, TILE, TILE);
-                // Neon edge highlights
-                ctx.fillStyle = t.wallEdge;
-                ctx.fillRect(x, y, TILE, 2);
-                ctx.fillRect(x, y, 2, TILE);
-                ctx.fillStyle = "rgba(0,0,0,0.4)";
-                ctx.fillRect(x, y + TILE - 2, TILE, 2);
-                ctx.fillRect(x + TILE - 2, y, 2, TILE);
-                // Inner accent line — gives "neon-tube" feel
-                ctx.fillStyle = t.wallEdge;
-                ctx.globalAlpha = 0.25;
-                ctx.fillRect(x + 4, y + 4, TILE - 8, 1);
-                ctx.globalAlpha = 1;
+            }
+        }
+        // Second pass: neon edges with shadow glow
+        ctx.save();
+        ctx.shadowColor = t.wallEdge;
+        ctx.shadowBlur = 8;
+        ctx.fillStyle = t.wallEdge;
+        for (let r = 0; r < ROWS; r++) {
+            for (let c = 0; c < COLS; c++) {
+                if (this.grid[r][c] !== T.WALL) continue;
+                const x = c * TILE, y = r * TILE;
+                // Only stroke edges that face an open cell — gives clean neon tubes
+                if (r === 0 || this.grid[r - 1][c] !== T.WALL) ctx.fillRect(x, y, TILE, 2);
+                if (r === ROWS - 1 || this.grid[r + 1][c] !== T.WALL) ctx.fillRect(x, y + TILE - 2, TILE, 2);
+                if (c === 0 || this.grid[r][c - 1] !== T.WALL) ctx.fillRect(x, y, 2, TILE);
+                if (c === COLS - 1 || this.grid[r][c + 1] !== T.WALL) ctx.fillRect(x + TILE - 2, y, 2, TILE);
+            }
+        }
+        ctx.restore();
+        // Subtle inner darker fill so walls don't look flat
+        ctx.fillStyle = "rgba(0,0,0,0.25)";
+        for (let r = 0; r < ROWS; r++) {
+            for (let c = 0; c < COLS; c++) {
+                if (this.grid[r][c] !== T.WALL) continue;
+                ctx.fillRect(c * TILE + 4, r * TILE + 4, TILE - 8, TILE - 8);
             }
         }
     }

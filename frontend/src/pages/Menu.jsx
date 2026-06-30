@@ -37,15 +37,18 @@ export default function Menu() {
 
                 {/* Headline */}
                 <div className="text-center cr-flicker">
-                    <div className="cr-marquee mb-3" data-testid="menu-marquee">A STREETS GAME</div>
+                    <div className="cr-marquee mb-3" data-testid="menu-marquee">// CYBER ARCADE //</div>
                     <h1
                         className="font-arcade text-7xl sm:text-8xl"
-                        style={{ color: "var(--cr-cash-bright)", textShadow: "0 0 24px rgba(126,232,149,0.45), 0 0 4px rgba(126,232,149,0.9)" }}
+                        style={{
+                            color: "var(--cr-cash-bright)",
+                            textShadow: "0 0 24px rgba(126,232,149,0.55), 0 0 4px rgba(126,232,149,0.9), 0 0 60px rgba(108,242,255,0.25)",
+                        }}
                         data-testid="menu-title"
                     >
-                        CASH RUN
+                        CASH_RUN
                     </h1>
-                    <p className="font-arcade text-2xl mt-1" style={{ color: "var(--cr-gold)" }} data-testid="menu-tagline">
+                    <p className="font-arcade text-2xl mt-1" style={{ color: "var(--cr-gold)", textShadow: "0 0 12px rgba(255,216,74,0.5)" }} data-testid="menu-tagline">
                         chomp the cash. duck the heat.
                     </p>
                 </div>
@@ -123,13 +126,14 @@ export default function Menu() {
                         the streets level up with you
                     </div>
                     <p className="font-mono text-sm" style={{ color: "var(--cr-ink-dim)" }}>
-                        Start in the slums. Stack cash. Each level pulls you uptown — from skid row to luxury district.
-                        Watch out for thugs (red) and cops (blue) — and grab the BIG cash to turn the tables on them.
+                        Boot up in the Neo-Slum. Stack credits. Each level pushes you uptown — from rusted alleys
+                        to the Aurum Spire. Watch the heat: red thugs chase you straight, blue cops cut you off.
+                        Grab the BIG cash to invert the hunt.
                     </p>
                 </div>
 
                 <div className="mt-10 font-arcade text-sm cr-blink" style={{ color: "var(--cr-ink-dim)" }}>
-                    insert quarter to begin
+                    [ insert credit to continue ]
                 </div>
             </div>
         </div>

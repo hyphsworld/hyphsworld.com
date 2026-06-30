@@ -1,86 +1,90 @@
-// Per-level visual themes. After level 5, cycles back (endless mode) but with
-// difficulty scaling baked into engine.
+// Per-level visual themes — cyberpunk / neo-arcade aesthetic.
+// Rags-to-riches arc preserved, all levels feel future-tech.
 
 export const THEMES = [
     {
-        // Level 1 — Skid Row / Slum
-        name: "Skid Row",
-        sub: "where it all begins",
-        bg:        "#1a120a",
-        floor:     "#221709",
-        floorAlt:  "#2a1d0d",
-        wall:      "#5a3a1c",
-        wallEdge:  "#7a4f24",
+        // Level 1 — Neo-Slum (rusted cyber district)
+        name: "Neo-Slum",
+        sub: "where bandwidth dies",
+        bg:        "#0a0e14",
+        floor:     "#11161e",
+        floorAlt:  "#161c25",
+        wall:      "#1f2a36",
+        wallEdge:  "#3da89c",
         pellet:    "#7ee895",
-        power:     "#d4af37",
-        ink:       "#f5e9d2",
-        accent:    "#c2410c",
-        decor:     "graffiti", // cosmetic motif
+        power:     "#ffb04a",
+        ink:       "#cfe9e3",
+        accent:    "#3da89c",
+        grid:      "#1a2a30",
+        decor:     "static",
     },
     {
-        // Level 2 — Bad Hood
-        name: "Bad Hood",
-        sub: "concrete jungle",
-        bg:        "#13141a",
-        floor:     "#1a1c24",
-        floorAlt:  "#22242e",
-        wall:      "#3d4252",
-        wallEdge:  "#5a6175",
-        pellet:    "#7ee895",
+        // Level 2 — Glitch Block
+        name: "Glitch Block",
+        sub: "data hood",
+        bg:        "#080612",
+        floor:     "#0e0d1f",
+        floorAlt:  "#13122a",
+        wall:      "#1f1a3a",
+        wallEdge:  "#7d4aff",
+        pellet:    "#9affb7",
         power:     "#ffd84a",
-        ink:       "#e8e4d8",
-        accent:    "#ffd84a",
-        decor:     "streetlamp",
+        ink:       "#e8ddff",
+        accent:    "#7d4aff",
+        grid:      "#1a1535",
+        decor:     "ghost-circuit",
     },
     {
-        // Level 3 — Mid Suburb
-        name: "Mid Suburb",
-        sub: "things are looking up",
-        bg:        "#0e1614",
-        floor:     "#142420",
-        floorAlt:  "#1a2c27",
-        wall:      "#2f5a4a",
-        wallEdge:  "#4a8a73",
+        // Level 3 — Midline
+        name: "Midline Grid",
+        sub: "civic mesh",
+        bg:        "#04101a",
+        floor:     "#06192a",
+        floorAlt:  "#082135",
+        wall:      "#0d3a55",
+        wallEdge:  "#26d9c5",
         pellet:    "#a8f59b",
-        power:     "#ffd84a",
-        ink:       "#e6f1e1",
-        accent:    "#5cc46f",
-        decor:     "hedge",
+        power:     "#26d9c5",
+        ink:       "#d6f4ff",
+        accent:    "#26d9c5",
+        grid:      "#0a2840",
+        decor:     "clean",
     },
     {
         // Level 4 — Downtown
-        name: "Downtown",
-        sub: "neon nights",
-        bg:        "#070a1a",
-        floor:     "#0d1530",
-        floorAlt:  "#121d40",
-        wall:      "#1f3380",
-        wallEdge:  "#4a6cff",
+        name: "Downtown.exe",
+        sub: "neon overload",
+        bg:        "#06031a",
+        floor:     "#0c0830",
+        floorAlt:  "#120d40",
+        wall:      "#22156a",
+        wallEdge:  "#ff3ec8",
         pellet:    "#6cf2ff",
-        power:     "#d36cff",
+        power:     "#ff3ec8",
         ink:       "#e6f6ff",
-        accent:    "#d36cff",
-        decor:     "neon",
+        accent:    "#ff3ec8",
+        grid:      "#190c4a",
+        decor:     "neon-strip",
     },
     {
-        // Level 5 — Luxury District
-        name: "Luxury District",
-        sub: "made it",
+        // Level 5 — Aurum Spire
+        name: "Aurum Spire",
+        sub: "the penthouse",
         bg:        "#0a0805",
         floor:     "#1a140c",
         floorAlt:  "#221c12",
-        wall:      "#7a5d20",
-        wallEdge:  "#d4af37",
+        wall:      "#5a4318",
+        wallEdge:  "#ffd84a",
         pellet:    "#ffe89a",
         power:     "#ffffff",
         ink:       "#fff4d6",
-        accent:    "#d4af37",
-        decor:     "marble",
+        accent:    "#ffd84a",
+        grid:      "#241c0e",
+        decor:     "gold-leaf",
     },
 ];
 
 export function getTheme(level) {
-    // 1-indexed level. After 5, cycle.
     const idx = ((level - 1) % THEMES.length + THEMES.length) % THEMES.length;
     return THEMES[idx];
 }
@@ -88,12 +92,10 @@ export function getTheme(level) {
 // Difficulty scaling — speeds in tiles per second.
 export function getDifficulty(level, mode = "normal") {
     const easy = mode === "easy";
-    // Base + small ramp per level.
     const playerSpeed = (easy ? 6.6 : 6.2) + Math.min(level - 1, 6) * 0.15;
     const enemySpeed  = (easy ? 3.4 : 4.6) + (level - 1) * (easy ? 0.10 : 0.18);
-    // Easy: fewer enemies. Normal: scales up faster.
     const enemyCount  = easy
-        ? Math.min(1 + Math.floor((level - 1) / 2), 3)   // 1,1,2,2,3,3...
+        ? Math.min(1 + Math.floor((level - 1) / 2), 3)
         : Math.min(2 + Math.floor((level - 1) / 1), 6);
     const frightTime  = easy
         ? Math.max(10 - (level - 1) * 0.2, 6)
@@ -101,5 +103,4 @@ export function getDifficulty(level, mode = "normal") {
     return { playerSpeed, enemySpeed, enemyCount, frightTime, easy };
 }
 
-// Power-up types (rotated)
 export const POWERUP_TYPES = ["speed", "shield", "double", "bomb", "life"];
