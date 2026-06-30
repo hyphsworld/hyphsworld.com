@@ -117,6 +117,9 @@ export class CashRunEngine {
         this.activePower = null;
         this._floatTexts = [];
         this._screenShake = 0;
+        this._transitionTimer = 0;
+        this._pendingLevel = this.level;
+        this._pendingThemeName = "";
 
         this.onStateChange?.({
             level: this.level, score: this.score, lives: this.lives, theme,
@@ -170,6 +173,17 @@ export class CashRunEngine {
 
     // ---------- Update ----------
     _update(dt) {
+        // Transition between levels — pause everything until glitch is done
+        if (this._transitionTimer > 0) {
+            this._transitionTimer -= dt;
+            if (this._transitionTimer <= 0) {
+                this.level = this._pendingLevel;
+                this._initLevel();
+                audio.startMusic(this.level);
+            }
+            return;
+        }
+
         if (this._readyTimer > 0) {
             this._readyTimer -= dt;
             return;
@@ -526,9 +540,12 @@ export class CashRunEngine {
 
     _nextLevel() {
         audio.levelUp();
-        this.level += 1;
-        this._initLevel();
-        audio.startMusic(this.level);
+        // Holographic glitch transition: defer actual level init until timer expires
+        this._transitionTimer = 1.8;
+        this._transitionFromName = this.theme?.name || "";
+        this._pendingLevel = this.level + 1;
+        this._pendingThemeName = getTheme(this._pendingLevel).name;
+        audio.stopMusic();
     }
 
     _addScore(n) {
@@ -665,6 +682,11 @@ export class CashRunEngine {
         // CRT scanline overlay — sweeping horizontal line + static lines
         this._drawScanlines(ctx);
 
+        // Holographic glitch transition (drawn on top of everything)
+        if (this._transitionTimer > 0) {
+            this._drawGlitchTransition(ctx);
+        }
+
         // Ready overlay
         if (this._readyTimer > 0) {
             ctx.fillStyle = "rgba(0,0,0,0.5)";
@@ -752,6 +774,80 @@ export class CashRunEngine {
         ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
         ctx.restore();
     }
+
+    _drawGlitchTransition(ctx) {
+        const t = Math.max(0, this._transitionTimer);
+        const total = 1.8;
+        const progress = 1 - t / total;
+        const tnow = performance.now();
+
+        const veil = Math.min(1, progress * 3) * (1 - Math.max(0, (progress - 0.7) / 0.3));
+        ctx.fillStyle = `rgba(2, 4, 10, ${0.55 + 0.3 * veil})`;
+        ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+
+        ctx.save();
+        const bands = 14;
+        for (let i = 0; i < bands; i++) {
+            const y = Math.floor(Math.random() * CANVAS_H);
+            const h = 2 + Math.floor(Math.random() * 24);
+            const dx = (Math.random() - 0.5) * 28;
+            const colors = ["rgba(255,60,100,0.25)", "rgba(60,220,255,0.25)", "rgba(126,232,149,0.18)", "rgba(255,216,74,0.18)"];
+            ctx.fillStyle = colors[i % colors.length];
+            ctx.fillRect(dx, y, CANVAS_W, h);
+        }
+        for (let i = 0; i < 4; i++) {
+            const y = (tnow / 3 + i * (CANVAS_H / 4)) % CANVAS_H;
+            ctx.fillStyle = i % 2 === 0 ? "rgba(255,62,200,0.22)" : "rgba(108,242,255,0.22)";
+            ctx.fillRect(0, y, CANVAS_W, 2);
+        }
+        ctx.restore();
+
+        ctx.save();
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        const cleared = `LEVEL ${this.level} CLEAR`;
+        const wobble = Math.sin(tnow / 70) * 2;
+        ctx.font = "48px 'VT323', monospace";
+
+        ctx.fillStyle = "rgba(255, 60, 100, 0.85)";
+        ctx.fillText(cleared, CANVAS_W / 2 - 4 - wobble, CANVAS_H / 2 - 30);
+        ctx.fillStyle = "rgba(60, 220, 255, 0.85)";
+        ctx.fillText(cleared, CANVAS_W / 2 + 4 + wobble, CANVAS_H / 2 - 30);
+        ctx.fillStyle = "#fff";
+        ctx.fillText(cleared, CANVAS_W / 2, CANVAS_H / 2 - 30);
+
+        const dest = (this._pendingThemeName || "").toUpperCase();
+        ctx.font = "28px 'VT323', monospace";
+        ctx.fillStyle = "rgba(126, 232, 149, 0.9)";
+        ctx.shadowColor = "#7ee895";
+        ctx.shadowBlur = 12;
+        ctx.fillText(`>> JACKING IN: ${dest}`, CANVAS_W / 2, CANVAS_H / 2 + 14);
+        ctx.shadowBlur = 0;
+
+        const barW = CANVAS_W * 0.55;
+        const barX = (CANVAS_W - barW) / 2;
+        const barY = CANVAS_H / 2 + 46;
+        ctx.fillStyle = "rgba(108, 242, 255, 0.18)";
+        ctx.fillRect(barX, barY, barW, 6);
+        ctx.fillStyle = "#6cf2ff";
+        ctx.shadowColor = "#6cf2ff";
+        ctx.shadowBlur = 10;
+        ctx.fillRect(barX, barY, barW * progress, 6);
+        ctx.shadowBlur = 0;
+
+        if (progress > 0.6) {
+            ctx.fillStyle = "rgba(255,255,255,0.5)";
+            for (let i = 0; i < 24; i++) {
+                const bx = Math.floor(Math.random() * CANVAS_W);
+                const by = Math.floor(Math.random() * CANVAS_H);
+                ctx.fillRect(bx, by, 4, 4);
+            }
+        }
+
+        ctx.restore();
+    }
+
 
     _drawPowerUp(ctx, pu) {
         const cx = pu.col * TILE + TILE / 2;
@@ -1065,3 +1161,4 @@ export class CashRunEngine {
         ctx.restore();
     }
 }
+

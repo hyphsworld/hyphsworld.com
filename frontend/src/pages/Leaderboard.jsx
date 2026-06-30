@@ -31,12 +31,13 @@ export default function Leaderboard() {
     const [editingId, setEditingId] = useState(null);
     const [editName, setEditName] = useState("");
     const [busy, setBusy] = useState(false);
+    const [period, setPeriod] = useState("all");
 
-    const load = async () => {
+    const load = async (p = period) => {
         setLoading(true);
         setError("");
         try {
-            const data = await fetchLeaderboard(50);
+            const data = await fetchLeaderboard(50, p);
             setRows(data);
         } catch {
             setError("Couldn't load leaderboard.");
@@ -45,7 +46,12 @@ export default function Leaderboard() {
         }
     };
 
-    useEffect(() => { load(); }, []);
+    useEffect(() => { load(period); /* eslint-disable-next-line */ }, [period]);
+
+    const changePeriod = (p) => {
+        if (p === period) return;
+        setPeriod(p);
+    };
 
     const handleDelete = async (id) => {
         if (!window.confirm("Delete this entry?")) return;
@@ -98,7 +104,7 @@ export default function Leaderboard() {
                         <Trophy size={32} /> HALL OF HUSTLERS
                     </h1>
                     <div className="flex gap-2">
-                        <button onClick={load} className="cr-btn" style={{ fontSize: "0.95rem", padding: "0.45rem 0.9rem" }} data-testid="leaderboard-refresh-btn">
+                        <button onClick={() => load(period)} className="cr-btn" style={{ fontSize: "0.95rem", padding: "0.45rem 0.9rem" }} data-testid="leaderboard-refresh-btn">
                             <RefreshCcw className="inline mr-1" size={14} /> Refresh
                         </button>
                         {admin ? (
@@ -110,6 +116,34 @@ export default function Leaderboard() {
                                 <LogIn className="inline mr-1" size={14} /> Admin
                             </button>
                         )}
+                    </div>
+                </div>
+
+                {/* Period filter tabs */}
+                <div className="mb-3 flex justify-center" data-testid="leaderboard-period-tabs">
+                    <div className="inline-flex p-1 rounded-full" style={{ background: "rgba(0,0,0,0.5)", border: "1px solid rgba(108,242,255,0.2)" }}>
+                        {[
+                            { id: "day",   label: "Today",        color: "#7ee895" },
+                            { id: "week",  label: "Weekly Hustlers", color: "#6cf2ff" },
+                            { id: "month", label: "Monthly",      color: "#d36cff" },
+                            { id: "all",   label: "All Time",     color: "#ffd84a" },
+                        ].map((tab) => (
+                            <button
+                                key={tab.id}
+                                type="button"
+                                onClick={() => changePeriod(tab.id)}
+                                data-testid={`leaderboard-period-${tab.id}`}
+                                className="font-arcade px-4 py-1.5 rounded-full transition-all text-base sm:text-lg"
+                                style={{
+                                    background: period === tab.id ? tab.color : "transparent",
+                                    color: period === tab.id ? "#0a0a0c" : tab.color,
+                                    letterSpacing: "0.04em",
+                                    boxShadow: period === tab.id ? `0 0 14px ${tab.color}55` : "none",
+                                }}
+                            >
+                                {tab.label}
+                            </button>
+                        ))}
                     </div>
                 </div>
 
@@ -148,7 +182,9 @@ export default function Leaderboard() {
 
                     {!loading && !error && rows.length === 0 && (
                         <div className="py-10 text-center font-arcade text-xl" style={{ color: "var(--cr-ink-dim)" }} data-testid="leaderboard-empty">
-                            No hustlers yet — be the first.
+                            {period === "all"
+                                ? "No hustlers yet — be the first."
+                                : `No hustlers in this ${period === "day" ? "day" : period}. Get out there.`}
                         </div>
                     )}
 

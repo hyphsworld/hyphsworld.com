@@ -143,13 +143,22 @@ async def submit_score(payload: LeaderboardSubmit):
 
 
 @api_router.get("/leaderboard", response_model=List[LeaderboardEntry])
-async def get_leaderboard(limit: int = 50):
+async def get_leaderboard(limit: int = 50, period: str = "all"):
     if limit < 1:
         limit = 50
     if limit > 200:
         limit = 200
 
-    cursor = db.leaderboard.find({}, {"_id": 0}).sort("score", -1).limit(limit)
+    period = (period or "all").lower().strip()
+    period_map = {"day": 1, "week": 7, "month": 30, "all": None}
+    days = period_map.get(period, None)
+
+    query: dict = {}
+    if days is not None:
+        cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+        query["timestamp"] = {"$gte": cutoff}
+
+    cursor = db.leaderboard.find(query, {"_id": 0}).sort("score", -1).limit(limit)
     rows = await cursor.to_list(length=limit)
 
     for row in rows:

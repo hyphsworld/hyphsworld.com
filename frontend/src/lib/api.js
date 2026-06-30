@@ -27,8 +27,9 @@ export const submitScore = async ({ name, score, level, character }) => {
     return data;
 };
 
-export const fetchLeaderboard = async (limit = 50) => {
-    const { data } = await axios.get(`${API}/leaderboard?limit=${limit}`);
+export const fetchLeaderboard = async (limit = 50, period = "all") => {
+    const params = new URLSearchParams({ limit: String(limit), period });
+    const { data } = await axios.get(`${API}/leaderboard?${params.toString()}`);
     return data;
 };
 
