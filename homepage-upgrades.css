@@ -64,6 +64,93 @@
   transition: transform .55s ease;
 }
 
+/* 8 Minutes Freestyle: future-feed homepage skin */
+body.home-page {
+  background: #030014;
+  background-image:
+    radial-gradient(circle at 10% 0%, rgba(31,252,255,.24), transparent 30%),
+    radial-gradient(circle at 88% 8%, rgba(255,79,216,.20), transparent 33%),
+    linear-gradient(180deg, #050018 0%, #020008 62%, #090018 100%);
+}
+.home-page main { position: relative; overflow: hidden; }
+.home-page main::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    linear-gradient(rgba(57,255,122,.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(31,252,255,.04) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,.88), transparent 84%);
+  animation: hwGridDrift 12s linear infinite;
+}
+@keyframes hwGridDrift { to { background-position: 42px 84px; } }
+.homepage-full-episode-frame,
+.spotlight-section {
+  position: relative;
+  overflow: hidden;
+  border: 2px solid rgba(31,252,255,.55) !important;
+  background: linear-gradient(145deg, rgba(7,10,28,.98), rgba(8,0,18,.9)) !important;
+  box-shadow: 0 0 34px rgba(31,252,255,.22), 0 0 74px rgba(255,79,216,.14), inset 0 0 28px rgba(57,255,122,.12) !important;
+}
+.homepage-full-episode-frame::before,
+.spotlight-section::before {
+  content: "HYPHSWORLD SIGNAL // 8 MINUTES FREESTYLE // FUTURE FEED";
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  top: 12px;
+  z-index: 2;
+  color: #1ffcff;
+  font-size: 11px;
+  font-weight: 1000;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  text-shadow: 0 0 12px rgba(31,252,255,.7);
+  opacity: .86;
+  pointer-events: none;
+}
+.homepage-full-episode-frame iframe {
+  filter: saturate(1.12) contrast(1.05);
+  box-shadow: 0 0 40px rgba(31,252,255,.18);
+}
+.homepage-full-episode-strip {
+  background: linear-gradient(90deg, rgba(0,0,0,.88), rgba(28,0,64,.92), rgba(0,0,0,.88)) !important;
+  border-top: 1px solid rgba(31,252,255,.42);
+}
+.homepage-full-episode-strip small,
+.section-title .eyebrow,
+.spotlight-info .eyebrow {
+  color: #1ffcff !important;
+  text-shadow: 0 0 10px rgba(31,252,255,.8);
+}
+.homepage-full-episode-strip span,
+.spotlight-info h3,
+.spotlight-info h4 {
+  letter-spacing: .02em;
+  text-shadow: 0 0 18px rgba(255,255,255,.18);
+}
+.spotlight-art-premiere {
+  background: radial-gradient(circle at center, rgba(31,252,255,.18), rgba(255,79,216,.14), rgba(0,0,0,.84)) !important;
+  border-color: rgba(255,228,92,.45) !important;
+  box-shadow: inset 0 0 28px rgba(31,252,255,.16), 0 0 24px rgba(255,79,216,.16) !important;
+}
+.spotlight-badge {
+  background: linear-gradient(90deg, #1ffcff, #b65cff, #ffe45c) !important;
+  color: #050008 !important;
+  box-shadow: 0 0 22px rgba(31,252,255,.35) !important;
+}
+.spotlight-feature {
+  border: 1px solid rgba(31,252,255,.25);
+  border-radius: 28px;
+  padding: clamp(14px,3vw,22px);
+  background: linear-gradient(135deg, rgba(255,255,255,.09), rgba(255,255,255,.025));
+}
+.ticker-track span:nth-child(4n+1) { color: #1ffcff; text-shadow: 0 0 10px rgba(31,252,255,.65); }
+.ticker-track span:nth-child(4n+3) { color: #ffe45c; text-shadow: 0 0 10px rgba(255,228,92,.55); }
+
 @media (max-width: 860px) {
   .home-page #login-section { padding: 7px 10px !important; line-height: 1.2; }
   .home-page #login-status { display: block; margin-left: 0 !important; font-size: 0.82rem; letter-spacing: 0.03em; }
