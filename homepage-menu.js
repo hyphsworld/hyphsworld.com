@@ -120,6 +120,14 @@
     directO1Links();
   }
 
+  function injectHomepageCleanupStyles() {
+    if (document.getElementById('hwHomepageCleanupStyles')) return;
+    const style = document.createElement('style');
+    style.id = 'hwHomepageCleanupStyles';
+    style.textContent = 'body.home-page #hwGlobalPointsHud{display:none!important}body.home-page .homepage-full-episode-frame::before{content:none!important;display:none!important}body.home-page .homepage-full-episode-frame iframe{position:relative;z-index:1;display:block;width:100%;border:0}';
+    document.head.appendChild(style);
+  }
+
   function userNameFromSession(session, user) {
     return (
       user && (user.displayName || user.username || user.name) ||
@@ -234,6 +242,7 @@
   }
 
   ready(function () {
+    injectHomepageCleanupStyles();
     cleanLobbyRoutes();
     bindMenu();
     updateLoginDisplay();
