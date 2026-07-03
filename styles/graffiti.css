@@ -41,8 +41,34 @@
 
 .hw-graffiti-content {
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
+
+.hw-logo-stamps {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.28;
+  mix-blend-mode: screen;
+}
+
+.hw-logo-stamp {
+  position: absolute;
+  width: clamp(145px, 23vw, 330px);
+  aspect-ratio: 1 / 1;
+  background-image: url('../assets:brand:ams-west-logo.png.jpg');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  filter: drop-shadow(0 0 24px rgba(57, 255, 20, 0.28));
+  transform: rotate(-18deg);
+}
+
+.hw-logo-stamp-one { top: 4%; left: 4%; }
+.hw-logo-stamp-two { top: 28%; right: 7%; transform: rotate(14deg); }
+.hw-logo-stamp-three { bottom: 6%; left: 18%; transform: rotate(-28deg); opacity: 0.72; }
+.hw-logo-stamp-four { bottom: 18%; right: 24%; transform: rotate(8deg); opacity: 0.5; }
 
 .hw-spray-tag {
   display: inline-flex;
@@ -123,7 +149,7 @@
   inset: 0;
   pointer-events: none;
   overflow: hidden;
-  opacity: 0.58;
+  opacity: 0.38;
 }
 
 .hw-diagonal-tag {
