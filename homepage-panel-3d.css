@@ -157,3 +157,16 @@
   font-size:.30rem!important;
 }
 .home-page header.site-header nav.main-nav > a.nav-cta{grid-column:auto!important;}
+
+/* Remove the top episode label bar so the embedded YouTube video is never covered. */
+.home-page .homepage-full-episode-frame::before,
+.home-page .homepage-full-episode-frame::after,
+.home-page [data-featured-video]::before,
+.home-page [data-featured-video]::after{
+  content:none!important;
+  display:none!important;
+}
+.home-page .homepage-full-episode-frame iframe{
+  position:relative!important;
+  z-index:3!important;
+}
