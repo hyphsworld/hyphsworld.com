@@ -1,37 +1,52 @@
 (function () {
   'use strict';
 
-  const DATE_KEY = 'hyphsworld.dailyWheel.date';
-  const LAST_KEY = 'hyphsworld.dailyWheel.last';
   const ROTATE_KEY = 'hyphsworld.dailyWheel.rotate';
   const wheel = document.getElementById('prizeWheel');
   const button = document.getElementById('spinWheelBtn');
   const result = document.getElementById('wheelResult');
   const pointsEl = document.getElementById('dailyWheelPoints');
 
-  const items = [
-    { title: '250 Cool Points', amount: 250, text: '250 Cool Points added.' },
-    { title: 'Green Gate Clue', amount: 0, text: 'Today clue: watch the green gate.' },
-    { title: '100 Cool Points', amount: 100, text: '100 Cool Points added.' },
-    { title: 'Vault Hint', amount: 0, text: 'Today hint: Duck Sauce knows where the badge moved.' },
-    { title: '500 Cool Points', amount: 500, text: '500 Cool Points added.' },
-    { title: 'Badge Note', amount: 0, text: 'Badge lane note saved for a future drop.' },
-    { title: '50 Cool Points', amount: 50, text: '50 Cool Points added.' },
-    { title: 'Daily Hype', amount: 0, text: 'Daily hype pass unlocked.' }
-  ];
+  const labels = ['5 CP', '10 CP', '15 CP', '20 CP', '25 CP', '50 CP', '75 CP', '100 CP'];
+  let spinning = false;
 
-  function today() { return new Date().toISOString().slice(0, 10); }
-  function n(value) { const parsed = parseInt(value, 10); return Number.isFinite(parsed) && parsed > 0 ? parsed : 0; }
-  function safe(text) { return String(text || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); }
+  function n(value) {
+    const parsed = parseInt(value, 10);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
+  }
+
+  function safe(text) {
+    return String(text || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
 
   function currentPoints() {
-    try { if (window.HWPoints && typeof window.HWPoints.get === 'function') return n(window.HWPoints.get()); } catch (error) {}
+    try {
+      if (window.HWPoints && typeof window.HWPoints.get === 'function') return n(window.HWPoints.get());
+      if (window.HWPoints && typeof window.HWPoints.getState === 'function') {
+        const state = window.HWPoints.getState();
+        return n(state && state.points);
+      }
+    } catch (error) {}
     try { return n(localStorage.getItem('hyphsworld.coolPoints.total') || localStorage.getItem('coolPoints') || '0'); } catch (error) {}
     return 0;
   }
 
-  function updatePoints() {
-    if (pointsEl) pointsEl.textContent = currentPoints().toLocaleString();
+  function updatePoints(value) {
+    const next = typeof value === 'number' ? value : currentPoints();
+    if (pointsEl) pointsEl.textContent = next.toLocaleString();
+  }
+
+  async function refreshPoints(value) {
+    try {
+      if (window.HWPoints && typeof window.HWPoints.refresh === 'function') await window.HWPoints.refresh();
+      if (window.HWUserWidget && typeof window.HWUserWidget.refresh === 'function') window.HWUserWidget.refresh();
+    } catch (error) {}
+    updatePoints(value);
   }
 
   function show(kicker, title, text) {
@@ -39,91 +54,108 @@
     result.innerHTML = '<span>' + safe(kicker) + '</span><h2>' + safe(title) + '</h2><p>' + safe(text) + '</p>';
   }
 
-  function alreadyUsed() {
-    try { return localStorage.getItem(DATE_KEY) === today(); } catch (error) { return false; }
-  }
-
-  function lastItem() {
-    try { return JSON.parse(localStorage.getItem(LAST_KEY) || 'null'); } catch (error) { return null; }
-  }
-
-  function lock() {
+  function setButton(text, disabled) {
     if (!button) return;
-    button.disabled = true;
-    button.textContent = 'DONE';
+    button.disabled = Boolean(disabled);
+    button.textContent = text;
   }
 
-  function open() {
-    if (!button) return;
-    button.disabled = false;
-    button.textContent = 'SPIN';
-  }
-
-  function selectItem() {
-    const index = Math.floor(Math.random() * items.length);
-    return { index, item: items[index] };
-  }
-
-  async function addPoints(amount, title) {
-    if (!amount) return;
-    if (window.HWPoints && typeof window.HWPoints.add === 'function') {
-      await window.HWPoints.add(amount, 'daily_wheel', { title });
-    } else {
-      document.dispatchEvent(new CustomEvent('hyph:points:add', { detail: { amount, reason: 'daily_wheel' } }));
+  async function getSupabaseClient() {
+    if (window.HWAuth && typeof window.HWAuth.getClient === 'function') {
+      const maybeClient = window.HWAuth.getClient();
+      const client = maybeClient && typeof maybeClient.then === 'function' ? await maybeClient : maybeClient;
+      if (client && typeof client.rpc === 'function') return client;
     }
+
+    if (window.supabaseClient && typeof window.supabaseClient.rpc === 'function') return window.supabaseClient;
+
+    if (window.supabase && window.HW_SUPABASE_CONFIG && window.HW_SUPABASE_CONFIG.url && window.HW_SUPABASE_CONFIG.anonKey) {
+      return window.supabase.createClient(window.HW_SUPABASE_CONFIG.url, window.HW_SUPABASE_CONFIG.anonKey, {
+        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+      });
+    }
+
+    return null;
   }
 
-  function save(item) {
-    try {
-      localStorage.setItem(DATE_KEY, today());
-      localStorage.setItem(LAST_KEY, JSON.stringify({ date: today(), title: item.title, text: item.text }));
-    } catch (error) {}
+  function rotateWheel(points) {
+    const index = Math.max(0, labels.indexOf(String(points) + ' CP'));
+    const segment = 360 / labels.length;
+    let base = 0;
+    try { base = n(localStorage.getItem(ROTATE_KEY)); } catch (error) {}
+    const target = 360 - (index * segment + segment / 2);
+    const rotation = base + 1440 + target;
+    try { localStorage.setItem(ROTATE_KEY, String(rotation)); } catch (error) {}
+    if (wheel) wheel.style.transform = 'rotate(' + rotation + 'deg)';
+  }
+
+  function paintWheelLabels() {
+    if (!wheel) return;
+    Array.prototype.slice.call(wheel.querySelectorAll('span')).forEach(function (span, index) {
+      span.textContent = labels[index] || span.textContent;
+    });
   }
 
   async function run() {
-    if (!button || !wheel || button.disabled) return;
+    if (!button || !wheel || spinning) return;
 
-    if (alreadyUsed()) {
-      const last = lastItem();
-      lock();
-      show('Already Claimed', 'Come Back Tomorrow', last ? last.text : 'Daily reward already claimed.');
-      return;
+    spinning = true;
+    setButton('SPINNING', true);
+    show('Spinning', 'Checking HYPHSWORLD ID', 'Buck is checking the account. Duck Sauce is watching the logs.');
+
+    try {
+      const client = await getSupabaseClient();
+      if (!client || typeof client.rpc !== 'function') throw new Error('Login first so the spin can save to your HYPHSWORLD ID.');
+
+      const response = await client.rpc('claim_daily_spin');
+      if (response && response.error) throw response.error;
+
+      const data = response && response.data || {};
+      const points = n(data.points_awarded);
+      const balance = n(data.balance);
+      const prize = data.prize_label || 'Daily Spin Reward';
+
+      if (data.already_spun) {
+        rotateWheel(5);
+        window.setTimeout(function () {
+          setButton('DONE', true);
+          show('Already Claimed', 'Come Back Tomorrow', data.message || 'Duck Sauce said you already spun today. Come back tomorrow.');
+          updatePoints(balance);
+        }, 1800);
+        return;
+      }
+
+      rotateWheel(points || 5);
+      window.setTimeout(async function () {
+        await refreshPoints(balance);
+        try {
+          document.dispatchEvent(new CustomEvent('hyph:points-updated', { detail: { points: balance, source: 'daily_spin' } }));
+          window.dispatchEvent(new CustomEvent('hw:points-change', { detail: { points: balance, source: 'daily_spin' } }));
+        } catch (error) {}
+        setButton('DONE', true);
+        show('POINTS VERIFIED', '+' + points + ' Cool Points', prize + '. Duck Sauce approves. Do not spin twice, he got the logs.');
+        spinning = false;
+      }, 4300);
+    } catch (error) {
+      const message = error && error.message ? error.message : 'Daily Spin missed. Try again.';
+      show('Spin Error', 'Not Saved Yet', message);
+      setButton('SPIN', false);
+      spinning = false;
+      try { console.error('HYPHSWORLD daily wheel error:', error); } catch (e) {}
     }
-
-    const picked = selectItem();
-    const segment = 360 / items.length;
-    const base = n(localStorage.getItem(ROTATE_KEY));
-    const target = 360 - (picked.index * segment + segment / 2);
-    const rotation = base + 1440 + target;
-
-    button.disabled = true;
-    button.textContent = 'SPINNING';
-    show('Spinning', 'Wheel Moving', 'Buck is watching the pointer.');
-
-    try { localStorage.setItem(ROTATE_KEY, String(rotation)); } catch (error) {}
-    wheel.style.transform = 'rotate(' + rotation + 'deg)';
-
-    window.setTimeout(async function () {
-      await addPoints(picked.item.amount, picked.item.title);
-      save(picked.item);
-      updatePoints();
-      lock();
-      show('Daily Drop', picked.item.title, picked.item.text);
-    }, 4300);
   }
 
   function boot() {
+    paintWheelLabels();
     updatePoints();
-    if (alreadyUsed()) {
-      const last = lastItem();
-      lock();
-      show('Claimed Today', 'Come Back Tomorrow', last ? last.text : 'Daily reward already claimed.');
-    } else {
-      open();
-    }
+    setButton('SPIN', false);
+    show('Ready', 'Tap spin for today’s drop.', 'This wheel now pays through Supabase and saves to your HYPHSWORLD ID.');
     if (button) button.addEventListener('click', run);
-    window.addEventListener('hw:points-change', updatePoints);
-    document.addEventListener('hyph:points-updated', updatePoints);
+    window.addEventListener('hw:points-change', function () { updatePoints(); });
+    document.addEventListener('hyph:points-updated', function (event) {
+      const value = event && event.detail && typeof event.detail.points === 'number' ? event.detail.points : undefined;
+      updatePoints(value);
+    });
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
