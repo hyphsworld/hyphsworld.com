@@ -89,6 +89,16 @@
     return lastAuthoritativeBalance !== null && Date.now() - lastAuthoritativeAt < AUTHORITATIVE_HOLD_MS;
   }
 
+  function shouldAbsorbSlotEvent(detail) {
+    const source = String(detail && (detail.source || detail.reason) || '').toLowerCase();
+    if (!source || source.indexOf('slot') === -1) return false;
+    if (source.indexOf('slot_wallet_sync') !== -1) return false;
+    if (source.indexOf('global_wallet_sync_v3') !== -1) return false;
+    if (source.indexOf('fresh_authoritative_wallet_hold') !== -1) return false;
+    if (source.indexOf('authoritative_wallet') !== -1) return false;
+    return true;
+  }
+
   async function currentUser() {
     if (!window.HWAuth || typeof window.HWAuth.getCurrentUser !== 'function') return null;
     try { return await window.HWAuth.getCurrentUser(); } catch (error) { return null; }
@@ -183,17 +193,13 @@
 
   window.addEventListener('hw:points-change', (event) => {
     const detail = event.detail || {};
-    const source = String(detail.source || detail.reason || '').toLowerCase();
-    if (!source || source.indexOf('slot') === -1) return;
-    if (source.indexOf('global_wallet_sync_v3') !== -1) return;
+    if (!shouldAbsorbSlotEvent(detail)) return;
     applyAuthoritativeBalance(detail.points, 'slot_wallet_sync', true);
   });
 
   document.addEventListener('hyph:points-updated', (event) => {
     const detail = event.detail || {};
-    const source = String(detail.source || detail.reason || '').toLowerCase();
-    if (!source || source.indexOf('slot') === -1) return;
-    if (source.indexOf('global_wallet_sync_v3') !== -1) return;
+    if (!shouldAbsorbSlotEvent(detail)) return;
     applyAuthoritativeBalance(detail.points, 'slot_wallet_sync', true);
   });
 
