@@ -58,6 +58,30 @@
     window.HWBetAudit.reject(receipt.auditId, { reason: error && error.message ? error.message : 'slots_error', bet: SPIN_COST, balanceAfter: getPoints() });
   }
 
+  function broadcastUnifiedBalance(balance) {
+    const parsed = Number.parseInt(balance, 10);
+    if (!Number.isFinite(parsed)) return;
+
+    setText(balanceEl, money(parsed));
+
+    const casinoBalance = document.getElementById('casinoCoolPoints');
+    if (casinoBalance) casinoBalance.textContent = String(parsed);
+
+    document.querySelectorAll('[data-hw-points], [data-cool-points], [data-hw-daily-balance]').forEach((el) => {
+      el.textContent = String(parsed);
+    });
+
+    try {
+      localStorage.setItem('hyphsworld.coolPoints.total', String(parsed));
+      localStorage.setItem('coolPoints', String(parsed));
+    } catch (error) {}
+
+    try {
+      document.dispatchEvent(new CustomEvent('hyph:points-updated', { detail: { points: parsed, source: 'slots' } }));
+      window.dispatchEvent(new CustomEvent('hw:points-change', { detail: { points: parsed, source: 'slots' } }));
+    } catch (error) {}
+  }
+
   function ensurePanel() {
     if (panel) return panel;
 
@@ -69,9 +93,9 @@
       '<div class="casino-machine" role="dialog" aria-modal="true" aria-labelledby="casinoEngineTitle">' +
         '<div class="casino-engine-head">' +
           '<div>' +
-            '<span class="casino-engine-kicker">Server-Backed Slots</span>' +
+            '<span class="casino-engine-kicker">Unified Ledger Slots</span>' +
             '<h2 id="casinoEngineTitle">Vintage Slots</h2>' +
-            '<p>Spin fast. Supabase decides the reels, payout, ledger, and Cool Points balance.</p>' +
+            '<p>One wallet. Supabase decides the reels, payout, ledger, and your HYPHSWORLD Cool Points balance.</p>' +
           '</div>' +
           '<button class="casino-engine-close" type="button" data-casino-close>Close</button>' +
         '</div>' +
@@ -84,7 +108,7 @@
           '<div class="casino-result" data-casino-result>Ready. Spin costs 5 Cool Points.</div>' +
         '</div>' +
         '<div class="casino-engine-stats">' +
-          '<div class="casino-engine-stat"><span>Balance</span><strong data-casino-balance>0 CP</strong></div>' +
+          '<div class="casino-engine-stat"><span>Unified Balance</span><strong data-casino-balance>0 CP</strong></div>' +
           '<div class="casino-engine-stat"><span>Payout</span><strong data-casino-payout>0 CP</strong></div>' +
           '<div class="casino-engine-stat"><span>Net</span><strong data-casino-net>0 CP</strong></div>' +
         '</div>' +
@@ -125,6 +149,7 @@
   async function refreshPoints() {
     try {
       if (window.HWPoints && typeof window.HWPoints.refresh === 'function') await window.HWPoints.refresh();
+      if (window.HWUserWidget && typeof window.HWUserWidget.refresh === 'function') window.HWUserWidget.refresh();
     } catch (error) {}
     updateBalance();
   }
@@ -137,7 +162,7 @@
     updateBalance();
     setText(payoutEl, '0 CP');
     setText(netEl, '0 CP');
-    setText(resultEl, 'Ready. Spin costs 5 Cool Points. Bet audit is armed.');
+    setText(resultEl, 'Ready. Spin costs 5 Cool Points from the same HYPHSWORLD wallet.');
     if (spinBtn) spinBtn.focus();
   }
 
@@ -168,20 +193,22 @@
 
   function resultCopy(data) {
     if (!data) return 'Spin complete.';
+    if (data.ok === false || data.result === 'not_enough_points') return data.message || 'Not enough Cool Points for this spin.';
+
     const result = String(data.result || '').replace(/_/g, ' ');
     const payout = Number.parseInt(data.payout, 10) || 0;
     const net = Number.parseInt(data.net, 10) || 0;
 
-    if (data.result === 'jackpot') return 'JACKPOT. ' + payout + ' Cool Points hit the ledger.';
-    if (payout > 0) return result.toUpperCase() + '. Payout: ' + payout + ' CP. Net: ' + net + ' CP.';
-    return 'No hit that spin. Cost: ' + SPIN_COST + ' CP. Run it back clean.';
+    if (data.result === 'jackpot') return 'JACKPOT. ' + payout + ' Cool Points hit the unified ledger.';
+    if (payout > 0) return result.toUpperCase() + '. Payout: ' + payout + ' CP. Net: ' + net + ' CP. Balance synced.';
+    return 'No hit that spin. Cost: ' + SPIN_COST + ' CP. Balance synced to one wallet.';
   }
 
   async function spinSlots() {
     if (spinning) return;
     ensurePanel();
 
-    const audit = startAudit('server_slots', SPIN_COST, { surface: 'casino-engine' });
+    const audit = startAudit('server_slots', SPIN_COST, { surface: 'casino-engine', wallet: 'profiles.cool_points' });
     if (audit.status === 'blocked') {
       setText(resultEl, 'Bet blocked. Not enough Cool Points for a clean 5 CP spin.');
       setText(payoutEl, '0 CP');
@@ -192,28 +219,38 @@
     spinning = true;
     if (spinBtn) spinBtn.disabled = true;
     if (machine) machine.classList.remove('is-win', 'is-loss');
-    setText(resultEl, 'Bet audit locked. Connecting to Supabase engine...');
+    setText(resultEl, 'Connecting to unified Supabase wallet...');
     setText(payoutEl, '—');
     setText(netEl, '—');
 
     try {
       const client = await getSupabaseClient();
-      if (!client) throw new Error('Supabase client not ready. Reload the casino page and try again.');
-      setText(resultEl, 'Calling Supabase engine...');
+      if (!client) throw new Error('Login first so slots can connect to your HYPHSWORLD ID.');
+      setText(resultEl, 'Calling Supabase slots ledger...');
       const { data, error } = await client.rpc('spin_slots');
       if (error) throw error;
       const payload = data || {};
+
+      if (payload.ok === false || payload.result === 'not_enough_points') {
+        setText(payoutEl, money(0));
+        setText(netEl, money(0));
+        setText(resultEl, resultCopy(payload));
+        broadcastUnifiedBalance(payload.balance);
+        if (machine) machine.classList.add('is-loss');
+        resolveAudit(audit, { status: 'blocked', result: payload.result || 'not_enough_points', bet: SPIN_COST, payout: 0, net: 0, balanceAfter: payload.balance || getPoints() });
+        return;
+      }
+
       await animateReels(payload.reels || []);
       setText(payoutEl, money(payload.payout));
       setText(netEl, money(payload.net));
       setText(resultEl, resultCopy(payload));
       if (machine) machine.classList.add((payload.payout || 0) > 0 ? 'is-win' : 'is-loss');
+
+      broadcastUnifiedBalance(payload.balance);
       await refreshPoints();
-      if (typeof payload.balance !== 'undefined') {
-        setText(balanceEl, money(payload.balance));
-        const casinoBalance = document.getElementById('casinoCoolPoints');
-        if (casinoBalance) casinoBalance.textContent = String(payload.balance);
-      }
+      broadcastUnifiedBalance(payload.balance);
+
       resolveAudit(audit, {
         status: 'resolved',
         result: payload.result || 'spin_complete',
@@ -221,7 +258,7 @@
         payout: payload.payout || 0,
         net: typeof payload.net === 'undefined' ? (Number(payload.payout || 0) - SPIN_COST) : payload.net,
         balanceAfter: typeof payload.balance === 'undefined' ? getPoints() : payload.balance,
-        metadata: { reels: payload.reels || [], source: 'spin_slots_rpc' }
+        metadata: { reels: payload.reels || [], source: 'spin_slots_rpc', wallet: payload.source || 'profiles.cool_points' }
       });
     } catch (error) {
       rejectAudit(audit, error);
@@ -263,6 +300,7 @@
     bindCasinoCards();
     updateBalance();
     document.addEventListener('hyph:points-updated', updateBalance);
+    window.addEventListener('hw:points-change', updateBalance);
     window.HWCasinoEngine = { openSlots, closeSlots, spinSlots, refreshPoints };
   }
 
