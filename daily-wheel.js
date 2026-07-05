@@ -2,7 +2,6 @@
   'use strict';
 
   const ROTATE_KEY = 'hyphsworld.dailyWheel.rotate';
-  const LOCAL_DAY_KEY = 'hyphsworld.dailyWheel.lastSpinDay';
   const wheel = document.getElementById('prizeWheel');
   const button = document.getElementById('spinWheelBtn');
   const result = document.getElementById('wheelResult');
@@ -14,10 +13,6 @@
   function n(value) {
     const parsed = parseInt(value, 10);
     return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
-  }
-
-  function todayKey() {
-    return new Date().toISOString().slice(0, 10);
   }
 
   function safe(text) {
@@ -83,6 +78,14 @@
     return null;
   }
 
+  async function requireSignedIn(client) {
+    if (!client || !client.auth || typeof client.auth.getUser !== 'function') return true;
+    const response = await client.auth.getUser();
+    const user = response && response.data && response.data.user;
+    if (!user) throw new Error('Login first so the Daily Spin can save to your HYPHSWORLD ID.');
+    return true;
+  }
+
   function spinTo(points) {
     const index = Math.max(0, labels.indexOf(String(points) + ' CP'));
     const segment = 360 / labels.length;
@@ -97,19 +100,6 @@
     }
   }
 
-  function pickLocalPrize() {
-    const index = Math.floor(Math.random() * labels.length);
-    return n(labels[index]);
-  }
-
-  function alreadySpunLocally() {
-    try { return localStorage.getItem(LOCAL_DAY_KEY) === todayKey(); } catch (error) { return false; }
-  }
-
-  function markLocalSpin() {
-    try { localStorage.setItem(LOCAL_DAY_KEY, todayKey()); } catch (error) {}
-  }
-
   function paintWheelLabels() {
     if (!wheel) return;
     Array.prototype.slice.call(wheel.querySelectorAll('span')).forEach(function (span, index) {
@@ -117,88 +107,69 @@
     });
   }
 
-  async function saveReward(points) {
+  async function claimServerReward() {
     const client = await getSupabaseClient();
-    if (client && typeof client.rpc === 'function') {
-      const response = await client.rpc('claim_daily_spin');
-      if (response && response.error) throw response.error;
-      return response && response.data || {};
-    }
+    if (!client || typeof client.rpc !== 'function') throw new Error('Supabase is still loading. Refresh and try again.');
+    await requireSignedIn(client);
 
-    if (window.HWPoints && typeof window.HWPoints.add === 'function') {
-      const state = await window.HWPoints.add(points, 'daily_spin_visual_fallback', { source: 'daily-wheel' });
-      return { points_awarded: points, balance: n(state && state.points), prize_label: 'Daily Spin Reward' };
-    }
-
-    return { points_awarded: points, balance: currentPoints(), prize_label: 'Daily Spin Reward', local_only: true };
+    const response = await client.rpc('claim_daily_spin');
+    if (response && response.error) throw response.error;
+    const data = response && response.data || {};
+    return data;
   }
 
   async function run() {
     if (!button || !wheel || spinning) return;
 
-    if (alreadySpunLocally()) {
-      show('Already Claimed', 'Come Back Tomorrow', 'This browser already spun today. Login keeps the reward synced across devices.');
-      setButton('DONE', true);
-      spinTo(5);
-      return;
-    }
-
     spinning = true;
-    const visualPrize = pickLocalPrize();
-    markLocalSpin();
-    setButton('SPINNING', true);
-    show('Spinning', 'Wheel In Motion', 'The wheel is spinning now. HYPHSWORLD will save the reward if your ID is ready.');
-    spinTo(visualPrize);
-
-    let savedData = null;
-    let saveError = null;
+    setButton('CHECKING ID', true);
+    show('Checking ID', 'Connecting To Supabase', 'Daily Spin only pays when the server ledger confirms it. No visual-only points.');
 
     try {
-      savedData = await saveReward(visualPrize);
-    } catch (error) {
-      saveError = error;
-      try { console.error('HYPHSWORLD daily wheel save error:', error); } catch (e) {}
-    }
+      const data = await claimServerReward();
+      const points = n(data.points_awarded);
+      const balance = n(data.balance) || currentPoints();
+      const prize = data.prize_label || 'Daily Spin Reward';
 
-    window.setTimeout(async function () {
-      const serverPoints = n(savedData && savedData.points_awarded) || visualPrize;
-      const balance = n(savedData && savedData.balance) || currentPoints();
-      const prize = savedData && savedData.prize_label || 'Daily Spin Reward';
-
-      if (savedData && savedData.already_spun) {
-        setButton('DONE', true);
-        show('Already Claimed', 'Come Back Tomorrow', savedData.message || 'You already spun today. Come back tomorrow.');
-        updatePoints(balance);
-        spinning = false;
+      if (data.already_spun) {
+        spinTo(5);
+        window.setTimeout(function () {
+          updatePoints(balance);
+          setButton('DONE', true);
+          show('Already Claimed', 'Come Back Tomorrow', data.message || 'Duck Sauce said you already spun today. Come back tomorrow.');
+          spinning = false;
+        }, 1300);
         return;
       }
 
-      await refreshPoints(balance);
-      try {
-        document.dispatchEvent(new CustomEvent('hyph:points-updated', { detail: { points: balance, source: 'daily_spin' } }));
-        window.dispatchEvent(new CustomEvent('hw:points-change', { detail: { points: balance, source: 'daily_spin' } }));
-      } catch (error) {}
+      setButton('SPINNING', true);
+      show('Spinning', 'Server Payout Locked', 'Supabase approved the reward. Wheel animation is matching the saved payout.');
+      spinTo(points || 5);
 
-      setButton('DONE', true);
-      if (saveError || (savedData && savedData.local_only)) {
-        show('Visual Spin Complete', '+' + serverPoints + ' Cool Points', 'The wheel spun. Login or refresh your ID if the account save does not show yet.');
-      } else {
-        show('POINTS VERIFIED', '+' + serverPoints + ' Cool Points', prize + '. Duck Sauce approves. Do not spin twice, he got the logs.');
-      }
+      window.setTimeout(async function () {
+        await refreshPoints(balance);
+        try {
+          document.dispatchEvent(new CustomEvent('hyph:points-updated', { detail: { points: balance, source: 'daily_spin' } }));
+          window.dispatchEvent(new CustomEvent('hw:points-change', { detail: { points: balance, source: 'daily_spin' } }));
+        } catch (error) {}
+        setButton('DONE', true);
+        show('POINTS VERIFIED', '+' + points + ' Cool Points', prize + '. Saved to your HYPHSWORLD ID. Duck Sauce got the logs.');
+        spinning = false;
+      }, 4300);
+    } catch (error) {
+      const message = error && error.message ? error.message : 'Daily Spin missed. Try again.';
+      setButton('SPIN', false);
+      show('Not Connected Yet', 'No Points Added', message);
       spinning = false;
-    }, 4300);
+      try { console.error('HYPHSWORLD daily wheel error:', error); } catch (e) {}
+    }
   }
 
   function boot() {
     paintWheelLabels();
     updatePoints();
-    if (alreadySpunLocally()) {
-      setButton('DONE', true);
-      show('Ready Tomorrow', 'Daily Spin Claimed', 'This browser already spun today. Come back tomorrow for another drop.');
-    } else {
-      setButton('SPIN', false);
-      show('Ready', 'Tap spin for today’s drop.', 'The wheel spins instantly. Login keeps rewards saved to your HYPHSWORLD ID.');
-    }
+    setButton('SPIN', false);
+    show('Ready', 'Tap spin for today’s server drop.', 'The wheel now waits for Supabase first. If it does not verify, it will not show fake points.');
     if (button) button.addEventListener('click', run);
     window.addEventListener('hw:points-change', function () { updatePoints(); });
     document.addEventListener('hyph:points-updated', function (event) {
