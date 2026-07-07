@@ -20,13 +20,13 @@
     return new Promise((resolve, reject) => {
       const old = Array.from(document.scripts).find((s) => s.src && s.src.includes(src));
       if (old) {
-        if (old.dataset.loaded === 'true') {
+        if (old.dataset.loaded === 'true' || (src === CDN && global.supabase && global.supabase.createClient)) {
           resolve();
           return;
         }
         old.addEventListener('load', resolve, { once: true });
         old.addEventListener('error', () => reject(new Error('Could not load ' + src)), { once: true });
-        setTimeout(resolve, 300);
+        setTimeout(resolve, 600);
         return;
       }
 
@@ -51,11 +51,11 @@
     if (/rate limit|security purposes|only request/i.test(message)) {
       return 'Security cooldown active. Wait about 60 seconds before requesting another reset link.';
     }
-    if (/expired|invalid|not found|session|token/i.test(message)) {
+    if (/expired|invalid|not found|session|token|recovery/i.test(message)) {
       return 'That reset link is expired or already used. Send a new reset link and open the newest email.';
     }
-    if (/network|fetch|load/i.test(message)) {
-      return 'Connection issue. Check service/data and try again.';
+    if (/network|fetch|load|connection/i.test(message)) {
+      return 'Connection issue. Open the newest reset email in Safari/Chrome, then try again.';
     }
     return message || fallback || 'Password reset failed. Try again.';
   }
@@ -65,9 +65,7 @@
 
     cfgPromise = (async () => {
       if (!global.HW_SUPABASE_CONFIG) {
-        try {
-          await loadScript(CONFIG_FILE);
-        } catch {}
+        try { await loadScript(CONFIG_FILE); } catch {}
       }
 
       const c = global.HW_SUPABASE_CONFIG || {};
@@ -113,15 +111,30 @@
     return clientPromise;
   }
 
-  function hasRecoveryParams() {
+  function readUrlParams() {
     const hash = new URLSearchParams(String(global.location.hash || '').replace(/^#/, ''));
     const search = new URLSearchParams(String(global.location.search || '').replace(/^\?/, ''));
+    return { hash, search };
+  }
+
+  function hasRecoveryParams() {
+    const { hash, search } = readUrlParams();
     return (
       hash.get('type') === 'recovery' ||
       search.get('type') === 'recovery' ||
       hash.has('access_token') ||
+      hash.has('refresh_token') ||
       search.has('code')
     );
+  }
+
+  async function exchangeRecoveryCode(sb) {
+    const { search } = readUrlParams();
+    const code = search.get('code');
+    if (!code || !sb.auth || typeof sb.auth.exchangeCodeForSession !== 'function') return null;
+    const { data, error } = await sb.auth.exchangeCodeForSession(code);
+    if (error) throw error;
+    return data && data.session ? data.session : null;
   }
 
   async function waitForAuthSession(sb) {
@@ -140,7 +153,7 @@
         if (data && data.session) finish(data.session);
       }).catch(() => {});
 
-      const timeout = setTimeout(() => finish(null), 2200);
+      const timeout = setTimeout(() => finish(null), 4200);
 
       const { data: listener } = sb.auth.onAuthStateChange((event, session) => {
         if (event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN' || session) {
@@ -159,6 +172,9 @@
 
     const current = await sb.auth.getSession().catch(() => ({ data: null }));
     if (current && current.data && current.data.session) return current.data.session;
+
+    const exchanged = await exchangeRecoveryCode(sb).catch((error) => { throw error; });
+    if (exchanged) return exchanged;
 
     await waitForAuthSession(sb);
 
