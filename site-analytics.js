@@ -10,6 +10,8 @@
   var REWARD_SRC = 'reward-code-widget.js?v=reward-code-live-20260607';
   var POINTS_SCRIPT_ID = 'hw-points-core-loader';
   var POINTS_SRC = 'points-core.js?v=hyphs-points-core-v4-20260613';
+  var AUTH_POINTS_BRIDGE_SCRIPT_ID = 'hw-auth-points-bridge-loader';
+  var AUTH_POINTS_BRIDGE_SRC = 'auth-points-bridge.js?v=central-wallet-20260706';
   var LOCK_STYLE_ID = 'hw-global-page-lock-style';
   var SUPPORT_STYLE_ID = 'hw-paypal-support-style';
   var SUPPORT_CARD_ID = 'hw-paypal-support-card';
@@ -59,6 +61,17 @@
     script.id = POINTS_SCRIPT_ID;
     script.defer = true;
     script.src = POINTS_SRC;
+    document.head.appendChild(script);
+  }
+
+  function loadAuthPointsBridge() {
+    if (window.__HYPHSWORLD_AUTH_POINTS_BRIDGE__) return;
+    if (document.getElementById(AUTH_POINTS_BRIDGE_SCRIPT_ID)) return;
+
+    var script = document.createElement('script');
+    script.id = AUTH_POINTS_BRIDGE_SCRIPT_ID;
+    script.defer = true;
+    script.src = AUTH_POINTS_BRIDGE_SRC;
     document.head.appendChild(script);
   }
 
@@ -148,6 +161,7 @@
 
   installGlobalPageLock();
   loadPointsCore();
+  loadAuthPointsBridge();
   loadGlobalDuckSauce();
   loadRewardCodeWidget();
 
