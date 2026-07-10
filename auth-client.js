@@ -12,18 +12,8 @@
   const AUTH_REDIRECT_URL = 'https://hyphsworld.com/account.html';
 
   const AVATARS = {
-    boy: '🧢',
-    girl: '💅',
-    fox: '🦊',
-    lion: '🦁',
-    panda: '🐼',
-    wolf: '🐺',
-    alien: '👽',
-    robot: '🤖',
-    ghost: '👻',
-    ninja: '🥷',
-    crown: '👑',
-    diamond: '💎'
+    boy: '🧢', girl: '💅', fox: '🦊', lion: '🦁', panda: '🐼', wolf: '🐺',
+    alien: '👽', robot: '🤖', ghost: '👻', ninja: '🥷', crown: '👑', diamond: '💎'
   };
 
   let cfgPromise = null;
@@ -39,21 +29,38 @@
   function displayFromEmail(email) { return String(email || '').split('@')[0] || 'HYPHSWORLD Guest'; }
   function usernameFromEmail(email) { return displayFromEmail(email).replace(/[^a-z0-9_]/gi, '_').slice(0, 30) || 'hyphsworld_guest'; }
   function num(value) { const parsed = parseInt(value, 10); return Number.isFinite(parsed) && parsed > 0 ? parsed : 0; }
-  function hasOwn(obj, key) { return Object.prototype.hasOwnProperty.call(obj || {}, key); }
   function avatarType(value) { const clean = String(value || '').toLowerCase().trim(); return AVATARS[clean] ? clean : 'boy'; }
   function avatarIcon(value) { return AVATARS[avatarType(value)] || '🧢'; }
-  function explicitPoints(updates) { return hasOwn(updates, 'points') || hasOwn(updates, 'coolPoints') || hasOwn(updates, 'cool_points'); }
-  function readUpdatePoints(updates, fallback) { if (hasOwn(updates, 'points')) return num(updates.points); if (hasOwn(updates, 'coolPoints')) return num(updates.coolPoints); if (hasOwn(updates, 'cool_points')) return num(updates.cool_points); return num(fallback); }
   function isPlaceholder(value) { const text = String(value || '').trim(); return !text || /PASTE_|YOUR_|PROJECT_URL|ANON_PUBLIC_KEY/i.test(text); }
+
+  function saveLocalSession(session) { jsonSet(LOCAL_SESSION, session); }
+  function localSession() { return jsonGet(LOCAL_SESSION, null); }
+  function clearLocalSession() { textRemove(LOCAL_SESSION); }
+  function localUsers() { return jsonGet(LOCAL_USERS, {}); }
+  function saveLocalUsers(users) { jsonSet(LOCAL_USERS, users); }
+  function localPoints() { return num(textGet(POINTS_KEY) || textGet('coolPoints') || textGet('hyphsworld_points') || textGet('HW_COOL_POINTS')); }
+  function saveLocalPoints(points) {
+    const value = Math.max(0, parseInt(points, 10) || 0);
+    textSet(POINTS_KEY, value);
+    textSet('coolPoints', value);
+    textSet('hyphsworld_points', value);
+    textSet('HW_COOL_POINTS', value);
+    textSet('hyphsworld.coolPoints.guestSession', value);
+  }
+  function saveLocalProfileName(name) { textSet('hyphsworld.playerName', name || 'Guest'); }
+  function saveLocalAvatar(type) { const clean = avatarType(type); textSet('hyphsworld.avatarType', clean); textSet('hyphsworld.avatarIcon', avatarIcon(clean)); }
+  function broadcastPoints(points, source) {
+    saveLocalPoints(points);
+    try {
+      document.dispatchEvent(new CustomEvent('hyph:points-updated', { detail: { points: num(points), source: source || 'auth' } }));
+      window.dispatchEvent(new CustomEvent('hw:points-change', { detail: { points: num(points), source: source || 'auth' } }));
+    } catch (error) {}
+  }
 
   function loadScript(src) {
     return new Promise((resolve, reject) => {
       const old = Array.from(document.scripts).find((script) => script.src && script.src.includes(src));
-      if (old) {
-        old.addEventListener('load', resolve, { once: true });
-        setTimeout(resolve, 200);
-        return;
-      }
+      if (old) { old.addEventListener('load', resolve, { once: true }); setTimeout(resolve, 200); return; }
       const script = document.createElement('script');
       script.src = src;
       script.async = false;
@@ -87,30 +94,20 @@
       if (isPlaceholder(c.url) || isPlaceholder(c.anonKey)) return null;
       if (!global.supabase || !global.supabase.createClient) await loadScript(CDN);
       if (!global.supabase || !global.supabase.createClient) return null;
-      client = global.supabase.createClient(c.url, c.anonKey, {
-        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
-      });
+      client = global.supabase.createClient(c.url, c.anonKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
       return client;
     })();
     return clientPromise;
   }
 
-  function localSession() { return jsonGet(LOCAL_SESSION, null); }
-  function saveLocalSession(session) { jsonSet(LOCAL_SESSION, session); }
-  function clearLocalSession() { textRemove(LOCAL_SESSION); }
-  function localUsers() { return jsonGet(LOCAL_USERS, {}); }
-  function saveLocalUsers(users) { jsonSet(LOCAL_USERS, users); }
-  function localPoints() { return num(textGet(POINTS_KEY) || textGet('coolPoints') || textGet('hyphsworld_points') || textGet('HW_COOL_POINTS')); }
-  function saveLocalPoints(points) {
-    const value = Math.max(0, parseInt(points, 10) || 0);
-    textSet(POINTS_KEY, value);
-    textSet('coolPoints', value);
-    textSet('hyphsworld_points', value);
-    textSet('HW_COOL_POINTS', value);
-    textSet('hyphsworld.coolPoints.guestSession', value);
+  function sessionFromUser(user) { return { email: user.email || '', userId: user.id || '', provider: 'supabase', createdAt: Date.now() }; }
+
+  async function getSupabaseUser() {
+    const sb = await getClient();
+    if (!sb || !sb.auth || typeof sb.auth.getUser !== 'function') return null;
+    const { data } = await sb.auth.getUser();
+    return data && data.user ? data.user : null;
   }
-  function saveLocalProfileName(name) { textSet('hyphsworld.playerName', name || 'Guest'); }
-  function saveLocalAvatar(type) { const clean = avatarType(type); textSet('hyphsworld.avatarType', clean); textSet('hyphsworld.avatarIcon', avatarIcon(clean)); }
 
   async function rowFor(user) {
     const sb = await getClient();
@@ -121,60 +118,59 @@
     return data || null;
   }
 
+  async function walletFor(user) {
+    const sb = await getClient();
+    if (!sb || !user) return { balance: localPoints(), lifetime_points: localPoints() };
+    try {
+      const { data, error } = await sb.rpc('get_my_points');
+      if (!error && data) {
+        const balance = num(data.balance ?? data.cool_points ?? data.points);
+        const lifetime = Math.max(num(data.lifetime_points), balance);
+        broadcastPoints(balance, 'get_my_points');
+        return { balance, lifetime_points: lifetime, rank_title: data.rank_title || 'Lobby Rookie' };
+      }
+    } catch (error) {}
+    const row = await rowFor(user);
+    const balance = num(row && (row.cool_points ?? row.points));
+    broadcastPoints(balance, 'profile_row');
+    return { balance, lifetime_points: Math.max(num(row && row.lifetime_points), balance), rank_title: row && row.rank_title || 'Lobby Rookie' };
+  }
+
   async function upsertRow(user, updates = {}) {
     const sb = await getClient();
     if (!sb || !user) return null;
     const c = await getConfig();
-    const meta = user.user_metadata || {};
     const current = await rowFor(user);
-    const nextPoints = explicitPoints(updates) ? readUpdatePoints(updates, current?.points ?? meta.points ?? 0) : num(current?.points ?? meta.points ?? 0);
-    const currentLifetime = num(current?.lifetime_points ?? meta.lifetimePoints ?? nextPoints);
-    const requestedLifetime = hasOwn(updates, 'lifetimePoints') ? num(updates.lifetimePoints) : num(updates.lifetime_points);
-    const nextLifetime = Math.max(currentLifetime, requestedLifetime, nextPoints);
-    const nextAvatarType = avatarType(updates.avatarType || updates.avatar_type || current?.avatar_type || meta.avatarType || textGet('hyphsworld.avatarType') || 'boy');
+    const wallet = await walletFor(user);
+    const cleanAvatar = avatarType(updates.avatarType || updates.avatar_type || current?.avatar_type || textGet('hyphsworld.avatarType') || 'boy');
+    const displayName = String(updates.displayName || updates.display_name || current?.display_name || user.user_metadata?.displayName || displayFromEmail(user.email)).trim().slice(0, 40);
     const row = {
       id: user.id,
-      username: String(updates.username || current?.username || meta.username || usernameFromEmail(user.email)).slice(0, 30),
-      display_name: String(updates.displayName || updates.display_name || current?.display_name || meta.displayName || displayFromEmail(user.email)).slice(0, 40),
-      duck_status: String(updates.duckStatus || updates.duck_status || current?.duck_status || meta.duckStatus || 'Duck Sauce is watching this account.').slice(0, 90),
-      buck_clearance: String(updates.buckClearance || updates.buck_clearance || current?.buck_clearance || meta.buckClearance || 'Lobby clearance only').slice(0, 90),
-      avatar_type: nextAvatarType,
-      avatar_icon: avatarIcon(nextAvatarType),
-      points: nextPoints,
-      lifetime_points: nextLifetime,
-      level_1_unlocked: Boolean(current?.level_1_unlocked || updates.level1Unlocked || updates.level_1_unlocked),
-      level_2_unlocked: Boolean(current?.level_2_unlocked || updates.level2Unlocked || updates.level_2_unlocked),
+      email: user.email || current?.email || null,
+      username: String(updates.username || current?.username || user.user_metadata?.username || usernameFromEmail(user.email)).slice(0, 30),
+      display_name: displayName,
+      duck_status: String(updates.duckStatus || updates.duck_status || current?.duck_status || user.user_metadata?.duckStatus || 'Duck Sauce is watching this account.').slice(0, 90),
+      buck_clearance: String(updates.buckClearance || updates.buck_clearance || current?.buck_clearance || user.user_metadata?.buckClearance || 'Lobby clearance only').slice(0, 90),
+      avatar_type: cleanAvatar,
+      avatar_icon: avatarIcon(cleanAvatar),
+      points: wallet.balance,
+      cool_points: wallet.balance,
+      lifetime_points: Math.max(wallet.lifetime_points, wallet.balance),
       updated_at: new Date().toISOString()
     };
-    if (row.level_1_unlocked && !current?.vault_access_granted_at) row.vault_access_granted_at = new Date().toISOString();
-    if (current?.vault_access_granted_at) row.vault_access_granted_at = current.vault_access_granted_at;
     const { data, error } = await sb.from(c.table).upsert(row, { onConflict: 'id' }).select().maybeSingle();
     if (error) throw new Error(error.message || 'Profile save failed.');
     saveLocalProfileName(row.display_name);
     saveLocalAvatar(row.avatar_type);
-    saveLocalPoints(row.points);
+    broadcastPoints(row.cool_points, 'profile_sync');
     return data || row;
   }
-
-  async function addLedger(user, amount, reason) {
-    const sb = await getClient();
-    if (!sb || !user || !amount) return;
-    try { await sb.from('points_ledger').insert({ user_id: user.id, amount, reason: reason || 'site_action', metadata: { source: 'hyphsworld_frontend', account_only: true } }); } catch (error) {}
-  }
-
-  async function addVaultUnlock(user, levelKey) {
-    const sb = await getClient();
-    if (!sb || !user) return;
-    try { await sb.from('vault_unlocks').insert({ user_id: user.id, level_key: levelKey || 'level_1' }); } catch (error) {}
-  }
-
-  function sessionFromUser(user) { return { email: user.email || '', userId: user.id || '', provider: 'supabase', createdAt: Date.now() }; }
 
   async function signInWithGoogle(options = {}) {
     const sb = await getClient();
     if (!sb) throw new Error('Google sign-in needs Supabase configuration.');
     const redirectTo = options.redirectTo || AUTH_REDIRECT_URL;
-    const { data, error } = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo, queryParams: { access_type: 'offline', prompt: 'consent' } } });
+    const { data, error } = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo } });
     if (error) throw new Error(error.message || 'Google sign-in failed.');
     return data;
   }
@@ -185,29 +181,20 @@
     const sb = await getClient();
     if (!sb) return mockSignUp(email, password);
     const displayName = displayFromEmail(email);
-    const startingPoints = 0;
     const startingAvatar = avatarType(textGet('hyphsworld.avatarType') || 'boy');
     const { data, error } = await sb.auth.signUp({
       email,
       password,
-      options: {
-        emailRedirectTo: AUTH_REDIRECT_URL,
-        data: {
-          displayName,
-          username: usernameFromEmail(email),
-          duckStatus: 'Duck Sauce has not fined this account yet.',
-          buckClearance: 'Lobby clearance only',
-          avatarType: startingAvatar,
-          avatarIcon: avatarIcon(startingAvatar),
-          points: startingPoints,
-          lifetimePoints: startingPoints
-        }
-      }
+      options: { emailRedirectTo: AUTH_REDIRECT_URL, data: { displayName, username: usernameFromEmail(email), avatarType: startingAvatar, avatarIcon: avatarIcon(startingAvatar) } }
     });
     if (error) throw new Error(error.message || 'Sign up failed.');
-    if (data && data.user) await upsertRow(data.user, { displayName, avatarType: startingAvatar, points: startingPoints, lifetimePoints: startingPoints });
+    if (data && data.user) await upsertRow(data.user, { displayName, avatarType: startingAvatar });
     const session = data && data.user ? sessionFromUser(data.user) : { email, userId: '', provider: 'supabase' };
-    saveLocalSession(session); saveLocalProfileName(displayName); saveLocalAvatar(startingAvatar); saveLocalPoints(startingPoints); return session;
+    saveLocalSession(session);
+    saveLocalProfileName(displayName);
+    saveLocalAvatar(startingAvatar);
+    broadcastPoints(0, 'signup');
+    return session;
   }
 
   async function signInWithEmail(email, password) {
@@ -217,33 +204,46 @@
     const { data, error } = await sb.auth.signInWithPassword({ email, password });
     if (error) throw new Error(error.message || 'Invalid credentials.');
     if (!data || !data.user) throw new Error('No user returned.');
-    let row = await rowFor(data.user);
-    if (!row) row = await upsertRow(data.user, { displayName: data.user.user_metadata?.displayName || displayFromEmail(email), points: 0, lifetimePoints: 0 });
-    const accountPoints = num(row?.points);
-    saveLocalPoints(accountPoints); saveLocalProfileName(row?.display_name || displayFromEmail(email)); saveLocalAvatar(row?.avatar_type || 'boy');
-    const session = sessionFromUser(data.user); saveLocalSession(session); return session;
+    const row = (await rowFor(data.user)) || (await upsertRow(data.user, { displayName: data.user.user_metadata?.displayName || displayFromEmail(email) }));
+    const wallet = await walletFor(data.user);
+    saveLocalPoints(wallet.balance);
+    saveLocalProfileName(row?.display_name || displayFromEmail(email));
+    saveLocalAvatar(row?.avatar_type || 'boy');
+    const session = sessionFromUser(data.user);
+    saveLocalSession(session);
+    return session;
   }
 
-  async function signOut() { const sb = await getClient(); if (sb) await sb.auth.signOut(); clearLocalSession(); }
+  async function signOut() {
+    const sb = await getClient();
+    if (sb) await sb.auth.signOut();
+    clearLocalSession();
+    textRemove('hyphsworld.playerName');
+    textRemove('hyphsworld.avatarType');
+    textRemove('hyphsworld.avatarIcon');
+    broadcastPoints(0, 'logout');
+  }
 
   async function getSession() {
     const sb = await getClient();
     if (!sb) return localSession();
     const { data } = await sb.auth.getSession();
     if (!data || !data.session || !data.session.user) { clearLocalSession(); return null; }
-    const session = sessionFromUser(data.session.user); saveLocalSession(session); return session;
+    const session = sessionFromUser(data.session.user);
+    saveLocalSession(session);
+    return session;
   }
 
   async function getCurrentUser() {
     const sb = await getClient();
     if (sb) {
-      const { data } = await sb.auth.getUser();
-      if (!data || !data.user) return null;
-      const user = data.user;
-      const row = (await rowFor(user)) || (await upsertRow(user, { displayName: user.user_metadata?.displayName || displayFromEmail(user.email), points: 0, lifetimePoints: 0 }));
-      const accountPoints = num(row?.points ?? user.user_metadata?.points);
+      const user = await getSupabaseUser();
+      if (!user) return null;
+      const row = (await rowFor(user)) || (await upsertRow(user, { displayName: user.user_metadata?.displayName || displayFromEmail(user.email) }));
+      const wallet = await walletFor(user);
       const type = avatarType(row?.avatar_type || user.user_metadata?.avatarType || textGet('hyphsworld.avatarType') || 'boy');
-      saveLocalPoints(accountPoints); saveLocalProfileName(row?.display_name || user.user_metadata?.displayName || displayFromEmail(user.email)); saveLocalAvatar(type);
+      saveLocalProfileName(row?.display_name || user.user_metadata?.displayName || displayFromEmail(user.email));
+      saveLocalAvatar(type);
       return {
         email: user.email || '',
         userId: user.id || '',
@@ -254,8 +254,9 @@
         buckClearance: row?.buck_clearance || user.user_metadata?.buckClearance || 'Lobby clearance only',
         avatarType: type,
         avatarIcon: avatarIcon(type),
-        coolPoints: accountPoints,
-        lifetimePoints: Math.max(num(row?.lifetime_points), accountPoints),
+        coolPoints: wallet.balance,
+        points: wallet.balance,
+        lifetimePoints: Math.max(wallet.lifetime_points, wallet.balance),
         level1Unlocked: Boolean(row?.level_1_unlocked),
         level2Unlocked: Boolean(row?.level_2_unlocked)
       };
@@ -266,43 +267,17 @@
     const users = localUsers();
     const stored = users[session.email] || {};
     const type = avatarType(stored.avatarType || textGet('hyphsworld.avatarType') || 'boy');
-    return {
-      email: session.email,
-      userId: session.userId,
-      provider: 'mock',
-      displayName: stored.displayName || displayFromEmail(session.email),
-      duckStatus: stored.duckStatus || 'Duck Sauce is watching this account from a folding chair.',
-      buckClearance: stored.buckClearance || 'Lobby clearance only',
-      avatarType: type,
-      avatarIcon: avatarIcon(type),
-      coolPoints: num(stored.coolPoints),
-      lifetimePoints: num(stored.lifetimePoints ?? stored.coolPoints),
-      level1Unlocked: Boolean(stored.level1Unlocked),
-      level2Unlocked: Boolean(stored.level2Unlocked)
-    };
+    return { email: session.email, userId: session.userId, provider: 'mock', displayName: stored.displayName || displayFromEmail(session.email), duckStatus: stored.duckStatus || 'Duck Sauce is watching this account from a folding chair.', buckClearance: stored.buckClearance || 'Lobby clearance only', avatarType: type, avatarIcon: avatarIcon(type), coolPoints: num(stored.coolPoints), lifetimePoints: num(stored.lifetimePoints ?? stored.coolPoints), level1Unlocked: Boolean(stored.level1Unlocked), level2Unlocked: Boolean(stored.level2Unlocked) };
   }
 
   async function updateProfile(updates) {
-    const type = avatarType(updates.avatarType || updates.avatar_type || textGet('hyphsworld.avatarType') || 'boy');
     const sb = await getClient();
-
     if (sb) {
-      const { data } = await sb.auth.getUser();
-      if (!data || !data.user) throw new Error('Login required.');
-      const current = await rowFor(data.user);
-      const currentPoints = num(current?.points);
-      const clean = {
-        displayName: String(updates.displayName || current?.display_name || displayFromEmail(data.user.email)).trim().slice(0, 40),
-        duckStatus: String(updates.duckStatus || current?.duck_status || 'Duck Sauce has no official notes.').trim().slice(0, 90),
-        buckClearance: String(updates.buckClearance || current?.buck_clearance || 'Lobby clearance only').trim().slice(0, 90),
-        avatarType: type,
-        avatarIcon: avatarIcon(type),
-        points: currentPoints,
-        lifetimePoints: Math.max(num(current?.lifetime_points), currentPoints)
-      };
-      await sb.auth.updateUser({ data: clean });
-      await upsertRow(data.user, clean);
-      saveLocalProfileName(clean.displayName); saveLocalAvatar(type); saveLocalPoints(clean.points);
+      const user = await getSupabaseUser();
+      if (!user) throw new Error('Login required.');
+      const clean = { displayName: String(updates.displayName || displayFromEmail(user.email)).trim().slice(0, 40), duckStatus: String(updates.duckStatus || 'Duck Sauce has no official notes.').trim().slice(0, 90), buckClearance: String(updates.buckClearance || 'Lobby clearance only').trim().slice(0, 90), avatarType: avatarType(updates.avatarType || updates.avatar_type || 'boy') };
+      try { await sb.auth.updateUser({ data: clean }); } catch (error) {}
+      await upsertRow(user, clean);
       return getCurrentUser();
     }
 
@@ -310,87 +285,63 @@
     if (!session || !session.email) throw new Error('Login required.');
     const users = localUsers();
     const current = users[session.email] || { email: session.email };
-    users[session.email] = {
-      ...current,
-      displayName: String(updates.displayName || current.displayName || displayFromEmail(session.email)).trim().slice(0, 40),
-      duckStatus: String(updates.duckStatus || current.duckStatus || 'Duck Sauce has no official notes.').trim().slice(0, 90),
-      buckClearance: String(updates.buckClearance || current.buckClearance || 'Lobby clearance only').trim().slice(0, 90),
-      avatarType: type,
-      avatarIcon: avatarIcon(type),
-      coolPoints: num(current.coolPoints),
-      lifetimePoints: Math.max(num(current.lifetimePoints), num(current.coolPoints)),
-      updatedAt: Date.now()
-    };
-    saveLocalUsers(users); saveLocalProfileName(users[session.email].displayName); saveLocalAvatar(type); saveLocalPoints(users[session.email].coolPoints);
+    users[session.email] = { ...current, displayName: String(updates.displayName || current.displayName || displayFromEmail(session.email)).trim().slice(0, 40), duckStatus: String(updates.duckStatus || current.duckStatus || 'Duck Sauce has no official notes.').trim().slice(0, 90), buckClearance: String(updates.buckClearance || current.buckClearance || 'Lobby clearance only').trim().slice(0, 90), avatarType: avatarType(updates.avatarType || current.avatarType || 'boy'), avatarIcon: avatarIcon(updates.avatarType || current.avatarType || 'boy'), coolPoints: num(current.coolPoints), lifetimePoints: Math.max(num(current.lifetimePoints), num(current.coolPoints)), updatedAt: Date.now() };
+    saveLocalUsers(users);
     return getCurrentUser();
   }
 
-  async function getPoints() { const user = await getCurrentUser(); return num(user?.coolPoints); }
+  async function getPoints() {
+    const user = await getCurrentUser();
+    return num(user?.coolPoints);
+  }
 
   async function setPoints(value, reason) {
     const next = Math.max(0, parseInt(value, 10) || 0);
-    const sb = await getClient();
-    if (sb) {
-      const { data } = await sb.auth.getUser();
-      if (!data || !data.user) throw new Error('Login required to save Cool Points.');
-      const current = await rowFor(data.user);
-      const lifetime = Math.max(num(current?.lifetime_points), next);
-      saveLocalPoints(next);
-      await sb.auth.updateUser({ data: { points: next, lifetimePoints: lifetime } });
-      await upsertRow(data.user, { points: next, lifetimePoints: lifetime });
-      return next;
+    const current = await getPoints();
+    const delta = next - current;
+    if (delta > 0) return addPoints(delta, reason || 'set_points_delta');
+    if (delta < 0) {
+      const sb = await getClient();
+      if (!sb) { broadcastPoints(next, reason || 'set_points_local'); return next; }
+      const { data, error } = await sb.rpc('spend_cool_points', { p_amount: Math.abs(delta), p_source: reason || 'set_points', p_reason: reason || 'Cool Points adjustment', p_metadata: { source: 'auth_client_set_points' } });
+      if (error) throw new Error(error.message || 'Could not spend Cool Points.');
+      if (data && data.ok === false) throw new Error(data.message || 'Not enough Cool Points.');
+      const balance = num(data && data.balance);
+      broadcastPoints(balance, reason || 'set_points');
+      return balance;
     }
-
-    const session = localSession();
-    if (!session?.email) throw new Error('Login required to save Cool Points.');
-    const users = localUsers();
-    if (!users[session.email]) throw new Error('Login required to save Cool Points.');
-    users[session.email].coolPoints = next;
-    users[session.email].lifetimePoints = Math.max(num(users[session.email].lifetimePoints), next);
-    saveLocalUsers(users);
-    saveLocalPoints(next);
+    broadcastPoints(next, reason || 'set_points');
     return next;
   }
 
   async function addPoints(amount, reason) {
-    const n = parseInt(amount, 10) || 0;
+    const amountInt = parseInt(amount, 10) || 0;
     const sb = await getClient();
     if (sb) {
-      const { data } = await sb.auth.getUser();
-      if (!data || !data.user) throw new Error('Login required to earn Cool Points.');
-      const current = await rowFor(data.user);
-      const currentPoints = num(current?.points);
-      const currentLifetime = num(current?.lifetime_points ?? currentPoints);
-      const next = Math.max(0, currentPoints + n);
-      saveLocalPoints(next);
-      await upsertRow(data.user, { points: next, lifetimePoints: Math.max(currentLifetime, next) });
-      await addLedger(data.user, n, reason || 'site_action');
-      return next;
+      const user = await getSupabaseUser();
+      if (!user) throw new Error('Login required to earn Cool Points.');
+      const { data, error } = await sb.rpc('earn_cool_points', { p_amount: amountInt, p_source: reason || 'site_action', p_reason: reason || 'Cool Points earned', p_metadata: { source: 'auth_client' } });
+      if (error) throw new Error(error.message || 'Could not earn Cool Points.');
+      const balance = num(data && data.balance);
+      broadcastPoints(balance, reason || 'earn_cool_points');
+      return balance;
     }
-
     const session = localSession();
     if (!session?.email) throw new Error('Login required to earn Cool Points.');
-    return setPoints((await getPoints()) + n, reason);
+    const next = localPoints() + amountInt;
+    broadcastPoints(next, reason || 'local_add');
+    return next;
   }
 
   async function grantVaultAccess(levelKey) {
     const normalizedLevel = levelKey || 'level_1';
     const sb = await getClient();
     if (sb) {
-      const { data } = await sb.auth.getUser();
-      if (!data || !data.user) throw new Error('Login required.');
-      await upsertRow(data.user, normalizedLevel === 'level_2' ? { level2Unlocked: true } : { level1Unlocked: true });
-      await addVaultUnlock(data.user, normalizedLevel);
+      const user = await getSupabaseUser();
+      if (!user) throw new Error('Login required.');
+      await upsertRow(user, normalizedLevel === 'level_2' ? { level2Unlocked: true } : { level1Unlocked: true });
+      try { await sb.from('vault_unlocks').insert({ user_id: user.id, level_key: normalizedLevel }); } catch (error) {}
       return true;
-    }
-
-    const session = localSession();
-    if (!session?.email) throw new Error('Login required.');
-    const users = localUsers();
-    if (users[session.email]) {
-      if (normalizedLevel === 'level_2') users[session.email].level2Unlocked = true;
-      else users[session.email].level1Unlocked = true;
-      saveLocalUsers(users);
     }
     return true;
   }
@@ -404,19 +355,18 @@
   async function mockSignUp(email, password) {
     const users = localUsers();
     if (users[email]) throw new Error('Account already exists.');
-    const startingPoints = 0;
     const type = avatarType(textGet('hyphsworld.avatarType') || 'boy');
-    users[email] = { email, password, displayName: displayFromEmail(email), duckStatus: 'Duck Sauce has not fined this account yet.', buckClearance: 'Lobby clearance only', avatarType: type, avatarIcon: avatarIcon(type), coolPoints: startingPoints, lifetimePoints: startingPoints, createdAt: Date.now() };
+    users[email] = { email, password, displayName: displayFromEmail(email), duckStatus: 'Duck Sauce has not fined this account yet.', buckClearance: 'Lobby clearance only', avatarType: type, avatarIcon: avatarIcon(type), coolPoints: 0, lifetimePoints: 0, createdAt: Date.now() };
     saveLocalUsers(users);
     const session = { email, userId: 'mock_' + btoa(email), provider: 'mock', createdAt: Date.now() };
-    saveLocalSession(session); saveLocalProfileName(users[email].displayName); saveLocalAvatar(type); saveLocalPoints(startingPoints);
+    saveLocalSession(session); saveLocalProfileName(users[email].displayName); saveLocalAvatar(type); broadcastPoints(0, 'mock_signup');
     return session;
   }
 
   async function mockSignIn(email, password) {
     const users = localUsers();
     if (!users[email] || users[email].password !== password) throw new Error('Invalid credentials.');
-    saveLocalPoints(users[email].coolPoints || 0); saveLocalProfileName(users[email].displayName || displayFromEmail(email)); saveLocalAvatar(users[email].avatarType || 'boy');
+    saveLocalProfileName(users[email].displayName || displayFromEmail(email)); saveLocalAvatar(users[email].avatarType || 'boy'); broadcastPoints(users[email].coolPoints || 0, 'mock_signin');
     const session = { email, userId: 'mock_' + btoa(email), provider: 'mock', createdAt: Date.now() };
     saveLocalSession(session);
     return session;
