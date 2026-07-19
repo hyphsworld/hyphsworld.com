@@ -34,4 +34,9 @@ window.HW_SUPABASE_CONFIG = {
     window.__HYPHSWORLD_FEATURE_VIDEO_BOOTSTRAP__ = true;
     loadOnce('hw-homepage-feature-video-loader', 'homepage-feature-video.js?v=yd4MShi6TvA-20260718');
   }
+
+  if (!window.__HYPHSWORLD_SESSION_STATUS_BOOTSTRAP__) {
+    window.__HYPHSWORLD_SESSION_STATUS_BOOTSTRAP__ = true;
+    loadOnce('hw-homepage-session-fix-loader', 'homepage-session-fix.js?v=session-fix-20260719');
+  }
 })();
