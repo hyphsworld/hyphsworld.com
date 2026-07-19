@@ -4,16 +4,25 @@
   var VIDEO_ID = 'yd4MShi6TvA';
   var WATCH_URL = 'https://youtu.be/yd4MShi6TvA?si=iJFwXE0jyZYXb9Ar';
   var EMBED_URL = 'https://www.youtube.com/embed/' + VIDEO_ID + '?si=iJFwXE0jyZYXb9Ar&rel=0&modestbranding=1';
-  var LABEL = 'WEST - Young Tez & Hyph Life prod by Cuz Zaid';
+  var LABEL = 'WEST (visual) YOUNG TEZ & HYPH LIFE prod by CUZ ZAID';
+  var SECOND_LINE = 'PURE DRIP 2 available now';
+  var FULL_LABEL = LABEL + ' — ' + SECOND_LINE;
 
   function setText(selector, value) {
     var nodes = document.querySelectorAll(selector);
     nodes.forEach(function (el) { el.textContent = value; });
   }
 
+  function setStripText() {
+    var strips = document.querySelectorAll('.homepage-full-episode-strip span');
+    strips.forEach(function (span) {
+      span.innerHTML = LABEL + '<br><small>' + SECOND_LINE + '</small>';
+    });
+  }
+
   function updateFeaturedVideo() {
     if (!document.body) return;
-    document.body.setAttribute('data-homepage-video', VIDEO_ID + '-west-young-tez-hyph-life');
+    document.body.setAttribute('data-homepage-video', VIDEO_ID + '-west-pure-drip-2');
 
     var frame = document.querySelector('.homepage-full-episode-frame');
     if (frame) frame.setAttribute('data-featured-video', VIDEO_ID + '-top');
@@ -24,17 +33,17 @@
       iframe.title = LABEL;
     }
 
-    setText('.homepage-full-episode-strip span', LABEL);
-    setText('.spotlight-badge', 'WEST');
+    setStripText();
+    setText('.spotlight-badge', 'WEST VISUAL');
     setText('#spotlight h4', LABEL);
 
     var spotlightText = document.querySelector('#spotlight .spotlight-info p:not(.eyebrow)');
-    if (spotlightText) spotlightText.textContent = 'WEST by Young Tez & Hyph Life, produced by Cuz Zaid, is now live in the HYPHSWORLD Artist Spotlight.';
+    if (spotlightText) spotlightText.textContent = 'WEST visual by Young Tez & Hyph Life, produced by Cuz Zaid. PURE DRIP 2 available now.';
 
     var primaryWatch = document.querySelector('#spotlight .btn.btn-primary');
     if (primaryWatch) {
       primaryWatch.href = WATCH_URL;
-      primaryWatch.textContent = 'Watch WEST';
+      primaryWatch.textContent = 'Watch WEST Visual';
       primaryWatch.target = '_blank';
       primaryWatch.rel = 'noopener';
     }
@@ -44,16 +53,35 @@
 
     var tickerSpans = document.querySelectorAll('.ticker-track span');
     tickerSpans.forEach(function (span) {
-      if (/8 MINUTES|FREESTYLE NOW PLAYING/i.test(span.textContent || '')) span.textContent = 'WEST NOW PLAYING';
+      if (/8 MINUTES|FREESTYLE NOW PLAYING|WEST NOW PLAYING/i.test(span.textContent || '')) span.textContent = 'WEST VISUAL NOW PLAYING';
     });
 
     var homepagePlayerCopy = document.querySelector('#music .section-title p:not(.eyebrow)');
-    if (homepagePlayerCopy) homepagePlayerCopy.textContent = 'WEST is on the top screen. Tap into the homepage player for more HYPHSWORLD music rotation.';
+    if (homepagePlayerCopy) homepagePlayerCopy.textContent = FULL_LABEL + '. Tap into the homepage player for more HYPHSWORLD music rotation.';
+  }
+
+  function boot() {
+    updateFeaturedVideo();
+    var textFixes = 0;
+    var textTimer = setInterval(function () {
+      setStripText();
+      setText('.spotlight-badge', 'WEST VISUAL');
+      setText('#spotlight h4', LABEL);
+      textFixes += 1;
+      if (textFixes >= 20) clearInterval(textTimer);
+    }, 500);
+
+    try {
+      var target = document.querySelector('.homepage-full-episode-strip') || document.body;
+      var observer = new MutationObserver(function () { setStripText(); });
+      observer.observe(target, { childList: true, subtree: true, characterData: true });
+      setTimeout(function () { observer.disconnect(); }, 15000);
+    } catch (error) {}
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', updateFeaturedVideo);
+    document.addEventListener('DOMContentLoaded', boot);
   } else {
-    updateFeaturedVideo();
+    boot();
   }
 })();
