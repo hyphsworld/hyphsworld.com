@@ -7,8 +7,8 @@
   var LABEL = 'WEST - Young Tez & Hyph Life prod by Cuz Zaid';
 
   function setText(selector, value) {
-    var el = document.querySelector(selector);
-    if (el) el.textContent = value;
+    var nodes = document.querySelectorAll(selector);
+    nodes.forEach(function (el) { el.textContent = value; });
   }
 
   function updateFeaturedVideo() {
@@ -39,16 +39,31 @@
       primaryWatch.rel = 'noopener';
     }
 
-    var navTop = document.querySelector('.main-nav a[href="#top"]');
-    if (navTop) navTop.textContent = 'Watch WEST';
+    var navLinks = document.querySelectorAll('.main-nav a[href="#top"], .mobile-menu-panel a[href="#top"]');
+    navLinks.forEach(function (link) { link.textContent = 'Watch WEST'; });
 
-    var mobileTop = document.querySelector('.mobile-menu-panel a[href="#top"]');
-    if (mobileTop) mobileTop.textContent = 'Watch WEST';
+    var tickerSpans = document.querySelectorAll('.ticker-track span');
+    tickerSpans.forEach(function (span) {
+      if (/8 MINUTES|FREESTYLE NOW PLAYING/i.test(span.textContent || '')) span.textContent = 'WEST NOW PLAYING';
+    });
+
+    var homepagePlayerCopy = document.querySelector('#music .section-title p:not(.eyebrow)');
+    if (homepagePlayerCopy) homepagePlayerCopy.textContent = 'WEST is on the top screen. Tap into the homepage player for more HYPHSWORLD music rotation.';
+  }
+
+  function boot() {
+    updateFeaturedVideo();
+    var tries = 0;
+    var timer = setInterval(function () {
+      updateFeaturedVideo();
+      tries += 1;
+      if (tries >= 30) clearInterval(timer);
+    }, 500);
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', updateFeaturedVideo);
+    document.addEventListener('DOMContentLoaded', boot);
   } else {
-    updateFeaturedVideo();
+    boot();
   }
 })();
