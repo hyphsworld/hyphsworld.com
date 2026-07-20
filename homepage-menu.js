@@ -1,303 +1,127 @@
 (function () {
   'use strict';
 
-  if (window.__HW_HOME_BOOT_V2__) return;
-  window.__HW_HOME_BOOT_V2__ = true;
+  if (window.__HW_HOME_SAFE_BOOT__) return;
+  window.__HW_HOME_SAFE_BOOT__ = true;
 
-  var AUTH_URL = 'auth.html';
-  var ACCOUNT_URL = 'account.html';
   var VIDEO_ID = 'yd4MShi6TvA';
-  var WATCH_URL = 'https://youtu.be/yd4MShi6TvA?is=RczZszmIf4ifMkAj';
-  var EMBED_URL = 'https://www.youtube.com/embed/' + VIDEO_ID + '?rel=0&modestbranding=1&playsinline=1';
-  var TITLE_LINE = 'WEST (visual) · YOUNG TEZ & HYPH LIFE · prod by CUZ ZAID · PURE DRIP 2 available now';
-  var sessionBusy = false;
-  var sessionQueued = false;
-  var authSubscription = null;
+  var WATCH_URL = 'https://youtu.be/yd4MShi6TvA?si=iJFwXE0jyZYXb9Ar';
+  var THUMB_URL = 'https://i.ytimg.com/vi/' + VIDEO_ID + '/hqdefault.jpg';
+  var TITLE = 'WEST (visual) YOUNG TEZ & HYPH LIFE';
+  var SUB = 'prod by CUZ ZAID';
+  var DROP = 'PURE DRIP 2 AVAILABLE NOW';
 
   function id(name) { return document.getElementById(name); }
-  function one(selector) { return document.querySelector(selector); }
-  function all(selector) { return Array.prototype.slice.call(document.querySelectorAll(selector)); }
+  function one(sel) { return document.querySelector(sel); }
+  function all(sel) { return Array.prototype.slice.call(document.querySelectorAll(sel)); }
   function text(el, value) { if (el) el.textContent = value; }
-  function num(value) {
-    var parsed = parseInt(value, 10);
-    return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
-  }
+  function num(value) { var p = parseInt(value, 10); return Number.isFinite(p) && p > 0 ? p : 0; }
   function emailName(email) { return String(email || '').split('@')[0] || 'HYPHSWORLD ID'; }
-  function escapeHtml(value) {
-    return String(value || '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
-  }
+  function esc(value) { return String(value || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); }
 
-  function installStyles() {
-    if (id('hwHomeBootStyles')) return;
-    var style = document.createElement('style');
-    style.id = 'hwHomeBootStyles';
-    style.textContent = [
-      '.hw-login-chip{display:inline-flex;align-items:center;justify-content:center;gap:10px;max-width:min(92vw,560px);padding:10px 13px;border-radius:999px;border:1px solid rgba(57,255,122,.34);background:rgba(0,0,0,.62);box-shadow:0 0 22px rgba(57,255,122,.14),0 12px 30px rgba(0,0,0,.24);color:#fff;text-align:left;vertical-align:middle}',
-      '.hw-login-avatar{display:grid;place-items:center;width:38px;height:38px;border-radius:999px;background:linear-gradient(135deg,#39ff7a,#1ffcff,#ff4fd8);color:#050505;font-size:1.25rem;font-weight:1000}',
-      '.hw-login-copy{display:grid;gap:2px}',
-      '.hw-login-copy strong{font-size:.92rem;line-height:1;color:#fff}',
-      '.hw-login-copy small{font-size:.72rem;line-height:1.2;color:#a9ff87;font-weight:800}',
-      '.mobile-menu-panel{display:none}',
-      '.mobile-menu-panel.is-open{display:grid}',
-      '.daily-spin-nav-link{border-color:rgba(255,228,92,.42)!important;color:#ffe45c!important}',
+  function css() {
+    if (id('hwHomeSafeCss')) return;
+    var s = document.createElement('style');
+    s.id = 'hwHomeSafeCss';
+    s.textContent = [
       'body.home-page{pointer-events:auto!important;touch-action:auto!important}',
-      'body.home-page .hw-transport-overlay:not(.is-live){pointer-events:none!important}',
-      'body.home-page #hwGlobalPointsHud{display:none!important}'
+      '.mobile-menu-panel{display:none}.mobile-menu-panel.is-open{display:grid}',
+      'body.home-page #hwGlobalPointsHud{display:none!important}',
+      '.hw-login-chip{display:inline-flex;align-items:center;gap:10px;max-width:min(92vw,560px);padding:10px 13px;border-radius:999px;border:1px solid rgba(57,255,122,.34);background:rgba(0,0,0,.62);color:#fff}',
+      '.hw-login-avatar{display:grid;place-items:center;width:38px;height:38px;border-radius:999px;background:linear-gradient(135deg,#39ff7a,#1ffcff,#ff4fd8);color:#050505;font-weight:1000}',
+      '.hw-login-copy{display:grid;gap:2px;text-align:left}.hw-login-copy strong{font-size:.92rem;line-height:1;color:#fff}.hw-login-copy small{font-size:.72rem;color:#a9ff87;font-weight:800}',
+      '.homepage-full-episode-frame iframe{display:none!important}',
+      '.hw-west-poster{display:block;position:relative;min-height:260px;background:#050505 center/cover no-repeat;border-radius:22px 22px 0 0;text-decoration:none;overflow:hidden}',
+      '.hw-west-poster:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.25))}',
+      '.hw-west-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:88px;height:62px;border-radius:18px;background:#ff0033;color:#fff;display:grid;place-items:center;font-size:34px;font-weight:1000;box-shadow:0 12px 30px rgba(0,0,0,.45)}',
+      '.homepage-full-episode-strip{padding:18px!important;overflow:visible!important}.homepage-full-episode-strip span{display:block;font-size:clamp(18px,4.7vw,30px)!important;line-height:1.14!important;letter-spacing:.02em!important;text-shadow:none!important}.hw-west-sub{display:block;color:#1ffcff;font-size:.84em;letter-spacing:.06em;margin-top:4px}',
+      '#duckBox{max-width:108px!important;z-index:5!important}'
     ].join('');
-    document.head.appendChild(style);
-  }
-
-  function setLink(link, label, href) {
-    if (!link) return;
-    link.textContent = label;
-    link.href = href;
+    document.head.appendChild(s);
   }
 
   function setAccount(signedIn) {
-    var label = signedIn ? 'Manage ID' : 'Create / Login';
-    var href = signedIn ? ACCOUNT_URL : AUTH_URL;
-    setLink(id('auth-link'), label, href);
-    setLink(id('nav-account-link'), label, href);
-    setLink(id('mobile-nav-account-link'), label, href);
+    var label = signedIn ? 'Manage ID' : 'Create ID / Login';
+    var href = signedIn ? 'account.html' : 'auth.html';
+    [id('auth-link'), id('nav-account-link'), id('mobile-nav-account-link')].forEach(function (a) { if (a) { a.textContent = label; a.href = href; } });
     var logout = id('home-logout');
     if (logout) logout.hidden = !signedIn;
   }
 
-  function renderGuest() {
-    var status = id('login-status');
-    if (status) {
-      status.className = 'hw-login-chip is-guest';
-      status.innerHTML = '<span class="hw-login-avatar">ID</span><span class="hw-login-copy"><strong>Guest Mode</strong><small>Login to sync Cool Points</small></span>';
-    }
+  function guest() {
+    var st = id('login-status');
+    if (st) st.innerHTML = '<span class="hw-login-avatar">ID</span><span class="hw-login-copy"><strong>Guest Mode</strong><small>Login to sync Cool Points</small></span>';
+    if (st) st.className = 'hw-login-chip is-guest';
     setAccount(false);
   }
 
-  function renderLoading() {
-    var status = id('login-status');
-    if (status) {
-      status.className = 'hw-login-chip is-loading';
-      status.innerHTML = '<span class="hw-login-avatar">ID</span><span class="hw-login-copy"><strong>Loading HYPHSWORLD ID...</strong><small>Connecting your saved session</small></span>';
-    }
-  }
-
-  function renderUser(user, points) {
-    var status = id('login-status');
+  function userChip(user, points) {
     var email = user && user.email || '';
-    var metadata = user && user.user_metadata || {};
-    var name = metadata.displayName || metadata.display_name || emailName(email);
-    if (status) {
-      status.className = 'hw-login-chip is-signed-in';
-      status.innerHTML = '<span class="hw-login-avatar">ID</span><span class="hw-login-copy"><strong>' + escapeHtml(name) + '</strong><small>' + num(points).toLocaleString() + ' CP' + (email ? ' · ' + escapeHtml(email) : '') + '</small></span>';
-    }
+    var name = user && user.user_metadata && (user.user_metadata.displayName || user.user_metadata.display_name) || emailName(email);
+    var st = id('login-status');
+    if (st) st.innerHTML = '<span class="hw-login-avatar">ID</span><span class="hw-login-copy"><strong>' + esc(name) + '</strong><small>' + num(points).toLocaleString() + ' CP' + (email ? ' - ' + esc(email) : '') + '</small></span>';
+    if (st) st.className = 'hw-login-chip is-signed-in';
     setAccount(true);
   }
 
   async function client() {
-    if (window.HWAuth && typeof window.HWAuth.getClient === 'function') {
-      try { return await window.HWAuth.getClient(); } catch (error) {}
-    }
+    if (window.HWAuth && window.HWAuth.getClient) { try { return await window.HWAuth.getClient(); } catch (e) {} }
     if (!window.supabase || !window.supabase.createClient) return null;
     var cfg = window.HW_SUPABASE_CONFIG || {};
     var url = cfg.url || window.HW_SUPABASE_URL;
-    var key = cfg.anonKey || cfg.anon_key || window.HW_SUPABASE_ANON_KEY || window.SUPABASE_ANON_KEY;
+    var key = cfg.anonKey || window.HW_SUPABASE_ANON_KEY || window.SUPABASE_ANON_KEY;
     if (!url || !key) return null;
-    if (!window.__HW_HOME_SB__) {
-      window.__HW_HOME_SB__ = window.supabase.createClient(url, key, {
-        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
-      });
-    }
-    return window.__HW_HOME_SB__;
+    window.__HW_HOME_SAFE_SB__ = window.__HW_HOME_SAFE_SB__ || window.supabase.createClient(url, key, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
+    return window.__HW_HOME_SAFE_SB__;
   }
 
-  function walletBalance(data) {
-    if (!data) return 0;
-    if (Array.isArray(data)) data = data[0] || {};
-    return num(data.balance != null ? data.balance : (data.cool_points != null ? data.cool_points : data.points));
+  function withTimeout(promise, ms) {
+    return Promise.race([promise, new Promise(function (_, reject) { setTimeout(function () { reject(new Error('timeout')); }, ms); })]);
   }
 
-  async function readPoints(sb) {
+  async function sessionOnce() {
     try {
-      var result = await sb.rpc('get_my_points');
-      if (!result.error) return walletBalance(result.data);
-    } catch (error) {}
-    try {
-      if (window.HWPoints && typeof window.HWPoints.getState === 'function') {
-        return num((window.HWPoints.getState() || {}).points);
-      }
-    } catch (error) {}
-    return 0;
+      var sb = await withTimeout(client(), 1800);
+      if (!sb || !sb.auth) return guest();
+      var result = await withTimeout(sb.auth.getSession(), 2200);
+      var user = result && result.data && result.data.session && result.data.session.user;
+      if (!user) return guest();
+      var points = 0;
+      try { var wallet = await withTimeout(sb.rpc('get_my_points'), 2200); if (!wallet.error && wallet.data) points = wallet.data.balance || wallet.data.cool_points || wallet.data.points || 0; } catch (e) {}
+      userChip(user, points);
+    } catch (e) { guest(); }
   }
 
-  async function refreshSession(showLoading) {
-    if (sessionBusy) {
-      sessionQueued = true;
-      return;
-    }
-    sessionBusy = true;
-    if (showLoading) renderLoading();
-    try {
-      var sb = await client();
-      if (!sb || !sb.auth) {
-        renderGuest();
-        return;
-      }
-      var result = await sb.auth.getSession();
-      var session = result && result.data ? result.data.session : null;
-      var user = session && session.user;
-      if (!user) {
-        renderGuest();
-        return;
-      }
-      renderUser(user, await readPoints(sb));
-    } catch (error) {
-      renderGuest();
-    } finally {
-      sessionBusy = false;
-      if (sessionQueued) {
-        sessionQueued = false;
-        window.setTimeout(function () { refreshSession(false); }, 100);
-      }
-    }
-  }
-
-  function ensureLink(nav, href, label, className) {
-    if (!nav || nav.querySelector('a[href="' + href + '"]')) return;
-    var link = document.createElement('a');
-    link.href = href;
-    link.textContent = label;
-    link.className = className || 'nav-link';
-    nav.appendChild(link);
-  }
-
-  function installWest() {
+  function west() {
     document.title = 'HYPHSWORLD | WEST Visual';
-    all('a,button,span,h2,h3,h4,p,small').forEach(function (el) {
-      var value = (el.textContent || '').trim();
-      if (value === 'Watch 8 Minutes') text(el, 'Watch WEST');
-      if (value === '8 Minutes Freestyle') text(el, 'WEST Visual');
-      if (value === '8 Minutes (Freestyle)') text(el, 'WEST (visual) YOUNG TEZ & HYPH LIFE');
-      if (value.indexOf('8 MINUTES FREESTYLE NOW PLAYING') >= 0) text(el, value.replace('8 MINUTES FREESTYLE NOW PLAYING', 'WEST VISUAL NOW PLAYING'));
-      if (value.indexOf('Hyph Life aka Slide Drexler // 8 Minutes') >= 0) text(el, TITLE_LINE);
-    });
-
-    var frame = one('.homepage-full-episode-frame iframe');
-    if (frame) {
-      if (frame.src.indexOf(VIDEO_ID) < 0) frame.src = EMBED_URL;
-      frame.title = 'WEST visual — Young Tez and Hyph Life — produced by Cuz Zaid';
-    }
-    text(one('.homepage-full-episode-strip small'), 'NOW PLAYING');
-    text(one('.homepage-full-episode-strip span'), TITLE_LINE);
-
-    all('a[href*="aZlYN1RyHLc"]').forEach(function (link) {
-      if ((link.textContent || '').toLowerCase().indexOf('watch') >= 0) link.href = WATCH_URL;
-    });
-
-    [one('.main-nav'), id('mobile-menu-panel')].forEach(function (nav) {
-      ensureLink(nav, 'shop.html', 'Merch', 'nav-link merch-nav-link');
-      ensureLink(nav, 'daily-wheel.html', 'Daily Spin', 'nav-link daily-spin-nav-link');
-    });
-  }
-
-  function bindMenu() {
-    var year = id('year');
-    if (year) year.textContent = new Date().getFullYear();
-
-    var toggle = one('.mobile-menu-toggle');
-    var panel = id('mobile-menu-panel');
-    if (toggle && panel && !toggle.__hwBound) {
-      toggle.__hwBound = true;
-      toggle.addEventListener('click', function () {
-        var open = panel.classList.toggle('is-open');
-        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-        toggle.textContent = open ? 'Menu ▲' : 'Menu ▼';
-      });
-    }
-
-    var logout = id('home-logout');
-    if (logout && !logout.__hwBound) {
-      logout.__hwBound = true;
-      logout.addEventListener('click', async function () {
-        logout.disabled = true;
-        try {
-          var sb = await client();
-          if (sb && sb.auth) await sb.auth.signOut();
-        } catch (error) {}
-        renderGuest();
-        logout.disabled = false;
-      });
-    }
-  }
-
-  async function watchAuth() {
-    if (authSubscription) return;
-    var sb = await client();
-    if (!sb || !sb.auth || typeof sb.auth.onAuthStateChange !== 'function') return;
-    var listener = sb.auth.onAuthStateChange(function (event) {
-      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'USER_UPDATED' || event === 'TOKEN_REFRESHED') {
-        window.setTimeout(function () { refreshSession(false); }, 0);
-      }
-    });
-    authSubscription = listener && listener.data ? listener.data.subscription : true;
-  }
-
-  function keepDuckClear() {
-    var duck = id('duckBox');
-    var strip = one('.homepage-full-episode-strip');
+    all('a[href="#top"]').forEach(function (a) { text(a, 'Watch WEST'); });
+    all('.ticker-track span').forEach(function (el) { if (/8 MINUTES|FREESTYLE/i.test(el.textContent || '')) text(el, 'WEST VISUAL NOW PLAYING'); });
     var frame = one('.homepage-full-episode-frame');
-    if (!duck || !strip || !frame) return;
-    var duckRect = duck.getBoundingClientRect();
-    var stripRect = strip.getBoundingClientRect();
-    var overlaps = duckRect.left < stripRect.right && duckRect.right > stripRect.left &&
-      duckRect.top < stripRect.bottom && duckRect.bottom > stripRect.top;
-    if (!overlaps) return;
-    var frameRect = frame.getBoundingClientRect();
-    var nextLeft = Math.max(8, Math.min(window.innerWidth - duck.offsetWidth - 12, frameRect.right - duck.offsetWidth - 14));
-    var nextTop = Math.max(8, Math.min(window.innerHeight - duck.offsetHeight - 12, frameRect.top + 54));
-    duck.style.left = Math.round(nextLeft) + 'px';
-    duck.style.top = Math.round(nextTop) + 'px';
-    duck.style.bottom = 'auto';
-  }
-
-  function loadDeferredSystems() {
-    var queue = Array.isArray(window.HW_HOME_DEFERRED_SCRIPTS) ? window.HW_HOME_DEFERRED_SCRIPTS.slice() : [];
-    function next() {
-      var src = queue.shift();
-      if (!src) return;
-      if (Array.prototype.some.call(document.scripts, function (script) { return script.src && script.src.indexOf(src.split('?')[0]) >= 0; })) {
-        window.setTimeout(next, 350);
-        return;
-      }
-      var script = document.createElement('script');
-      script.src = src;
-      script.async = true;
-      script.onload = script.onerror = function () { window.setTimeout(next, 350); };
-      document.body.appendChild(script);
+    if (frame && !one('.hw-west-poster')) {
+      var a = document.createElement('a');
+      a.className = 'hw-west-poster';
+      a.href = WATCH_URL;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.style.backgroundImage = 'url(' + THUMB_URL + ')';
+      a.innerHTML = '<span class="hw-west-play">▶</span>';
+      frame.insertBefore(a, frame.firstChild);
     }
-    window.setTimeout(next, 1400);
+    var strip = one('.homepage-full-episode-strip span');
+    if (strip) strip.innerHTML = TITLE + '<span class="hw-west-sub">' + SUB + '</span><span class="hw-west-sub">' + DROP + '</span>';
+    text(one('.spotlight-badge'), 'WEST Visual');
+    text(one('#spotlight h4'), TITLE);
   }
 
-  function boot() {
-    installStyles();
-    installWest();
-    bindMenu();
-    refreshSession(true);
-    watchAuth();
-    loadDeferredSystems();
-    window.setTimeout(keepDuckClear, 900);
-    window.setTimeout(keepDuckClear, 1800);
+  function nav() {
+    var y = id('year'); if (y) y.textContent = new Date().getFullYear();
+    var t = one('.mobile-menu-toggle'); var p = id('mobile-menu-panel');
+    if (t && p && !t.__hwSafeBound) { t.__hwSafeBound = true; t.addEventListener('click', function () { var open = p.classList.toggle('is-open'); t.textContent = open ? 'Menu ▲' : 'Menu ▼'; }); }
+    var logout = id('home-logout');
+    if (logout && !logout.__hwSafeBound) { logout.__hwSafeBound = true; logout.addEventListener('click', async function () { try { var sb = await client(); if (sb && sb.auth) await sb.auth.signOut(); } catch (e) {} guest(); }); }
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true });
-  else boot();
-
-  window.addEventListener('pageshow', function (event) {
-    if (event.persisted) refreshSession(false);
-    window.setTimeout(keepDuckClear, 150);
-  });
-  window.addEventListener('resize', function () { window.setTimeout(keepDuckClear, 100); });
+  function boot() { css(); guest(); west(); nav(); setTimeout(sessionOnce, 250); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true }); else boot();
+  window.addEventListener('pageshow', function () { setTimeout(sessionOnce, 150); });
 })();
