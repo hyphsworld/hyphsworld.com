@@ -85,6 +85,7 @@
     document.body.style.removeProperty('pointer-events');
   }
 
+  resetTransport();
   window.addEventListener('pageshow',resetTransport);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)resetTransport()});
 
