@@ -8,7 +8,7 @@
   var ACCOUNT_URL = 'account.html';
   var VIDEO_ID = 'yd4MShi6TvA';
   var WATCH_URL = 'https://youtu.be/' + VIDEO_ID + '?si=iJFwXE0jyZYXb9Ar';
-  var EMBED_URL = 'https://www.youtube-nocookie.com/embed/' + VIDEO_ID + '?rel=0&modestbranding=1&playsinline=1';
+  var EMBED_URL = 'https://www.youtube.com/embed/' + VIDEO_ID + '?rel=0&modestbranding=1&playsinline=1';
   var TITLE_LINE = 'WEST (visual) · YOUNG TEZ & HYPH LIFE · prod by CUZ ZAID · PURE DRIP 2 available now';
   var sessionBusy = false;
   var sessionQueued = false;
@@ -245,12 +245,32 @@
     authSubscription = listener && listener.data ? listener.data.subscription : true;
   }
 
+  function keepDuckClear() {
+    var duck = id('duckBox');
+    var strip = one('.homepage-full-episode-strip');
+    var frame = one('.homepage-full-episode-frame');
+    if (!duck || !strip || !frame) return;
+    var duckRect = duck.getBoundingClientRect();
+    var stripRect = strip.getBoundingClientRect();
+    var overlaps = duckRect.left < stripRect.right && duckRect.right > stripRect.left &&
+      duckRect.top < stripRect.bottom && duckRect.bottom > stripRect.top;
+    if (!overlaps) return;
+    var frameRect = frame.getBoundingClientRect();
+    var nextLeft = Math.max(8, Math.min(window.innerWidth - duck.offsetWidth - 12, frameRect.right - duck.offsetWidth - 14));
+    var nextTop = Math.max(8, Math.min(window.innerHeight - duck.offsetHeight - 12, frameRect.top + 54));
+    duck.style.left = Math.round(nextLeft) + 'px';
+    duck.style.top = Math.round(nextTop) + 'px';
+    duck.style.bottom = 'auto';
+  }
+
   function boot() {
     installStyles();
     installWest();
     bindMenu();
     refreshSession(true);
     watchAuth();
+    window.setTimeout(keepDuckClear, 900);
+    window.setTimeout(keepDuckClear, 1800);
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true });
@@ -258,5 +278,7 @@
 
   window.addEventListener('pageshow', function (event) {
     if (event.persisted) refreshSession(false);
+    window.setTimeout(keepDuckClear, 150);
   });
+  window.addEventListener('resize', function () { window.setTimeout(keepDuckClear, 100); });
 })();
