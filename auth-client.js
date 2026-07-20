@@ -19,6 +19,16 @@
   let cfgPromise = null;
   let clientPromise = null;
   let client = null;
+  let currentUserCache = null;
+  let currentUserCacheAt = 0;
+  let currentUserPromise = null;
+  const CURRENT_USER_CACHE_MS = 2500;
+
+  function clearCurrentUserCache() {
+    currentUserCache = null;
+    currentUserCacheAt = 0;
+    currentUserPromise = null;
+  }
 
   function jsonGet(key, fallback) { try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; } catch { return fallback; } }
   function jsonSet(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch {} }
@@ -215,6 +225,7 @@
   }
 
   async function signOut() {
+    clearCurrentUserCache();
     const sb = await getClient();
     if (sb) await sb.auth.signOut();
     clearLocalSession();
@@ -234,7 +245,7 @@
     return session;
   }
 
-  async function getCurrentUser() {
+  async function loadCurrentUser() {
     const sb = await getClient();
     if (sb) {
       const user = await getSupabaseUser();
@@ -270,6 +281,19 @@
     return { email: session.email, userId: session.userId, provider: 'mock', displayName: stored.displayName || displayFromEmail(session.email), duckStatus: stored.duckStatus || 'Duck Sauce is watching this account from a folding chair.', buckClearance: stored.buckClearance || 'Lobby clearance only', avatarType: type, avatarIcon: avatarIcon(type), coolPoints: num(stored.coolPoints), lifetimePoints: num(stored.lifetimePoints ?? stored.coolPoints), level1Unlocked: Boolean(stored.level1Unlocked), level2Unlocked: Boolean(stored.level2Unlocked) };
   }
 
+  async function getCurrentUser(force) {
+    if (!force && currentUserCacheAt && Date.now() - currentUserCacheAt < CURRENT_USER_CACHE_MS) return currentUserCache;
+    if (!force && currentUserPromise) return currentUserPromise;
+    currentUserPromise = loadCurrentUser();
+    try {
+      currentUserCache = await currentUserPromise;
+      currentUserCacheAt = Date.now();
+      return currentUserCache;
+    } finally {
+      currentUserPromise = null;
+    }
+  }
+
   async function updateProfile(updates) {
     const sb = await getClient();
     if (sb) {
@@ -278,7 +302,8 @@
       const clean = { displayName: String(updates.displayName || displayFromEmail(user.email)).trim().slice(0, 40), duckStatus: String(updates.duckStatus || 'Duck Sauce has no official notes.').trim().slice(0, 90), buckClearance: String(updates.buckClearance || 'Lobby clearance only').trim().slice(0, 90), avatarType: avatarType(updates.avatarType || updates.avatar_type || 'boy') };
       try { await sb.auth.updateUser({ data: clean }); } catch (error) {}
       await upsertRow(user, clean);
-      return getCurrentUser();
+      clearCurrentUserCache();
+      return getCurrentUser(true);
     }
 
     const session = localSession();
