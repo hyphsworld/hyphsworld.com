@@ -45,6 +45,8 @@
       '.mobile-menu-panel{display:none}',
       '.mobile-menu-panel.is-open{display:grid}',
       '.daily-spin-nav-link{border-color:rgba(255,228,92,.42)!important;color:#ffe45c!important}',
+      'body.home-page{pointer-events:auto!important;touch-action:auto!important}',
+      'body.home-page .hw-transport-overlay:not(.is-live){pointer-events:none!important}',
       'body.home-page #hwGlobalPointsHud{display:none!important}'
     ].join('');
     document.head.appendChild(style);
