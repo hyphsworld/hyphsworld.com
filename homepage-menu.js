@@ -263,12 +263,31 @@
     duck.style.bottom = 'auto';
   }
 
+  function loadDeferredSystems() {
+    var queue = Array.isArray(window.HW_HOME_DEFERRED_SCRIPTS) ? window.HW_HOME_DEFERRED_SCRIPTS.slice() : [];
+    function next() {
+      var src = queue.shift();
+      if (!src) return;
+      if (Array.prototype.some.call(document.scripts, function (script) { return script.src && script.src.indexOf(src.split('?')[0]) >= 0; })) {
+        window.setTimeout(next, 350);
+        return;
+      }
+      var script = document.createElement('script');
+      script.src = src;
+      script.async = true;
+      script.onload = script.onerror = function () { window.setTimeout(next, 350); };
+      document.body.appendChild(script);
+    }
+    window.setTimeout(next, 1400);
+  }
+
   function boot() {
     installStyles();
     installWest();
     bindMenu();
     refreshSession(true);
     watchAuth();
+    loadDeferredSystems();
     window.setTimeout(keepDuckClear, 900);
     window.setTimeout(keepDuckClear, 1800);
   }
