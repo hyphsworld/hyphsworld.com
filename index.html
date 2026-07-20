@@ -13,7 +13,7 @@
 
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="homepage-upgrades.css" />
-  <link rel="stylesheet" href="homepage-panel-3d.css?v=20260720-mobile-performance-1" />
+  <link rel="stylesheet" href="homepage-panel-3d.css?v=20260720-touch-safe-1" />
   <link rel="stylesheet" href="leaderboard-widgets.css" />
   <link rel="stylesheet" href="transport-system.css" />
   <link rel="stylesheet" href="o1-show-links.css" />
@@ -47,9 +47,41 @@
     .support-paypal-btn:hover,.support-paypal-btn:focus-visible{transform:translateY(-1px);filter:saturate(1.18);outline:3px solid rgba(255,39,93,.65);outline-offset:3px}
     .support-note{margin:0;color:rgba(255,255,255,.72);font-weight:850;line-height:1.45}
     .site-footer .footer-support-link{color:#ffe45c;font-weight:1000;text-decoration:none}
+    /* Mobile interaction recovery: keep the document scrollable and only suppress an inactive transport layer. */
+    html { overflow-y: auto !important; }
+    body.home-page {
+      overflow-y: auto !important;
+      pointer-events: auto !important;
+      touch-action: pan-y !important;
+    }
+    body.home-page .hw-transport-overlay:not(.is-live) {
+      display: none !important;
+      pointer-events: none !important;
+    }
   </style>
 </head>
 <body class="home-page" data-homepage-video="yd4MShi6TvA-west-visual-20260720">
+  <script>
+    (function () {
+      function unlockHomepage() {
+        document.documentElement.style.removeProperty('overflow');
+        document.documentElement.style.removeProperty('pointer-events');
+        document.documentElement.style.removeProperty('touch-action');
+        if (!document.body) return;
+        document.body.style.removeProperty('overflow');
+        document.body.style.removeProperty('pointer-events');
+        document.body.style.removeProperty('touch-action');
+        var overlay = document.querySelector('.hw-transport-overlay');
+        if (overlay && !overlay.classList.contains('is-live')) {
+          overlay.style.display = 'none';
+          overlay.style.pointerEvents = 'none';
+        }
+      }
+      unlockHomepage();
+      window.addEventListener('pageshow', unlockHomepage);
+      document.addEventListener('DOMContentLoaded', unlockHomepage, { once: true });
+    })();
+  </script>
   <div id="login-section" style="background:transparent;color:#a9ff87;padding:10px;text-align:center;border:0;box-shadow:none;">
     <span id="login-status" style="margin-left:20px;">Checking session...</span>
     <a href="auth.html" id="auth-link" style="margin-left:12px;color:#45ff36;font-weight:700;">Create ID / Login</a>
@@ -180,7 +212,7 @@
   <script src="user-widget.js?v=global-cashier-20260523"></script>
   <script src="index-player.js?v=global-cashier-20260523"></script>
   <script src="leaderboard-widgets.js?v=global-cashier-20260523"></script>
-  <script src="site-analytics.js?v=global-cashier-20260523"></script>
+  <script src="site-analytics.js?v=20260720-duck-pointer-1"></script>
   <script src="transport-system.js?v=20260720-touch-recovery-2"></script>
   <script src="homepage-menu.js?v=20260720-west-link-lock-1"></script>
 </body>
