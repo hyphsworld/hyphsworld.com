@@ -7,7 +7,7 @@
   var AUTH_URL = 'auth.html';
   var ACCOUNT_URL = 'account.html';
   var VIDEO_ID = 'yd4MShi6TvA';
-  var WATCH_URL = 'https://youtu.be/' + VIDEO_ID + '?si=iJFwXE0jyZYXb9Ar';
+  var WATCH_URL = 'https://youtu.be/yd4MShi6TvA?is=RczZszmIf4ifMkAj';
   var EMBED_URL = 'https://www.youtube.com/embed/' + VIDEO_ID + '?rel=0&modestbranding=1&playsinline=1';
   var TITLE_LINE = 'WEST (visual) · YOUNG TEZ & HYPH LIFE · prod by CUZ ZAID · PURE DRIP 2 available now';
   var sessionBusy = false;
