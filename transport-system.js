@@ -53,8 +53,14 @@
     if(line) line.textContent=data.line;
     overlay.classList.add('is-live');
     overlay.setAttribute('aria-hidden','false');
-    document.body.style.pointerEvents='none';
+    const startHref=location.href;
     setTimeout(()=>{location.href=url.href},650);
+    setTimeout(()=>{
+      if(location.href!==startHref)return;
+      overlay.classList.remove('is-live');
+      overlay.setAttribute('aria-hidden','true');
+      document.body.style.removeProperty('pointer-events');
+    },2200);
   }
 
   function shouldIntercept(anchor,url){
@@ -69,6 +75,18 @@
     if(url.pathname.match(/\.(mp3|mp4|zip|pdf|jpg|jpeg|png|webp|gif)$/i))return false;
     return true;
   }
+
+  function resetTransport(){
+    const overlay=document.getElementById('hwTransportOverlay');
+    if(overlay){
+      overlay.classList.remove('is-live');
+      overlay.setAttribute('aria-hidden','true');
+    }
+    document.body.style.removeProperty('pointer-events');
+  }
+
+  window.addEventListener('pageshow',resetTransport);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)resetTransport()});
 
   document.addEventListener('click',(event)=>{
     const anchor=event.target.closest('a[href]');
