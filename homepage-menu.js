@@ -13,4 +13,4 @@
 
   function id(name) { return document.getElementById(name); }
   function one(sel) { return document.querySelector(sel); }
-  function all(sel) { return
+  function all(sel) { return Array.prototype.slice.call(document.querySelector
