@@ -22,7 +22,7 @@
   let currentUserCache = null;
   let currentUserCacheAt = 0;
   let currentUserPromise = null;
-  const CURRENT_USER_CACHE_MS = 2500;
+  const CURRENT_USER_CACHE_MS = 15000;
 
   function clearCurrentUserCache() {
     currentUserCache = null;
@@ -114,9 +114,9 @@
 
   async function getSupabaseUser() {
     const sb = await getClient();
-    if (!sb || !sb.auth || typeof sb.auth.getUser !== 'function') return null;
-    const { data } = await sb.auth.getUser();
-    return data && data.user ? data.user : null;
+    if (!sb || !sb.auth || typeof sb.auth.getSession !== 'function') return null;
+    const { data } = await sb.auth.getSession();
+    return data && data.session && data.session.user ? data.session.user : null;
   }
 
   async function rowFor(user) {
