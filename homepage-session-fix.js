@@ -1,38 +1,48 @@
 (function () {
   'use strict';
 
-  if (window.__HW_HOME_SESSION_FIX_V2__) return;
-  window.__HW_HOME_SESSION_FIX_V2__ = true;
+  if (window.__HW_HOME_SESSION_SAFE__) return;
+  window.__HW_HOME_SESSION_SAFE__ = true;
 
-  function byId(id) { return document.getElementById(id); }
-  function setText(id, value) { var el = byId(id); if (el) el.textContent = value; }
-  function n(value) { var parsed = parseInt(value, 10); return Number.isFinite(parsed) && parsed > 0 ? parsed : 0; }
-  function nameFromEmail(email) { return String(email || '').split('@')[0] || 'HYPHSWORLD ID'; }
-
-  function setLoading() {
-    setText('login-status', 'Loading HYPHSWORLD ID...');
-    var link = byId('auth-link');
-    if (link) { link.textContent = 'Create / Login'; link.href = 'auth.html'; link.hidden = false; }
+  function el(id) { return document.getElementById(id); }
+  function n(value) {
+    var parsed = parseInt(value, 10);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
   }
-
-  function showLoggedOut() {
-    setText('login-status', 'Guest Mode');
-    var link = byId('auth-link');
-    if (link) { link.textContent = 'Create / Login'; link.href = 'auth.html'; link.hidden = false; }
-    var logout = byId('home-logout');
-    if (logout) logout.hidden = true;
+  function set(id, value) {
+    var node = el(id);
+    if (node) node.textContent = value;
   }
-
-  function showLoggedIn(user, points) {
-    var label = (user && (user.user_metadata && user.user_metadata.displayName || user.email)) || 'HYPHSWORLD ID';
-    setText('login-status', nameFromEmail(label) + ' - ' + n(points) + ' CP');
-    var link = byId('auth-link');
-    if (link) { link.textContent = 'Manage ID'; link.href = 'account.html'; link.hidden = false; }
-    var logout = byId('home-logout');
-    if (logout) logout.hidden = false;
+  function simpleName(email) {
+    var text = String(email || '');
+    var at = text.indexOf('@');
+    return at > 0 ? text.slice(0, at) : (text || 'HYPHSWORLD ID');
   }
-
-  async function getClient() {
+  function setLink(loggedIn) {
+    var link = el('auth-link');
+    if (link) {
+      link.textContent = loggedIn ? 'Manage ID' : 'Create / Login';
+      link.href = loggedIn ? 'account.html' : 'auth.html';
+      link.hidden = false;
+    }
+    var nav = el('nav-account-link');
+    if (nav) {
+      nav.textContent = loggedIn ? 'Manage ID' : 'Create ID';
+      nav.href = loggedIn ? 'account.html' : 'auth.html';
+    }
+    var mobile = el('mobile-nav-account-link');
+    if (mobile) {
+      mobile.textContent = loggedIn ? 'Manage ID' : 'Create ID';
+      mobile.href = loggedIn ? 'account.html' : 'auth.html';
+    }
+    var logout = el('home-logout');
+    if (logout) logout.hidden = !loggedIn;
+  }
+  function setGuest() {
+    set('login-status', 'Guest Mode');
+    setLink(false);
+  }
+  async function client() {
     if (window.HWAuth && window.HWAuth.getClient) {
       try { return await window.HWAuth.getClient(); } catch (error) {}
     }
@@ -41,42 +51,51 @@
     var url = cfg.url || window.HW_SUPABASE_URL;
     var key = cfg.anonKey || cfg.anon_key || window.HW_SUPABASE_ANON_KEY || window.SUPABASE_ANON_KEY;
     if (!url || !key) return null;
-    window.__HW_HOME_SB__ = window.__HW_HOME_SB__ || window.supabase.createClient(url, key, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
-    return window.__HW_HOME_SB__;
+    window.__HW_SAFE_SB__ = window.__HW_SAFE_SB__ || window.supabase.createClient(url, key, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
+    return window.__HW_SAFE_SB__;
   }
-
-  async function refreshStatus() {
+  async function refresh() {
+    set('login-status', 'Loading HYPHSWORLD ID...');
     try {
-      setLoading();
-      var sb = await getClient();
-      if (!sb || !sb.auth) { showLoggedOut(); return; }
+      var sb = await client();
+      if (!sb || !sb.auth) { setGuest(); return; }
       var sessionResult = await sb.auth.getSession();
       var session = sessionResult && sessionResult.data ? sessionResult.data.session : null;
       var user = session && session.user ? session.user : null;
-      if (!user) { showLoggedOut(); return; }
+      if (!user) { setGuest(); return; }
       var points = 0;
       try {
         var wallet = await sb.rpc('get_my_points');
         if (!wallet.error && wallet.data) points = wallet.data.balance || wallet.data.cool_points || wallet.data.points || 0;
       } catch (error) {}
-      showLoggedIn(user, points);
+      set('login-status', simpleName(user.email) + ' - ' + n(points) + ' CP');
+      setLink(true);
     } catch (error) {
-      showLoggedOut();
+      setGuest();
     }
   }
-
-  function boot() {
-    setLoading();
-    refreshStatus();
-    setTimeout(refreshStatus, 800);
-    setTimeout(refreshStatus, 2000);
-    setTimeout(refreshStatus, 4500);
+  function fixWestText() {
+    document.querySelectorAll('a,span,h2,h3,h4,p,small').forEach(function (node) {
+      var text = (node.textContent || '').trim();
+      if (text === 'Watch 8 Minutes') node.textContent = 'Watch WEST';
+      if (text === '8 Minutes Freestyle') node.textContent = 'WEST Visual';
+      if (text === '8 Minutes (Freestyle)') node.textContent = 'WEST (visual)';
+      if (text.indexOf('8 MINUTES FREESTYLE') >= 0) node.textContent = text.replace('8 MINUTES FREESTYLE NOW PLAYING', 'WEST VISUAL NOW PLAYING');
+      if (text.indexOf('Hyph Life aka Slide Drexler // 8 Minutes') >= 0) node.textContent = 'WEST (visual) YOUNG TEZ & HYPH LIFE prod by CUZ ZAID - PURE DRIP 2 available now';
+    });
+    var frame = document.querySelector('.homepage-full-episode-frame iframe');
+    if (frame && frame.src.indexOf('yd4MShi6TvA') < 0) {
+      frame.src = 'https://www.youtube.com/embed/yd4MShi6TvA?rel=0&modestbranding=1';
+      frame.title = 'WEST visual Young Tez and Hyph Life prod by Cuz Zaid';
+    }
   }
-
+  function boot() {
+    fixWestText();
+    refresh();
+    setTimeout(fixWestText, 700);
+    setTimeout(refresh, 1200);
+  }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
-
-  window.addEventListener('storage', refreshStatus);
-  document.addEventListener('hyph:points-updated', refreshStatus);
-  window.addEventListener('hw:points-change', refreshStatus);
+  window.addEventListener('focus', refresh);
 })();
