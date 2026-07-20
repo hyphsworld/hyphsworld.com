@@ -9,7 +9,7 @@
   <meta property="og:description" content="Hyph Life aka Slide Drexler is now featured with 8 Minutes (Freestyle). Casino lobby, direct fan access, Vault drops, and HYPHSWORLD updates." />
   <meta property="og:image" content="album-art.jpg" />
   <meta name="theme-color" content="#00ff66" />
-  <meta name="hw-build" content="20260720-pages-republish-1" />
+  <meta name="hw-build" content="20260720-stable-stagger-1" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
 
   <link rel="stylesheet" href="styles.css" />
@@ -196,7 +196,7 @@
     <section id="podcast" class="section-pad">
       <div class="phone-shell section-card podcast-bottom-frame">
         <div class="section-title"><p class="eyebrow">Real Life Podcast</p><h2>Saved A Guy’s Life</h2><p>The podcast is restored at the bottom of the homepage like the original layout. This story stays locked in place.</p></div>
-        <div class="podcast-video-shell"><iframe src="https://www.youtube.com/embed/4jvPUvhXnBA?si=TqgEwqLK4otzl4ZR&amp;rel=0&amp;modestbranding=1" title="Hyph Life podcast: saved a guy's life" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe><div class="podcast-strip"><small>Podcast Restored</small><span>Real story // HYPHSWORLD archive</span></div></div>
+        <div class="podcast-video-shell"><iframe loading="lazy" src="https://www.youtube.com/embed/4jvPUvhXnBA?si=TqgEwqLK4otzl4ZR&amp;rel=0&amp;modestbranding=1" title="Hyph Life podcast: saved a guy's life" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe><div class="podcast-strip"><small>Podcast Restored</small><span>Real story // HYPHSWORLD archive</span></div></div>
         <div class="button-row compact-actions"><a class="btn btn-primary" href="https://youtu.be/4jvPUvhXnBA?si=TqgEwqLK4otzl4ZR" target="_blank" rel="noopener">Watch on YouTube</a><a class="btn btn-soft" href="vault.html">Enter Vault</a><a class="btn btn-hot" href="https://paypal.me/1Hyphsworld" target="_blank" rel="noopener noreferrer">Send Cool Points</a></div>
       </div>
     </section>
@@ -209,13 +209,17 @@
   <script src="auth-client.js?v=20260720-safari-session-stability-1"></script>
   <script src="cool-points.js?v=global-cashier-20260523"></script>
   <script src="global-points-engine.js?v=global-cashier-20260523"></script>
-  <script src="global-points-follow-fix.js?v=global-cashier-20260523"></script>
-  <script src="user-widget.js?v=global-cashier-20260523"></script>
   <script src="index-player.js?v=global-cashier-20260523"></script>
-  <script src="leaderboard-widgets.js?v=global-cashier-20260523"></script>
   <script id="hw-global-duck-helper-loader" src="duck-helper.js?v=global-duck-20260720-mobile-pointer-1"></script>
-  <script src="site-analytics.js?v=20260720-duck-pointer-1"></script>
-  <script src="transport-system.js?v=20260720-touch-recovery-2"></script>
-  <script src="homepage-menu.js?v=20260720-west-link-lock-1"></script>
+  <script>
+    window.HW_HOME_DEFERRED_SCRIPTS = [
+      'global-points-follow-fix.js?v=20260720-stagger-1',
+      'user-widget.js?v=20260720-stagger-1',
+      'leaderboard-widgets.js?v=20260720-stagger-1',
+      'site-analytics.js?v=20260720-stagger-1',
+      'transport-system.js?v=20260720-stagger-1'
+    ];
+  </script>
+  <script src="homepage-menu.js?v=20260720-stable-stagger-1"></script>
 </body>
 </html>
