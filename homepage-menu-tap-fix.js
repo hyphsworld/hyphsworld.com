@@ -1,6 +1,9 @@
 (function () {
   'use strict';
 
+  var MONEY_COUNTER_URL = 'https://youtu.be/yDezFWqPbck?is=b0MTPsE2EPHK0Sem';
+  var MONEY_COUNTER_EMBED = 'https://www.youtube.com/embed/yDezFWqPbck?rel=0&modestbranding=1&playsinline=1';
+
   function ready(fn) {
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn, { once: true });
     else fn();
@@ -52,8 +55,42 @@
     return clone;
   }
 
+  function updateMoneyCounterLinks() {
+    var heroFrame = document.querySelector('.homepage-full-episode-frame');
+    var heroIframe = heroFrame && heroFrame.querySelector('iframe');
+    if (heroFrame) heroFrame.setAttribute('data-featured-video', 'yDezFWqPbck-money-counter');
+    if (heroIframe) {
+      heroIframe.src = MONEY_COUNTER_EMBED;
+      heroIframe.title = 'MONEY COUNTER - Hyph Life - prod by K.M.T';
+    }
+
+    document.querySelectorAll('a[href*="yDezFWqPbck"], .hw-west-open-link').forEach(function (link) {
+      link.href = MONEY_COUNTER_URL;
+      link.setAttribute('target', '_blank');
+      link.setAttribute('rel', 'noopener');
+      if (/money counter/i.test(link.textContent || '')) link.textContent = link.textContent.replace(/MONEY COUNTER.*/i, 'MONEY COUNTER');
+    });
+
+    var openLink = document.querySelector('.hw-west-open-link');
+    if (!openLink && heroFrame) {
+      openLink = document.createElement('a');
+      openLink.className = 'hw-west-open-link';
+      openLink.target = '_blank';
+      openLink.rel = 'noopener';
+      openLink.style.cssText = 'position:absolute;right:12px;top:12px;z-index:3;padding:8px 10px;border-radius:999px;background:rgba(0,0,0,.68);border:1px solid rgba(255,255,255,.18);color:#fff;font-weight:1000;text-decoration:none;font-size:.75rem';
+      heroFrame.style.position = 'relative';
+      heroFrame.appendChild(openLink);
+    }
+    if (openLink) {
+      openLink.href = MONEY_COUNTER_URL;
+      openLink.setAttribute('aria-label', 'Open MONEY COUNTER on YouTube');
+      openLink.textContent = 'MONEY COUNTER';
+    }
+  }
+
   function bind() {
     injectCSS();
+    updateMoneyCounterLinks();
     var toggle = replaceToggleNode();
     var panel = byId('mobile-menu-panel');
     if (!toggle || !panel) return;
