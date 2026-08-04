@@ -38,6 +38,14 @@ if (exists('vault-gate-games.js')) {
   }
 }
 
+if (exists('homepage-menu.js')) {
+  const src = read('homepage-menu.js');
+  const requiredTokens = ['hwLanguageSelect', 'hyphsworld.language', 'detectLanguage', 'translatePage'];
+  for (const token of requiredTokens) {
+    if (!src.includes(token)) failures.push(`homepage-menu.js missing translation hook: ${token}`);
+  }
+}
+
 for (const file of jsFiles(ROOT)) {
   const rel = path.relative(ROOT, file);
   try {
