@@ -161,3 +161,18 @@ body[data-hw-page="level-2"] .tech-list li { border-radius: 4px; border-left: 2p
 }
 
 @media (prefers-reduced-motion: reduce) { body[data-hw-page="level-2"]::before { animation: none; } }
+
+/* Level 2 Beat Room */
+.beat-room-head { display:flex; align-items:flex-end; justify-content:space-between; gap:24px; margin-bottom:20px; }
+.beat-room-head h2 { margin:14px 0 0; font-size:clamp(2.8rem,8vw,6.5rem); line-height:.82; letter-spacing:-.07em; text-transform:uppercase; }
+.now-playing { min-width:250px; padding:14px 18px; border-left:3px solid var(--floor-green); background:rgba(103,255,154,.07); }
+.now-playing small,.now-playing strong { display:block; }.now-playing small { color:var(--floor-green); font-size:.6rem; font-weight:1000; letter-spacing:.18em; }.now-playing strong { margin-top:5px; font-size:1.05rem; }
+.beat-rack { display:grid; gap:12px; }
+body[data-hw-page="level-2"] .beat-card { display:grid; grid-template-columns:90px minmax(0,1fr) auto; gap:22px; align-items:center; padding:20px 24px; transition:border-color .2s ease,transform .2s ease,box-shadow .2s ease; }
+body[data-hw-page="level-2"] .beat-card.is-playing { border-color:var(--floor-green); transform:translateX(5px); box-shadow:0 0 36px rgba(103,255,154,.14); }
+.beat-number { color:transparent; -webkit-text-stroke:1px rgba(98,247,255,.7); font-size:3.5rem; font-weight:1000; line-height:1; letter-spacing:-.08em; }
+.beat-info > span { color:var(--floor-cyan); font-size:.62rem; font-weight:1000; letter-spacing:.16em; }.beat-info h3 { margin:5px 0 3px; font-size:1.5rem; text-transform:uppercase; }.beat-info p { margin:0 0 10px; color:#a9b9c8; font-size:.85rem; }
+.beat-info audio { width:min(100%,520px); height:36px; color-scheme:dark; accent-color:var(--floor-green); }
+.buy-beat { display:inline-flex; align-items:center; gap:18px; padding:15px 18px; border:1px solid var(--floor-green); color:var(--floor-green); font-size:.7rem; font-weight:1000; letter-spacing:.1em; text-transform:uppercase; white-space:nowrap; }.buy-beat:hover { color:#02050a; background:var(--floor-green); box-shadow:0 0 28px rgba(103,255,154,.22); }.buy-beat span { font-size:1.1rem; }
+body[data-hw-page="level-2"] .license-note { margin-top:20px; padding:28px; display:grid; grid-template-columns:auto 1fr auto; gap:26px; align-items:center; }.license-note h2 { margin:0 0 6px; text-transform:uppercase; }.license-note p { margin:0; color:#a9b9c8; line-height:1.5; }
+@media (max-width:760px) { .beat-room-head { align-items:stretch; flex-direction:column; }.now-playing { min-width:0; } body[data-hw-page="level-2"] .beat-card { grid-template-columns:54px 1fr; padding:18px; }.beat-number { font-size:2.5rem; }.buy-beat { grid-column:1/-1; justify-content:space-between; } body[data-hw-page="level-2"] .license-note { grid-template-columns:1fr; } }
