@@ -1,5 +1,13 @@
 const wallEntries = [
   {
+    title: 'Grind Mode Backpack Prize',
+    tier: 10600,
+    image: 'merch/ams-west-grind-mode-backpack.jpeg',
+    tag: '10,600 CP Reward',
+    description: 'YOU WON THE BACKPACK. Your 10,600 Cool Point prize is unlocked—use Manage ID to verify your account and claim it.'
+  },
+
+  {
     title: 'HYPHSWORLD 5 Archive',
     tier: 500,
     image: 'player-cover.jpg',
@@ -82,7 +90,11 @@ function renderWall() {
   if (pointsEl) pointsEl.textContent = points.toLocaleString();
 
   if (statusEl) {
-    statusEl.textContent = points >= 500 ? 'Vault clearance approved. Wall systems online.' : 'Need 500 Cool Points to fully unlock the wall.';
+    statusEl.textContent = points >= 10600
+      ? 'BACKPACK PRIZE UNLOCKED. Use Manage ID to verify your account and claim your win.'
+      : points >= 500
+        ? 'Vault clearance approved. Keep climbing—10,600 CP wins the Grind Mode backpack.'
+        : 'Need 500 Cool Points to fully unlock the wall. The backpack prize unlocks at 10,600 CP.';
   }
 
   document.querySelectorAll('.wof-unlock-track article').forEach((card) => {
