@@ -1,7 +1,7 @@
 (function(){
   "use strict";
 
-  var VERSION="global-duck-20260720-mobile-pointer-1";
+  var VERSION="global-duck-20260814-points-coach-1";
   var IMG_VERSION="duck-reload-20260509-slick-talk-1";
   var IMG_FALLBACKS=["duck-sauce.png","duck-sauce.jpg","./duck-sauce.png","./duck-sauce.jpg"];
   var KEY="duck_helper_pos";
@@ -62,11 +62,82 @@
   function pageKey(){var p=location.pathname.toLowerCase();if(p.indexOf("leaderboard")>-1)return"leaderboard";if(p.indexOf("casino")>-1)return"casino";if(p.indexOf("vault")>-1||p.indexOf("floor")>-1||p.indexOf("level")>-1)return"vault";if(p.indexOf("games")>-1)return"games";if(p.indexOf("app-player")>-1||p.indexOf("player")>-1||p.indexOf("music")>-1)return"player";if(p.indexOf("shop")>-1||p.indexOf("point-store")>-1||p.indexOf("merch")>-1)return"shop";if(p.indexOf("booking")>-1||p.indexOf("contact")>-1)return"booking";if(p.indexOf("visuals")>-1||p.indexOf("video")>-1)return"visuals";if(p.indexOf("socials")>-1)return"socials";if(p.indexOf("auth")>-1||p.indexOf("account")>-1||p.indexOf("login")>-1)return"auth";return"home";}
   function nextLine(){var list=(PAGE_LINES[pageKey()]||PAGE_LINES.home).concat(GENERAL_LINES);var msg=list[lineIndex%list.length];lineIndex++;return msg;}
   function nextSlick(){return SLICK_LINES[tapCount%SLICK_LINES.length];}
-  function css(){if($("#duckStyle"))return;var s=document.createElement("style");s.id="duckStyle";s.textContent=".hw-duck-guide{display:none!important}.duckBox{position:fixed;left:16px;top:170px;width:92px;height:92px;z-index:2147483000;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}.duckBox:active{cursor:grabbing}.duckBox.off{display:none}.duckBox::before{content:'TAP HELP';position:absolute;left:50%;top:-18px;transform:translateX(-50%);padding:4px 8px;border-radius:999px;background:linear-gradient(90deg,#39ff14,#ffe600,#ff2bd6,#00e5ff);color:#050505;font:1000 10px/1 system-ui;letter-spacing:.08em;box-shadow:0 0 18px rgba(57,255,20,.28);white-space:nowrap}.duckBox.slick::before{content:'SLICK MODE'}.duckBox::after{content:'';position:absolute;inset:-8px;border-radius:50%;border:2px dashed rgba(57,255,20,.45);animation:duckOrbit 2.8s linear infinite;pointer-events:none}.duckBox.slick::after{border-color:rgba(255,230,0,.8);box-shadow:0 0 22px rgba(255,230,0,.28)}.duckFace{width:92px;height:92px;border:0;background:transparent;padding:0;cursor:inherit;filter:drop-shadow(0 14px 22px rgba(0,0,0,.52)) drop-shadow(0 0 14px rgba(57,255,20,.18));animation:duckBob 2.2s ease-in-out infinite alternate}.duckBox.slick .duckFace{animation:duckSlick .24s ease 2}.duckFace img{width:100%;height:100%;object-fit:contain}.duckFace .duckFallback{display:grid;place-items:center;width:100%;height:100%;border-radius:50%;background:radial-gradient(circle at 30% 25%,#fff36d,#39ff14 42%,#00e5ff 70%,#ff2bd6);color:#050505;font:1000 30px/1 system-ui;box-shadow:0 0 24px rgba(57,255,20,.28)}.duckTalk{position:absolute;left:78px;top:-6px;width:min(72vw,292px);display:none;padding:10px 11px;border-radius:14px;background:linear-gradient(135deg,rgba(6,8,9,.96),rgba(18,8,28,.94));color:#fff;border:2px solid rgba(31,252,255,.30);box-shadow:0 12px 28px rgba(0,0,0,.42),0 0 18px rgba(57,255,20,.08);font:850 12px/1.32 system-ui}.duckTalk.show{display:block}.duckTalk strong{display:block;color:#39ff14;font-size:9px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:3px}.duckBox.slick .duckTalk strong{color:#ffe600}.duckTalk span{display:block}.duckBtns{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap}.duckBtns button,.duckReturn{border:0;border-radius:999px;padding:7px 9px;font:1000 9px/1 system-ui;cursor:pointer}.duckBtns button:first-child,.duckReturn{color:#050505;background:linear-gradient(135deg,#39ff14,#ffe600,#ff2bd6,#00e5ff)}.duckBtns button:nth-child(2){color:#050505;background:linear-gradient(135deg,#ffe600,#ff8a00)}.duckBtns button:last-child{color:#fff;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18)}.duckReturn{position:fixed;left:14px;bottom:88px;z-index:2147482999;display:none;text-transform:uppercase;box-shadow:0 0 22px rgba(57,255,20,.22)}.duckReturn.on{display:block}@keyframes duckBob{from{transform:translateY(0) rotate(-2deg)}to{transform:translateY(-8px) rotate(2deg)}}@keyframes duckSlick{50%{transform:translateX(5px) rotate(5deg) scale(1.04)}}@keyframes duckOrbit{to{transform:rotate(360deg)}}@media(max-width:700px){.duckBox{width:78px;height:78px;top:auto;bottom:118px;left:18px}.duckFace{width:78px;height:78px}.duckTalk{left:0;top:auto;bottom:82px;width:min(82vw,292px);padding:9px 10px;border-radius:13px;font-size:11px;line-height:1.26}.duckBtns button{padding:6px 7px;font-size:8px}.duckBox::before{top:-17px;font-size:9px}}";document.head.appendChild(s);}
-  function say(t,hold){var b=$("#duckTalk"),x=$("#duckText");if(!b||!x)return;x.textContent=t;b.classList.add("show");clearTimeout(b._t);if(!hold)b._t=setTimeout(function(){b.classList.remove("show")},8200);}
+  function css(){if($("#duckStyle"))return;var s=document.createElement("style");s.id="duckStyle";s.textContent=".hw-duck-guide{display:none!important}.duckBox{position:fixed;left:16px;top:170px;width:92px;height:92px;z-index:2147483000;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}.duckBox:active{cursor:grabbing}.duckBox.off{display:none}.duckBox::before{content:'POINTS COACH';position:absolute;left:50%;top:-18px;transform:translateX(-50%);padding:4px 8px;border-radius:999px;background:linear-gradient(90deg,#39ff14,#ffe600,#ff2bd6,#00e5ff);color:#050505;font:1000 10px/1 system-ui;letter-spacing:.08em;box-shadow:0 0 18px rgba(57,255,20,.28);white-space:nowrap}.duckBox.slick::before{content:'SLICK MODE'}.duckBox::after{content:'';position:absolute;inset:-8px;border-radius:50%;border:2px dashed rgba(57,255,20,.45);animation:duckOrbit 2.8s linear infinite;pointer-events:none}.duckBox.slick::after{border-color:rgba(255,230,0,.8);box-shadow:0 0 22px rgba(255,230,0,.28)}.duckFace{width:92px;height:92px;border:0;background:transparent;padding:0;cursor:inherit;filter:drop-shadow(0 14px 22px rgba(0,0,0,.52)) drop-shadow(0 0 14px rgba(57,255,20,.18));animation:duckBob 2.2s ease-in-out infinite alternate}.duckBox.slick .duckFace{animation:duckSlick .24s ease 2}.duckFace img{width:100%;height:100%;object-fit:contain}.duckFace .duckFallback{display:grid;place-items:center;width:100%;height:100%;border-radius:50%;background:radial-gradient(circle at 30% 25%,#fff36d,#39ff14 42%,#00e5ff 70%,#ff2bd6);color:#050505;font:1000 30px/1 system-ui;box-shadow:0 0 24px rgba(57,255,20,.28)}.duckTalk{position:absolute;left:78px;top:-6px;width:min(72vw,292px);display:none;padding:10px 11px;border-radius:14px;background:linear-gradient(135deg,rgba(6,8,9,.96),rgba(18,8,28,.94));color:#fff;border:2px solid rgba(31,252,255,.30);box-shadow:0 12px 28px rgba(0,0,0,.42),0 0 18px rgba(57,255,20,.08);font:850 12px/1.32 system-ui}.duckTalk.show{display:block}.duckTalk strong{display:block;color:#39ff14;font-size:9px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:3px}.duckBox.slick .duckTalk strong{color:#ffe600}.duckTalk span{display:block}.duckPointsState{display:block;margin-top:7px;color:#ffe600;font:1000 10px/1.2 system-ui}.duckEarn{color:#050505!important;background:linear-gradient(135deg,#39ff14,#ffe600)!important}.duckShow{color:#050505!important;background:linear-gradient(135deg,#00e5ff,#39ff14)!important}.duckTarget{position:relative!important;z-index:2147482998!important;outline:4px solid #ffe600!important;outline-offset:6px!important;animation:duckTargetPulse .7s ease-in-out 4 alternate!important;scroll-margin:120px}.duckBtns{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap}.duckBtns button,.duckReturn{border:0;border-radius:999px;padding:7px 9px;font:1000 9px/1 system-ui;cursor:pointer}.duckBtns button:first-child,.duckReturn{color:#050505;background:linear-gradient(135deg,#39ff14,#ffe600,#ff2bd6,#00e5ff)}.duckBtns button:nth-child(2){color:#050505;background:linear-gradient(135deg,#ffe600,#ff8a00)}.duckBtns button:last-child{color:#fff;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18)}.duckReturn{position:fixed;left:14px;bottom:88px;z-index:2147482999;display:none;text-transform:uppercase;box-shadow:0 0 22px rgba(57,255,20,.22)}.duckReturn.on{display:block}@keyframes duckBob{from{transform:translateY(0) rotate(-2deg)}to{transform:translateY(-8px) rotate(2deg)}}@keyframes duckSlick{50%{transform:translateX(5px) rotate(5deg) scale(1.04)}}@keyframes duckOrbit{to{transform:rotate(360deg)}}@keyframes duckTargetPulse{from{filter:drop-shadow(0 0 0 rgba(57,255,20,0))}to{filter:drop-shadow(0 0 18px rgba(57,255,20,.9))}}@media(max-width:700px){.duckBox{width:78px;height:78px;top:auto;bottom:118px;left:18px}.duckFace{width:78px;height:78px}.duckTalk{left:0;top:auto;bottom:82px;width:min(82vw,292px);padding:9px 10px;border-radius:13px;font-size:11px;line-height:1.26}.duckBtns button{padding:6px 7px;font-size:8px}.duckBox::before{top:-17px;font-size:9px}}";document.head.appendChild(s);}
+  function say(t,hold){var b=$("#duckTalk"),x=$("#duckText");if(!b||!x)return;x.textContent=t;refreshPointLabel();b.classList.add("show");clearTimeout(b._t);if(!hold)b._t=setTimeout(function(){b.classList.remove("show")},8200);}
   function hide(){var d=$("#duckBox"),r=$("#duckReturn");if(d)d.classList.add("off");if(r)r.classList.add("on");save({off:true});store(HIDE_KEY,"1");}
   function show(){var d=$("#duckBox"),r=$("#duckReturn");if(d)d.classList.remove("off");if(r)r.classList.remove("on");save({off:false});say("Duck Sauce is back. Tap me for help, double-tap to hide me, or drag me anywhere.",true);}
   function installDuckImage(img){var i=0;function tryNext(){if(i>=IMG_FALLBACKS.length){var wrap=img.parentNode;if(wrap){wrap.innerHTML="<span class='duckFallback' aria-hidden='true'>🦆</span>";}return;}img.src=busted(IMG_FALLBACKS[i++]);}img.onerror=tryNext;tryNext();}
+
+  var POINT_GUIDES={
+    leaderboard:{
+      earn:"Leaderboards display progress; they do not hand out points. Play a scored game or finish a mission, then return here to see the result.",
+      selectors:["a[href*='games']","[data-tab='games']", ".leaderboard-tab"]
+    },
+    casino:{
+      earn:"Log in, choose a live casino game, complete the full round, then check your Cool Points display. The game—not Duck—records the result.",
+      selectors:["[data-game]",".game-card a",".casino-game-card a","button:not([disabled])"]
+    },
+    vault:{
+      earn:"Use Duck Arcade, Buck’s number game, or the current floor action while logged in. Finish the action, then watch your saved Cool Points total update.",
+      selectors:["#gateSpinBtn",".gate-card","#gatePlayBtn","#playFirst",".track-card","#gateForm button[type='submit']"]
+    },
+    games:{
+      earn:"Choose a live game, complete a full round, and wait for the result screen. Then check the Cool Points display or Leaderboard.",
+      selectors:["[data-game]",".game-card a",".game-card button","a[href*='casino']","button:not([disabled])"]
+    },
+    player:{
+      earn:"Listening reveals clues, missions, and Vault routes. For a direct earning action, open Games and complete a scored round.",
+      selectors:[".track-card","[data-track]","#playButton","a[href*='games']"]
+    },
+    shop:{
+      earn:"The Shop uses points; it does not generate them. Earn through Games, missions, official reward codes, and Vault progress first.",
+      selectors:["a[href*='games']","a[href*='reward']","[data-point-spend]",".reward-card"]
+    },
+    auth:{
+      earn:"First move: log in or create a HYPHSWORLD ID. Permanent Cool Points attach to your account—not this browser.",
+      selectors:["form input","form button[type='submit']","a[href*='login']","a[href*='account']"]
+    },
+    home:{
+      earn:"Log in first. Then open Games or the Lobby, complete a real action, and check your Cool Points total when the result finishes.",
+      selectors:["a[href*='account']","a[href*='login']","a[href*='games']","a[href*='vault']",".menu-card"]
+    }
+  };
+
+  function pointGuide(){return POINT_GUIDES[pageKey()]||POINT_GUIDES.home;}
+  function pointState(){try{return window.HWPoints&&typeof window.HWPoints.getState==="function"?window.HWPoints.getState():null;}catch(e){return null;}}
+  function pointLesson(){
+    var s=pointState();
+    var prefix=s&&s.accountBacked
+      ?"You’re logged in with "+Number(s.points||0).toLocaleString()+" Cool Points. "
+      :"You’re browsing as a guest. Log in first so earned Cool Points save permanently. ";
+    return prefix+pointGuide().earn;
+  }
+  function refreshPointLabel(){
+    var el=$("#duckPointsState");
+    if(!el)return;
+    var s=pointState();
+    el.textContent=s&&s.accountBacked
+      ?Number(s.points||0).toLocaleString()+" COOL POINTS • ACCOUNT SAVED"
+      :"LOGIN REQUIRED FOR PERMANENT POINTS";
+  }
+  function showTarget(){
+    document.querySelectorAll(".duckTarget").forEach(function(el){el.classList.remove("duckTarget");});
+    var selectors=pointGuide().selectors||[];
+    var target=null;
+    for(var i=0;i<selectors.length&&!target;i++){
+      var found=document.querySelectorAll(selectors[i]);
+      for(var n=0;n<found.length;n++){
+        var rect=found[n].getBoundingClientRect();
+        if(rect.width>0&&rect.height>0&&!found[n].closest(".duckBox")){target=found[n];break;}
+      }
+    }
+    if(!target){say("I don’t see the action yet. Let the page finish loading, then hit SHOW ME again.",true);return;}
+    target.classList.add("duckTarget");
+    target.scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"center"});
+    say("That glowing control is your next move. Complete the action and watch your Cool Points total after the result finishes.",true);
+    setTimeout(function(){target.classList.remove("duckTarget");},5200);
+  }
+
   function drag(box){
     var down=false,moved=false,sx=0,sy=0,bx=0,by=0,pointerId=null,st=state();
     if(Number.isFinite(st.x)&&Number.isFinite(st.y)){
@@ -140,6 +211,32 @@
     var face=$("#duckFace");
     face.addEventListener("click",tapDuck);
   }
-  function boot(){css();document.querySelectorAll(".hw-duck-guide").forEach(function(el){el.style.display="none"});if($("#duckBox"))return;var st=state();tapCount=parseInt(read(TAP_KEY)||"0",10)||0;if(read(VERSION_KEY)!==VERSION){st.off=false;tapCount=0;save({off:false});store(TAP_KEY,"0");store(VERSION_KEY,VERSION)}var d=document.createElement("div");d.id="duckBox";d.className="duckBox"+(st.off?" off":"");d.innerHTML="<button id='duckFace' class='duckFace' type='button' aria-label='Duck Sauce help. Tap for help. Double tap to hide.'><img id='duckImg' alt='Duck Sauce'></button><div id='duckTalk' class='duckTalk'><strong>Duck Sauce</strong><span id='duckText'></span><div class='duckBtns'><button id='duckHelp' type='button'>More Help</button><button id='duckHide' type='button'>Hide Duck</button><button id='duckClose' type='button'>Close Bubble</button></div></div>";var r=document.createElement("button");r.id="duckReturn";r.className="duckReturn"+(st.off?" on":"");r.type="button";r.textContent="Duck";document.body.append(d,r);installDuckImage($("#duckImg"));drag(d);$("#duckHelp").onclick=function(e){e.stopPropagation();tapCount+=1;store(TAP_KEY,tapCount);say(tapCount>=5?nextSlick():nextLine(),true)};$("#duckHide").onclick=function(e){e.stopPropagation();say("No problem. I’ll hide for now. Tap the Duck button anytime to bring me back.",true);setTimeout(hide,300)};$("#duckClose").onclick=function(e){e.stopPropagation();var b=$("#duckTalk");if(b)b.classList.remove("show")};r.onclick=show;if(!st.off){setTimeout(function(){var intro=read(HIDE_KEY)?"Duck Sauce online. Tap for help, double-tap to hide me again, or drag me out of the way." : "Duck Sauce online. Tap me for help. If you keep tapping too much, I might get slick.";say(intro)},700)}}
+  function boot(){
+    css();
+    document.querySelectorAll(".hw-duck-guide").forEach(function(el){el.style.display="none";});
+    if($("#duckBox"))return;
+    var st=state();
+    tapCount=parseInt(read(TAP_KEY)||"0",10)||0;
+    if(read(VERSION_KEY)!==VERSION){st.off=false;tapCount=0;save({off:false});store(TAP_KEY,"0");store(VERSION_KEY,VERSION);}
+    var d=document.createElement("div");
+    d.id="duckBox";
+    d.className="duckBox"+(st.off?" off":"");
+    d.innerHTML="<button id='duckFace' class='duckFace' type='button' aria-label='Duck Sauce Cool Points coach. Tap for help. Double tap to hide.'><img id='duckImg' alt='Duck Sauce'></button><div id='duckTalk' class='duckTalk' role='status'><strong>Duck Sauce • Cool Points Coach</strong><span id='duckText'></span><small id='duckPointsState' class='duckPointsState'></small><div class='duckBtns'><button id='duckEarn' class='duckEarn' type='button'>Earn Points</button><button id='duckShow' class='duckShow' type='button'>Show Me</button><button id='duckHelp' type='button'>More Help</button><button id='duckHide' type='button'>Hide</button><button id='duckClose' type='button'>Close</button></div></div>";
+    var r=document.createElement("button");
+    r.id="duckReturn";r.className="duckReturn"+(st.off?" on":"");r.type="button";r.textContent="Duck";
+    document.body.append(d,r);
+    installDuckImage($("#duckImg"));
+    drag(d);
+    $("#duckEarn").onclick=function(e){e.stopPropagation();say(pointLesson(),true);};
+    $("#duckShow").onclick=function(e){e.stopPropagation();showTarget();};
+    $("#duckHelp").onclick=function(e){e.stopPropagation();tapCount+=1;store(TAP_KEY,tapCount);say(tapCount>=5?nextSlick():nextLine(),true);};
+    $("#duckHide").onclick=function(e){e.stopPropagation();say("I’ll hide for now. Tap the Duck button anytime to bring me back.",true);setTimeout(hide,300);};
+    $("#duckClose").onclick=function(e){e.stopPropagation();var b=$("#duckTalk");if(b)b.classList.remove("show");};
+    r.onclick=show;
+    window.addEventListener("hw:points-change",refreshPointLabel);
+    window.addEventListener("hw:points-ready",refreshPointLabel);
+    document.addEventListener("hyph:points-updated",refreshPointLabel);
+    if(!st.off)setTimeout(function(){say("Duck Sauce online. I’ll teach you how Cool Points work and show you the next action. Hit EARN POINTS or SHOW ME.",true);},700);
+  }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot);else boot();
 })();
