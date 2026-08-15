@@ -157,3 +157,55 @@
   font-size:.30rem!important;
 }
 .home-page header.site-header nav.main-nav > a.nav-cta{grid-column:auto!important;}
+
+/* Remove the top episode label bar so the embedded YouTube video is never covered. */
+.home-page .homepage-full-episode-frame::before,
+.home-page .homepage-full-episode-frame::after,
+.home-page [data-featured-video]::before,
+.home-page [data-featured-video]::after{
+  content:none!important;
+  display:none!important;
+}
+.home-page .homepage-full-episode-frame iframe{
+  position:relative!important;
+  z-index:3!important;
+}
+
+
+/* HYPHSWORLD MOBILE PERFORMANCE V1
+   Preserve motion accents while reducing full-screen paint work on phones. */
+@media (max-width:700px){
+  .home-page{
+    background-attachment:scroll!important;
+  }
+  .home-page .site-header,
+  .home-page .main-nav,
+  .home-page .section-card,
+  .home-page .homepage-full-episode-frame,
+  .home-page .spotlight-section,
+  .home-page .podcast-bottom-frame,
+  .home-page .support-portal-card{
+    -webkit-backdrop-filter:none!important;
+    backdrop-filter:none!important;
+  }
+  .home-page .section-card,
+  .home-page .spotlight-section,
+  .home-page .podcast-bottom-frame,
+  .home-page .support-portal-card{
+    box-shadow:0 10px 28px rgba(0,0,0,.30),0 0 16px rgba(31,252,255,.10)!important;
+  }
+  .home-page .homepage-full-episode-frame{
+    box-shadow:0 10px 30px rgba(0,0,0,.36),0 0 18px rgba(31,252,255,.14)!important;
+  }
+  .home-page .homepage-full-episode-frame iframe{
+    filter:none!important;
+    transform:translateZ(0);
+  }
+  .home-page main > section{
+  }
+  .home-page .ticker,
+  .home-page .ticker-track,
+  .home-page .duckBox,
+  .home-page .duckFace{
+  }
+}

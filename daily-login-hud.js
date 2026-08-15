@@ -33,18 +33,9 @@
     const message = String(error.message || error.details || error.hint || '').toLowerCase();
     const code = String(error.code || '').toLowerCase();
 
-    if (message.includes('already') || message.includes('claimed') || code.includes('23505')) {
-      return 'Already Claimed';
-    }
-
-    if (message.includes('auth') || message.includes('jwt') || message.includes('permission') || message.includes('not logged')) {
-      return 'Sign In Again';
-    }
-
-    if (message.includes('rate') || message.includes('limit') || message.includes('cooldown')) {
-      return 'Try Later';
-    }
-
+    if (message.includes('already') || message.includes('claimed') || code.includes('23505')) return 'Already Claimed';
+    if (message.includes('auth') || message.includes('jwt') || message.includes('permission') || message.includes('not logged')) return 'Open ID Gate';
+    if (message.includes('rate') || message.includes('limit') || message.includes('cooldown')) return 'Try Later';
     return 'Claim Failed';
   }
 
@@ -110,7 +101,7 @@
       const createId = document.createElement('a');
       createId.className = 'hw-daily-btn';
       createId.href = 'auth.html';
-      createId.textContent = 'Create ID';
+      createId.textContent = 'Create / Login';
       actions.appendChild(createId);
     }
 
@@ -128,7 +119,7 @@
       'hw-daily-msg',
       user
         ? 'Duck Sauce says don’t lose your streak. The leaderboard watching.'
-        : 'Create a HYPHSWORLD ID to save Cool Points forever.'
+        : 'Use one HYPHSWORLD ID to save Cool Points forever.'
     );
 
     wrap.appendChild(card);
@@ -148,7 +139,7 @@
         try {
           if (!window.supabaseClient || typeof window.supabaseClient.rpc !== 'function') {
             claim.disabled = false;
-            claim.textContent = 'Sign In Again';
+            claim.textContent = 'Open ID Gate';
             return;
           }
 

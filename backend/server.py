@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException
+from fastapi import FastAPI, APIRouter, HTTPException, Request
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -8,7 +8,7 @@ from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 
 ROOT_DIR = Path(__file__).parent
@@ -36,6 +36,40 @@ if mongo_url:
 else:
     logger.warning("MONGO_URL is not configured. API will boot, but leaderboard database routes will return setup errors.")
 
+
+
+TRUSTED_ORIGINS = [
+    "https://hyphsworld.com",
+    "https://www.hyphsworld.com",
+    "https://app.hyphsworld.com",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000"
+]
+
+RATE_LIMIT_WINDOW_SECONDS = int(os.environ.get('LEADERBOARD_RATE_WINDOW_SECONDS', '60'))
+RATE_LIMIT_MAX_REQUESTS = int(os.environ.get('LEADERBOARD_RATE_MAX_REQUESTS', '24'))
+_rate_limit_store = {}
+
+def parse_origins(value: str):
+    raw = [item.strip() for item in (value or '').split(',') if item.strip()]
+    if not raw:
+        return TRUSTED_ORIGINS
+    if '*' in raw:
+        logger.warning("CORS_ORIGINS includes '*'; falling back to TRUSTED_ORIGINS for safety.")
+        return TRUSTED_ORIGINS
+    return raw
+
+def rate_limited(client_ip: str):
+    now = datetime.now(timezone.utc)
+    cutoff = now - timedelta(seconds=RATE_LIMIT_WINDOW_SECONDS)
+    events = _rate_limit_store.get(client_ip, [])
+    events = [stamp for stamp in events if stamp > cutoff]
+    if len(events) >= RATE_LIMIT_MAX_REQUESTS:
+        _rate_limit_store[client_ip] = events
+        return True
+    events.append(now)
+    _rate_limit_store[client_ip] = events
+    return False
 
 # ---------- Models ----------
 
@@ -151,10 +185,20 @@ app.include_router(api_router)
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+    allow_origins=parse_origins(os.environ.get('CORS_ORIGINS', '')),
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["X-Frame-Options"] = "SAMEORIGIN"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    return response
 
 
 @app.on_event("shutdown")

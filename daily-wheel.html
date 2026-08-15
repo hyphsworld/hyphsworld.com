@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daily Spin Wheel | HYPHSWORLD</title>
+  <meta name="description" content="Spin the HYPHSWORLD daily prize wheel once per day for Cool Points, clues, boosts, and promo rewards." />
+  <meta name="theme-color" content="#00ff66" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="homepage-upgrades.css" />
+  <link rel="stylesheet" href="daily-wheel.css" />
+  <script>window.HW_SUPABASE_URL='https://yuhxtdkhsltaqiagrtys.supabase.co';window.HW_SUPABASE_ANON_KEY='sb_publishable_oYdN-75W3b7k3m1zLukI-A_BKWVDD5e';window.SUPABASE_ANON_KEY=window.HW_SUPABASE_ANON_KEY;window.HW_SUPABASE_CONFIG={url:window.HW_SUPABASE_URL,anonKey:window.HW_SUPABASE_ANON_KEY,profileTable:'profiles'};</script>
+</head>
+<body class="daily-wheel-page">
+  <header class="site-header">
+    <a class="brand-lockup" href="index.html" aria-label="HYPHSWORLD home"><span>AMS WEST PRESENTS</span><strong>HYPHSWORLD</strong></a>
+    <nav class="main-nav" aria-label="Daily wheel navigation">
+      <a href="index.html">Home</a>
+      <a href="games.html">Casino</a>
+      <a href="account.html">Account</a>
+      <a href="vault.html">Vault</a>
+    </nav>
+  </header>
+
+  <main class="daily-wheel-shell">
+    <section class="daily-wheel-hero">
+      <p class="daily-wheel-kicker">DAILY REWARD</p>
+      <h1>AMS WEST Prize Wheel</h1>
+      <p>Spin once per day. Win Cool Points, vault clues, Cash Run boosts, or a daily AMS WEST promo code.</p>
+      <div class="daily-wheel-balance">Cool Points: <strong id="dailyWheelPoints" data-hw-points>0</strong></div>
+    </section>
+
+    <section class="daily-wheel-card" aria-label="Daily prize wheel">
+      <div class="wheel-wrap">
+        <div class="wheel-pointer" aria-hidden="true">▼</div>
+        <div class="prize-wheel" id="prizeWheel" aria-hidden="true">
+          <span style="--i:0">250 CP</span>
+          <span style="--i:1">PROMO</span>
+          <span style="--i:2">100 CP</span>
+          <span style="--i:3">CLUE</span>
+          <span style="--i:4">500 CP</span>
+          <span style="--i:5">MYSTERY</span>
+          <span style="--i:6">50 CP</span>
+          <span style="--i:7">BOOST</span>
+        </div>
+        <button class="wheel-center" id="spinWheelBtn" type="button">SPIN</button>
+      </div>
+
+      <article class="wheel-result" id="wheelResult" aria-live="polite">
+        <span>Ready</span>
+        <h2>Tap spin for today’s drop.</h2>
+        <p>Duck Sauce is standing too close to the prize machine.</p>
+      </article>
+
+      <div class="wheel-actions">
+        <a href="games.html">Back to Casino</a>
+        <a href="account.html">Manage ID</a>
+      </div>
+    </section>
+
+    <section class="wheel-rules">
+      <h2>Rules</h2>
+      <p>One spin per HYPHSWORLD ID per day. Rewards save through the same central Cool Points wallet as slots, table games, and reward codes.</p>
+      <p><strong>Note:</strong> public static-site promo codes are for fan rewards, not private admin access.</p>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js?v=daily-spin-central-wallet-20260706"></script>
+  <script src="auth-client.js?v=daily-spin-central-wallet-20260706"></script>
+  <script src="auth-points-bridge.js?v=daily-spin-central-wallet-20260706"></script>
+  <script src="cool-points.js?v=daily-spin-central-wallet-20260706"></script>
+  <script src="global-points-engine.js?v=daily-spin-central-wallet-20260706"></script>
+  <script src="global-points-follow-fix.js?v=daily-spin-central-wallet-20260706"></script>
+  <script src="user-widget.js?v=daily-spin-central-wallet-20260706"></script>
+  <script src="daily-wheel.js?v=daily-spin-central-wallet-20260706"></script>
+  <script src="site-analytics.js?v=daily-spin-central-wallet-20260706"></script>
+</body>
+</html>

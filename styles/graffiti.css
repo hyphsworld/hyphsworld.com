@@ -1,0 +1,187 @@
+@import url('./districts.css');
+
+.hw-graffiti-wall {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(57, 255, 20, 0.18), transparent 28%),
+    radial-gradient(circle at 85% 10%, rgba(255, 79, 216, 0.16), transparent 24%),
+    radial-gradient(circle at 70% 85%, rgba(25, 230, 255, 0.14), transparent 30%),
+    linear-gradient(135deg, var(--hw-casino-black), var(--hw-glass-black));
+}
+
+.hw-graffiti-wall::before {
+  content: 'AMS WEST  HYPHSWORLD  AMS WEST  CASH RUN  01 SHOW  TRACKS  PODCAST';
+  position: absolute;
+  inset: 5% -10% auto -10%;
+  transform: rotate(-8deg);
+  color: rgba(57, 255, 20, 0.1);
+  font-family: var(--hw-font-display);
+  font-size: clamp(2.8rem, 9vw, 8rem);
+  line-height: 0.9;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.hw-graffiti-wall::after {
+  content: 'AMS WEST';
+  position: absolute;
+  right: 5%;
+  bottom: 8%;
+  transform: rotate(9deg);
+  color: rgba(255, 79, 216, 0.13);
+  font-family: var(--hw-font-display);
+  font-size: clamp(3rem, 11vw, 9rem);
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.hw-graffiti-content {
+  position: relative;
+  z-index: 2;
+}
+
+.hw-logo-stamps {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.28;
+  mix-blend-mode: screen;
+}
+
+.hw-logo-stamp {
+  position: absolute;
+  width: clamp(145px, 23vw, 330px);
+  aspect-ratio: 1 / 1;
+  background-image: url('../assets:brand:ams-west-logo.png.jpg');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  filter: drop-shadow(0 0 24px rgba(57, 255, 20, 0.28));
+  transform: rotate(-18deg);
+}
+
+.hw-logo-stamp-one { top: 4%; left: 4%; }
+.hw-logo-stamp-two { top: 28%; right: 7%; transform: rotate(14deg); }
+.hw-logo-stamp-three { bottom: 6%; left: 18%; transform: rotate(-28deg); opacity: 0.72; }
+.hw-logo-stamp-four { bottom: 18%; right: 24%; transform: rotate(8deg); opacity: 0.5; }
+
+.hw-spray-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3rem 0.75rem;
+  border: 1px solid currentColor;
+  border-radius: var(--hw-radius-pill);
+  font-family: var(--hw-font-display);
+  font-size: clamp(1rem, 3vw, 1.6rem);
+  line-height: 1;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  transform: rotate(-3deg);
+}
+
+.hw-spray-green {
+  color: var(--hw-vault-green);
+  background: rgba(57, 255, 20, 0.09);
+}
+
+.hw-spray-pink {
+  color: var(--hw-hot-pink);
+  background: rgba(255, 79, 216, 0.09);
+}
+
+.hw-spray-cyan {
+  color: var(--hw-chip-cyan);
+  background: rgba(25, 230, 255, 0.08);
+}
+
+.hw-spray-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.hw-ticker {
+  position: relative;
+  z-index: 5;
+  overflow: hidden;
+  min-height: 44px;
+  border-top: 2px solid var(--hw-vault-green);
+  border-bottom: 2px solid var(--hw-hot-pink);
+  background: rgba(0,0,0,0.92);
+  color: var(--hw-vault-green);
+  font-family: var(--hw-font-mono);
+  font-size: clamp(0.82rem, 2.5vw, 1rem);
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  box-shadow: 0 0 26px rgba(57,255,20,0.24);
+}
+
+.hw-ticker-track {
+  display: flex;
+  align-items: center;
+  gap: 2.25rem;
+  width: max-content;
+  min-width: 200%;
+  padding: 0.8rem 1rem;
+  animation: hwTickerScroll 26s linear infinite;
+}
+
+.hw-ticker-track span::after {
+  content: ' /';
+  color: var(--hw-hot-pink);
+}
+
+@keyframes hwTickerScroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.hw-diagonal-tags {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0.38;
+}
+
+.hw-diagonal-tag {
+  position: absolute;
+  left: -24%;
+  width: 150%;
+  transform: rotate(-18deg);
+  font-family: Impact, Haettenschweiler, 'Arial Black', sans-serif;
+  font-size: clamp(3rem, 10vw, 10rem);
+  line-height: 0.82;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  filter: blur(0.2px);
+}
+
+.hw-diagonal-green {
+  color: rgba(57,255,20,0.16);
+  -webkit-text-stroke: 1px rgba(57,255,20,0.18);
+}
+
+.hw-diagonal-pink {
+  color: rgba(255,79,216,0.15);
+  -webkit-text-stroke: 1px rgba(255,79,216,0.18);
+}
+
+.hw-diagonal-cyan {
+  color: rgba(25,230,255,0.13);
+  -webkit-text-stroke: 1px rgba(25,230,255,0.18);
+}
+
+.hw-diagonal-yellow {
+  color: rgba(255,230,0,0.11);
+  -webkit-text-stroke: 1px rgba(255,230,0,0.14);
+}

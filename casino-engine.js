@@ -23,6 +23,7 @@
   function getPoints() {
     try {
       if (window.HWPoints && typeof window.HWPoints.get === 'function') return window.HWPoints.get();
+      if (window.HWPoints && typeof window.HWPoints.getState === 'function') return window.HWPoints.getState().points;
     } catch (error) {}
     return 0;
   }
@@ -34,6 +35,16 @@
   function money(value) {
     const n = Number.parseInt(value, 10) || 0;
     return n + ' CP';
+  }
+
+  function rpcWithTimeout(client, name, args, ms) {
+    var rpc = client.rpc(name, args || {});
+    var timer = new Promise(function (_, reject) {
+      window.setTimeout(function () {
+        reject(new Error('Slots timed out. Close and reopen the machine, then try again.'));
+      }, ms || 9000);
+    });
+    return Promise.race([rpc, timer]);
   }
 
   function randomSymbol() {
@@ -51,9 +62,9 @@
       '<div class="casino-machine" role="dialog" aria-modal="true" aria-labelledby="casinoEngineTitle">' +
         '<div class="casino-engine-head">' +
           '<div>' +
-            '<span class="casino-engine-kicker">Server-Backed Slots</span>' +
+            '<span class="casino-engine-kicker">Supabase Slots</span>' +
             '<h2 id="casinoEngineTitle">Vintage Slots</h2>' +
-            '<p>Spin fast. Supabase decides the reels, payout, ledger, and Cool Points balance.</p>' +
+            '<p>One wallet. Supabase decides the reels, payout, ledger, and your HYPHSWORLD Cool Points balance.</p>' +
           '</div>' +
           '<button class="casino-engine-close" type="button" data-casino-close>Close</button>' +
         '</div>' +
@@ -174,9 +185,17 @@
       const client = await getSupabaseClient();
       if (!client) throw new Error('Supabase client not ready. Reload the casino page and try again.');
       setText(resultEl, 'Calling Supabase engine...');
-      const { data, error } = await client.rpc('spin_slots');
+      const { data, error } = await rpcWithTimeout(client, 'spin_slots', {}, 9000);
       if (error) throw error;
       const payload = data || {};
+      if (payload.ok === false || payload.result === 'not_enough_points') {
+        setText(payoutEl, money(0));
+        setText(netEl, money(0));
+        setText(resultEl, payload.message || 'Not enough Cool Points for this spin.');
+        if (typeof payload.balance !== 'undefined') setText(balanceEl, money(payload.balance));
+        if (machine) machine.classList.add('is-loss');
+        return;
+      }
       await animateReels(payload.reels || []);
       setText(payoutEl, money(payload.payout));
       setText(netEl, money(payload.net));
@@ -227,6 +246,7 @@
     bindCasinoCards();
     updateBalance();
     document.addEventListener('hyph:points-updated', updateBalance);
+    window.addEventListener('hw:points-change', updateBalance);
     window.HWCasinoEngine = { openSlots, closeSlots, spinSlots, refreshPoints };
   }
 

@@ -1,0 +1,114 @@
+@import url('./tokens.css');
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--hw-deep-black);
+  color: var(--hw-cream-ink);
+  font-family: var(--hw-font-ui);
+}
+
+body {
+  background: linear-gradient(180deg, var(--hw-casino-black), var(--hw-deep-black));
+}
+
+a {
+  color: var(--hw-chip-cyan);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--hw-vault-green);
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.hw-page {
+  min-height: 100vh;
+  color: var(--hw-cream-ink);
+  background: linear-gradient(135deg, var(--hw-casino-black), var(--hw-glass-black));
+}
+
+.hw-container {
+  width: min(1180px, calc(100% - 32px));
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hw-section {
+  padding-top: clamp(3rem, 7vw, 6rem);
+  padding-bottom: clamp(3rem, 7vw, 6rem);
+}
+
+.hw-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--hw-border-green);
+  border-radius: var(--hw-radius-pill);
+  background: rgba(57, 255, 20, 0.1);
+  color: var(--hw-vault-green);
+  font-family: var(--hw-font-mono);
+  font-size: 0.76rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.hw-title {
+  margin: 0;
+  font-family: var(--hw-font-display);
+  font-size: clamp(2.7rem, 8vw, 7rem);
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+
+.hw-title-gradient {
+  background: var(--hw-gradient-vip);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hw-copy {
+  color: var(--hw-soft-chrome);
+  font-size: clamp(1rem, 2vw, 1.15rem);
+  line-height: 1.7;
+}
+
+.hw-muted {
+  color: var(--hw-fog-gray);
+}
+
+@media (max-width: 720px) {
+  .hw-container {
+    width: min(100% - 22px, 1180px);
+  }
+
+  .hw-section {
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+  }
+}

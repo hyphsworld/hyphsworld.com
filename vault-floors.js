@@ -7,6 +7,7 @@
 
   const floorId = floorMount.getAttribute("data-floor");
   const floor = data.floors.find(item => item.id === floorId) || data.floors[0];
+  const isLevel2 = floorId === "floor2";
 
   if (!floor) {
     floorMount.innerHTML = `
@@ -53,7 +54,7 @@
           </div>
 
           <div class="floor-actions">
-            <button class="brand-btn fun" id="playFirst">Play First Track</button>
+            <button class="brand-btn fun" id="playFirst">${isLevel2 ? "Open Hidden Casino" : "Play First Track"}</button>
             <a class="brand-btn hot" href="${floor.next || "casino.html"}">Next Door</a>
             <a class="brand-btn gold" href="${floor.casino || "casino.html"}">Open Casino</a>
           </div>
@@ -62,8 +63,8 @@
         <aside class="track-panel">
           <div class="panel-head">
             <div>
-              <h3>Track Listing</h3>
-              <p>Click a record. If the MP3 path is different, update vault-data.js.</p>
+              <h3>${isLevel2 ? "Casino Access" : "Track Listing"}</h3>
+              <p>${isLevel2 ? "Level 2 is the hidden casino. Open the global casino floor to use account-backed Cool Points." : "Click a record. If the MP3 path is different, update vault-data.js."}</p>
             </div>
             <span class="tag green">${floor.tracks.length} TRACKS</span>
           </div>
@@ -113,6 +114,14 @@
   }
 
   document.getElementById("playFirst")?.addEventListener("click", () => {
+    if (isLevel2) {
+      window.location.href = floor.casino || "games.html";
+      return;
+    }
     if (floor.tracks[0]) playTrack(floor.tracks[0]);
   });
+
+  if (isLevel2) {
+    nowTitle.textContent = "Select a Level 2 track or open the hidden casino.";
+  }
 })();
