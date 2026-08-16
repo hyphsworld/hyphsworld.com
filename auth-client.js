@@ -53,6 +53,8 @@
     textSet('HW_COOL_POINTS', value);
     textSet('hyphsworld.coolPoints.guestSession', value);
   }
+  function accountPointsKey(userId) { return 'hyphsworld.coolPoints.account.' + String(userId || 'unknown'); }
+  function saveAccountPoints(userId, points) { if (userId) textSet(accountPointsKey(userId), Math.max(0, parseInt(points, 10) || 0)); }
   function saveLocalProfileName(name) { textSet('hyphsworld.playerName', name || 'Guest'); }
   function saveLocalAvatar(type) { const clean = avatarType(type); textSet('hyphsworld.avatarType', clean); textSet('hyphsworld.avatarIcon', avatarIcon(clean)); }
   function broadcastPoints(points, source) {
@@ -115,54 +117,42 @@
     if (!sb || !user) return null;
     const c = await getConfig();
     const { data, error } = await sb.from(c.table).select('*').eq('id', user.id).maybeSingle();
-    if (error && error.code !== 'PGRST116') console.warn('HYPHSWORLD profile fetch warning:', error.message);
+    if (error) throw new Error(error.message || 'Profile fetch failed.');
     return data || null;
   }
   async function walletFor(user) {
     const sb = await getClient();
     if (!sb || !user) return { balance: localPoints(), lifetime_points: localPoints() };
-    try {
-      const { data, error } = await sb.rpc('get_my_points');
-      if (!error && data) {
-        const balance = num(data.balance ?? data.cool_points ?? data.points);
-        const lifetime = Math.max(num(data.lifetime_points), balance);
-        broadcastPoints(balance, 'get_my_points');
-        return { balance, lifetime_points: lifetime, rank_title: data.rank_title || 'Lobby Rookie' };
-      }
-    } catch (error) {}
-    const row = await rowFor(user);
-    const balance = num(row && (row.cool_points ?? row.points));
-    broadcastPoints(balance, 'profile_row');
-    return { balance, lifetime_points: Math.max(num(row && row.lifetime_points), balance), rank_title: row && row.rank_title || 'Lobby Rookie' };
+    const { data, error } = await sb.rpc('get_my_points');
+    if (error) throw new Error(error.message || 'Could not load Cool Points.');
+    if (!data) throw new Error('Cool Points response was empty.');
+    const balance = num(data.balance ?? data.cool_points ?? data.points);
+    const lifetime = Math.max(num(data.lifetime_points), balance);
+    saveAccountPoints(user.id, balance);
+    broadcastPoints(balance, 'get_my_points');
+    return { balance, lifetime_points: lifetime, rank_title: data.rank_title || 'Lobby Rookie' };
   }
   async function upsertRow(user, updates = {}) {
     const sb = await getClient();
     if (!sb || !user) return null;
-    const c = await getConfig();
     const current = await rowFor(user);
-    const wallet = await walletFor(user);
     const cleanAvatar = avatarType(updates.avatarType || updates.avatar_type || current?.avatar_type || textGet('hyphsworld.avatarType') || 'boy');
     const displayName = String(updates.displayName || updates.display_name || current?.display_name || user.user_metadata?.displayName || displayFromEmail(user.email)).trim().slice(0, 40);
-    const row = {
-      id: user.id,
-      email: user.email || current?.email || null,
-      username: String(updates.username || current?.username || user.user_metadata?.username || usernameFromEmail(user.email)).slice(0, 30),
-      display_name: displayName,
-      duck_status: String(updates.duckStatus || updates.duck_status || current?.duck_status || user.user_metadata?.duckStatus || 'Duck Sauce is watching this account.').slice(0, 90),
-      buck_clearance: String(updates.buckClearance || updates.buck_clearance || current?.buck_clearance || user.user_metadata?.buckClearance || 'Lobby clearance only').slice(0, 90),
-      avatar_type: cleanAvatar,
-      avatar_icon: avatarIcon(cleanAvatar),
-      points: wallet.balance,
-      cool_points: wallet.balance,
-      lifetime_points: Math.max(wallet.lifetime_points, wallet.balance),
-      updated_at: new Date().toISOString()
+    const payload = {
+      p_display_name: displayName,
+      p_duck_status: String(updates.duckStatus || updates.duck_status || current?.duck_status || user.user_metadata?.duckStatus || 'Duck Sauce is watching this account.').slice(0, 90),
+      p_buck_clearance: String(updates.buckClearance || updates.buck_clearance || current?.buck_clearance || user.user_metadata?.buckClearance || 'Lobby clearance only').slice(0, 90),
+      p_avatar_type: cleanAvatar,
+      p_level_1_unlocked: typeof updates.level1Unlocked === 'boolean' ? updates.level1Unlocked : null,
+      p_level_2_unlocked: typeof updates.level2Unlocked === 'boolean' ? updates.level2Unlocked : null
     };
-    const { data, error } = await sb.from(c.table).upsert(row, { onConflict: 'id' }).select().maybeSingle();
+    const { data, error } = await sb.rpc('update_my_profile', payload);
     if (error) throw new Error(error.message || 'Profile save failed.');
+    const row = data && data.profile ? data.profile : data;
+    if (!row) throw new Error('Profile save returned no profile.');
     saveLocalProfileName(row.display_name);
     saveLocalAvatar(row.avatar_type);
-    broadcastPoints(row.cool_points, 'profile_sync');
-    return data || row;
+    return row;
   }
   async function signInWithGoogle(options = {}) {
     const sb = await getClient();
@@ -186,17 +176,20 @@
     });
     if (error) throw new Error(error.message || 'Sign up failed.');
     const session = data && data.user ? sessionFromUser(data.user) : { email, userId: '', provider: 'supabase' };
+    session.emailConfirmationPending = Boolean(data && data.user && !data.session);
     saveLocalSession(session);
     saveLocalProfileName(displayName);
     saveLocalAvatar(startingAvatar);
     broadcastPoints(0, 'signup');
-    if (data && data.user) {
+    if (data && data.session && data.user) {
       try {
         await upsertRow(data.user, { displayName, avatarType: startingAvatar });
       } catch (syncError) {
+        session.profileSyncPending = true;
         console.warn('HYPHSWORLD post-signup profile sync warning:', syncError && syncError.message || syncError);
       }
     }
+    if (session.emailConfirmationPending) session.profileSyncPending = true;
     return session;
   }
   async function signInWithEmail(email, password) {
@@ -217,6 +210,7 @@
       saveLocalProfileName(row?.display_name || displayFromEmail(email));
       saveLocalAvatar(row?.avatar_type || 'boy');
     } catch (syncError) {
+      session.profileSyncPending = true;
       console.warn('HYPHSWORLD post-login profile sync warning:', syncError && syncError.message || syncError);
     }
     return session;
@@ -224,6 +218,8 @@
   async function signOut() {
     clearCurrentUserCache();
     const sb = await getClient();
+    const session = localSession();
+    if (session && session.userId) saveAccountPoints(session.userId, localPoints());
     if (sb) await sb.auth.signOut();
     clearLocalSession();
     textRemove('hyphsworld.playerName');
@@ -292,7 +288,7 @@
       const user = await getSupabaseUser();
       if (!user) throw new Error('Login required.');
       const clean = { displayName: String(updates.displayName || displayFromEmail(user.email)).trim().slice(0, 40), duckStatus: String(updates.duckStatus || 'Duck Sauce has no official notes.').trim().slice(0, 90), buckClearance: String(updates.buckClearance || 'Lobby clearance only').trim().slice(0, 90), avatarType: avatarType(updates.avatarType || updates.avatar_type || 'boy') };
-      try { await sb.auth.updateUser({ data: clean }); } catch (error) {}
+      try { await sb.auth.updateUser({ data: clean }); } catch (error) { console.warn('HYPHSWORLD auth metadata sync warning:', error && error.message || error); }
       await upsertRow(user, clean);
       clearCurrentUserCache();
       return getCurrentUser(true);
