@@ -20,6 +20,39 @@
     return resolvedClient && typeof resolvedClient.rpc === 'function' ? resolvedClient : null;
   }
 
+  async function getAuthenticatedClient(forceRefresh) {
+    const client = await getSupabaseClient();
+    if (!client || !client.auth) return null;
+
+    let sessionResult = await client.auth.getSession();
+    let session = sessionResult && sessionResult.data ? sessionResult.data.session : null;
+    const expiresSoon = session && session.expires_at && (session.expires_at * 1000) < Date.now() + 30000;
+
+    // A page can render from the cached profile before Supabase has refreshed its
+    // access token.  The slots RPC needs that token, not just the cached profile.
+    if (session && (forceRefresh || expiresSoon) && typeof client.auth.refreshSession === 'function') {
+      const refreshed = await client.auth.refreshSession();
+      if (!refreshed.error && refreshed.data) session = refreshed.data.session;
+    }
+
+    return session ? client : null;
+  }
+
+  function isAuthenticationError(error) {
+    const message = String(error && error.message || error || '').toLowerCase();
+    return message.includes('login') || message.includes('auth') || message.includes('jwt') ||
+      message.includes('session') || message.includes('not_authenticated');
+  }
+
+  async function spinWithSessionRetry(client) {
+    let response = await rpcWithTimeout(client, 'spin_slots', {}, 9000);
+    if (!response.error || !isAuthenticationError(response.error)) return response;
+
+    const refreshedClient = await getAuthenticatedClient(true);
+    if (!refreshedClient) return response;
+    return rpcWithTimeout(refreshedClient, 'spin_slots', {}, 9000);
+  }
+
   function getPoints() {
     try {
       if (window.HWPoints && typeof window.HWPoints.get === 'function') return window.HWPoints.get();
@@ -182,10 +215,10 @@
     setText(netEl, '—');
 
     try {
-      const client = await getSupabaseClient();
-      if (!client) throw new Error('Supabase client not ready. Reload the casino page and try again.');
+      const client = await getAuthenticatedClient(false);
+      if (!client) throw new Error('Your sign-in session is not ready. Refresh the page or sign in again.');
       setText(resultEl, 'Calling Supabase engine...');
-      const { data, error } = await rpcWithTimeout(client, 'spin_slots', {}, 9000);
+      const { data, error } = await spinWithSessionRetry(client);
       if (error) throw error;
       const payload = data || {};
       if (payload.ok === false || payload.result === 'not_enough_points') {
