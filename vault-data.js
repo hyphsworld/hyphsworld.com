@@ -27,19 +27,19 @@ window.HYPHSWORLD_VAULT = {
         { title: "HAM", artist: "Hyph Life", producer: "Hyph Life", file: "music/ham.mp3" },
         { title: "No Trace", artist: "Hyph Life", producer: "AMS WEST", file: "music/no-trace.mp3" }
       ],
-      next: "floor2.html",
+      next: "level-2.html",
       casino: "casino.html"
     },
     {
       id: "floor2",
       title: "LEVEL 2",
-      subtitle: "HIDDEN CASINO",
-      badge: "CURRENT PRESSURE",
+      subtitle: "THE BEAT ROOM",
+      badge: "PRIVATE SESSION",
       status: "OPEN",
       theme: "hyphsworld5",
       art: "assets/hyphsworld-5.jpg",
       mp4: "",
-      description: "Level 2 is now the hidden casino floor. Every table and spin routes through global Cool Points.",
+      description: "Level 2 is the Beat Room. Preview sounds, choose a direction, and request a license for your next record.",
       tracks: [
         { title: "HYPHSWORLD 5 Intro", artist: "Hyph Life", producer: "AMS WEST", file: "music/hyphsworld-5-intro.mp3" },
         { title: "No Trace", artist: "Hyph Life", producer: "AMS WEST", file: "music/no-trace.mp3" },

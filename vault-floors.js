@@ -32,7 +32,7 @@
         <nav class="nav-pills">
           <a class="nav-pill" href="vault.html">Vault Gate</a>
           <a class="nav-pill" href="floor1.html">Level 1</a>
-          <a class="nav-pill" href="floor2.html">Level 2</a>
+          <a class="nav-pill" href="level-2.html">Level 2</a>
           <a class="nav-pill" href="${floor.casino || "casino.html"}">Casino</a>
         </nav>
       </header>
@@ -54,7 +54,7 @@
           </div>
 
           <div class="floor-actions">
-            <button class="brand-btn fun" id="playFirst">${isLevel2 ? "Open Hidden Casino" : "Play First Track"}</button>
+            <button class="brand-btn fun" id="playFirst">${isLevel2 ? "Open Beat Room" : "Play First Track"}</button>
             <a class="brand-btn hot" href="${floor.next || "casino.html"}">Next Door</a>
             <a class="brand-btn gold" href="${floor.casino || "casino.html"}">Open Casino</a>
           </div>
@@ -63,8 +63,8 @@
         <aside class="track-panel">
           <div class="panel-head">
             <div>
-              <h3>${isLevel2 ? "Casino Access" : "Track Listing"}</h3>
-              <p>${isLevel2 ? "Level 2 is the hidden casino. Open the global casino floor to use account-backed Cool Points." : "Click a record. If the MP3 path is different, update vault-data.js."}</p>
+              <h3>${isLevel2 ? "Beat Room Access" : "Track Listing"}</h3>
+              <p>${isLevel2 ? "Level 2 is the private listening room. Open it to preview sounds and request a beat license." : "Click a record. If the MP3 path is different, update vault-data.js."}</p>
             </div>
             <span class="tag green">${floor.tracks.length} TRACKS</span>
           </div>
@@ -115,13 +115,13 @@
 
   document.getElementById("playFirst")?.addEventListener("click", () => {
     if (isLevel2) {
-      window.location.href = floor.casino || "games.html";
+      window.location.href = "level-2.html";
       return;
     }
     if (floor.tracks[0]) playTrack(floor.tracks[0]);
   });
 
   if (isLevel2) {
-    nowTitle.textContent = "Select a Level 2 track or open the hidden casino.";
+    nowTitle.textContent = "Select a Level 2 track or open the Beat Room.";
   }
 })();
