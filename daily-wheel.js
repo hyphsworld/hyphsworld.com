@@ -9,6 +9,7 @@
 
   const labels = ['5 CP', '10 CP', '15 CP', '20 CP', '25 CP', '50 CP', '75 CP', '100 CP'];
   let spinning = false;
+  let rotation = 0;
 
   function n(value) {
     const parsed = parseInt(value, 10);
@@ -86,18 +87,30 @@
     return true;
   }
 
+  function savedRotation() {
+    if (rotation) return rotation;
+    try { rotation = parseInt(localStorage.getItem(ROTATE_KEY), 10) || 0; } catch (error) {}
+    return rotation;
+  }
+
+  function rotateWheel(nextRotation) {
+    rotation = nextRotation;
+    try { localStorage.setItem(ROTATE_KEY, String(rotation)); } catch (error) {}
+    if (!wheel) return;
+    wheel.style.willChange = 'transform';
+    wheel.style.transform = 'rotate(' + rotation + 'deg)';
+  }
+
+  function startWheel() {
+    rotateWheel(savedRotation() + 1440);
+  }
+
   function spinTo(points) {
     const index = Math.max(0, labels.indexOf(String(points) + ' CP'));
     const segment = 360 / labels.length;
-    let base = 0;
-    try { base = n(localStorage.getItem(ROTATE_KEY)); } catch (error) {}
     const target = 360 - (index * segment + segment / 2);
-    const rotation = base + 1440 + target;
-    try { localStorage.setItem(ROTATE_KEY, String(rotation)); } catch (error) {}
-    if (wheel) {
-      wheel.style.willChange = 'transform';
-      wheel.style.transform = 'rotate(' + rotation + 'deg)';
-    }
+    const completedTurns = Math.ceil(savedRotation() / 360) * 360;
+    rotateWheel(completedTurns + 1080 + target);
   }
 
   function paintWheelLabels() {
@@ -112,7 +125,12 @@
     if (!client || typeof client.rpc !== 'function') throw new Error('Supabase is still loading. Refresh and try again.');
     await requireSignedIn(client);
 
-    const response = await client.rpc('claim_daily_spin');
+    const response = await Promise.race([
+      client.rpc('claim_daily_spin'),
+      new Promise(function (_, reject) {
+        window.setTimeout(function () { reject(new Error('Daily Spin server timed out. Try again.')); }, 10000);
+      })
+    ]);
     if (response && response.error) throw response.error;
     const data = response && response.data || {};
     return data;
@@ -122,8 +140,9 @@
     if (!button || !wheel || spinning) return;
 
     spinning = true;
-    setButton('CHECKING ID', true);
-    show('Checking ID', 'Connecting To Supabase', 'Daily Spin only pays when the server ledger confirms it. No visual-only points.');
+    setButton('SPINNING', true);
+    show('Spinning', 'Checking Your Daily Drop', 'The wheel is moving while the server verifies today’s reward.');
+    startWheel();
 
     try {
       const data = await claimServerReward();
