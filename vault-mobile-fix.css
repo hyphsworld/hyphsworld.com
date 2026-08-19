@@ -252,12 +252,123 @@ body.vault-page * {
   }
 
   .access-core {
-    min-height: 390px;
+    min-height: 390px !important;
+    height: 390px;
     border-radius: 24px;
+    margin: 14px 0;
+  }
+
+  .cyber-vault-live .access-core::before {
+    width: min(76%, 300px) !important;
+    border-width: 10px !important;
+  }
+
+  .cyber-vault-live .access-core::after {
+    bottom: 18px !important;
+    font-size: 10px !important;
+    letter-spacing: .12em !important;
+    padding: 8px 11px !important;
+  }
+
+  .cyber-vault-live .vault-door {
+    inset: 24% !important;
+  }
+
+  .cyber-vault-live .scan-rings span {
+    inset: 23% !important;
+  }
+
+  .cyber-vault-live .scan-rings span:nth-child(2) {
+    inset: 31% !important;
+  }
+
+  .cyber-vault-live .scan-rings span:nth-child(3) {
+    inset: 39% !important;
+  }
+
+  .cyber-vault-live .body-target {
+    top: 50%;
+    width: 112px;
+    height: 218px;
+    transform: translate(-50%, -50%) scale(.82);
+  }
+
+  .cyber-vault-live .body-target .head {
+    width: 46px;
+    height: 46px;
+  }
+
+  .cyber-vault-live .body-target .torso {
+    width: 66px;
+    height: 94px;
+    top: 54px;
+  }
+
+  .cyber-vault-live .body-target .arm.left,
+  .cyber-vault-live .body-target .arm.right {
+    width: 20px;
+    height: 88px;
+    top: 62px;
+  }
+
+  .cyber-vault-live .body-target .arm.left {
+    left: 13px;
+  }
+
+  .cyber-vault-live .body-target .arm.right {
+    right: 13px;
+  }
+
+  .cyber-vault-live .body-target .leg.left,
+  .cyber-vault-live .body-target .leg.right {
+    width: 20px;
+    height: 86px;
+    top: 144px;
+  }
+
+  .cyber-vault-live .body-target .leg.left {
+    left: 34px;
+  }
+
+  .cyber-vault-live .body-target .leg.right {
+    right: 34px;
+  }
+
+  .cyber-vault-live .floating-tag {
+    font-size: 9px !important;
+    letter-spacing: .08em !important;
+    padding: 7px 9px !important;
+    max-width: 42% !important;
+    white-space: nowrap;
+  }
+
+  .cyber-vault-live .floating-tag.tag-one {
+    left: 7% !important;
+    top: 25% !important;
+  }
+
+  .cyber-vault-live .floating-tag.tag-two {
+    right: 7% !important;
+    top: 48% !important;
+  }
+
+  .cyber-vault-live .floating-tag.tag-three {
+    left: 8% !important;
+    bottom: 21% !important;
   }
 
   .readout-grid {
     grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .readout-grid > div {
+    min-height: 86px;
+    padding: 14px 16px;
+  }
+
+  .readout-grid strong {
+    font-size: clamp(25px, 8vw, 40px);
   }
 
   .console-divider {
@@ -340,32 +451,39 @@ body.vault-page * {
   }
 
   .access-core {
-    min-height: 350px;
+    min-height: 330px !important;
+    height: 330px;
   }
 
-  .body-target {
-    transform: translate(-50%, -50%) scale(.86);
+  .cyber-vault-live .access-core::before {
+    width: min(72%, 250px) !important;
+    border-width: 8px !important;
+  }
+
+  .cyber-vault-live .vault-door {
+    inset: 26% !important;
   }
 
   .cyber-vault-live .body-target {
-    width: 138px;
-    height: 268px;
-    transform: translate(-50%, -50%) scale(.86);
+    width: 102px;
+    height: 204px;
+    transform: translate(-50%, -50%) scale(.74);
   }
 
-  .cyber-vault-live .body-target .arm.left {
-    left: 18px;
+  .cyber-vault-live .floating-tag {
+    font-size: 8px !important;
+    padding: 6px 8px !important;
   }
 
-  .cyber-vault-live .body-target .arm.right {
-    right: 18px;
+  .cyber-vault-live .floating-tag.tag-one {
+    top: 24% !important;
   }
 
-  .cyber-vault-live .body-target .leg.left {
-    left: 42px;
+  .cyber-vault-live .floating-tag.tag-two {
+    top: 47% !important;
   }
 
-  .cyber-vault-live .body-target .leg.right {
-    right: 42px;
+  .cyber-vault-live .floating-tag.tag-three {
+    bottom: 20% !important;
   }
 }
