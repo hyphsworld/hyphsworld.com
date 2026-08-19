@@ -25,4 +25,4 @@ jobs:
         run: npm install
 
       - name: Run diagnostics
-        run: npm run diagnostics
+        run: npm run diagnostics && npm run diagnostics:auth && npm run diagnostics:consumer

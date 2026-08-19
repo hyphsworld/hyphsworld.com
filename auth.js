@@ -72,13 +72,17 @@
 
     try {
       if (mode === 'signup') {
-        await HWAuth.signUpWithEmail(email, password);
+        const session = await HWAuth.signUpWithEmail(email, password);
+        if (session && session.emailConfirmationPending) {
+          show('ID created. Check your email to confirm it, then login.', 'success');
+          return;
+        }
         await refreshPoints();
-        show('ID created. Opening your account…', 'success');
+        show(session && session.profileSyncPending ? 'ID created. Profile sync will retry on your account.' : 'ID created. Opening your account…', session && session.profileSyncPending ? 'warn' : 'success');
       } else {
-        await HWAuth.signInWithEmail(email, password);
+        const session = await HWAuth.signInWithEmail(email, password);
         await refreshPoints();
-        show('Logged in. Opening your account…', 'success');
+        show(session && session.profileSyncPending ? 'Logged in. Profile sync will retry on your account.' : 'Logged in. Opening your account…', session && session.profileSyncPending ? 'warn' : 'success');
       }
       redirectToNext(450);
     } catch (error) {
