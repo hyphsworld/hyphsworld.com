@@ -159,11 +159,31 @@
     document.body.appendChild(card);
   }
 
+  function installStorefrontAnalytics() {
+    document.addEventListener('click', function (event) {
+      var link = event.target && event.target.closest ? event.target.closest('a[data-store-link]') : null;
+      if (!link || typeof window.gtag !== 'function') return;
+
+      var section = link.closest('section');
+      var card = link.closest('.product-card, .lane-card');
+      var productName = card && card.querySelector('h3');
+
+      window.gtag('event', 'shopify_store_click', {
+        link_url: link.href,
+        link_text: String(link.textContent || '').trim(),
+        merch_item: productName ? String(productName.textContent || '').trim() : 'Storefront',
+        store_section: section && section.id ? section.id : 'shop',
+        transport_type: 'beacon'
+      });
+    });
+  }
+
   installGlobalPageLock();
   loadPointsCore();
   loadAuthPointsBridge();
   loadGlobalDuckSauce();
   loadRewardCodeWidget();
+  installStorefrontAnalytics();
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', installPayPalSupportCard);
