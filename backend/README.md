@@ -1,6 +1,6 @@
-# HYPHSWORLD Cash Run Backend
+# HYPHSWORLD Chase the Bag Backend
 
-FastAPI backend powering the Cash Run leaderboard system.
+FastAPI backend powering the Chase the Bag leaderboard system.
 
 ## Setup
 

@@ -7,7 +7,7 @@
   const DESTINATIONS={
     'index.html':{title:'HOME PORTAL',line:'Duck Sauce: "Sending you back to the front door. Try not to trip over the welcome mat."'},
     'vault.html':{title:'LEVEL 1 VAULT TRANSPORT',line:'Duck Sauce: "Buck scanning the route. Hold still while the portal checks your access."'},
-    'games.html':{title:'CASINO FLOOR',line:'Duck Sauce: "Casino floor opening. Poker, dominoes, slots, Cash Run, and Cool Points only."'},
+    'games.html':{title:'CASINO FLOOR',line:'Duck Sauce: "Casino floor opening. Poker, dominoes, slots, Chase the Bag, and Cool Points only."'},
     'leaderboard.html':{title:'RANKING SYNC',line:'Duck Sauce: "Synchronizing Cool Points. The board knows who really been moving."'},
     'shop.html':{title:'MERCH FLOOR',line:'Duck Sauce: "Merch floor opening. Fresh drops and checkout lanes are live."'},
     'merch.html':{title:'MERCH FLOOR',line:'Duck Sauce: "Merch floor opening. Fresh drops and checkout lanes are live."'},
