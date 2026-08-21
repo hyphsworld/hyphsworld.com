@@ -1,127 +1,51 @@
-/* HYPHSWORLD user widget: avatar + name + GTA-style Cool Points HUD */
+/* HYPHSWORLD inline user display compatibility.
+   Floating Cool Points HUD is owned only by global-points-engine.js. */
 (function () {
   'use strict';
 
-  const HUD_ID = 'hw-gta-hud';
-
-  function getLocal(key, fallback) {
-    try { return localStorage.getItem(key) || fallback; } catch { return fallback; }
-  }
-
-  function avatarIcon(type) {
-    return String(type || '').toLowerCase() === 'girl' ? '💅' : '🧢';
-  }
-
   function number(value) {
-    const parsed = parseInt(value, 10);
+    var parsed = parseInt(value, 10);
     return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
   }
 
-  function localProfile() {
-    const name = getLocal('hyphsworld.playerName', 'Guest');
-    const avatarType = getLocal('hyphsworld.avatarType', 'boy');
-    const points = number(getLocal('hyphsworld.coolPoints.total', '0'));
-    return { displayName: name, avatarType, avatarIcon: avatarIcon(avatarType), coolPoints: points, provider: 'local' };
+  function getState() {
+    try {
+      if (window.HWPoints && typeof window.HWPoints.getState === 'function') return window.HWPoints.getState() || {};
+    } catch (error) {}
+    return {};
   }
 
-  function escapeText(value) {
-    return String(value || '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
-  }
+  function render(profile) {
+    var state = getState();
+    var p = profile || state.profile || state.user || {};
+    var name = p.displayName || p.display_name || p.username || (state.accountBacked ? 'HYPHSWORLD ID' : 'Guest');
+    var icon = p.avatarIcon || p.avatar_icon || state.avatarIcon || '🧢';
+    var points = number(state.points != null ? state.points : (p.coolPoints != null ? p.coolPoints : p.points));
 
-  function ensureHud() {
-    let hud = document.getElementById(HUD_ID);
-    if (hud) return hud;
-
-    hud = document.createElement('aside');
-    hud.id = HUD_ID;
-    hud.className = 'hw-gta-hud';
-    hud.setAttribute('aria-label', 'HYPHSWORLD Cool Points HUD');
-    hud.innerHTML =
-      '<div class="hw-hud-icon-stack" aria-hidden="true">' +
-        '<span class="hw-hud-icon">⭐</span>' +
-        '<span class="hw-hud-icon">💵</span>' +
-        '<span class="hw-hud-icon">🎧</span>' +
-        '<span class="hw-hud-icon">🛡️</span>' +
-      '</div>' +
-      '<div class="hw-hud-readout">' +
-        '<span class="hw-hud-label">Cool Points</span>' +
-        '<strong class="hw-hud-points" data-player-points>0</strong>' +
-        '<span class="hw-hud-name" data-hud-name>Guest</span>' +
-        '<span class="hw-hud-status" data-hud-status>Local</span>' +
-      '</div>';
-
-    document.body.appendChild(hud);
-    return hud;
-  }
-
-  function renderHud(profile) {
-    const p = profile || localProfile();
-    const hud = ensureHud();
-    const name = p.displayName || p.username || 'Guest';
-    const points = number(p.coolPoints ?? p.points ?? 0);
-    const isAccount = Boolean(p.email || p.userId || p.provider === 'supabase');
-    const status = isAccount ? 'ID Active' : 'Local Guest';
-
-    const pointsEl = hud.querySelector('.hw-hud-points');
-    const nameEl = hud.querySelector('[data-hud-name]');
-    const statusEl = hud.querySelector('[data-hud-status]');
-
-    if (pointsEl) pointsEl.textContent = String(points).padStart(3, '0') + ' CP';
-    if (nameEl) nameEl.textContent = name;
-    if (statusEl) statusEl.textContent = status;
-    hud.dataset.state = isAccount ? 'account' : 'guest';
-  }
-
-  function renderProfile(profile) {
-    const p = profile || localProfile();
-    const name = p.displayName || p.username || 'Guest';
-    const points = number(p.coolPoints ?? p.points ?? 0);
-    const icon = p.avatarIcon || avatarIcon(p.avatarType);
-
-    document.querySelectorAll('[data-user-widget]').forEach((el) => {
-      el.innerHTML = '<span class="hw-user-icon" aria-hidden="true">' + escapeText(icon) + '</span>' +
-        '<span class="hw-user-name">' + escapeText(name) + '</span>' +
-        '<span class="hw-user-points">' + points + ' CP</span>';
-      el.dataset.avatarType = p.avatarType || 'boy';
+    document.querySelectorAll('[data-user-widget]').forEach(function (el) {
+      el.innerHTML = '<span class="hw-user-icon" aria-hidden="true">' + icon + '</span>' +
+        '<span class="hw-user-name">' + name + '</span>' +
+        '<span class="hw-user-points">' + points.toLocaleString() + ' CP</span>';
     });
-
-    document.querySelectorAll('[data-player-name]').forEach((el) => { el.textContent = name; });
-    document.querySelectorAll('[data-player-avatar]').forEach((el) => { el.textContent = icon; });
-    document.querySelectorAll('[data-player-points]').forEach((el) => { el.textContent = String(points); });
-
-    renderHud({ ...p, displayName: name, coolPoints: points, avatarIcon: icon });
+    document.querySelectorAll('[data-player-name]').forEach(function (el) { el.textContent = name; });
+    document.querySelectorAll('[data-player-avatar]').forEach(function (el) { el.textContent = icon; });
+    document.querySelectorAll('[data-player-points]').forEach(function (el) { el.textContent = points.toLocaleString(); });
   }
 
   async function refresh() {
-    let profile = localProfile();
+    var profile = null;
     try {
-      if (window.HWAuth && typeof window.HWAuth.getCurrentUser === 'function') {
-        const user = await window.HWAuth.getCurrentUser();
-        if (user) profile = user;
-      }
-      if (window.HWPoints && typeof window.HWPoints.get === 'function') {
-        profile.coolPoints = window.HWPoints.get();
-      }
+      if (window.HWAuth && typeof window.HWAuth.getCurrentUser === 'function') profile = await window.HWAuth.getCurrentUser();
     } catch (error) {}
-    renderProfile(profile);
+    render(profile);
     return profile;
   }
 
-  window.HWUserWidget = { refresh, render: renderProfile, renderHud };
+  var oldHud = document.getElementById('hw-gta-hud');
+  if (oldHud) oldHud.remove();
 
-  document.addEventListener('DOMContentLoaded', refresh);
-  window.addEventListener('storage', refresh);
-
-  document.addEventListener('click', function (event) {
-    if (event.target.closest('[data-point-add],[data-point-spend],[data-funny-action]')) {
-      setTimeout(refresh, 120);
-      setTimeout(refresh, 500);
-      setTimeout(refresh, 1200);
-    }
-  });
+  window.HWUserWidget = { refresh: refresh, render: render, getPoints: function () { return number(getState().points); } };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', refresh);
+  else refresh();
+  window.addEventListener('hw:points-change', function (event) { render(event && event.detail); });
 })();

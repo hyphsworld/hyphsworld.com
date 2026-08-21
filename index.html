@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HYPHSWORLD | AMS WEST</title>
-  <meta name="description" content="HYPHSWORLD by Hyph Life and AMS WEST. Music, Vault drops, Duck Sauce guide, 01 Show links, artist spotlight, Cool Points, casino multiplayer games, leaderboards, and direct fan access." />
-  <meta property="og:title" content="HYPHSWORLD | AMS WEST" />
-  <meta property="og:description" content="Real music. Casino lobby. Direct 01 Show access. Duck Sauce watching the lobby." />
+  <title>HYPHSWORLD | MONEY COUNTER</title>
+  <meta name="description" content="HYPHSWORLD by Hyph Life and AMS WEST. MONEY COUNTER by Hyph Life, produced by K.M.T, is featured now with music, Vault drops, Duck Sauce guide, Cool Points, casino games, leaderboards, and direct fan access." />
+  <meta property="og:title" content="HYPHSWORLD | MONEY COUNTER" />
+  <meta property="og:description" content="Hyph Life is now featured with MONEY COUNTER, produced by K.M.T. Casino lobby, direct fan access, Vault drops, and HYPHSWORLD updates." />
   <meta property="og:image" content="album-art.jpg" />
   <meta name="theme-color" content="#00ff66" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
 
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="homepage-upgrades.css" />
-  <link rel="stylesheet" href="homepage-panel-3d.css" />
+  <link rel="stylesheet" href="homepage-panel-3d.css?v=20260720-touch-safe-1" />
   <link rel="stylesheet" href="leaderboard-widgets.css" />
   <link rel="stylesheet" href="transport-system.css" />
   <link rel="stylesheet" href="o1-show-links.css" />
@@ -39,9 +39,48 @@
     .podcast-video-shell iframe{display:block;width:100%;aspect-ratio:16/9;border:0}
     .podcast-strip{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:13px 14px;background:rgba(0,0,0,.72);color:#fff;font-weight:900}
     .podcast-strip small{color:#83ff70;letter-spacing:.08em;text-transform:uppercase}
+    .support-portal-card{position:relative;overflow:hidden;border:2px solid rgba(255,228,92,.46);border-radius:30px;background:radial-gradient(circle at 8% 10%,rgba(57,255,122,.24),transparent 34%),radial-gradient(circle at 92% 8%,rgba(255,39,93,.22),transparent 36%),linear-gradient(145deg,rgba(8,12,9,.96),rgba(0,0,0,.84));box-shadow:0 22px 64px rgba(0,0,0,.42),0 0 34px rgba(255,228,92,.18);padding:clamp(18px,4vw,28px)}
+    .support-portal-card:before{content:"";position:absolute;inset:-80px auto auto -80px;width:180px;height:180px;border-radius:50%;background:rgba(31,252,255,.22);filter:blur(12px)}
+    .support-portal-card .section-title{position:relative;z-index:1}
+    .support-actions{position:relative;z-index:1;display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:16px}
+    .support-paypal-btn{display:inline-flex;align-items:center;justify-content:center;min-height:56px;padding:0 22px;border-radius:999px;background:linear-gradient(90deg,#ffe45c,#39ff7a,#1ffcff);color:#050505!important;font-weight:1000;text-transform:uppercase;letter-spacing:.08em;text-decoration:none;box-shadow:0 12px 28px rgba(0,0,0,.3),0 0 22px rgba(57,255,122,.32);border:2px solid rgba(0,0,0,.75)}
+    .support-paypal-btn:hover,.support-paypal-btn:focus-visible{transform:translateY(-1px);filter:saturate(1.18);outline:3px solid rgba(255,39,93,.65);outline-offset:3px}
+    .support-note{margin:0;color:rgba(255,255,255,.72);font-weight:850;line-height:1.45}
+    .site-footer .footer-support-link{color:#ffe45c;font-weight:1000;text-decoration:none}
+    html { overflow-y: auto !important; }
+    body.home-page {
+      overflow-y: auto !important;
+      pointer-events: auto !important;
+      touch-action: pan-y !important;
+    }
+    body.home-page .hw-transport-overlay:not(.is-live) {
+      display: none !important;
+      pointer-events: none !important;
+    }
   </style>
 </head>
-<body class="home-page" data-homepage-video="oPUZx7mCceg-top-episode-20260510">
+<body class="home-page" data-homepage-video="yDezFWqPbck-money-counter-20260730">
+  <script>
+    (function () {
+      function unlockHomepage() {
+        document.documentElement.style.removeProperty('overflow');
+        document.documentElement.style.removeProperty('pointer-events');
+        document.documentElement.style.removeProperty('touch-action');
+        if (!document.body) return;
+        document.body.style.removeProperty('overflow');
+        document.body.style.removeProperty('pointer-events');
+        document.body.style.removeProperty('touch-action');
+        var overlay = document.querySelector('.hw-transport-overlay');
+        if (overlay && !overlay.classList.contains('is-live')) {
+          overlay.style.display = 'none';
+          overlay.style.pointerEvents = 'none';
+        }
+      }
+      unlockHomepage();
+      window.addEventListener('pageshow', unlockHomepage);
+      document.addEventListener('DOMContentLoaded', unlockHomepage, { once: true });
+    })();
+  </script>
   <div id="login-section" style="background:transparent;color:#a9ff87;padding:10px;text-align:center;border:0;box-shadow:none;">
     <span id="login-status" style="margin-left:20px;">Checking session...</span>
     <a href="auth.html" id="auth-link" style="margin-left:12px;color:#45ff36;font-weight:700;">Create ID / Login</a>
@@ -52,7 +91,7 @@
     <a class="brand-lockup" href="index.html" aria-label="HYPHSWORLD home"><span>AMS WEST PRESENTS</span><strong>HYPHSWORLD</strong></a>
     <nav class="main-nav" aria-label="Main navigation">
       <a href="games.html">🎰 Casino</a>
-      <a href="#top">Watch 01 Show</a>
+      <a href="#top">Watch MONEY COUNTER</a>
       <a href="#music">Listen Music</a>
       <button class="mobile-menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu-panel">Menu ▼</button>
       <a class="desktop-extra-link" href="games.html">🎰 Casino</a>
@@ -62,17 +101,19 @@
       <a class="desktop-extra-link" href="leaderboard.html">Leaderboards</a>
       <a class="desktop-extra-link" href="app-player.html">Full Player</a>
       <a class="desktop-extra-link" href="#connect">Connect</a>
+      <a class="desktop-extra-link" href="#support">Send Cool Points</a>
       <a class="desktop-extra-link" href="#podcast">Podcast</a>
       <a class="desktop-extra-link nav-cta" id="nav-account-link" href="auth.html">Create ID</a>
       <div class="mobile-menu-panel" id="mobile-menu-panel">
         <a href="games.html">🎰 Casino</a>
-        <a href="#top">Watch 01 Show</a>
+        <a href="#top">Watch MONEY COUNTER</a>
         <a href="#spotlight">Spotlight</a>
         <a href="vault.html">Vault</a>
         <a href="wall-of-fame.html">Wall of Fame</a>
         <a href="leaderboard.html">Leaderboards</a>
         <a href="app-player.html">Full Player</a>
         <a href="#connect">Connect</a>
+        <a href="#support">Send Cool Points</a>
         <a href="#podcast">Podcast</a>
         <a class="nav-cta" id="mobile-nav-account-link" href="auth.html">Create ID</a>
       </div>
@@ -81,23 +122,23 @@
 
   <main>
     <section class="ticker" aria-label="HYPHSWORLD ticker">
-      <div class="ticker-track"><span>WELCOME 2 HYPHSWORLD</span><b>✦</b><span>BOOGOTGLUU SPOTLIGHT LIVE</span><b>✦</b><span>PURSE 1ST NOW LOADED</span><b>✦</b><span>COVID DOSE IN ROTATION</span><b>✦</b><span>CASINO FLOOR OPEN</span><b>✦</b><span>01 SHOW FULL EPISODE NOW PLAYING</span><b>✦</b><span>PODCAST RESTORED</span><b>✦</b></div>
+      <div class="ticker-track"><span>WELCOME 2 HYPHSWORLD</span><b>✦</b><span>HYPH LIFE AKA SLIDE DREXLER</span><b>✦</b><span>MONEY COUNTER NOW PLAYING</span><b>✦</b><span>ARTIST SPOTLIGHT LIVE</span><b>✦</b><span>CASINO FLOOR OPEN</span><b>✦</b><span>NEW VIDEO ON THE TOP SCREEN</span><b>✦</b><span>SEND COOL POINTS VIA PAYPAL</span><b>✦</b><span>PODCAST RESTORED</span><b>✦</b></div>
     </section>
 
     <section class="hero-shell" id="top">
-      <div class="homepage-full-episode-frame" data-featured-video="oPUZx7mCceg-top">
-        <iframe src="https://www.youtube.com/embed/oPUZx7mCceg?si=1n257lXjiWNRMhMI&amp;rel=0&amp;modestbranding=1" title="01 Show full episode" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-        <div class="homepage-full-episode-strip"><small>NOW SHOWING</small><span>01 Show Full Episode // HYPHSWORLD Top Screen</span></div>
+      <div class="homepage-full-episode-frame" data-featured-video="yDezFWqPbck-money-counter">
+        <iframe src="https://www.youtube.com/embed/yDezFWqPbck?rel=0&amp;modestbranding=1&amp;playsinline=1" title="MONEY COUNTER - Hyph Life - prod by K.M.T" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        <div class="homepage-full-episode-strip"><small>NOW PLAYING</small><span>MONEY COUNTER · HYPH LIFE · prod by K.M.T</span></div>
       </div>
     </section>
 
     <section class="cash-run-home" id="cash-run-drop">
       <p class="eyebrow">HYPHSWORLD CASINO DROP</p>
       <h2>Casino Floor Is Live</h2>
-      <p>Poker, dominoes, vintage slots, and Cash Run all run through saved Cool Points.</p>
+      <p>Poker, dominoes, vintage slots, and Chase the Bag all run through saved Cool Points.</p>
       <a class="cash-run-button" href="games.html">🎰 Enter Casino</a>
       <a class="cash-run-button" href="wall-of-fame.html">Wall of Fame</a>
-      <p><strong>Live room:</strong> Cash Run</p>
+      <p><strong>Live room:</strong> Chase the Bag</p>
     </section>
 
     <section id="music" class="section-pad">
@@ -105,7 +146,7 @@
         <div class="section-title">
           <p class="eyebrow">HYPHSWORLD Radio</p>
           <h2>Homepage Player</h2>
-          <p>COVID DOSE is back in the main rotation. PURSE 1ST stays as the Artist Spotlight button.</p>
+          <p>MONEY COUNTER is on the top screen. Tap into the homepage player for more HYPHSWORLD music rotation.</p>
         </div>
         <div class="player-grid">
           <div class="now-playing-card">
@@ -126,38 +167,54 @@
 
     <section id="spotlight" class="section-pad">
       <div class="phone-shell section-card spotlight-section spotlight-underground">
-        <div class="section-title"><p class="eyebrow">Artist Spotlight</p><h2>BooGotGluu</h2><p>New AMS WEST spotlight loaded into the homepage.</p></div>
+        <div class="section-title"><p class="eyebrow">Artist Spotlight</p><h2>Hyph Life</h2><p>MONEY COUNTER is now loaded into the homepage spotlight.</p></div>
         <article class="spotlight-feature spotlight-feature-ams">
-          <div class="spotlight-art spotlight-art-premiere"><img src="boogotgluu-covid-dose.jpg" alt="BooGotGluu artwork" onerror="this.onerror=null;this.src='album-art.jpg';" /><span class="spotlight-badge">AMS WEST Spotlight</span></div>
-          <div class="spotlight-info"><p class="eyebrow">New Artist // Spotlight Drop</p><h3>BooGotGluu</h3><h4>Purse 1st</h4><p>BooGotGluu steps into the HYPHSWORLD Artist Spotlight. Tap the spotlight button and PURSE 1ST loads into the homepage player.</p><div class="button-row compact-actions"><button class="btn btn-primary" type="button" data-track-id="purse1st">Play Purse 1st</button><a class="btn btn-soft" href="app-player.html#track-purse1st">Open Full Player</a><a class="btn btn-hot" href="vault.html">Enter Vault</a></div></div>
+          <div class="spotlight-art spotlight-art-premiere"><img src="album-art.jpg" alt="Hyph Life MONEY COUNTER artwork" onerror="this.onerror=null;this.src='album-art.jpg';" /><span class="spotlight-badge">MONEY COUNTER</span></div>
+          <div class="spotlight-info"><p class="eyebrow">AMS WEST // Spotlight Drop</p><h3>Hyph Life</h3><h4>MONEY COUNTER</h4><p>Hyph Life brings MONEY COUNTER to the HYPHSWORLD homepage with production by K.M.T — bossed-up motion, Cool Points energy, and AMS WEST pressure.</p><div class="button-row compact-actions"><a class="btn btn-primary" href="https://youtu.be/yDezFWqPbck?is=lZgGifKVs8ijsZVl" target="_blank" rel="noopener">Watch MONEY COUNTER</a><a class="btn btn-soft" href="app-player.html">Open Full Player</a><a class="btn btn-hot" href="vault.html">Enter Vault</a></div></div>
         </article>
       </div>
     </section>
 
     <section id="connect" class="section-pad"><div class="phone-shell section-card connect-card"><div class="section-title"><p class="eyebrow">Tap In</p><h2>Stay Locked In</h2><p>Booking, features, interviews, business, and Vault updates.</p></div><div class="button-row compact-actions"><a class="btn btn-primary" href="mailto:tone@amsenterprisecorp.com">Email AMS WEST</a><a class="btn btn-soft" href="account.html">Manage ID</a></div></div></section>
 
+    <section id="support" class="section-pad">
+      <div class="phone-shell section-card support-portal-card">
+        <div class="section-title">
+          <p class="eyebrow">Power The Portal</p>
+          <h2>Send Cool Points</h2>
+          <p>Support HYPHSWORLD directly through PayPal. Your contribution helps fund new episodes, music, animation, live streams, and exclusive drops.</p>
+        </div>
+        <div class="support-actions">
+          <a class="support-paypal-btn" href="https://paypal.me/1Hyphsworld" target="_blank" rel="noopener noreferrer">Send Cool Points</a>
+          <p class="support-note">PayPal support opens in a new tab. No login maze, no checkout build, just fuel for the universe.</p>
+        </div>
+      </div>
+    </section>
+
     <section id="podcast" class="section-pad">
       <div class="phone-shell section-card podcast-bottom-frame">
         <div class="section-title"><p class="eyebrow">Real Life Podcast</p><h2>Saved A Guy’s Life</h2><p>The podcast is restored at the bottom of the homepage like the original layout. This story stays locked in place.</p></div>
         <div class="podcast-video-shell"><iframe src="https://www.youtube.com/embed/4jvPUvhXnBA?si=TqgEwqLK4otzl4ZR&amp;rel=0&amp;modestbranding=1" title="Hyph Life podcast: saved a guy's life" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe><div class="podcast-strip"><small>Podcast Restored</small><span>Real story // HYPHSWORLD archive</span></div></div>
-        <div class="button-row compact-actions"><a class="btn btn-primary" href="https://youtu.be/4jvPUvhXnBA?si=TqgEwqLK4otzl4ZR" target="_blank" rel="noopener">Watch on YouTube</a><a class="btn btn-soft" href="vault.html">Enter Vault</a></div>
+        <div class="button-row compact-actions"><a class="btn btn-primary" href="https://youtu.be/4jvPUvhXnBA?si=TqgEwqLK4otzl4ZR" target="_blank" rel="noopener">Watch on YouTube</a><a class="btn btn-soft" href="vault.html">Enter Vault</a><a class="btn btn-hot" href="https://paypal.me/1Hyphsworld" target="_blank" rel="noopener noreferrer">Send Cool Points</a></div>
       </div>
     </section>
   </main>
 
-  <footer class="site-footer"><span>© <span id="year"></span> AMS WEST LLC</span><span>HYPHSWORLD • Richmond, CA</span></footer>
+  <footer class="site-footer"><span>© <span id="year"></span> AMS WEST LLC</span><span>HYPHSWORLD • Richmond, CA</span><a class="footer-support-link" href="https://paypal.me/1Hyphsworld" target="_blank" rel="noopener noreferrer">Send Cool Points</a></footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=global-cashier-20260523"></script>
-  <script src="auth-client.js?v=global-cashier-20260523"></script>
+  <script src="auth-client.js?v=20260720-shared-read-cache-1"></script>
   <script src="cool-points.js?v=global-cashier-20260523"></script>
   <script src="global-points-engine.js?v=global-cashier-20260523"></script>
   <script src="global-points-follow-fix.js?v=global-cashier-20260523"></script>
   <script src="user-widget.js?v=global-cashier-20260523"></script>
   <script src="index-player.js?v=global-cashier-20260523"></script>
   <script src="leaderboard-widgets.js?v=global-cashier-20260523"></script>
-  <script src="site-analytics.js?v=global-cashier-20260523"></script>
-  <script src="transport-system.js?v=global-cashier-20260523"></script>
-  <script src="homepage-menu.js?v=global-cashier-20260523"></script>
+  <script id="hw-global-duck-helper-loader" src="duck-helper.js?v=global-duck-20260720-mobile-pointer-1"></script>
+  <script src="site-analytics.js?v=20260720-duck-pointer-1"></script>
+  <script src="transport-system.js?v=20260720-touch-recovery-2"></script>
+  <script src="homepage-menu.js?v=language-selector-20260804-1"></script>
+  <script src="homepage-menu-tap-fix.js?v=hard-menu-recovery-20260801-1"></script>
 </body>
 </html>

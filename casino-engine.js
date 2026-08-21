@@ -20,9 +20,43 @@
     return resolvedClient && typeof resolvedClient.rpc === 'function' ? resolvedClient : null;
   }
 
+  async function getAuthenticatedClient(forceRefresh) {
+    const client = await getSupabaseClient();
+    if (!client || !client.auth) return null;
+
+    let sessionResult = await client.auth.getSession();
+    let session = sessionResult && sessionResult.data ? sessionResult.data.session : null;
+    const expiresSoon = session && session.expires_at && (session.expires_at * 1000) < Date.now() + 30000;
+
+    // A page can render from the cached profile before Supabase has refreshed its
+    // access token.  The slots RPC needs that token, not just the cached profile.
+    if (session && (forceRefresh || expiresSoon) && typeof client.auth.refreshSession === 'function') {
+      const refreshed = await client.auth.refreshSession();
+      if (!refreshed.error && refreshed.data) session = refreshed.data.session;
+    }
+
+    return session ? client : null;
+  }
+
+  function isAuthenticationError(error) {
+    const message = String(error && error.message || error || '').toLowerCase();
+    return message.includes('login') || message.includes('auth') || message.includes('jwt') ||
+      message.includes('session') || message.includes('not_authenticated');
+  }
+
+  async function spinWithSessionRetry(client) {
+    let response = await rpcWithTimeout(client, 'spin_slots', {}, 9000);
+    if (!response.error || !isAuthenticationError(response.error)) return response;
+
+    const refreshedClient = await getAuthenticatedClient(true);
+    if (!refreshedClient) return response;
+    return rpcWithTimeout(refreshedClient, 'spin_slots', {}, 9000);
+  }
+
   function getPoints() {
     try {
       if (window.HWPoints && typeof window.HWPoints.get === 'function') return window.HWPoints.get();
+      if (window.HWPoints && typeof window.HWPoints.getState === 'function') return window.HWPoints.getState().points;
     } catch (error) {}
     return 0;
   }
@@ -34,6 +68,16 @@
   function money(value) {
     const n = Number.parseInt(value, 10) || 0;
     return n + ' CP';
+  }
+
+  function rpcWithTimeout(client, name, args, ms) {
+    var rpc = client.rpc(name, args || {});
+    var timer = new Promise(function (_, reject) {
+      window.setTimeout(function () {
+        reject(new Error('Slots timed out. Close and reopen the machine, then try again.'));
+      }, ms || 9000);
+    });
+    return Promise.race([rpc, timer]);
   }
 
   function randomSymbol() {
@@ -51,9 +95,9 @@
       '<div class="casino-machine" role="dialog" aria-modal="true" aria-labelledby="casinoEngineTitle">' +
         '<div class="casino-engine-head">' +
           '<div>' +
-            '<span class="casino-engine-kicker">Server-Backed Slots</span>' +
+            '<span class="casino-engine-kicker">Supabase Slots</span>' +
             '<h2 id="casinoEngineTitle">Vintage Slots</h2>' +
-            '<p>Spin fast. Supabase decides the reels, payout, ledger, and Cool Points balance.</p>' +
+            '<p>One wallet. Supabase decides the reels, payout, ledger, and your HYPHSWORLD Cool Points balance.</p>' +
           '</div>' +
           '<button class="casino-engine-close" type="button" data-casino-close>Close</button>' +
         '</div>' +
@@ -171,12 +215,20 @@
     setText(netEl, '—');
 
     try {
-      const client = await getSupabaseClient();
-      if (!client) throw new Error('Supabase client not ready. Reload the casino page and try again.');
+      const client = await getAuthenticatedClient(false);
+      if (!client) throw new Error('Your sign-in session is not ready. Refresh the page or sign in again.');
       setText(resultEl, 'Calling Supabase engine...');
-      const { data, error } = await client.rpc('spin_slots');
+      const { data, error } = await spinWithSessionRetry(client);
       if (error) throw error;
       const payload = data || {};
+      if (payload.ok === false || payload.result === 'not_enough_points') {
+        setText(payoutEl, money(0));
+        setText(netEl, money(0));
+        setText(resultEl, payload.message || 'Not enough Cool Points for this spin.');
+        if (typeof payload.balance !== 'undefined') setText(balanceEl, money(payload.balance));
+        if (machine) machine.classList.add('is-loss');
+        return;
+      }
       await animateReels(payload.reels || []);
       setText(payoutEl, money(payload.payout));
       setText(netEl, money(payload.net));
@@ -227,6 +279,7 @@
     bindCasinoCards();
     updateBalance();
     document.addEventListener('hyph:points-updated', updateBalance);
+    window.addEventListener('hw:points-change', updateBalance);
     window.HWCasinoEngine = { openSlots, closeSlots, spinSlots, refreshPoints };
   }
 

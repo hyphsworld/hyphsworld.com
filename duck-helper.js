@@ -1,7 +1,7 @@
 (function(){
   "use strict";
 
-  var VERSION="global-duck-20260509-slick-talk-1";
+  var VERSION="global-duck-20260720-mobile-pointer-1";
   var IMG_VERSION="duck-reload-20260509-slick-talk-1";
   var IMG_FALLBACKS=["duck-sauce.png","duck-sauce.jpg","./duck-sauce.png","./duck-sauce.jpg"];
   var KEY="duck_helper_pos";
@@ -67,7 +67,79 @@
   function hide(){var d=$("#duckBox"),r=$("#duckReturn");if(d)d.classList.add("off");if(r)r.classList.add("on");save({off:true});store(HIDE_KEY,"1");}
   function show(){var d=$("#duckBox"),r=$("#duckReturn");if(d)d.classList.remove("off");if(r)r.classList.remove("on");save({off:false});say("Duck Sauce is back. Tap me for help, double-tap to hide me, or drag me anywhere.",true);}
   function installDuckImage(img){var i=0;function tryNext(){if(i>=IMG_FALLBACKS.length){var wrap=img.parentNode;if(wrap){wrap.innerHTML="<span class='duckFallback' aria-hidden='true'>🦆</span>";}return;}img.src=busted(IMG_FALLBACKS[i++]);}img.onerror=tryNext;tryNext();}
-  function drag(box){var down=false,moved=false,sx=0,sy=0,bx=0,by=0,st=state();if(Number.isFinite(st.x)&&Number.isFinite(st.y)){box.style.left=st.x+"px";box.style.top=st.y+"px";box.style.bottom="auto"}function point(e){return e.touches?e.touches[0]:e}function start(e){var p=point(e);down=true;moved=false;sx=p.clientX;sy=p.clientY;var r=box.getBoundingClientRect();bx=r.left;by=r.top;box.style.bottom="auto";e.preventDefault()}function move(e){if(!down)return;var p=point(e),dx=p.clientX-sx,dy=p.clientY-sy;if(Math.abs(dx)+Math.abs(dy)>7)moved=true;var x=Math.max(6,Math.min(innerWidth-box.offsetWidth-6,bx+dx));var y=Math.max(6,Math.min(innerHeight-box.offsetHeight-6,by+dy));box.style.left=x+"px";box.style.top=y+"px";e.preventDefault()}function end(){if(!down)return;down=false;var r=box.getBoundingClientRect();save({x:Math.round(r.left),y:Math.round(r.top)});setTimeout(function(){moved=false},90)}function tapDuck(e){if(moved)return;e.preventDefault();e.stopPropagation();var now=Date.now();if(now-lastTap<360){say("No problem. I’ll hide for now. Tap the Duck button anytime to bring me back.",true);setTimeout(hide,320)}else{tapCount+=1;store(TAP_KEY,tapCount);if(tapCount>=5){box.classList.add("slick");say(nextSlick(),true);clearTimeout(box._slickTimer);box._slickTimer=setTimeout(function(){box.classList.remove("slick")},1400)}else{say(nextLine(),true)}}lastTap=now}box.addEventListener("mousedown",start);box.addEventListener("touchstart",start,{passive:false});box.addEventListener("pointerdown",start);addEventListener("mousemove",move,{passive:false});addEventListener("touchmove",move,{passive:false});addEventListener("pointermove",move,{passive:false});addEventListener("mouseup",end);addEventListener("touchend",end);addEventListener("pointerup",end);var face=$("#duckFace");face.addEventListener("click",tapDuck);face.addEventListener("touchend",tapDuck,{passive:false});face.addEventListener("pointerup",tapDuck)}
+  function drag(box){
+    var down=false,moved=false,sx=0,sy=0,bx=0,by=0,pointerId=null,st=state();
+    if(Number.isFinite(st.x)&&Number.isFinite(st.y)){
+      box.style.left=st.x+"px";
+      box.style.top=st.y+"px";
+      box.style.bottom="auto";
+    }
+    function start(e){
+      if(e.target&&e.target.closest&&e.target.closest(".duckBtns"))return;
+      down=true;
+      moved=false;
+      pointerId=e.pointerId;
+      sx=e.clientX;
+      sy=e.clientY;
+      var r=box.getBoundingClientRect();
+      bx=r.left;
+      by=r.top;
+      box.style.bottom="auto";
+      if(box.setPointerCapture&&pointerId!=null){
+        try{box.setPointerCapture(pointerId)}catch(err){}
+      }
+      e.preventDefault();
+    }
+    function move(e){
+      if(!down||(pointerId!=null&&e.pointerId!==pointerId))return;
+      var dx=e.clientX-sx,dy=e.clientY-sy;
+      if(Math.abs(dx)+Math.abs(dy)>7)moved=true;
+      var x=Math.max(6,Math.min(innerWidth-box.offsetWidth-6,bx+dx));
+      var y=Math.max(6,Math.min(innerHeight-box.offsetHeight-6,by+dy));
+      box.style.left=x+"px";
+      box.style.top=y+"px";
+      e.preventDefault();
+    }
+    function end(e){
+      if(!down||(pointerId!=null&&e&&e.pointerId!==pointerId))return;
+      down=false;
+      if(box.releasePointerCapture&&pointerId!=null){
+        try{box.releasePointerCapture(pointerId)}catch(err){}
+      }
+      pointerId=null;
+      var r=box.getBoundingClientRect();
+      save({x:Math.round(r.left),y:Math.round(r.top)});
+      setTimeout(function(){moved=false},90);
+    }
+    function tapDuck(e){
+      if(moved){e.preventDefault();e.stopPropagation();return}
+      e.preventDefault();
+      e.stopPropagation();
+      var now=Date.now();
+      if(now-lastTap<360){
+        say("No problem. I’ll hide for now. Tap the Duck button anytime to bring me back.",true);
+        setTimeout(hide,320);
+      }else{
+        tapCount+=1;
+        store(TAP_KEY,tapCount);
+        if(tapCount>=5){
+          box.classList.add("slick");
+          say(nextSlick(),true);
+          clearTimeout(box._slickTimer);
+          box._slickTimer=setTimeout(function(){box.classList.remove("slick")},1400);
+        }else{
+          say(nextLine(),true);
+        }
+      }
+      lastTap=now;
+    }
+    box.addEventListener("pointerdown",start,{passive:false});
+    box.addEventListener("pointermove",move,{passive:false});
+    box.addEventListener("pointerup",end);
+    box.addEventListener("pointercancel",end);
+    var face=$("#duckFace");
+    face.addEventListener("click",tapDuck);
+  }
   function boot(){css();document.querySelectorAll(".hw-duck-guide").forEach(function(el){el.style.display="none"});if($("#duckBox"))return;var st=state();tapCount=parseInt(read(TAP_KEY)||"0",10)||0;if(read(VERSION_KEY)!==VERSION){st.off=false;tapCount=0;save({off:false});store(TAP_KEY,"0");store(VERSION_KEY,VERSION)}var d=document.createElement("div");d.id="duckBox";d.className="duckBox"+(st.off?" off":"");d.innerHTML="<button id='duckFace' class='duckFace' type='button' aria-label='Duck Sauce help. Tap for help. Double tap to hide.'><img id='duckImg' alt='Duck Sauce'></button><div id='duckTalk' class='duckTalk'><strong>Duck Sauce</strong><span id='duckText'></span><div class='duckBtns'><button id='duckHelp' type='button'>More Help</button><button id='duckHide' type='button'>Hide Duck</button><button id='duckClose' type='button'>Close Bubble</button></div></div>";var r=document.createElement("button");r.id="duckReturn";r.className="duckReturn"+(st.off?" on":"");r.type="button";r.textContent="Duck";document.body.append(d,r);installDuckImage($("#duckImg"));drag(d);$("#duckHelp").onclick=function(e){e.stopPropagation();tapCount+=1;store(TAP_KEY,tapCount);say(tapCount>=5?nextSlick():nextLine(),true)};$("#duckHide").onclick=function(e){e.stopPropagation();say("No problem. I’ll hide for now. Tap the Duck button anytime to bring me back.",true);setTimeout(hide,300)};$("#duckClose").onclick=function(e){e.stopPropagation();var b=$("#duckTalk");if(b)b.classList.remove("show")};r.onclick=show;if(!st.off){setTimeout(function(){var intro=read(HIDE_KEY)?"Duck Sauce online. Tap for help, double-tap to hide me again, or drag me out of the way." : "Duck Sauce online. Tap me for help. If you keep tapping too much, I might get slick.";say(intro)},700)}}
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot);else boot();
 })();

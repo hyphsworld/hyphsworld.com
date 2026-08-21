@@ -16,10 +16,27 @@ window.HW_SUPABASE_CONFIG = {
 };
 
 (function () {
-  if (window.__HYPHSWORLD_ANALYTICS_BOOTSTRAP__) return;
-  window.__HYPHSWORLD_ANALYTICS_BOOTSTRAP__ = true;
-  var script = document.createElement('script');
-  script.src = 'site-analytics.js';
-  script.defer = true;
-  document.head.appendChild(script);
+  function loadOnce(id, src) {
+    if (document.getElementById(id)) return;
+    var script = document.createElement('script');
+    script.id = id;
+    script.src = src;
+    script.defer = true;
+    document.head.appendChild(script);
+  }
+
+  if (!window.__HYPHSWORLD_ANALYTICS_BOOTSTRAP__) {
+    window.__HYPHSWORLD_ANALYTICS_BOOTSTRAP__ = true;
+    loadOnce('hw-site-analytics-loader', 'site-analytics.js');
+  }
+
+  if (!window.__HYPHSWORLD_FEATURE_VIDEO_BOOTSTRAP__) {
+    window.__HYPHSWORLD_FEATURE_VIDEO_BOOTSTRAP__ = true;
+    loadOnce('hw-homepage-feature-video-loader', 'homepage-feature-video.js?v=yd4MShi6TvA-20260718');
+  }
+
+  if (!window.__HYPHSWORLD_SESSION_STATUS_BOOTSTRAP__) {
+    window.__HYPHSWORLD_SESSION_STATUS_BOOTSTRAP__ = true;
+    loadOnce('hw-homepage-session-fix-loader', 'homepage-session-fix.js?v=session-fix-20260719');
+  }
 })();

@@ -1,17 +1,30 @@
-(function(){
+(function () {
+  'use strict';
+
   const msgEl = document.getElementById('message');
   const next = new URLSearchParams(location.search).get('next') || 'account.html';
   const googleLoginBtn = document.getElementById('googleLoginBtn');
+  const authCard = document.getElementById('authCard');
+  const modeSignin = document.getElementById('modeSignin');
+  const modeSignup = document.getElementById('modeSignup');
+  const form = document.getElementById('oneAuthForm');
+  const emailInput = document.getElementById('authEmail');
+  const passwordInput = document.getElementById('authPassword');
+  const togglePasswordBtn = document.getElementById('togglePassword');
+  const submitBtn = document.getElementById('oneAuthSubmit');
   const GOOGLE_REDIRECT_URL = 'https://hyphsworld.com/account.html';
 
-  function show(text, type='') {
+  let mode = 'signin';
+  let submitting = false;
+
+  function show(text, type) {
     if (!msgEl) return;
     msgEl.textContent = text;
-    msgEl.className = 'message ' + type;
+    msgEl.className = 'message ' + (type || '');
   }
 
   function redirectToNext(delay) {
-    setTimeout(()=>location.href = next, delay || 400);
+    setTimeout(() => { location.href = next; }, delay || 400);
   }
 
   async function refreshPoints() {
@@ -20,55 +33,108 @@
         await window.HWPoints.refresh();
         if (typeof window.HWPoints.render === 'function') window.HWPoints.render();
       }
-    } catch (err) {}
+    } catch (error) {}
   }
 
-  HWAuth.getSession().then(async (s)=>{
-    if (s) {
-      await refreshPoints();
-      show('Already logged in. Opening account management…','success');
-      redirectToNext(350);
+  function setMode(nextMode) {
+    mode = nextMode === 'signup' ? 'signup' : 'signin';
+    if (authCard) {
+      authCard.classList.toggle('mode-signup', mode === 'signup');
+      authCard.classList.toggle('mode-signin', mode === 'signin');
     }
-  });
+    if (modeSignin) {
+      modeSignin.classList.toggle('is-active', mode === 'signin');
+      modeSignin.setAttribute('aria-selected', mode === 'signin' ? 'true' : 'false');
+    }
+    if (modeSignup) {
+      modeSignup.classList.toggle('is-active', mode === 'signup');
+      modeSignup.setAttribute('aria-selected', mode === 'signup' ? 'true' : 'false');
+    }
+    if (submitBtn) submitBtn.textContent = mode === 'signup' ? 'Create ID' : 'Login';
+    if (passwordInput) passwordInput.setAttribute('autocomplete', mode === 'signup' ? 'new-password' : 'current-password');
+    show(mode === 'signup' ? 'Create one HYPHSWORLD ID. Use it everywhere.' : 'Login with your existing HYPHSWORLD ID.', '');
+  }
 
-  if (googleLoginBtn) {
-    googleLoginBtn.addEventListener('click', async ()=>{
-      try {
-        googleLoginBtn.disabled = true;
-        show('Opening Google ID tunnel…','success');
-        await HWAuth.signInWithGoogle({ redirectTo: GOOGLE_REDIRECT_URL });
-      } catch (err) {
-        googleLoginBtn.disabled = false;
-        show(err.message || 'Google login failed','error');
+  function togglePassword() {
+    if (!passwordInput || !togglePasswordBtn) return;
+    const showing = passwordInput.type === 'text';
+    passwordInput.type = showing ? 'password' : 'text';
+    togglePasswordBtn.textContent = showing ? 'See' : 'Hide';
+    togglePasswordBtn.setAttribute('aria-pressed', showing ? 'false' : 'true');
+  }
+
+  async function submitAuth(event) {
+    event.preventDefault();
+    if (submitting) return;
+    const email = emailInput ? emailInput.value.trim() : '';
+    const password = passwordInput ? passwordInput.value : '';
+    if (!email || !password) return show('Email and password required.', 'error');
+
+    submitting = true;
+    if (submitBtn) submitBtn.disabled = true;
+
+    try {
+      if (mode === 'signup') {
+        await HWAuth.signUpWithEmail(email, password);
+        await refreshPoints();
+        show('ID created. Opening your account…', 'success');
+      } else {
+        await HWAuth.signInWithEmail(email, password);
+        const session = await HWAuth.getSession();
+        if (!session) throw new Error('Login did not persist. Please try again.');
+        await refreshPoints();
+        show('Logged in. Opening your account…', 'success');
       }
-    });
+      redirectToNext(450);
+    } catch (error) {
+      const text = String(error && error.message || 'Auth failed.');
+      if (mode === 'signin' && /invalid|credential|not found|email/i.test(text)) {
+        show('Login failed. New here? Tap Create ID once.', 'error');
+      } else if (mode === 'signup' && /already|registered|exists/i.test(text)) {
+        setMode('signin');
+        show('That email already has an ID. Login instead.', 'warn');
+      } else {
+        show(text, 'error');
+      }
+    } finally {
+      submitting = false;
+      if (submitBtn) submitBtn.disabled = false;
+    }
   }
 
-  document.getElementById('signupForm').addEventListener('submit', async (e)=>{
-    e.preventDefault();
+  async function googleLogin() {
     try {
-      const email = document.getElementById('signupEmail').value.trim();
-      const password = document.getElementById('signupPassword').value;
-      await HWAuth.signUpWithEmail(email, password);
-      await refreshPoints();
-      show('Account created. Duck Sauce said welcome way too loud. Redirecting…','success');
-      redirectToNext(400);
-    } catch (err) {
-      show(err.message || 'Sign up failed','error');
+      if (googleLoginBtn) googleLoginBtn.disabled = true;
+      show('Opening Google ID tunnel…', 'success');
+      await HWAuth.signInWithGoogle({ redirectTo: GOOGLE_REDIRECT_URL });
+    } catch (error) {
+      if (googleLoginBtn) googleLoginBtn.disabled = false;
+      show(error.message || 'Google login failed.', 'error');
     }
-  });
+  }
 
-  document.getElementById('signinForm').addEventListener('submit', async (e)=>{
-    e.preventDefault();
+  async function boot() {
+    setMode('signin');
+
+    // Bind controls before any network/session work. On slower mobile connections,
+    // waiting for Supabase here allowed the form's native submit to reload the page,
+    // making the first tap look like a failed login.
+    if (modeSignin) modeSignin.addEventListener('click', () => setMode('signin'));
+    if (modeSignup) modeSignup.addEventListener('click', () => setMode('signup'));
+    if (togglePasswordBtn) togglePasswordBtn.addEventListener('click', togglePassword);
+    if (googleLoginBtn) googleLoginBtn.addEventListener('click', googleLogin);
+    if (form) form.addEventListener('submit', submitAuth);
+
     try {
-      const email = document.getElementById('signinEmail').value.trim();
-      const password = document.getElementById('signinPassword').value;
-      await HWAuth.signInWithEmail(email, password);
-      await refreshPoints();
-      show('Signed in. Buck opened the clipboard. Redirecting…','success');
-      redirectToNext(400);
-    } catch (err) {
-      show(err.message || 'Sign in failed','error');
-    }
-  });
+      const session = await HWAuth.getSession();
+      if (session) {
+        await refreshPoints();
+        show('Already logged in. Opening account management…', 'success');
+        redirectToNext(350);
+      }
+    } catch (error) {}
+
+  }
+
+  boot();
 })();

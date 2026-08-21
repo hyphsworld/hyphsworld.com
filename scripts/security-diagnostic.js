@@ -15,10 +15,30 @@ const cashRun = fs.readFileSync('games/cash-run/index.html', 'utf8');
 assert(cashRun.includes('window.HW_SUPABASE_ANON_KEY'), 'cash-run page should define Supabase anon key variable for runtime auth.');
 assert(cashRun.includes('overscroll-behavior:none'), 'cash-run should keep hard viewport lock for touch/overscroll.');
 
+const supabaseSetup = fs.readFileSync('HYPHSWORLD_SUPABASE_SETUP.sql', 'utf8');
+assert(
+  supabaseSetup.includes('security invoker') && supabaseSetup.includes('function public.hw_touch_updated_at()'),
+  'The profile timestamp trigger should run as SECURITY INVOKER.'
+);
+assert(
+  (supabaseSetup.match(/revoke all on function public\.hw_[^(]+\(\) from anon, authenticated;/g) || []).length === 2,
+  'Both internal trigger functions should revoke execution from anon and authenticated.'
+);
+assert(
+  supabaseSetup.includes("tg_table_schema <> 'auth'") && supabaseSetup.includes("tg_table_name <> 'users'"),
+  'The SECURITY DEFINER signup function should reject calls outside the auth.users trigger.'
+);
+assert(
+  !supabaseSetup.includes("new.raw_user_meta_data ->> 'coolPoints'") &&
+    !supabaseSetup.includes("new.raw_user_meta_data ->> 'buckClearance'") &&
+    !supabaseSetup.includes("new.raw_user_meta_data ->> 'duckStatus'"),
+  'Client signup metadata must not control points, clearance, or account status.'
+);
+
 if (issues.length) {
   console.error('Security diagnostic failed:');
   issues.forEach((i) => console.error('- ' + i));
   process.exit(1);
 }
 
-console.log('Security diagnostic passed: CORS/rate-limit/header hardening and key page checks are in place.');
+console.log('Security diagnostic passed: API, Supabase function, and key page checks are in place.');

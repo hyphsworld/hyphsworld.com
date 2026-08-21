@@ -20,13 +20,14 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="Cash Run Game API")
+app = FastAPI(title="Chase the Bag Game API")
 api_router = APIRouter(prefix="/api")
 
 mongo_url = os.environ.get('MONGO_URL')
 db_name = os.environ.get('DB_NAME', 'cash_run')
 client: Optional[AsyncIOMotorClient] = None
 db = None
+in_memory_leaderboard: List[dict] = []
 
 if mongo_url:
     client = AsyncIOMotorClient(mongo_url)
@@ -100,7 +101,7 @@ def require_database():
 
 @api_router.get("/")
 async def root():
-    return {"message": "Cash Run Game API", "version": "1.0", "database": "configured" if db is not None else "missing"}
+    return {"message": "Chase the Bag Game API", "version": "1.0", "database": "configured" if db is not None else "missing"}
 
 
 @api_router.get("/health")
@@ -109,11 +110,7 @@ async def health():
 
 
 @api_router.post("/leaderboard", response_model=LeaderboardEntry)
-async def submit_score(payload: LeaderboardSubmit, request: Request):
-    client_ip = request.client.host if request.client and request.client.host else "unknown"
-    if rate_limited(client_ip):
-        raise HTTPException(status_code=429, detail="Too many leaderboard submissions. Try again shortly.")
-    database = require_database()
+async def submit_score(payload: LeaderboardSubmit):
     name = payload.name.strip().upper()[:12]
     if not name:
         raise HTTPException(status_code=400, detail="Name cannot be empty")
@@ -132,15 +129,24 @@ async def submit_score(payload: LeaderboardSubmit, request: Request):
     doc = entry.model_dump()
     doc['timestamp'] = doc['timestamp'].isoformat()
 
-    await database.leaderboard.insert_one(doc)
+    if db is None:
+        in_memory_leaderboard.append(doc)
+        in_memory_leaderboard.sort(key=lambda row: row.get('score', 0), reverse=True)
+        if len(in_memory_leaderboard) > 500:
+            del in_memory_leaderboard[500:]
+        logger.warning("Stored leaderboard entry in memory because database is not configured")
+        return entry
+
+    await db.leaderboard.insert_one(doc)
     return entry
 
 
 @api_router.get("/leaderboard", response_model=List[LeaderboardEntry])
 async def get_leaderboard(limit: int = 50):
     if db is None:
-        logger.warning("Leaderboard requested while database is not configured; returning empty list")
-        return []
+        logger.warning("Leaderboard requested while database is not configured; serving in-memory entries")
+        rows = in_memory_leaderboard[:limit]
+        return [LeaderboardEntry(**row) for row in rows]
 
     database = db
     if limit < 1:
@@ -165,11 +171,11 @@ async def get_leaderboard(limit: int = 50):
 async def get_rank(score: int):
     """Return how many entries beat this score (rank = count + 1)."""
     if db is None:
-        logger.warning("Rank requested while database is not configured; returning default rank")
-        return {"rank": 1, "score": score}
+        logger.warning("Rank requested while database is not configured; using in-memory entries")
+        higher = sum(1 for row in in_memory_leaderboard if int(row.get("score", 0)) > score)
+        return {"rank": higher + 1, "score": score}
 
-    database = db
-    higher = await database.leaderboard.count_documents({"score": {"$gt": score}})
+    higher = await db.leaderboard.count_documents({"score": {"$gt": score}})
     return {"rank": higher + 1, "score": score}
 
 

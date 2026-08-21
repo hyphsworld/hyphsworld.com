@@ -1,281 +1,43 @@
-/*
-  HYPHSWORLD Cool Points
-  Account-first point system.
-  - Logged-in users sync permanently through HWAuth/Supabase.
-  - Guests do not keep permanent points. Refresh/private tab/cache clear returns guests to 0.
-*/
+/* HYPHSWORLD account + wallet bootstrap.
+   Every legacy page can load this one file and receive the same auth session,
+   account-backed Cool Points engine, and single floating account widget. */
 (function () {
   'use strict';
 
-  function loadSharedAnalytics() {
-    if (window.__HYPHSWORLD_ANALYTICS_BOOTSTRAP__) return;
-    window.__HYPHSWORLD_ANALYTICS_BOOTSTRAP__ = true;
-    const script = document.createElement('script');
-    script.src = 'site-analytics.js';
-    script.defer = true;
-    document.head.appendChild(script);
-  }
+  if (window.__HW_ACCOUNT_WIDGET_BOOTSTRAP__) return;
+  window.__HW_ACCOUNT_WIDGET_BOOTSTRAP__ = true;
+  window.HWCoolPointsLegacyDisabled = true;
 
-  loadSharedAnalytics();
-
-  const TOTAL_KEY = 'hyphsworld.coolPoints.total';
-  const PROFILE_KEY = 'hyphsworld.coolPoints.profile';
-  const GUEST_SESSION_KEY = 'hyphsworld.coolPoints.guestSession';
-  const OLD_KEYS = ['coolPoints', 'hyphsCoolPoints', 'hwCoolPoints', 'hyphsworldPoints', 'hyphsworld.coolpoints'];
-
-  let points = 0;
-  let hydrated = false;
-  let hydrating = false;
-  let sessionActive = false;
-  let lastEventPoints = null;
-
-  function safeGet(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
-  function safeSet(key, value) { try { localStorage.setItem(key, String(value)); } catch (e) {} }
-  function safeRemove(key) { try { localStorage.removeItem(key); } catch (e) {} }
-  function safeSessionGet(key) { try { return sessionStorage.getItem(key); } catch (e) { return null; } }
-  function safeSessionSet(key, value) { try { sessionStorage.setItem(key, String(value)); } catch (e) {} }
-
-  function numberFrom(value) {
-    const parsed = parseInt(value, 10);
-    return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
-  }
-
-  function getProfileName() {
-    const saved =
-      safeGet('hyphsworld.playerName') ||
-      safeGet('hyphsworld.userName') ||
-      safeGet('hwPlayerName') ||
-      safeGet('playerName') ||
-      safeGet('username');
-    return saved && saved.trim() ? saved.trim() : 'Guest';
-  }
-
-  function clearGuestPersistentPoints() {
-    safeRemove(TOTAL_KEY);
-    OLD_KEYS.forEach(safeRemove);
-  }
-
-  function saveProfile() {
-    const profile = {
-      name: getProfileName(),
-      points,
-      accountBacked: sessionActive,
-      note: sessionActive ? 'Supabase account-backed points' : 'Guest points are temporary only',
-      updatedAt: new Date().toISOString()
-    };
-    safeSet(PROFILE_KEY, JSON.stringify(profile));
-  }
-
-  function emitUpdate(reason) {
-    const detail = {
-      points,
-      accountBacked: sessionActive,
-      reason: reason || 'render',
-      profile: {
-        name: getProfileName(),
-        points,
-        accountBacked: sessionActive
-      }
-    };
-
-    if (lastEventPoints === points && reason === 'render') return;
-    lastEventPoints = points;
-
-    try {
-      document.dispatchEvent(new CustomEvent('hyph:points-updated', { detail }));
-    } catch (error) {}
-  }
-
-  function toast(message) {
-    const el = document.getElementById('hw-toast');
-    if (!el) return;
-    el.textContent = message;
-    el.classList.add('show');
-    clearTimeout(window.__hwToastTimer);
-    window.__hwToastTimer = setTimeout(() => el.classList.remove('show'), 2200);
-  }
-
-  function render(reason) {
-    document.querySelectorAll('.js-cool-points,[data-cool-points],#accountCoolPoints,#gateCredits').forEach((el) => {
-      el.textContent = String(points);
+  function hasScript(file) {
+    return Array.from(document.scripts).some(function (script) {
+      return String(script.src || '').split('?')[0].endsWith('/' + file);
     });
+  }
 
-    const playerName = getProfileName();
-    document.querySelectorAll('#hw-player-name,[data-player-name]').forEach((el) => {
-      el.textContent = playerName;
+  function load(file, ready) {
+    if ((ready && ready()) || hasScript(file)) return Promise.resolve();
+    return new Promise(function (resolve, reject) {
+      var script = document.createElement('script');
+      script.src = '/' + file;
+      script.async = false;
+      script.onload = resolve;
+      script.onerror = function () { reject(new Error('Could not load ' + file)); };
+      document.head.appendChild(script);
     });
-
-    const loginLink = document.getElementById('hw-login-link');
-    if (loginLink && playerName !== 'Guest') loginLink.textContent = playerName;
-
-    document.querySelectorAll('[data-points-mode]').forEach((el) => {
-      el.textContent = sessionActive ? 'Account saved' : 'Guest preview';
-    });
-
-    saveProfile();
-    emitUpdate(reason || 'render');
   }
 
-  function setDisplay(value, reason) {
-    points = Math.max(0, parseInt(value, 10) || 0);
-    if (sessionActive) safeSet(TOTAL_KEY, points);
-    else {
-      clearGuestPersistentPoints();
-      safeSessionSet(GUEST_SESSION_KEY, points);
-    }
-    render(reason || 'set_display');
-    return points;
-  }
-
-  async function getAuthSession() {
+  async function boot() {
     try {
-      if (window.HWAuth && typeof window.HWAuth.getSession === 'function') {
-        return await window.HWAuth.getSession();
-      }
-    } catch (error) {}
-    return null;
+      await load('supabase-config.js', function () { return Boolean(window.HW_SUPABASE_CONFIG); });
+      await load('auth-client.js', function () { return Boolean(window.HWAuth); });
+      await load('auth-stability.js', function () { return false; });
+      await load('auth-points-bridge.js', function () { return Boolean(window.__HYPHSWORLD_AUTH_POINTS_BRIDGE__); });
+      await load('global-points-engine.js', function () { return Boolean(window.HWPoints && window.HWPoints.__accountOnlyEngineV2); });
+      if (window.HWPoints && typeof window.HWPoints.refresh === 'function') await window.HWPoints.refresh();
+    } catch (error) {
+      console.warn('HYPHSWORLD account widget bootstrap warning:', error && error.message || error);
+    }
   }
 
-  async function getAccountPoints() {
-    try {
-      if (window.HWAuth && typeof window.HWAuth.getPoints === 'function') {
-        return numberFrom(await window.HWAuth.getPoints());
-      }
-    } catch (error) {}
-    return null;
-  }
-
-  async function hydrate(force) {
-    if (hydrated && !force) return points;
-    if (hydrating) return points;
-    hydrating = true;
-
-    const session = await getAuthSession();
-    sessionActive = Boolean(session);
-
-    if (sessionActive) {
-      const accountPoints = await getAccountPoints();
-      setDisplay(accountPoints !== null ? accountPoints : numberFrom(safeGet(TOTAL_KEY)), 'hydrate_account');
-    } else {
-      sessionActive = false;
-      clearGuestPersistentPoints();
-      setDisplay(numberFrom(safeSessionGet(GUEST_SESSION_KEY)), 'hydrate_guest');
-    }
-
-    hydrated = true;
-    hydrating = false;
-    return points;
-  }
-
-  async function add(amount, reason) {
-    const n = numberFrom(amount);
-    if (!n) return points;
-
-    const session = await getAuthSession();
-    sessionActive = Boolean(session);
-
-    if (sessionActive && window.HWAuth && typeof window.HWAuth.addPoints === 'function') {
-      try {
-        const next = await window.HWAuth.addPoints(n, reason || '');
-        setDisplay(next, 'add_account');
-        toast(`+${n} Cool Points${reason ? ' — ' + reason : ''}`);
-        return points;
-      } catch (error) {}
-    }
-
-    sessionActive = false;
-    clearGuestPersistentPoints();
-    points += n;
-    setDisplay(points, 'add_guest');
-    toast(`+${n} temporary guest points — create ID to keep points`);
-    return points;
-  }
-
-  async function spend(amount, reason) {
-    const n = numberFrom(amount);
-    if (!n) return points;
-
-    await hydrate(true);
-
-    if (points < n) {
-      toast(`Need ${n} Cool Points. Current: ${points}`);
-      return points;
-    }
-
-    const next = points - n;
-    const session = await getAuthSession();
-    sessionActive = Boolean(session);
-
-    if (sessionActive && window.HWAuth && typeof window.HWAuth.setPoints === 'function') {
-      try {
-        const saved = await window.HWAuth.setPoints(next, reason || 'spend');
-        setDisplay(saved, 'spend_account');
-        toast(`-${n} Cool Points spent${reason ? ' — ' + reason : ''}`);
-        return points;
-      } catch (error) {}
-    }
-
-    sessionActive = false;
-    setDisplay(next, 'spend_guest');
-    toast(`-${n} temporary guest points spent${reason ? ' — ' + reason : ''}`);
-    return points;
-  }
-
-  async function set(value) {
-    const next = Math.max(0, parseInt(value, 10) || 0);
-    const session = await getAuthSession();
-    sessionActive = Boolean(session);
-
-    if (sessionActive && window.HWAuth && typeof window.HWAuth.setPoints === 'function') {
-      try {
-        const saved = await window.HWAuth.setPoints(next, 'set_points');
-        setDisplay(saved, 'set_account');
-        return points;
-      } catch (error) {}
-    }
-
-    sessionActive = false;
-    setDisplay(next, 'set_guest');
-    return points;
-  }
-
-  async function refresh() {
-    hydrated = false;
-    const refreshed = await hydrate(true);
-    render('refresh');
-    return refreshed;
-  }
-
-  document.addEventListener('click', (event) => {
-    const addButton = event.target.closest('[data-point-add]');
-    if (addButton) {
-      add(addButton.dataset.pointAdd, addButton.dataset.pointReason || '');
-      return;
-    }
-
-    const spendButton = event.target.closest('[data-point-spend]');
-    if (spendButton) spend(spendButton.dataset.pointSpend, spendButton.dataset.pointReason || '');
-  });
-
-  window.HWPoints = {
-    get: () => points,
-    hydrate,
-    refresh,
-    add,
-    spend,
-    set,
-    render,
-    isAccountBacked: () => sessionActive,
-    profile: () => {
-      try { return JSON.parse(safeGet(PROFILE_KEY) || '{}'); } catch (e) { return {}; }
-    }
-  };
-
-  document.addEventListener('DOMContentLoaded', () => {
-    hydrate(true).then(() => render('dom_ready'));
-  });
-
-  points = numberFrom(safeSessionGet(GUEST_SESSION_KEY));
-  clearGuestPersistentPoints();
-  render('boot');
+  window.HWAccountWidgetReady = boot();
 })();

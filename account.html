@@ -11,12 +11,23 @@
     .hw-user-chip{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 12px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(0,0,0,.35);font-weight:900;box-shadow:0 0 18px rgba(57,255,122,.16);margin-top:12px}
     .hw-user-icon{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:999px;background:linear-gradient(135deg,#39ff7a,#1ffcff,#ff4fd8);color:#050505;font-size:1rem}
     .hw-user-points{padding:5px 8px;border-radius:999px;background:#39ff7a;color:#050505;font-size:.78rem;font-weight:1000}
-    .avatar-picker{border:1px solid rgba(255,255,255,.18);border-radius:18px;padding:12px;margin:10px 0;background:rgba(0,0,0,.18)}
-    .avatar-picker legend{font-weight:900;padding:0 8px}
-    .avatar-choice-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
-    .avatar-choice-row label{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;border-radius:18px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.28);cursor:pointer;font-weight:900}
-    .avatar-choice-row input{width:auto;margin:0;accent-color:#39ff7a}
-    @media(max-width:640px){.avatar-choice-row{grid-template-columns:1fr}.hw-user-chip{border-radius:18px}}
+    .identity-studio,.avatar-picker,.avatar-studio{border:1px solid rgba(57,255,122,.28);border-radius:22px;padding:14px;margin:14px 0;background:radial-gradient(circle at 10% 0%,rgba(57,255,122,.14),transparent 34%),rgba(0,0,0,.22);box-shadow:0 0 24px rgba(57,255,122,.08)}
+    .identity-studio h2,.avatar-picker legend,.avatar-studio h2{font-weight:1000;padding:0 8px;letter-spacing:.04em;text-transform:uppercase;margin:0 0 8px}
+    .identity-studio p,.avatar-picker-note,.avatar-studio p{margin:4px 0 12px;color:rgba(255,255,255,.72);font-size:.88rem;font-weight:800;line-height:1.35}
+    .display-name-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:end}
+    .display-name-row label{display:grid;gap:6px;font-weight:1000;color:#fff}.display-name-row input{min-height:48px}.display-name-row button{min-height:48px;background:linear-gradient(90deg,#39ff7a,#1ffcff,#ffe45c);color:#050505;font-weight:1000;text-transform:uppercase;letter-spacing:.06em}.display-live-preview{display:flex;align-items:center;gap:10px;margin-top:12px;padding:12px;border-radius:18px;background:rgba(0,0,0,.32);border:1px solid rgba(255,255,255,.12);font-weight:1000}.display-live-preview span:first-child{display:grid;place-items:center;width:44px;height:44px;border-radius:999px;background:linear-gradient(135deg,#39ff7a,#1ffcff,#ff4fd8);color:#050505;font-size:1.5rem}.display-live-preview strong{color:#39ff7a}
+    .avatar-choice-row,.avatar-studio-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:10px;margin-top:8px}
+    .avatar-choice-row label,.avatar-studio button{position:relative;display:grid;place-items:center;gap:6px;min-height:86px;padding:12px;border-radius:20px;border:1px solid rgba(255,255,255,.18);background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(0,0,0,.24));cursor:pointer;font-weight:1000;text-align:center;color:#fff;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease,background .18s ease}
+    .avatar-choice-row label:hover,.avatar-studio button:hover{transform:translateY(-2px);border-color:rgba(57,255,122,.48);box-shadow:0 12px 28px rgba(0,0,0,.24),0 0 22px rgba(57,255,122,.12)}
+    .avatar-choice-row input{position:absolute;opacity:0;pointer-events:none}
+    .avatar-choice-row input:checked + span,.avatar-studio button.is-active .avatar-studio-icon{transform:scale(1.12);box-shadow:0 0 0 3px rgba(57,255,122,.22),0 0 28px rgba(57,255,122,.28)}
+    .avatar-choice-row input:checked ~ strong,.avatar-studio button.is-active strong{color:#39ff7a}
+    .avatar-choice-row label:has(input:checked),.avatar-studio button.is-active{border-color:#39ff7a;background:radial-gradient(circle at 50% 0%,rgba(57,255,122,.25),transparent 56%),rgba(0,0,0,.38)}
+    .avatar-choice-row span,.avatar-studio-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:999px;background:linear-gradient(135deg,#39ff7a,#1ffcff,#ff4fd8);color:#050505;font-size:1.45rem;transition:.18s ease}
+    .avatar-choice-row strong,.avatar-studio strong{display:block;font-size:.78rem;color:#fff;letter-spacing:.02em}
+    .avatar-live-preview{display:flex;align-items:center;gap:10px;margin-top:12px;padding:12px;border-radius:18px;background:rgba(0,0,0,.32);border:1px solid rgba(255,255,255,.12);font-weight:1000}
+    .avatar-live-preview span:first-child{display:grid;place-items:center;width:44px;height:44px;border-radius:999px;background:linear-gradient(135deg,#39ff7a,#1ffcff,#ff4fd8);color:#050505;font-size:1.5rem}
+    @media(max-width:640px){.display-name-row{grid-template-columns:1fr}.avatar-choice-row,.avatar-studio-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hw-user-chip{border-radius:18px}}
   </style>
 </head>
 <body class="account-page">
@@ -39,6 +50,38 @@
 
       <div id="message" class="message" role="status" aria-live="polite"></div>
 
+      <section class="identity-studio" id="identityStudio" aria-label="Change display name anytime">
+        <h2>Display Name Studio</h2>
+        <p>Change the name users see on your HYPHSWORLD ID, homepage chip, account badge, and HUD.</p>
+        <div class="display-name-row">
+          <label>Display Name
+            <input id="displayNameStudio" type="text" maxlength="40" placeholder="Example: Hyph Life" autocomplete="nickname" />
+          </label>
+          <button id="saveDisplayNameBtn" type="button">Save Name</button>
+        </div>
+        <div class="display-live-preview"><span id="displayPreviewIcon">🧢</span><span>Current name: <strong id="displayPreviewText">Guest</strong></span></div>
+      </section>
+
+      <section class="avatar-studio" id="avatarStudio" aria-label="Change avatar anytime">
+        <h2>Avatar Studio</h2>
+        <p>Change your icon anytime. It updates the homepage chip, account badge, and HUD immediately.</p>
+        <div class="avatar-studio-grid">
+          <button type="button" data-avatar-pick="boy"><span class="avatar-studio-icon">🧢</span><strong>Man</strong></button>
+          <button type="button" data-avatar-pick="girl"><span class="avatar-studio-icon">💅</span><strong>Woman</strong></button>
+          <button type="button" data-avatar-pick="fox"><span class="avatar-studio-icon">🦊</span><strong>Fox</strong></button>
+          <button type="button" data-avatar-pick="lion"><span class="avatar-studio-icon">🦁</span><strong>Lion</strong></button>
+          <button type="button" data-avatar-pick="panda"><span class="avatar-studio-icon">🐼</span><strong>Panda</strong></button>
+          <button type="button" data-avatar-pick="wolf"><span class="avatar-studio-icon">🐺</span><strong>Wolf</strong></button>
+          <button type="button" data-avatar-pick="alien"><span class="avatar-studio-icon">👽</span><strong>Alien</strong></button>
+          <button type="button" data-avatar-pick="robot"><span class="avatar-studio-icon">🤖</span><strong>Robot</strong></button>
+          <button type="button" data-avatar-pick="ghost"><span class="avatar-studio-icon">👻</span><strong>Ghost</strong></button>
+          <button type="button" data-avatar-pick="ninja"><span class="avatar-studio-icon">🥷</span><strong>Ninja</strong></button>
+          <button type="button" data-avatar-pick="crown"><span class="avatar-studio-icon">👑</span><strong>Crown</strong></button>
+          <button type="button" data-avatar-pick="diamond"><span class="avatar-studio-icon">💎</span><strong>Diamond</strong></button>
+        </div>
+        <div class="avatar-live-preview"><span id="avatarPreviewIcon">🧢</span><span id="avatarPreviewText">Current icon: Man</span></div>
+      </section>
+
       <section id="accountPanel" class="account-grid" hidden>
         <form id="profileForm" class="panel account-panel">
           <h2>ID Settings</h2>
@@ -46,10 +89,21 @@
             <input id="displayName" type="text" maxlength="40" placeholder="Example: Hyph Life" />
           </label>
           <fieldset class="avatar-picker">
-            <legend>Avatar Icon</legend>
-            <div class="avatar-choice-row">
-              <label><input type="radio" name="avatarType" value="boy" id="avatarBoy" checked /> 🧢 Boy</label>
-              <label><input type="radio" name="avatarType" value="girl" id="avatarGirl" /> 💅 Girl</label>
+            <legend>Identity Icon</legend>
+            <p class="avatar-picker-note">This mirrors Avatar Studio, so the selected badge is always the same.</p>
+            <div class="avatar-choice-row" id="avatarChoiceRow">
+              <label><input type="radio" name="avatarType" value="boy" id="avatarBoy" checked /><span>🧢</span><strong>Man</strong></label>
+              <label><input type="radio" name="avatarType" value="girl" id="avatarGirl" /><span>💅</span><strong>Woman</strong></label>
+              <label><input type="radio" name="avatarType" value="fox" /><span>🦊</span><strong>Fox</strong></label>
+              <label><input type="radio" name="avatarType" value="lion" /><span>🦁</span><strong>Lion</strong></label>
+              <label><input type="radio" name="avatarType" value="panda" /><span>🐼</span><strong>Panda</strong></label>
+              <label><input type="radio" name="avatarType" value="wolf" /><span>🐺</span><strong>Wolf</strong></label>
+              <label><input type="radio" name="avatarType" value="alien" /><span>👽</span><strong>Alien</strong></label>
+              <label><input type="radio" name="avatarType" value="robot" /><span>🤖</span><strong>Robot</strong></label>
+              <label><input type="radio" name="avatarType" value="ghost" /><span>👻</span><strong>Ghost</strong></label>
+              <label><input type="radio" name="avatarType" value="ninja" /><span>🥷</span><strong>Ninja</strong></label>
+              <label><input type="radio" name="avatarType" value="crown" /><span>👑</span><strong>Crown</strong></label>
+              <label><input type="radio" name="avatarType" value="diamond" /><span>💎</span><strong>Diamond</strong></label>
             </div>
           </fieldset>
           <label>Duck Sauce Account Note
@@ -72,7 +126,7 @@
           <div class="status-stack">
             <p><strong>Email:</strong> <span id="accountEmail">—</span></p>
             <p><strong>Name:</strong> <span id="accountName">—</span></p>
-            <p><strong>Avatar:</strong> <span id="accountAvatar">🧢 Boy</span></p>
+            <p><strong>Icon:</strong> <span id="accountAvatar">🧢 Man</span></p>
             <p><strong>Duck Note:</strong> <span id="accountDuck">—</span></p>
             <p><strong>Buck:</strong> <span id="accountBuck">—</span></p>
           </div>
@@ -88,13 +142,14 @@
       <section id="loggedOutPanel" class="panel account-panel" hidden>
         <h2>No ID Active</h2>
         <p class="sub">Duck Sauce said you walked in with no badge. Buck is pointing at the login button.</p>
-        <a class="auth-pill" href="auth.html?next=account.html">Create ID / Login</a>
+        <a class="auth-pill" href="auth.html?next=account.html">Create / Login</a>
       </section>
 
       <div class="actions account-actions">
         <a href="index.html">Back Home</a>
+        <a href="daily-wheel.html">Daily Spin</a>
         <a href="vault.html">Vault</a>
-        <a href="auth.html?next=account.html">Create/Login</a>
+        <a href="auth.html?next=account.html">Create / Login</a>
         <button id="logoutBtn" type="button">Logout</button>
       </div>
     </section>

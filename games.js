@@ -16,27 +16,21 @@
   function getPoints() {
     try {
       if (window.HWPoints && typeof window.HWPoints.get === "function") return window.HWPoints.get();
+      if (window.HWPoints && typeof window.HWPoints.getState === "function") return window.HWPoints.getState().points;
     } catch (error) {}
     return 0;
   }
 
-  function titleRoom(room) {
-    if (room === "dominoes") return "Dominoes";
-    if (room === "poker") return "Poker";
-    if (room === "cash-run") return "Cash Run";
-    if (room === "slots") return "Slots";
-    return String(room || "table").replace(/-/g, " ");
-  }
-
   function renderBalance(value) {
-    const balance = document.getElementById("casinoCoolPoints");
     const next = typeof value === "number" ? value : getPoints();
+    const balance = document.getElementById("casinoCoolPoints");
     if (balance) balance.textContent = String(next);
   }
 
   async function refreshBalance() {
     try {
       if (window.HWPoints && typeof window.HWPoints.refresh === "function") await window.HWPoints.refresh();
+      if (window.HWUserWidget && typeof window.HWUserWidget.refresh === "function") window.HWUserWidget.refresh();
     } catch (error) {}
     renderBalance();
   }
@@ -46,6 +40,14 @@
     const maybeClient = window.HWAuth.getClient();
     const client = maybeClient && typeof maybeClient.then === "function" ? await maybeClient : maybeClient;
     return client && typeof client.rpc === "function" ? client : null;
+  }
+
+  function titleRoom(room) {
+    if (room === "dominoes" || room === "domino") return "Dominoes";
+    if (room === "poker") return "Poker";
+    if (room === "cash-run") return "Chase the Bag";
+    if (room === "slots") return "Slots";
+    return String(room || "table").replace(/-/g, " ");
   }
 
   function routeSlots(action) {
@@ -145,29 +147,37 @@
         const roomLabel = payload.roomCode || payload.roomId;
         setRoomStatus(card, titleRoom(room) + " room ready: " + roomLabel, payload);
         toast(titleRoom(room) + " preview room created. Tap Open Table Room.", false);
+      } else {
+        setRoomStatus(card, titleRoom(room) + " room request finished, but no room payload came back.");
       }
     } catch (error) {
-      toast(error.message || "Table room missed. Try again.", true);
+      const message = error && error.message ? error.message : "Table room missed. Try again.";
+      setRoomStatus(card, message);
+      toast(message, true);
     } finally {
       button.disabled = false;
       actionLocked = false;
     }
   }
 
-
-
   async function quickJoinRoom(event) {
     event.preventDefault();
     const input = document.getElementById("quickJoinCode");
     const status = document.getElementById("quickJoinStatus");
     const code = String(input && input.value || "").trim().toUpperCase();
-    if (!code) { if (status) status.textContent = "Enter a room code first."; return; }
+    if (!code) {
+      if (status) status.textContent = "Enter a room code first.";
+      return;
+    }
+
     try {
       if (status) status.textContent = "Joining room...";
       if (!window.HWMultiplayerInvites || typeof window.HWMultiplayerInvites.joinTable !== "function") throw new Error("Multiplayer helper still loading.");
       const result = await window.HWMultiplayerInvites.joinTable(code);
       const roomId = result && result.room && result.room.id;
-      if (window.HWAuth && typeof window.HWAuth.addPoints === "function") { try { await window.HWAuth.addPoints(8, "multiplayer_quick_join"); } catch (error) {} }
+      if (window.HWAuth && typeof window.HWAuth.addPoints === "function") {
+        try { await window.HWAuth.addPoints(8, "multiplayer_quick_join"); } catch (error) {}
+      }
       if (status) status.textContent = "Joined. +8 Cool Points. Sending you to the live table...";
       if (roomId) window.location.href = "table-room.html?room=" + encodeURIComponent(roomId) + "&joined=1";
       else window.location.href = "games.html?room=" + encodeURIComponent(result.roomCode || code) + "&joined=1";
@@ -195,13 +205,25 @@
     }
 
     document.querySelectorAll("[data-room-action]").forEach((button) => {
+      if (button.__hwCasinoActionBound) return;
+      button.__hwCasinoActionBound = true;
       button.addEventListener("click", () => handleRoomAction(button));
     });
 
-    document.addEventListener("hyph:points-updated", renderBalance);
+    document.addEventListener("hyph:points-updated", function (event) {
+      const points = event && event.detail && typeof event.detail.points === "number" ? event.detail.points : undefined;
+      renderBalance(points);
+    });
+    window.addEventListener("hw:points-change", function (event) {
+      const points = event && event.detail && typeof event.detail.points === "number" ? event.detail.points : undefined;
+      renderBalance(points);
+    });
 
     const quickJoinForm = document.getElementById("quickJoinForm");
-    if (quickJoinForm) quickJoinForm.addEventListener("submit", quickJoinRoom);
+    if (quickJoinForm && !quickJoinForm.__hwQuickJoinBound) {
+      quickJoinForm.__hwQuickJoinBound = true;
+      quickJoinForm.addEventListener("submit", quickJoinRoom);
+    }
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);

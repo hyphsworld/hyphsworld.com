@@ -1,1 +1,46 @@
-*{box-sizing:border-box}body{margin:0;min-height:100vh;color:#fff;font-family:Arial,Helvetica,sans-serif;background:#050505}.vault-bg{position:fixed;inset:0;background:linear-gradient(rgba(0,0,0,.75),rgba(0,0,0,.92)),url("album-art.jpg") center/cover no-repeat;filter:blur(18px);transform:scale(1.08);z-index:-1}.gate-shell{min-height:100vh;display:grid;place-items:center;padding:24px 16px 120px}.gate-card{width:min(460px,94vw);border:1px solid rgba(201,163,74,.34);background:linear-gradient(180deg,rgba(12,12,12,.94),rgba(0,0,0,.96));border-radius:30px;box-shadow:0 30px 80px rgba(0,0,0,.6);padding:22px}.back-link{color:#cfcfcf;text-decoration:none}.brand-row{display:flex;gap:12px;margin-top:18px}.brand-row img{width:54px;height:54px;object-fit:contain;border-radius:14px;background:#fff}.brand-row p{margin:0;color:#bdbdbd;font-size:11px;letter-spacing:.24em}.brand-row h1{margin:0;font-size:32px}.vault-lock{margin-top:24px;border:1px solid rgba(255,255,255,.10);border-radius:18px;padding:14px;display:flex;gap:12px}.lock-light{width:14px;height:14px;border-radius:999px;background:#c9a34a;box-shadow:0 0 16px #f1d28a}.vault-lock strong{color:#f1d28a}.gate-copy{color:#d1d1d1}.code-display{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:18px 0}.code-display span{height:50px;border-radius:14px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);display:grid;place-items:center}.code-display span.filled:before{content:'•';color:#f1d28a;font-size:24px}.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.keypad button,.unlock-btn,input{min-height:56px;border-radius:18px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.045);color:#fff;font-weight:900}input{width:100%;margin-top:14px;padding:0 14px;text-transform:uppercase}.unlock-btn{width:100%;margin-top:14px;background:linear-gradient(180deg,#f1d28a,#c9a34a);color:#111}.gate-message{text-align:center}.gate-message.error{color:#ff7070}.gate-message.success{color:#f1d28a}.shake{animation:shake .35s}@keyframes shake{25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-5px)}}
+:root{
+  --cy:#6ffcff;
+  --cy2:#45b4ff;
+  --glass:rgba(164,242,255,.12);
+}
+*{box-sizing:border-box}
+.vault-shell{position:relative}
+.vault-stack,.vault-grid{display:grid;gap:22px}
+.vault-grid{grid-template-columns:repeat(auto-fit,minmax(290px,1fr))}
+.vault-master-card,.vault-lock-card{position:relative;overflow:hidden;border:1px solid rgba(150,250,255,.22);background:radial-gradient(circle at 10% 0%,rgba(66,178,255,.13),transparent 45%),linear-gradient(165deg,rgba(4,8,22,.92),rgba(0,0,0,.88));backdrop-filter:blur(5px)}
+.vault-lock-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.vault-state{padding:7px 11px;border-radius:999px;border:1px solid rgba(255,255,255,.18)}
+.vault-state.unlocked{color:#91ffd8;border-color:#91ffd8;background:rgba(80,255,193,.14)}
+.vault-form{margin-top:14px}.vault-label{display:block;margin-bottom:8px;color:#b9f8ff}
+.vault-input{width:100%;min-height:50px;border-radius:14px;border:1px solid rgba(164,242,255,.35);background:linear-gradient(180deg,rgba(170,247,255,.12),rgba(35,84,103,.16));color:#fff;padding:0 14px;text-transform:uppercase;letter-spacing:.08em}
+.vault-row{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
+.vault-row .btn{flex:1 1 150px}
+.vault-message{min-height:24px;margin-top:8px;color:#7cfecb;font-weight:700}
+.vault-message.error{color:#ff8f8f}
+.vault-badge{padding:8px 13px;border-radius:999px;border:1px solid rgba(255,255,255,.2)}
+.vault-badge.on{color:#9fffd9;border-color:#9fffd9;background:rgba(62,255,181,.16)}
+
+/* Falcon Lane Level 2 upgrade */
+.vault-lock-card[data-level="level2"]{box-shadow:0 0 0 1px rgba(111,252,255,.4),0 0 40px rgba(69,180,255,.18)}
+.vault-lock-card[data-level="level2"]::before{content:"";position:absolute;inset:-40%;background:conic-gradient(from 120deg,transparent,rgba(111,252,255,.2),transparent 38%);animation:spin 11s linear infinite;pointer-events:none}
+.falcon-pad{position:relative;margin:14px 0 10px;padding:14px;border-radius:16px;border:1px solid rgba(111,252,255,.35);background:linear-gradient(165deg,rgba(124,243,255,.14),rgba(8,24,38,.5));z-index:1}
+.falcon-keypad{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.falcon-key{position:relative;min-height:54px;border-radius:14px;border:1px solid rgba(137,239,255,.45);background:linear-gradient(170deg,rgba(196,250,255,.24),rgba(56,153,201,.15));color:#dfffff;font-weight:900;box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 10px 16px rgba(0,20,33,.45);transform-style:preserve-3d;transition:transform .16s ease,box-shadow .16s ease}
+.falcon-key::after{content:"";position:absolute;inset:3px;border-radius:11px;border:1px solid rgba(208,253,255,.45);opacity:.8}
+.falcon-key:hover,.falcon-key:focus-visible{transform:translateY(-2px) scale(1.02);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 0 20px rgba(111,252,255,.35),0 14px 20px rgba(0,20,33,.5)}
+.falcon-key:active{transform:translateY(1px) scale(.98)}
+.falcon-mini{display:flex;justify-content:space-between;font-size:11px;text-transform:uppercase;letter-spacing:.2em;color:#9fefff;margin-top:10px}
+.falcon-gate{margin-top:14px;height:120px;border-radius:20px;position:relative;overflow:hidden;border:1px solid rgba(111,252,255,.35);background:radial-gradient(circle at 50% 40%,rgba(104,251,255,.23),rgba(2,8,17,.9) 55%)}
+.falcon-door{position:absolute;top:0;bottom:0;width:50%;background:linear-gradient(180deg,rgba(214,252,255,.24),rgba(58,170,223,.08));box-shadow:inset 0 0 24px rgba(111,252,255,.22)}
+.falcon-door.left{left:0;border-right:1px solid rgba(111,252,255,.32)}
+.falcon-door.right{right:0;border-left:1px solid rgba(111,252,255,.32)}
+.falcon-smoke{position:absolute;inset:0;pointer-events:none}
+.falcon-smoke span{position:absolute;bottom:-16px;width:52px;height:52px;border-radius:50%;background:radial-gradient(circle,rgba(188,250,255,.75),rgba(188,250,255,0));filter:blur(2px);opacity:0;animation:evap 2.4s ease-in infinite}
+.falcon-smoke span:nth-child(1){left:12%;animation-delay:.1s}.falcon-smoke span:nth-child(2){left:35%;animation-delay:.55s}.falcon-smoke span:nth-child(3){left:62%;animation-delay:1s}.falcon-smoke span:nth-child(4){left:78%;animation-delay:1.45s}
+.vault-lock-card[data-level="level2"].is-unlocked .falcon-door.left{animation:doorLeft .9s cubic-bezier(.2,.7,.1,1) forwards}
+.vault-lock-card[data-level="level2"].is-unlocked .falcon-door.right{animation:doorRight .9s cubic-bezier(.2,.7,.1,1) forwards}
+.vault-lock-card[data-level="level2"].is-unlocked .falcon-smoke span{animation-duration:1.4s;opacity:.8}
+@keyframes spin{to{transform:rotate(1turn)}}
+@keyframes doorLeft{to{transform:translateX(-102%) scaleX(.9);opacity:.22}}
+@keyframes doorRight{to{transform:translateX(102%) scaleX(.9);opacity:.22}}
+@keyframes evap{0%{transform:translateY(0) scale(.45);opacity:0}20%{opacity:.75}100%{transform:translateY(-130px) scale(1.7);opacity:0}}
