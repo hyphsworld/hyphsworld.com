@@ -118,6 +118,17 @@
     var u = await user(false);
     if (!sb || !u) return null;
     if (!updates && !force && profileCache && profileCache.id === u.id && fresh(profileAt, PROFILE_TTL)) return profileCache;
+    // Hydration is read-only.  In particular, never manufacture defaults and
+    // pass them to update_my_profile merely because a page requested the user.
+    if (!updates) {
+      var fetched = await sb.from('profiles').select('*').eq('id', u.id).maybeSingle();
+      if (fetched.error) throw new Error(fetched.error.message || 'Profile load failed.');
+      profileCache = fetched.data || {};
+      profileCache.id = profileCache.id || u.id;
+      profileAt = now();
+      saveProfileBits(profileCache, u);
+      return profileCache;
+    }
     var current = profileCache || {};
     var clean = updates || {};
     var payload = {

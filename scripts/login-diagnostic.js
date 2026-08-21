@@ -1,11 +1,14 @@
 #!/usr/bin/env node
 const fs = require('fs');
+const path = require('path');
 
 const issues = [];
 const authPage = fs.readFileSync('auth.html', 'utf8');
 const authController = fs.readFileSync('auth.js', 'utf8');
 const authClient = fs.readFileSync('auth-client.js', 'utf8');
 const authStability = fs.readFileSync('auth-stability.js', 'utf8');
+const accountBootstrap = fs.readFileSync('cool-points.js', 'utf8');
+const pointsEngine = fs.readFileSync('global-points-engine.js', 'utf8');
 
 function assert(condition, message) {
   if (!condition) issues.push(message);
@@ -38,6 +41,18 @@ assert(authClient.includes('persistSession: true'), 'Supabase login should persi
 assert(authClient.includes('autoRefreshToken: true'), 'Supabase login should refresh sessions automatically.');
 assert(authClient.includes("new CustomEvent('hyph:auth-signed-in'"), 'auth client should broadcast successful sign-in.');
 assert(authStability.includes("window.HWAuth.getCurrentUser(true).catch"), 'profile hydration must not reject an otherwise successful first login.');
+assert(accountBootstrap.includes("await load('auth-client.js'"), 'legacy pages should bootstrap the shared auth client.');
+assert(accountBootstrap.includes("await load('global-points-engine.js'"), 'legacy pages should bootstrap the central points engine.');
+assert(pointsEngine.includes('data-hw-account-name'), 'central widget should show the active account identity.');
+assert(pointsEngine.includes('data-hw-account-action'), 'central widget should provide one login/account action.');
+assert(pointsEngine.includes("document.addEventListener('hyph:auth-signed-in', refresh)"), 'central widget should refresh immediately after login.');
+assert(pointsEngine.includes("window.addEventListener('pageshow', refresh)"), 'central widget should catch up after browser navigation.');
+
+const accountFlowPages = new Set(['auth.html', 'forgot-password.html', 'login.html', 'logout.html', 'update-password.html']);
+fs.readdirSync('.').filter((file) => file.endsWith('.html') && !accountFlowPages.has(file)).forEach((file) => {
+  const html = fs.readFileSync(path.join('.', file), 'utf8');
+  assert(html.includes('cool-points.js') || html.includes('global-points-engine.js'), file + ' should load the central account widget system.');
+});
 
 if (issues.length) {
   console.error('Login diagnostic failed:');

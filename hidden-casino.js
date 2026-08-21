@@ -1,7 +1,6 @@
 (() => {
   "use strict";
 
-  const POINTS_KEY = "coolPoints";
   const symbols = ["🦆", "🎰", "🛡️", "🔥", "💎", "🛹", "💿"];
 
   const lines = [
@@ -16,18 +15,21 @@
   }
 
   function getPoints() {
-    return Number(localStorage.getItem(POINTS_KEY) || 0);
+    return window.HWPoints ? window.HWPoints.get() : 0;
   }
 
   function setPoints(value) {
     const clean = Math.max(0, Math.floor(Number(value) || 0));
-    localStorage.setItem(POINTS_KEY, String(clean));
     if ($("casinoPoints")) $("casinoPoints").textContent = String(clean);
     return clean;
   }
 
-  function addPoints(amount) {
-    return setPoints(getPoints() + amount);
+  async function addPoints(amount, reason) {
+    if (!window.HWPoints) return 0;
+    const result = amount < 0
+      ? await window.HWPoints.spend(Math.abs(amount), reason)
+      : await window.HWPoints.add(amount, reason);
+    return setPoints(result.points);
   }
 
   function rotateLine() {
@@ -36,13 +38,15 @@
     }
   }
 
-  function spinCasino() {
+  async function spinCasino() {
     if (getPoints() < 5) {
       $("casinoResult").textContent = "Buck: “You need 5 Cool Points to spin.”";
       return;
     }
 
-    addPoints(-5);
+    const before = getPoints();
+    await addPoints(-5, "hidden_casino_spin");
+    if (getPoints() === before) return;
 
     const reels = [document.querySelector("#c1"), document.querySelector("#c2"), document.querySelector("#c3")];
     const reelBoxes = document.querySelectorAll(".reel");
@@ -52,7 +56,7 @@
     reelBoxes.forEach((box) => box.classList.add("spin"));
     $("casinoResult").textContent = "Duck Sauce: “Back room machine spinning…”";
 
-    setTimeout(() => {
+    setTimeout(async () => {
       const results = reels.map(() => symbols[Math.floor(Math.random() * symbols.length)]);
       reels.forEach((el, i) => { if (el) el.textContent = results[i]; });
       reelBoxes.forEach((box) => box.classList.remove("spin"));
@@ -68,31 +72,34 @@
         msg = "TWO MATCH +15";
       }
 
-      if (win > 0) addPoints(win);
+      if (win > 0) await addPoints(win, "hidden_casino_win");
       $("casinoResult").textContent = msg;
 
       if (button) button.disabled = false;
     }, 900);
   }
 
-  function duckBonus() {
+  async function duckBonus() {
     if (Math.random() < 0.55) {
-      addPoints(10);
+      await addPoints(10, "hidden_casino_duck_bonus");
       $("casinoResult").textContent = "Duck Bonus hit +10. Buck is suspicious.";
     } else {
       const fee = Math.min(5, getPoints());
-      addPoints(-fee);
+      await addPoints(-fee, "hidden_casino_duck_tax");
       $("casinoResult").textContent = `Duck Sauce tax -${fee}. Diabolical.`;
     }
   }
 
-  function bind() {
+  async function bind() {
+    if (window.HWAccountWidgetReady) await window.HWAccountWidgetReady;
+    if (window.HWPoints) await window.HWPoints.refresh();
     setPoints(getPoints());
     rotateLine();
     setInterval(rotateLine, 4200);
 
     if ($("casinoSpin")) $("casinoSpin").addEventListener("click", spinCasino);
     if ($("freeBonus")) $("freeBonus").addEventListener("click", duckBonus);
+    window.addEventListener("hw:points-change", (event) => setPoints(event.detail && event.detail.points));
   }
 
   document.addEventListener("DOMContentLoaded", bind);
