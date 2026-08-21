@@ -28,13 +28,11 @@
     const balance = Math.max(0, Number(next && next.balance) || 0);
     const delta = balance - lastBalance;
     if (!delta) return;
-    // Structured game-over rewards are handled by cash-run-points-bridge with
-    // run IDs and practice-mode checks; all other bundle transactions go here.
     const transaction = next.transactions && next.transactions[0];
-    if (transaction && transaction.source === 'cashRun') {
-      publish(window.HWPoints.get());
-      return;
-    }
+    // Preserve every explicit bundle transaction, including the access-code
+    // and leaderboard-submission rewards whose source is `cashRun`. The bridge
+    // separately awards a completed run from its trusted native game-over
+    // event; it does not replace these distinct rewards.
     lastBalance = balance;
     queue = queue.then(function () {
       return delta > 0
