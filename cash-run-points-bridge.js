@@ -106,6 +106,8 @@
     score = number(score);
     metadata = metadata || {};
     if (!score) return 0;
+    // Practice mode deliberately does not save scores or award account points.
+    if (String(metadata.mode || '').toLowerCase() === 'easy') return 0;
 
     lastCandidate = { score: score, source: source || 'chase_the_bag', at: Date.now(), metadata: metadata };
     if (score > bestScore) {
@@ -166,7 +168,8 @@
     const text = root ? root.innerText || root.textContent || '' : '';
     const score = scoreFromText(text);
     if (score) lastCandidate = { score: score, source: 'dom_scan', at: Date.now() };
-    if (/game\s*over|final\s*score|you\s*(won|lost)|try\s*again|restart/i.test(text) && score) award(score, 'dom_game_over');
+    // Text is useful for the bridge HUD only. It is not an authenticated game
+    // result and must never enter the account award path.
   }
 
   function hookStorage() {
@@ -181,7 +184,8 @@
           const score = Math.max(number(value), scoreFromText(joined));
           if (score) {
             lastCandidate = { score: score, source: 'storage:' + key, at: Date.now() };
-            if (/final|game|over|best|score|bag/i.test(joined)) award(score, 'storage:' + key, { storageKey: key });
+            // Storage is similarly informational only; native game-over events
+            // carry the authoritative run ID and mode used for an award.
           }
         }
       } catch (error) {}
@@ -200,25 +204,28 @@
   function hookNativeEvents() {
     const passiveEvents = ['start', 'score', 'state', 'life', 'pause', 'resume', 'stop'];
     passiveEvents.forEach(function (name) {
-      window.addEventListener('hw:chasethebag:' + name, function (event) {
+      window.addEventListener('hw:cashrun:' + name, function (event) {
         handleNativeSignal(event.detail || {}, 'native_' + name, false);
       });
     });
 
-    window.addEventListener('hw:chasethebag:gameover', function (event) {
+    window.addEventListener('hw:cashrun:gameover', function (event) {
       handleNativeSignal(event.detail || {}, 'native_game_over', true);
     });
   }
 
   function hookMessages() {
     window.addEventListener('message', function (event) {
+      // The bundled game runs in this window and emits CustomEvents. Messages
+      // are accepted only from this same window/origin for future iframe use.
+      if (event.source !== window || event.origin !== window.location.origin) return;
       const data = event.data || {};
       const text = typeof data === 'string' ? data : JSON.stringify(data);
-      if (!/bag|run|score|coin|chase|point|game|hw:chasethebag/i.test(text)) return;
+      if (!/bag|run|score|coin|chase|point|game|hw:cashrun/i.test(text)) return;
       const score = number(data.finalScore || data.score || data.points || data.cash || data.coins || data.bags) || scoreFromText(text);
       if (score) {
         lastCandidate = { score: score, source: 'postmessage', at: Date.now(), metadata: data };
-        if (/game\s*over|final|complete|finished|chase_the_bag_score|hw:chasethebag:gameover/i.test(text)) award(score, 'postmessage', data);
+        if (/game\s*over|final|complete|finished|chase_the_bag_score|hw:cashrun:gameover/i.test(text)) award(score, 'postmessage', data);
       }
     });
   }
@@ -227,8 +234,8 @@
     window.addEventListener('keydown', function (event) {
       if (!event.altKey || !event.shiftKey || event.key.toLowerCase() !== 'c') return;
       const score = lastCandidate.score || bestScore;
-      if (score) award(score, 'manual_chase_the_bag_bridge', lastCandidate.metadata || {});
-      else toast('Chase the Bag bridge ready. Play first, then Alt+Shift+C can force-sync the detected score.');
+      if (score) toast('Detected score: ' + score + '. Only completed standard runs save rewards.');
+      else toast('Chase the Bag bridge is ready.');
     });
   }
 
