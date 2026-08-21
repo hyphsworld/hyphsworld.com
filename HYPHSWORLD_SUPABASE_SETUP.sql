@@ -43,14 +43,28 @@ with check (auth.uid() = id);
 create or replace function public.hw_touch_updated_at()
 returns trigger
 language plpgsql
-security definer
-set search_path = public
+security invoker
+set search_path = ''
 as $$
 begin
-  new.updated_at = now();
+  -- This function is trigger-only.  Reject an accidental attachment to any
+  -- other table or operation before changing the row supplied by PostgreSQL.
+  if tg_op <> 'UPDATE'
+     or tg_table_schema <> 'public'
+     or tg_table_name <> 'hw_profiles' then
+    raise exception 'hw_touch_updated_at may only update public.hw_profiles';
+  end if;
+
+  new.updated_at = pg_catalog.now();
   return new;
 end;
 $$;
+
+-- Neither trigger function is part of the client RPC API.  PUBLIC receives
+-- EXECUTE on new functions by default, so revoke it explicitly (PUBLIC also
+-- covers anon and authenticated) and name the API roles for audit clarity.
+revoke all on function public.hw_touch_updated_at() from public;
+revoke all on function public.hw_touch_updated_at() from anon, authenticated;
 
 drop trigger if exists hw_profiles_touch_updated_at on public.hw_profiles;
 create trigger hw_profiles_touch_updated_at
@@ -62,9 +76,20 @@ create or replace function public.hw_create_profile_for_new_user()
 returns trigger
 language plpgsql
 security definer
-set search_path = public
+set search_path = ''
 as $$
 begin
+  -- SECURITY DEFINER is required because auth.users is outside the client's
+  -- RLS context.  Only rows emitted by the auth.users INSERT trigger are
+  -- accepted; callers cannot choose an account id or create another tenant's
+  -- profile through this function.
+  if tg_op <> 'INSERT'
+     or tg_table_schema <> 'auth'
+     or tg_table_name <> 'users'
+     or new.id is null then
+    raise exception 'hw_create_profile_for_new_user may only handle auth.users inserts';
+  end if;
+
   insert into public.hw_profiles (
     id,
     email,
@@ -76,16 +101,26 @@ begin
   values (
     new.id,
     new.email,
-    coalesce(new.raw_user_meta_data ->> 'displayName', split_part(new.email, '@', 1)),
-    coalesce(new.raw_user_meta_data ->> 'duckStatus', 'Duck Sauce has not fined this account yet.'),
-    coalesce(new.raw_user_meta_data ->> 'buckClearance', 'Lobby clearance only'),
-    coalesce((new.raw_user_meta_data ->> 'coolPoints')::integer, 0)
+    left(
+      coalesce(
+        nullif(pg_catalog.btrim(new.raw_user_meta_data ->> 'displayName'), ''),
+        pg_catalog.split_part(new.email, '@', 1),
+        'player'
+      ),
+      80
+    ),
+    'Duck Sauce has not fined this account yet.',
+    'Lobby clearance only',
+    0
   )
   on conflict (id) do nothing;
 
   return new;
 end;
 $$;
+
+revoke all on function public.hw_create_profile_for_new_user() from public;
+revoke all on function public.hw_create_profile_for_new_user() from anon, authenticated;
 
 drop trigger if exists hw_create_profile_after_signup on auth.users;
 create trigger hw_create_profile_after_signup
