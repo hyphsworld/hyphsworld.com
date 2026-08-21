@@ -20,7 +20,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="Cash Run Game API")
+app = FastAPI(title="Chase the Bag Game API")
 api_router = APIRouter(prefix="/api")
 
 mongo_url = os.environ.get('MONGO_URL')
@@ -101,7 +101,7 @@ def require_database():
 
 @api_router.get("/")
 async def root():
-    return {"message": "Cash Run Game API", "version": "1.0", "database": "configured" if db is not None else "missing"}
+    return {"message": "Chase the Bag Game API", "version": "1.0", "database": "configured" if db is not None else "missing"}
 
 
 @api_router.get("/health")

@@ -45,7 +45,7 @@
   function titleRoom(room) {
     if (room === "dominoes" || room === "domino") return "Dominoes";
     if (room === "poker") return "Poker";
-    if (room === "cash-run") return "Cash Run";
+    if (room === "cash-run") return "Chase the Bag";
     if (room === "slots") return "Slots";
     return String(room || "table").replace(/-/g, " ");
   }

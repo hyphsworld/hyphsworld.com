@@ -15,6 +15,7 @@
   const GOOGLE_REDIRECT_URL = 'https://hyphsworld.com/account.html';
 
   let mode = 'signin';
+  let submitting = false;
 
   function show(text, type) {
     if (!msgEl) return;
@@ -64,10 +65,12 @@
 
   async function submitAuth(event) {
     event.preventDefault();
+    if (submitting) return;
     const email = emailInput ? emailInput.value.trim() : '';
     const password = passwordInput ? passwordInput.value : '';
     if (!email || !password) return show('Email and password required.', 'error');
 
+    submitting = true;
     if (submitBtn) submitBtn.disabled = true;
 
     try {
@@ -77,6 +80,8 @@
         show('ID created. Opening your account…', 'success');
       } else {
         await HWAuth.signInWithEmail(email, password);
+        const session = await HWAuth.getSession();
+        if (!session) throw new Error('Login did not persist. Please try again.');
         await refreshPoints();
         show('Logged in. Opening your account…', 'success');
       }
@@ -92,6 +97,7 @@
         show(text, 'error');
       }
     } finally {
+      submitting = false;
       if (submitBtn) submitBtn.disabled = false;
     }
   }
@@ -110,6 +116,15 @@
   async function boot() {
     setMode('signin');
 
+    // Bind controls before any network/session work. On slower mobile connections,
+    // waiting for Supabase here allowed the form's native submit to reload the page,
+    // making the first tap look like a failed login.
+    if (modeSignin) modeSignin.addEventListener('click', () => setMode('signin'));
+    if (modeSignup) modeSignup.addEventListener('click', () => setMode('signup'));
+    if (togglePasswordBtn) togglePasswordBtn.addEventListener('click', togglePassword);
+    if (googleLoginBtn) googleLoginBtn.addEventListener('click', googleLogin);
+    if (form) form.addEventListener('submit', submitAuth);
+
     try {
       const session = await HWAuth.getSession();
       if (session) {
@@ -119,11 +134,6 @@
       }
     } catch (error) {}
 
-    if (modeSignin) modeSignin.addEventListener('click', () => setMode('signin'));
-    if (modeSignup) modeSignup.addEventListener('click', () => setMode('signup'));
-    if (togglePasswordBtn) togglePasswordBtn.addEventListener('click', togglePassword);
-    if (googleLoginBtn) googleLoginBtn.addEventListener('click', googleLogin);
-    if (form) form.addEventListener('submit', submitAuth);
   }
 
   boot();

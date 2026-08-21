@@ -1,6 +1,6 @@
 # HYPHSWORLD / AMS WEST Brand System
 
-This document defines the visual system for building HYPHSWORLD like a major entertainment platform while keeping the Cash Run game and future districts visually connected.
+This document defines the visual system for building HYPHSWORLD like a major entertainment platform while keeping the Chase the Bag game and future districts visually connected.
 
 ## Brand position
 
@@ -23,7 +23,7 @@ Primary brands:
 
 - HYPHSWORLD
 - AMS WEST
-- Cash Run
+- Chase the Bag
 - O1 Universe
 
 Core feel:
@@ -221,7 +221,7 @@ The homepage should answer fast:
 Homepage structure:
 
 1. Hero front gate
-2. Featured Cash Run card
+2. Featured Chase the Bag card
 3. District map
 4. Latest media/drop rail
 5. O1 Universe teaser
@@ -242,7 +242,7 @@ Required for every game page:
 - Mobile support notes
 - Status indicator
 
-Cash Run rules:
+Chase the Bag rules:
 
 - Preserve `/games/cash-run/` paths.
 - Preserve mobile playability.
@@ -378,7 +378,7 @@ Required:
 - Fast loading
 - Stable viewport
 - No horizontal scroll
-- Cash Run controls remain playable
+- Chase the Bag controls remain playable
 
 ## Do not use
 
@@ -391,7 +391,7 @@ Avoid:
 - Huge uncompressed assets
 - Unclear buttons
 - Hidden navigation
-- Breaking Cash Run static paths
+- Breaking Chase the Bag static paths
 - Uploading secrets
 
 ## Future visual concepts
