@@ -208,7 +208,12 @@
       window.HWAuth.signInWithEmail = async function (email, password) {
         clearCaches();
         var result = await base.signInWithEmail(email, password);
-        await window.HWAuth.getCurrentUser(true);
+        // Authentication succeeded already. Profile/wallet hydration must never
+        // turn that valid first login into an apparent failure that asks the
+        // player to submit the same credentials again.
+        await window.HWAuth.getCurrentUser(true).catch(function (error) {
+          console.warn('HYPHSWORLD post-login hydration warning:', error && error.message || error);
+        });
         return result;
       };
     }

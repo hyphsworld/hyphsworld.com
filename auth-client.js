@@ -201,6 +201,7 @@
   }
   async function signInWithEmail(email, password) {
     email = normalizeEmail(email);
+    clearCurrentUserCache();
     const sb = await getClient();
     if (!sb) return mockSignIn(email, password);
     const { data, error } = await sb.auth.signInWithPassword({ email, password });
@@ -208,6 +209,7 @@
     if (!data || !data.user) throw new Error('No user returned.');
     const session = sessionFromUser(data.user);
     saveLocalSession(session);
+    clearCurrentUserCache();
     saveLocalProfileName(data.user.user_metadata?.displayName || displayFromEmail(email));
     saveLocalAvatar(data.user.user_metadata?.avatarType || 'boy');
     try {
@@ -219,6 +221,8 @@
     } catch (syncError) {
       console.warn('HYPHSWORLD post-login profile sync warning:', syncError && syncError.message || syncError);
     }
+    clearCurrentUserCache();
+    try { document.dispatchEvent(new CustomEvent('hyph:auth-signed-in', { detail: session })); } catch (error) {}
     return session;
   }
   async function signOut() {

@@ -9,7 +9,8 @@
     "lint:css": "node scripts/lint-css.js",
     "lint:js": "node scripts/lint-js.js",
     "diagnostics:consumer": "node scripts/consumer-diagnostic.js",
-    "diagnostics:full": "npm run diagnostics:consumer && npm run diagnostics:security && npm run diagnostics",
+    "diagnostics:login": "node scripts/login-diagnostic.js",
+    "diagnostics:full": "npm run diagnostics:consumer && npm run diagnostics:security && npm run diagnostics:login && npm run diagnostics",
     "diagnostics:security": "node scripts/security-diagnostic.js"
   },
   "devDependencies": {}

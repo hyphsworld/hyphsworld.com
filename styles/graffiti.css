@@ -11,7 +11,7 @@
 }
 
 .hw-graffiti-wall::before {
-  content: 'AMS WEST  HYPHSWORLD  AMS WEST  CASH RUN  01 SHOW  TRACKS  PODCAST';
+  content: 'AMS WEST  HYPHSWORLD  AMS WEST  CHASE THE BAG  01 SHOW  TRACKS  PODCAST';
   position: absolute;
   inset: 5% -10% auto -10%;
   transform: rotate(-8deg);

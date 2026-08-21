@@ -164,13 +164,15 @@
     const style = document.createElement('style');
     style.id = 'hwGlobalPointsHudStyles';
     style.textContent = [
-      '#hwGlobalPointsHud{position:fixed;right:14px;bottom:14px;z-index:9999;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 28px);padding:10px 12px;border:1px solid rgba(69,255,54,.32);border-radius:18px;background:rgba(0,0,0,.78);backdrop-filter:blur(12px);box-shadow:0 0 24px rgba(69,255,54,.16),0 12px 32px rgba(0,0,0,.36);color:#fff;font-family:Arial,Helvetica,sans-serif}',
+      '#hwGlobalPointsHud{position:fixed;right:14px;bottom:14px;z-index:9999;display:grid;grid-template-columns:auto minmax(84px,1fr) auto;align-items:center;gap:10px;max-width:calc(100vw - 28px);padding:10px 12px;border:1px solid rgba(69,255,54,.32);border-radius:18px;background:rgba(0,0,0,.88);backdrop-filter:blur(12px);box-shadow:0 0 24px rgba(69,255,54,.16),0 12px 32px rgba(0,0,0,.36);color:#fff;font-family:Arial,Helvetica,sans-serif}',
       '.hwgp-icon{width:34px;height:34px;display:grid;place-items:center;border-radius:999px;background:linear-gradient(135deg,#39ff7a,#1ffcff,#ff4fd8);color:#050505;font-weight:1000}',
       '#hwGlobalPointsHud strong{display:block;font-size:1.05rem;color:#39ff7a;line-height:1}',
       '#hwGlobalPointsHud span{display:block;font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:#d8ffe5;font-weight:900}',
+      '#hwGlobalPointsHud .hwgp-name{max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff;font-size:.7rem;text-transform:none;letter-spacing:0}',
       '#hwGlobalPointsHud small{padding:5px 8px;border-radius:999px;background:rgba(255,255,255,.08);color:#ffe45c;font-size:.66rem;font-weight:900;white-space:nowrap}',
+      '#hwGlobalPointsHud .hwgp-action{display:inline-flex;align-items:center;justify-content:center;min-height:32px;padding:6px 10px;border-radius:999px;background:linear-gradient(90deg,#39ff7a,#1ffcff);color:#050505;font-size:.68rem;font-weight:1000;text-decoration:none;text-transform:uppercase;letter-spacing:.04em}',
       '#hwGlobalPointsHud.is-live{border-color:rgba(31,252,255,.38);box-shadow:0 0 24px rgba(31,252,255,.16),0 12px 32px rgba(0,0,0,.36)}',
-      '@media(max-width:640px){#hwGlobalPointsHud{left:10px;right:10px;bottom:10px;justify-content:center;border-radius:16px;padding:9px 10px}#hwGlobalPointsHud small{display:none}}'
+      '@media(max-width:640px){#hwGlobalPointsHud{left:10px;right:10px;bottom:10px;border-radius:16px;padding:9px 10px}#hwGlobalPointsHud small{display:none}#hwGlobalPointsHud .hwgp-name{max-width:34vw}}'
     ].join('');
     document.head.appendChild(style);
   }
@@ -181,7 +183,8 @@
 
     hud = document.createElement('aside');
     hud.id = 'hwGlobalPointsHud';
-    hud.innerHTML = '<div class="hwgp-icon" data-hw-avatar>🧢</div><div><strong data-hw-points>0</strong><span>Cool Points</span></div><small data-hw-rank>Login Required</small>';
+    hud.setAttribute('aria-live', 'polite');
+    hud.innerHTML = '<div class="hwgp-icon" data-hw-avatar>🧢</div><div><strong data-hw-points>0</strong><span>Cool Points</span><span class="hwgp-name" data-hw-account-name>Checking login…</span></div><small data-hw-rank>Checking…</small><a class="hwgp-action" data-hw-account-action href="/auth.html">Login</a>';
     document.body.appendChild(hud);
     return hud;
   }
@@ -193,6 +196,8 @@
     const pointsText = safePoints.toLocaleString();
     const rank = state.user ? (state.rankTitle || 'Lobby Rookie') : 'Login Required';
     const avatar = state.avatarIcon || '🧢';
+    const profile = state.profile || state.user || {};
+    const accountName = profile.display_name || profile.displayName || profile.username || profile.email || (state.ready ? 'Guest' : 'Checking login…');
 
     document.querySelectorAll('[data-hw-points], #cool-points, #gateCredits, #wof-points, .js-cool-points, [data-cool-points], #accountCoolPoints').forEach((el) => {
       el.textContent = pointsText;
@@ -207,6 +212,10 @@
     hud.querySelector('[data-hw-avatar]').textContent = avatar;
     hud.querySelector('[data-hw-points]').textContent = pointsText;
     hud.querySelector('[data-hw-rank]').textContent = rank;
+    hud.querySelector('[data-hw-account-name]').textContent = accountName;
+    const action = hud.querySelector('[data-hw-account-action]');
+    action.textContent = state.user ? 'Account' : 'Login';
+    action.href = state.user ? '/account.html' : '/auth.html?next=' + encodeURIComponent(location.pathname + location.search);
     hud.classList.toggle('is-live', Boolean(state.user));
   }
 
@@ -385,6 +394,9 @@
   window.addEventListener('storage', (event) => {
     if (event.key === CACHE_KEY) refresh();
   });
+
+  document.addEventListener('hyph:auth-signed-in', refresh);
+  window.addEventListener('pageshow', refresh);
 
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) refresh();

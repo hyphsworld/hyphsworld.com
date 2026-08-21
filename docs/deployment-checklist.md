@@ -6,8 +6,8 @@ Use this checklist before and after every platform-level change. The goal is to 
 
 - Stable diagnostics run: #350
 - Stable commit reference: 983943f
-- Cash Run page: live
-- Cash Run diagnostics: green
+- Chase the Bag page: live
+- Chase the Bag diagnostics: green
 - Public backend: hardened and online-ready
 
 ## Golden rule
@@ -45,7 +45,7 @@ Treat these as high-risk production zones:
 - Any deployed game bundle
 - Any file containing runtime keys or environment references
 
-Extra care for Cash Run:
+Extra care for Chase the Bag:
 
 - Keep `/games/cash-run/` paths stable.
 - Do not change static JS/CSS asset references unless uploading the matching assets.
@@ -83,7 +83,7 @@ For homepage/platform changes:
 - No duplicate element IDs.
 - HTML files include `<!DOCTYPE html>`.
 
-For Cash Run changes:
+For Chase the Bag changes:
 
 - Game page loads.
 - Canvas appears.
@@ -169,7 +169,7 @@ After deploy, verify:
 
 - `https://hyphsworld.com/` loads.
 - `https://hyphsworld.com/games/cash-run/` loads.
-- Cash Run starts.
+- Chase the Bag starts.
 - Leaderboard page loads.
 - Backend health endpoint responds.
 - No 404s for static JS/CSS assets.
@@ -205,7 +205,7 @@ Phase order:
 3. Platform shell
 4. Homepage districts
 5. Games hub
-6. Cash Run cleanup
+6. Chase the Bag cleanup
 7. Vault / Cool Points
 8. Admin Control Room
 9. Store / drops

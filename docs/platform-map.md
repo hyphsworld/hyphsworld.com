@@ -4,8 +4,8 @@
 
 - Diagnostics green: workflow #350
 - Stable commit reference: 983943f
-- Cash Run page recovered and live
-- Cash Run public backend routes restored and hardened
+- Chase the Bag page recovered and live
+- Chase the Bag public backend routes restored and hardened
 
 This document is the build map for turning HYPHSWORLD into a major platform without breaking the live site.
 
@@ -21,7 +21,7 @@ The main homepage must keep this four-lane order:
 
 ```txt
 1. 01 Show
-2. Casino / Cash Run
+2. Casino / Chase the Bag
 3. Tracks
 4. Podcast
 ```
@@ -41,10 +41,10 @@ Visual direction:
 - Character cards
 - Episode posters
 
-### Lane 2: Casino / Cash Run
+### Lane 2: Casino / Chase the Bag
 
 Purpose:
-- Feature Cash Run
+- Feature Chase the Bag
 - Show the Hidden Casino reward layer
 - Promote Cool Points, power-ups, leaderboards, and VIP-style unlocks
 
@@ -85,13 +85,13 @@ Path: `/`
 
 Purpose:
 - Introduce HYPHSWORLD / AMS WEST
-- Preserve the four-lane layout: 01 Show, Casino / Cash Run, Tracks, Podcast
+- Preserve the four-lane layout: 01 Show, Casino / Chase the Bag, Tracks, Podcast
 - Route users into the platform districts
 
 Key sections:
 - Hero
 - 01 Show lane
-- Casino / Cash Run lane
+- Casino / Chase the Bag lane
 - Tracks lane
 - Podcast lane
 - Footer map
@@ -104,7 +104,7 @@ Future concept:
 Path: `/games/`
 
 Purpose:
-- Central arcade hub for Cash Run and future games
+- Central arcade hub for Chase the Bag and future games
 - Show leaderboards, rewards, and upcoming games
 
 Children:
@@ -115,7 +115,7 @@ Children:
 Future concept:
 - HYPHSWORLD Arcade Passport with badges earned across games.
 
-### 3. Cash Run
+### 3. Chase the Bag
 
 Path: `/games/cash-run/`
 
@@ -268,11 +268,11 @@ Future platform API:
 1. Protect the green build.
 2. Do not remove working files without approval.
 3. Add docs/plans before major rewrites.
-4. Keep Cash Run static paths stable.
+4. Keep Chase the Bag static paths stable.
 5. Run diagnostics after every platform-level change.
 6. Separate public player features from admin-only features.
 7. Keep secrets out of GitHub.
-8. Preserve homepage lane order: 01 Show, Casino / Cash Run, Tracks, Podcast.
+8. Preserve homepage lane order: 01 Show, Casino / Chase the Bag, Tracks, Podcast.
 
 ## Immediate roadmap
 
@@ -288,7 +288,7 @@ Future platform API:
 
 ### Phase 3: Games Hub
 - Add `/games/` landing page.
-- Add Cash Run feature card.
+- Add Chase the Bag feature card.
 - Add power-up guide page.
 
 ### Phase 4: Backend cleanup
