@@ -4,29 +4,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#000000" />
-  <meta name="description" content="Play Chase the Bag, the HYPHSWORLD arcade game." />
+  <meta name="description" content="Play Chase the Bag with your saved HYPHSWORLD ID and Cool Points." />
   <title>Chase the Bag | HYPHSWORLD</title>
   <style>
-    html,
-    body,
-    #root {
-      width: 100%;
-      min-height: 100%;
-      margin: 0;
-      overscroll-behavior:none;
-    }
-
-    body {
-      background: #000;
-      touch-action: manipulation;
-    }
+    html,body,#root{width:100%;min-height:100%;margin:0;overscroll-behavior:none}
+    body{background:#000;touch-action:manipulation}
+    html:not(.hw-id-ready) #root{visibility:hidden}
+    #loginCheck{position:fixed;inset:0;z-index:999999;display:grid;place-items:center;background:#000;color:#fff;font-family:Arial,sans-serif;text-align:center;padding:24px}
+    #loginCheck strong{display:block;font-size:clamp(1.8rem,8vw,4rem);text-transform:uppercase;margin-bottom:10px}html.hw-id-ready #loginCheck{display:none}
   </style>
   <script>
     window.HW_SUPABASE_URL = 'https://yuhxtdkhsltaqiagrtys.supabase.co';
     window.HW_SUPABASE_ANON_KEY = 'sb_publishable_oYdN-75W3b7k3m1zLukI-A_BKWVDD5e';
     window.SUPABASE_ANON_KEY = window.HW_SUPABASE_ANON_KEY;
+    window.HW_SUPABASE_CONFIG = { url: window.HW_SUPABASE_URL, anonKey: window.HW_SUPABASE_ANON_KEY, profileTable: 'profiles' };
   </script>
-  <!-- Load the complete account bootstrap before either the game or its bridge. -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/supabase-config.js"></script>
+  <script src="/auth-client.js"></script>
+  <script src="/require-login.js"></script>
   <script src="/cool-points.js"></script>
   <script defer src="/chase-the-bag-wallet.js"></script>
   <script defer src="/global-points-engine.js"></script>
@@ -35,6 +31,7 @@
   <link href="/games/cash-run/static/css/main.2be1f31f.css" rel="stylesheet" />
 </head>
 <body>
+  <div id="loginCheck"><div><strong>Checking HYPHSWORLD ID…</strong><span>Login once. Then play and earn everywhere.</span></div></div>
   <noscript>You need to enable JavaScript to play Chase the Bag.</noscript>
   <div id="root"></div>
 </body>
