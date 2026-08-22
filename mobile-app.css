@@ -1,0 +1,56 @@
+/* Mobile app shell: safe areas, reachable controls, and compact phone layouts. */
+html { -webkit-text-size-adjust: 100%; }
+
+body.home-page {
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+.app-install-card {
+  width: min(720px, calc(100% - 24px));
+  margin: 10px auto 0;
+  padding: 10px 12px;
+  display: none;
+  grid-template-columns: 44px minmax(0, 1fr) auto 36px;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(69, 255, 54, .5);
+  border-radius: 18px;
+  background: rgba(5, 5, 8, .94);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .38), 0 0 22px rgba(69, 255, 54, .12);
+}
+
+.app-install-card.is-visible { display: grid; }
+.app-install-icon { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, #45ff36, #1ffcff, #ff4fd8); color: #050505; font-weight: 1000; }
+.app-install-copy { display: grid; gap: 2px; min-width: 0; }
+.app-install-copy strong { color: #fff; font-size: .92rem; }
+.app-install-copy span { color: #b8bdc9; font-size: .76rem; line-height: 1.25; }
+.app-install-button, .app-install-dismiss { min-height: 44px; border: 0; cursor: pointer; font-weight: 950; }
+.app-install-button { padding: 0 16px; border-radius: 999px; background: #45ff36; color: #050505; white-space: nowrap; }
+.app-install-dismiss { width: 36px; padding: 0; background: transparent; color: #fff; font-size: 1.5rem; }
+.app-install-button:focus-visible, .app-install-dismiss:focus-visible { outline: 3px solid #ffe45c; outline-offset: 2px; }
+
+@media (max-width: 620px) {
+  .home-page .site-header { top: env(safe-area-inset-top); }
+  .home-page .section-card { padding: 18px 14px; border-radius: 22px; }
+  .home-page .homepage-full-episode-frame, .home-page .podcast-video-shell { border-radius: 18px; }
+  .home-page .support-paypal-btn, .home-page .cash-run-button { min-height: 48px; }
+  .home-page .button-row .btn, .home-page .compact-actions .btn, .home-page .player-controls .btn { min-height: 44px !important; }
+  .home-page input[type="range"] { min-height: 44px; }
+  .app-install-card { grid-template-columns: 40px minmax(0, 1fr) 36px; }
+  .app-install-icon { width: 40px; height: 40px; }
+  .app-install-button { grid-column: 2 / 3; width: 100%; }
+  .app-install-dismiss { grid-column: 3; grid-row: 1; }
+  .site-footer { padding-bottom: calc(30px + env(safe-area-inset-bottom)); }
+}
+
+@media (max-width: 380px) {
+  .home-page .hero-shell, .home-page .section-pad { padding-left: 8px; padding-right: 8px; }
+  .home-page h2 { font-size: clamp(1.75rem, 10vw, 2.5rem); }
+  .home-page .progress-wrap { grid-template-columns: 34px minmax(0, 1fr) 34px; gap: 6px; font-size: .72rem; }
+}
+
+@media (display-mode: standalone) {
+  .app-install-card { display: none !important; }
+  body.home-page { padding-top: env(safe-area-inset-top); }
+}

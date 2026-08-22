@@ -2,13 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>HYPHSWORLD | MONEY COUNTER</title>
   <meta name="description" content="HYPHSWORLD by Hyph Life and AMS WEST. MONEY COUNTER by Hyph Life, produced by K.M.T, is featured now with music, Vault drops, Duck Sauce guide, Cool Points, casino games, leaderboards, and direct fan access." />
   <meta property="og:title" content="HYPHSWORLD | MONEY COUNTER" />
   <meta property="og:description" content="Hyph Life is now featured with MONEY COUNTER, produced by K.M.T. Casino lobby, direct fan access, Vault drops, and HYPHSWORLD updates." />
   <meta property="og:image" content="album-art.jpg" />
   <meta name="theme-color" content="#00ff66" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="HYPHSWORLD" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
 
   <link rel="stylesheet" href="styles.css" />
@@ -18,6 +22,10 @@
   <link rel="stylesheet" href="transport-system.css" />
   <link rel="stylesheet" href="o1-show-links.css" />
   <link rel="stylesheet" href="global-button-pop.css" />
+  <link rel="stylesheet" href="mobile-app.css?v=20260822-1" />
+  <link rel="manifest" href="site.webmanifest" />
+  <link rel="icon" href="app-icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="ams-logo.jpg" />
 
   <script>
     window.HW_SUPABASE_URL = 'https://yuhxtdkhsltaqiagrtys.supabase.co';
@@ -120,6 +128,16 @@
     </nav>
   </header>
 
+  <aside class="app-install-card" id="app-install-card" aria-labelledby="app-install-title">
+    <div class="app-install-icon" aria-hidden="true">HW</div>
+    <div class="app-install-copy">
+      <strong id="app-install-title">Take HYPHSWORLD with you</strong>
+      <span id="app-install-message">Install the mobile app for a full-screen, one-tap experience.</span>
+    </div>
+    <button class="app-install-button" id="app-install-button" type="button">Install app</button>
+    <button class="app-install-dismiss" id="app-install-dismiss" type="button" aria-label="Dismiss app install message">×</button>
+  </aside>
+
   <main>
     <section class="ticker" aria-label="HYPHSWORLD ticker">
       <div class="ticker-track"><span>WELCOME 2 HYPHSWORLD</span><b>✦</b><span>HYPH LIFE AKA SLIDE DREXLER</span><b>✦</b><span>MONEY COUNTER NOW PLAYING</span><b>✦</b><span>ARTIST SPOTLIGHT LIVE</span><b>✦</b><span>CASINO FLOOR OPEN</span><b>✦</b><span>NEW VIDEO ON THE TOP SCREEN</span><b>✦</b><span>SEND COOL POINTS VIA PAYPAL</span><b>✦</b><span>PODCAST RESTORED</span><b>✦</b></div>
@@ -216,5 +234,6 @@
   <script src="transport-system.js?v=20260720-touch-recovery-2"></script>
   <script src="homepage-menu.js?v=language-selector-20260804-1"></script>
   <script src="homepage-menu-tap-fix.js?v=hard-menu-recovery-20260801-1"></script>
+  <script src="mobile-app.js?v=20260822-1"></script>
 </body>
 </html>
