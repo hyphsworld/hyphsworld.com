@@ -1,0 +1,20 @@
+{
+  "name": "HYPHSWORLD",
+  "short_name": "HYPHSWORLD",
+  "description": "Music, videos, Cool Points, games, and exclusive HYPHSWORLD drops.",
+  "start_url": "./index.html?source=app",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#050505",
+  "theme_color": "#00ff66",
+  "categories": ["music", "entertainment", "games"],
+  "icons": [
+    { "src": "app-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Listen", "url": "./app-player.html", "description": "Open the HYPHSWORLD music player" },
+    { "name": "Casino", "url": "./games.html", "description": "Enter the HYPHSWORLD casino" },
+    { "name": "Vault", "url": "./vault.html", "description": "Open the HYPHSWORLD Vault" }
+  ]
+}
