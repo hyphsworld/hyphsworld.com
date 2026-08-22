@@ -14,6 +14,61 @@ import {
 import { getTheme, getDifficulty, POWERUP_TYPES } from "./themes";
 import { audio } from "./audio";
 
+// Character sprites — loaded once, background-keyed (transparent), reused across engines.
+const CHAR_URLS = {
+    boy:  "https://customer-assets-cm19k8pv.emergentagent.net/job_cash-runner-game/artifacts/lsq3ji5w_IMG_6613.png",
+    girl: "https://customer-assets-cm19k8pv.emergentagent.net/job_cash-runner-game/artifacts/a6esd831_IMG_6641.jpeg",
+};
+const CHAR_SPRITES = {};   // { key: HTMLCanvasElement } — processed sprite
+const CHAR_LOADING = {};   // { key: Promise } — in-flight
+
+function keyOutBackground(img) {
+    // Copy image to a canvas and knock out near-white and near-black pixels
+    // so the source-art background disappears in-game.
+    const c = document.createElement("canvas");
+    // Crop out bottom "CHASE THE BAG" text — keep top 62%
+    const sw = img.naturalWidth;
+    const sh = Math.floor(img.naturalHeight * 0.62);
+    c.width = sw;
+    c.height = sh;
+    const g = c.getContext("2d");
+    g.drawImage(img, 0, 0, sw, sh, 0, 0, sw, sh);
+    try {
+        const data = g.getImageData(0, 0, sw, sh);
+        const px = data.data;
+        for (let i = 0; i < px.length; i += 4) {
+            const r = px[i], gg = px[i + 1], b = px[i + 2];
+            // Near-white (light JPEG bg)
+            if (r > 235 && gg > 235 && b > 235) { px[i + 3] = 0; continue; }
+            // Near-black (dark PNG bg) — but avoid killing legitimate black clothing.
+            // Only strip near-pure-black around the border ring.
+            if (r < 14 && gg < 14 && b < 14) { px[i + 3] = 0; }
+        }
+        g.putImageData(data, 0, 0);
+    } catch { /* CORS may block; fall back to raw draw */ }
+    return c;
+}
+
+function loadCharSprite(key) {
+    if (CHAR_SPRITES[key]) return CHAR_SPRITES[key];
+    if (CHAR_LOADING[key]) return null;
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    CHAR_LOADING[key] = new Promise((resolve) => {
+        img.onload = () => {
+            CHAR_SPRITES[key] = keyOutBackground(img);
+            resolve(CHAR_SPRITES[key]);
+        };
+        img.onerror = () => resolve(null);
+    });
+    img.src = CHAR_URLS[key];
+    return null;
+}
+
+// Kick off loads at module import
+loadCharSprite("boy");
+loadCharSprite("girl");
+
 const DIRS = {
     up:    { dc:  0, dr: -1 },
     down:  { dc:  0, dr:  1 },
@@ -1041,7 +1096,7 @@ export class CashRunEngine {
         if (this.activePower?.type === "shield") {
             ctx.strokeStyle = "rgba(108, 242, 255, 0.85)";
             ctx.lineWidth = 2;
-            const r = 12 + Math.sin(performance.now() / 100) * 1.5;
+            const r = 16 + Math.sin(performance.now() / 100) * 1.5;
             ctx.beginPath();
             ctx.arc(cx, cy, r, 0, Math.PI * 2);
             ctx.stroke();
@@ -1051,8 +1106,8 @@ export class CashRunEngine {
             ctx.lineWidth = 2;
             for (let i = 0; i < 3; i++) {
                 ctx.beginPath();
-                ctx.moveTo(cx - dir.dc * (8 + i * 4), cy - dir.dr * (8 + i * 4) - 3);
-                ctx.lineTo(cx - dir.dc * (12 + i * 4), cy - dir.dr * (12 + i * 4) - 3);
+                ctx.moveTo(cx - dir.dc * (10 + i * 4), cy - dir.dr * (10 + i * 4) - 3);
+                ctx.lineTo(cx - dir.dc * (14 + i * 4), cy - dir.dr * (14 + i * 4) - 3);
                 ctx.stroke();
             }
         }
@@ -1060,105 +1115,36 @@ export class CashRunEngine {
             ctx.fillStyle = "#d36cff";
             ctx.font = "bold 10px 'IBM Plex Mono', monospace";
             ctx.textAlign = "center";
-            ctx.fillText("x2", cx + 9, cy - 9);
+            ctx.fillText("x2", cx + 12, cy - 12);
         }
 
-        const isGirl = this.character === "girl";
-        const skin = "#ffd1a8";
-        const shirt = isGirl ? "#d36cff" : "#3a72d8";
-        const shirtDark = isGirl ? "#9c47c0" : "#1f4ea0";
-        const pant = isGirl ? "#1a1a2a" : "#2a1a0a";
-        const shoe = "#0a0a0c";
-        const hair = isGirl ? "#3a1f10" : "#1a0e06";
-        const cap  = isGirl ? "#ff6cb4" : "#1a1a2a";
-
-        // Running animation phase — based on movement progress
+        const sprite = loadCharSprite(this.character);
+        // Slight running bob
         const phase = (p.col + p.row) * 1.9 + performance.now() / 90;
-        const swA = Math.sin(phase) * 3.5;
-        const swB = Math.sin(phase + Math.PI) * 3.5;
+        const bob = Math.sin(phase) * 1.2;
 
-        ctx.save();
-        ctx.translate(cx, cy);
-        if (dir.dc < 0) ctx.scale(-1, 1);
+        const spriteSize = 34; // draw a bit larger than tile for presence
 
-        // Legs
-        ctx.fillStyle = pant;
-        ctx.fillRect(-3, 3, 2.6, 6 + swA / 2);
-        ctx.fillRect(0.4, 3, 2.6, 6 + swB / 2);
-        // Shoes (sneakers)
-        ctx.fillStyle = shoe;
-        ctx.fillRect(-3.6, 8 + swA / 2, 3.6, 1.8);
-        ctx.fillRect(0, 8 + swB / 2, 3.6, 1.8);
-        ctx.fillStyle = "#fff";
-        ctx.fillRect(-3.6, 9.4 + swA / 2, 3.6, 0.6);
-        ctx.fillRect(0, 9.4 + swB / 2, 3.6, 0.6);
+        if (sprite) {
+            const sw = sprite.width;
+            const sh = sprite.height;
+            // fit within spriteSize preserving aspect
+            const scale = spriteSize / Math.max(sw, sh);
+            const dw = sw * scale;
+            const dh = sh * scale;
 
-        // Torso (shirt with seam)
-        ctx.fillStyle = shirt;
-        ctx.fillRect(-4.5, -4, 9, 8);
-        ctx.fillStyle = shirtDark;
-        ctx.fillRect(-4.5, 2, 9, 2);
-
-        // Arms (swing opposite to legs); back arm partly hidden
-        ctx.fillStyle = shirt;
-        ctx.fillRect(-6, -3, 2, 5 + swB / 2);     // back arm
-        ctx.fillRect(4, -3, 2, 5 + swA / 2);      // front arm
-
-        // Cash bundle in the front (forward) hand
-        const handY = 2 + swA / 2;
-        ctx.fillStyle = "#3a8a4f";
-        ctx.fillRect(4, handY - 1, 6, 4);
-        ctx.fillStyle = "#5cc46f";
-        ctx.fillRect(4, handY - 1, 6, 1);
-        ctx.fillStyle = "#d4af37";
-        ctx.fillRect(6.4, handY - 1, 1.4, 4);
-        ctx.fillStyle = "#fff5c8";
-        ctx.fillRect(5.5, handY + 0.4, 1, 1);
-
-        // Back hand (skin)
-        ctx.fillStyle = skin;
-        ctx.fillRect(-6, 2 + swB / 2, 2, 1.6);
-
-        // Head
-        ctx.fillStyle = skin;
-        ctx.beginPath();
-        ctx.arc(0, -7, 4, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Eye (forward facing dot)
-        ctx.fillStyle = "#0a0a0c";
-        ctx.fillRect(1.4, -8, 1.5, 1.5);
-        // Subtle smile
-        ctx.fillStyle = "#7a3a2e";
-        ctx.fillRect(0.6, -5.6, 2, 0.8);
-
-        // Hair / Cap
-        if (isGirl) {
-            // Long hair behind
-            ctx.fillStyle = hair;
-            ctx.beginPath();
-            ctx.arc(0, -7.2, 4.4, Math.PI * 1.05, Math.PI * 1.95);
-            ctx.fill();
-            // Ponytail
-            ctx.fillRect(-5, -7, 2, 6);
-            // Bow
-            ctx.fillStyle = cap;
-            ctx.fillRect(-2.4, -11, 4.8, 2.2);
-            ctx.fillStyle = "#ffb0d4";
-            ctx.fillRect(-0.6, -11, 1.2, 2.2);
+            ctx.save();
+            ctx.translate(cx, cy + bob);
+            // Flip horizontally when facing left. Source art faces right by default.
+            if (dir.dc < 0) ctx.scale(-1, 1);
+            ctx.drawImage(sprite, -dw / 2, -dh / 2, dw, dh);
+            ctx.restore();
         } else {
-            // Short hair tuft
-            ctx.fillStyle = hair;
-            ctx.fillRect(-4, -10.6, 8, 2.4);
-            // Backwards baseball cap
-            ctx.fillStyle = cap;
-            ctx.fillRect(-4.2, -10.6, 8.4, 3);
-            ctx.fillRect(-5.6, -8.4, 2, 1.4);     // brim back (visible since flipped)
-            ctx.fillStyle = "#ffd84a";
-            ctx.fillRect(-0.8, -9.6, 1.6, 1.4);    // logo
+            // Fallback while image loads — small colored circle
+            ctx.fillStyle = this.character === "girl" ? "#ff3ec8" : "#e0413a";
+            ctx.beginPath();
+            ctx.arc(cx, cy + bob, 8, 0, Math.PI * 2);
+            ctx.fill();
         }
-
-        ctx.restore();
     }
 }
-

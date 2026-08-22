@@ -123,12 +123,12 @@ export default function Menu() {
                 {/* Hints */}
                 <div className="cr-card max-w-xl text-center cr-float">
                     <div className="font-arcade text-xl mb-3" style={{ color: "var(--cr-gold)" }}>
-                        the streets level up with you
+                        chase the bag with tonio & nikki
                     </div>
                     <p className="font-mono text-sm" style={{ color: "var(--cr-ink-dim)" }}>
                         Boot up in the Neo-Slum. Stack credits. Each level pushes you uptown — from rusted alleys
-                        to the Aurum Spire. Watch the heat: red thugs chase you straight, blue cops cut you off.
-                        Grab the BIG cash to invert the hunt.
+                        to the Aurum Spire. Red thugs chase you straight, blue cops cut you off.
+                        Grab the BIG cash to flip the hunt.
                     </p>
                 </div>
 
