@@ -238,7 +238,10 @@
   async function getSession() {
     const sb = await getClient();
     if (!sb) return localSession();
-    const { data } = await sb.auth.getSession();
+    const { data, error } = await sb.auth.getSession();
+    // Do not erase a valid remembered login because of a temporary token or
+    // network read failure. The next check can refresh the Supabase session.
+    if (error) return localSession();
     if (!data || !data.session || !data.session.user) { clearLocalSession(); return null; }
     const session = sessionFromUser(data.session.user);
     saveLocalSession(session);
