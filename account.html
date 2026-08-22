@@ -3,154 +3,106 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Manage Account | HYPHSWORLD</title>
-  <meta name="description" content="Manage your HYPHSWORLD ID, Duck Sauce notes, Buck clearance, Cool Points, and logout." />
+  <title>My HYPHSWORLD ID</title>
+  <meta name="description" content="Login once to your HYPHSWORLD ID, play across the site, and keep your Cool Points synced." />
   <link rel="stylesheet" href="auth.css" />
   <script src="site-analytics.js" defer></script>
   <style>
-    .hw-user-chip{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 12px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(0,0,0,.35);font-weight:900;box-shadow:0 0 18px rgba(57,255,122,.16);margin-top:12px}
-    .hw-user-icon{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:999px;background:linear-gradient(135deg,#39ff7a,#1ffcff,#ff4fd8);color:#050505;font-size:1rem}
-    .hw-user-points{padding:5px 8px;border-radius:999px;background:#39ff7a;color:#050505;font-size:.78rem;font-weight:1000}
-    .identity-studio,.avatar-picker,.avatar-studio{border:1px solid rgba(57,255,122,.28);border-radius:22px;padding:14px;margin:14px 0;background:radial-gradient(circle at 10% 0%,rgba(57,255,122,.14),transparent 34%),rgba(0,0,0,.22);box-shadow:0 0 24px rgba(57,255,122,.08)}
-    .identity-studio h2,.avatar-picker legend,.avatar-studio h2{font-weight:1000;padding:0 8px;letter-spacing:.04em;text-transform:uppercase;margin:0 0 8px}
-    .identity-studio p,.avatar-picker-note,.avatar-studio p{margin:4px 0 12px;color:rgba(255,255,255,.72);font-size:.88rem;font-weight:800;line-height:1.35}
-    .display-name-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:end}
-    .display-name-row label{display:grid;gap:6px;font-weight:1000;color:#fff}.display-name-row input{min-height:48px}.display-name-row button{min-height:48px;background:linear-gradient(90deg,#39ff7a,#1ffcff,#ffe45c);color:#050505;font-weight:1000;text-transform:uppercase;letter-spacing:.06em}.display-live-preview{display:flex;align-items:center;gap:10px;margin-top:12px;padding:12px;border-radius:18px;background:rgba(0,0,0,.32);border:1px solid rgba(255,255,255,.12);font-weight:1000}.display-live-preview span:first-child{display:grid;place-items:center;width:44px;height:44px;border-radius:999px;background:linear-gradient(135deg,#39ff7a,#1ffcff,#ff4fd8);color:#050505;font-size:1.5rem}.display-live-preview strong{color:#39ff7a}
-    .avatar-choice-row,.avatar-studio-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:10px;margin-top:8px}
-    .avatar-choice-row label,.avatar-studio button{position:relative;display:grid;place-items:center;gap:6px;min-height:86px;padding:12px;border-radius:20px;border:1px solid rgba(255,255,255,.18);background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(0,0,0,.24));cursor:pointer;font-weight:1000;text-align:center;color:#fff;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease,background .18s ease}
-    .avatar-choice-row label:hover,.avatar-studio button:hover{transform:translateY(-2px);border-color:rgba(57,255,122,.48);box-shadow:0 12px 28px rgba(0,0,0,.24),0 0 22px rgba(57,255,122,.12)}
-    .avatar-choice-row input{position:absolute;opacity:0;pointer-events:none}
-    .avatar-choice-row input:checked + span,.avatar-studio button.is-active .avatar-studio-icon{transform:scale(1.12);box-shadow:0 0 0 3px rgba(57,255,122,.22),0 0 28px rgba(57,255,122,.28)}
-    .avatar-choice-row input:checked ~ strong,.avatar-studio button.is-active strong{color:#39ff7a}
-    .avatar-choice-row label:has(input:checked),.avatar-studio button.is-active{border-color:#39ff7a;background:radial-gradient(circle at 50% 0%,rgba(57,255,122,.25),transparent 56%),rgba(0,0,0,.38)}
-    .avatar-choice-row span,.avatar-studio-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:999px;background:linear-gradient(135deg,#39ff7a,#1ffcff,#ff4fd8);color:#050505;font-size:1.45rem;transition:.18s ease}
-    .avatar-choice-row strong,.avatar-studio strong{display:block;font-size:.78rem;color:#fff;letter-spacing:.02em}
-    .avatar-live-preview{display:flex;align-items:center;gap:10px;margin-top:12px;padding:12px;border-radius:18px;background:rgba(0,0,0,.32);border:1px solid rgba(255,255,255,.12);font-weight:1000}
-    .avatar-live-preview span:first-child{display:grid;place-items:center;width:44px;height:44px;border-radius:999px;background:linear-gradient(135deg,#39ff7a,#1ffcff,#ff4fd8);color:#050505;font-size:1.5rem}
-    @media(max-width:640px){.display-name-row{grid-template-columns:1fr}.avatar-choice-row,.avatar-studio-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hw-user-chip{border-radius:18px}}
+    body{background:#020703;color:#fff}
+    .account-shell{max-width:880px;margin:0 auto;padding:28px 18px 120px}
+    .account-card{border:1px solid rgba(57,255,122,.34);border-radius:30px;background:radial-gradient(circle at 10% 0%,rgba(57,255,122,.14),transparent 34%),#071008;box-shadow:0 24px 80px rgba(0,0,0,.5);padding:clamp(22px,5vw,42px)}
+    .mini-kicker{display:inline-flex;padding:8px 14px;border-radius:999px;background:linear-gradient(90deg,#39ff7a,#1ffcff,#ffe45c);color:#050505;font-weight:1000;letter-spacing:.14em;text-transform:uppercase}
+    h1{font-size:clamp(2.6rem,9vw,5.5rem);line-height:.9;margin:18px 0 12px;text-transform:uppercase;letter-spacing:-.055em}
+    .sub{color:rgba(255,255,255,.72);font-weight:800;line-height:1.55}
+    .login-gate{padding:28px;margin-top:24px;text-align:center;border:1px solid rgba(57,255,122,.28);border-radius:26px;background:rgba(0,0,0,.32)}
+    .login-gate h2{font-size:clamp(2rem,7vw,3.5rem);margin:0 0 10px;text-transform:uppercase}
+    .login-gate p{max-width:600px;margin:0 auto 20px;color:rgba(255,255,255,.72);font-weight:800;line-height:1.55}
+    .auth-pill,.play-pill,button{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 20px;border:0;border-radius:999px;background:linear-gradient(90deg,#39ff7a,#1ffcff,#ffe45c);color:#050505!important;font-weight:1000;text-decoration:none;cursor:pointer}
+    .user-head{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin:18px 0}
+    .hw-user-chip{display:inline-flex;align-items:center;gap:10px;padding:10px 14px;border-radius:999px;background:#000;border:1px solid rgba(255,255,255,.18);font-weight:1000}
+    .hw-user-icon{display:grid;place-items:center;width:38px;height:38px;border-radius:999px;background:linear-gradient(135deg,#39ff7a,#1ffcff,#ff4fd8)}
+    .hw-user-points{padding:6px 9px;border-radius:999px;background:#39ff7a;color:#050505}
+    .account-points{padding:14px 18px;border-radius:20px;background:#000;border:1px solid rgba(255,255,255,.16)}
+    .account-points span{display:block;color:rgba(255,255,255,.7);font-weight:900;text-transform:uppercase}.account-points strong{font-size:2.6rem;color:#ffe45c}
+    .identity-studio,.avatar-studio,.account-panel{border:1px solid rgba(57,255,122,.28);border-radius:24px;padding:18px;margin:16px 0;background:rgba(0,0,0,.25)}
+    .identity-studio h2,.avatar-studio h2,.account-panel h2{margin:0 0 8px;text-transform:uppercase}
+    .display-name-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:end}.display-name-row label{font-weight:900}.display-name-row input{width:100%;min-height:50px;margin-top:7px;border-radius:14px;padding:0 14px}
+    .avatar-studio-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.avatar-studio-grid button{min-height:78px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:#fff!important;border-radius:18px;display:grid;gap:5px}.avatar-studio-grid button.is-active{border-color:#39ff7a;box-shadow:0 0 22px rgba(57,255,122,.2)}.avatar-studio-icon{font-size:1.6rem}
+    .status-stack{display:grid;gap:8px}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}.actions a{color:#fff;font-weight:900}.actions #logoutBtn{background:#ff315e;color:#fff!important}
+    .message{margin:14px 0;font-weight:900}.message.warn{color:#ffe45c}.message.success{color:#75ff75}.message.error{color:#ff6b83}
+    body:not(.is-logged-in) #signedInContent,body:not(.is-logged-in) .account-points,body:not(.is-logged-in) [data-user-widget]{display:none!important}
+    body.is-logged-in #loggedOutPanel{display:none!important}
+    @media(max-width:640px){.avatar-studio-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.display-name-row{grid-template-columns:1fr}}
   </style>
 </head>
-<body class="account-page">
-  <main class="auth-shell account-shell">
-    <section class="card account-card">
-      <div class="account-head">
-        <div>
-          <p class="mini-kicker">AMS WEST ID OFFICE</p>
-          <h1>Manage Account</h1>
-          <p class="sub">Buck checks the account. Duck Sauce adds unnecessary notes.</p>
-          <div class="hw-user-chip" data-user-widget role="group" aria-label="User profile widget">
-            <span class="hw-user-icon" aria-hidden="true">🧢</span><span class="hw-user-name">Guest</span><span class="hw-user-points">0 CP</span>
-          </div>
+<body class="account-page is-loading-account">
+  <main class="account-shell">
+    <section class="account-card">
+      <p class="mini-kicker">AMS WEST ID</p>
+      <h1>My HYPHSWORLD ID</h1>
+      <p class="sub">Login one time. Then play across HYPHSWORLD and keep the same Cool Points, name, and profile everywhere.</p>
+
+      <div class="user-head">
+        <div class="hw-user-chip" data-user-widget role="group" aria-label="User profile widget">
+          <span class="hw-user-icon">🧢</span><span class="hw-user-name">Guest</span><span class="hw-user-points">0 CP</span>
         </div>
-        <div class="account-points">
-          <span>Cool Points</span>
-          <strong id="accountCoolPoints">0</strong>
-        </div>
+        <div class="account-points"><span>Cool Points</span><strong id="accountCoolPoints">0</strong></div>
       </div>
 
       <div id="message" class="message" role="status" aria-live="polite"></div>
 
-      <section class="identity-studio" id="identityStudio" aria-label="Change display name anytime">
-        <h2>Display Name Studio</h2>
-        <p>Change the name users see on your HYPHSWORLD ID, homepage chip, account badge, and HUD.</p>
-        <div class="display-name-row">
-          <label>Display Name
-            <input id="displayNameStudio" type="text" maxlength="40" placeholder="Example: Hyph Life" autocomplete="nickname" />
-          </label>
-          <button id="saveDisplayNameBtn" type="button">Save Name</button>
-        </div>
-        <div class="display-live-preview"><span id="displayPreviewIcon">🧢</span><span>Current name: <strong id="displayPreviewText">Guest</strong></span></div>
+      <section id="loggedOutPanel" class="login-gate">
+        <h2>Login Once. Play Everything.</h2>
+        <p>Create or login to your HYPHSWORLD ID. After that, games use the same saved session automatically and your Cool Points stay connected to your account.</p>
+        <a class="auth-pill" href="auth.html?next=games.html">Login / Create ID</a>
       </section>
 
-      <section class="avatar-studio" id="avatarStudio" aria-label="Change avatar anytime">
-        <h2>Avatar Studio</h2>
-        <p>Change your icon anytime. It updates the homepage chip, account badge, and HUD immediately.</p>
-        <div class="avatar-studio-grid">
-          <button type="button" data-avatar-pick="boy"><span class="avatar-studio-icon">🧢</span><strong>Man</strong></button>
-          <button type="button" data-avatar-pick="girl"><span class="avatar-studio-icon">💅</span><strong>Woman</strong></button>
-          <button type="button" data-avatar-pick="fox"><span class="avatar-studio-icon">🦊</span><strong>Fox</strong></button>
-          <button type="button" data-avatar-pick="lion"><span class="avatar-studio-icon">🦁</span><strong>Lion</strong></button>
-          <button type="button" data-avatar-pick="panda"><span class="avatar-studio-icon">🐼</span><strong>Panda</strong></button>
-          <button type="button" data-avatar-pick="wolf"><span class="avatar-studio-icon">🐺</span><strong>Wolf</strong></button>
-          <button type="button" data-avatar-pick="alien"><span class="avatar-studio-icon">👽</span><strong>Alien</strong></button>
-          <button type="button" data-avatar-pick="robot"><span class="avatar-studio-icon">🤖</span><strong>Robot</strong></button>
-          <button type="button" data-avatar-pick="ghost"><span class="avatar-studio-icon">👻</span><strong>Ghost</strong></button>
-          <button type="button" data-avatar-pick="ninja"><span class="avatar-studio-icon">🥷</span><strong>Ninja</strong></button>
-          <button type="button" data-avatar-pick="crown"><span class="avatar-studio-icon">👑</span><strong>Crown</strong></button>
-          <button type="button" data-avatar-pick="diamond"><span class="avatar-studio-icon">💎</span><strong>Diamond</strong></button>
+      <div id="signedInContent">
+        <div class="actions">
+          <a class="play-pill" href="games.html">🎮 Play Games</a>
+          <a class="play-pill" href="games/cash-run/">🏃 Chase The Bag</a>
+          <a class="play-pill" href="daily-wheel.html">🎡 Daily Spin</a>
         </div>
-        <div class="avatar-live-preview"><span id="avatarPreviewIcon">🧢</span><span id="avatarPreviewText">Current icon: Man</span></div>
-      </section>
 
-      <section id="accountPanel" class="account-grid" hidden>
-        <form id="profileForm" class="panel account-panel">
-          <h2>ID Settings</h2>
-          <label>Display Name
-            <input id="displayName" type="text" maxlength="40" placeholder="Example: Hyph Life" />
-          </label>
-          <fieldset class="avatar-picker">
-            <legend>Identity Icon</legend>
-            <p class="avatar-picker-note">This mirrors Avatar Studio, so the selected badge is always the same.</p>
-            <div class="avatar-choice-row" id="avatarChoiceRow">
-              <label><input type="radio" name="avatarType" value="boy" id="avatarBoy" checked /><span>🧢</span><strong>Man</strong></label>
-              <label><input type="radio" name="avatarType" value="girl" id="avatarGirl" /><span>💅</span><strong>Woman</strong></label>
-              <label><input type="radio" name="avatarType" value="fox" /><span>🦊</span><strong>Fox</strong></label>
-              <label><input type="radio" name="avatarType" value="lion" /><span>🦁</span><strong>Lion</strong></label>
-              <label><input type="radio" name="avatarType" value="panda" /><span>🐼</span><strong>Panda</strong></label>
-              <label><input type="radio" name="avatarType" value="wolf" /><span>🐺</span><strong>Wolf</strong></label>
-              <label><input type="radio" name="avatarType" value="alien" /><span>👽</span><strong>Alien</strong></label>
-              <label><input type="radio" name="avatarType" value="robot" /><span>🤖</span><strong>Robot</strong></label>
-              <label><input type="radio" name="avatarType" value="ghost" /><span>👻</span><strong>Ghost</strong></label>
-              <label><input type="radio" name="avatarType" value="ninja" /><span>🥷</span><strong>Ninja</strong></label>
-              <label><input type="radio" name="avatarType" value="crown" /><span>👑</span><strong>Crown</strong></label>
-              <label><input type="radio" name="avatarType" value="diamond" /><span>💎</span><strong>Diamond</strong></label>
-            </div>
-          </fieldset>
-          <label>Duck Sauce Account Note
-            <input id="duckStatus" type="text" maxlength="90" placeholder="Example: Duck owes me points" />
-          </label>
-          <label>Buck Clearance
-            <select id="buckClearance">
-              <option>Lobby clearance only</option>
-              <option>Vault regular — no foolishness</option>
-              <option>Level 1 cleared, Buck still watching</option>
-              <option>VIP rope maybe, depends on shoes</option>
-              <option>Duck Sauce tried to vouch — denied</option>
-            </select>
-          </label>
-          <button type="submit">Save Account</button>
-        </form>
+        <section class="identity-studio" id="identityStudio">
+          <h2>Display Name</h2>
+          <p class="sub">This name follows your HYPHSWORLD ID everywhere.</p>
+          <div class="display-name-row">
+            <label>Display Name<input id="displayNameStudio" type="text" maxlength="40" placeholder="Example: Hyph Life" autocomplete="nickname" /></label>
+            <button id="saveDisplayNameBtn" type="button">Save</button>
+          </div>
+          <div style="margin-top:12px;font-weight:900"><span id="displayPreviewIcon">🧢</span> <strong id="displayPreviewText">Guest</strong></div>
+        </section>
 
-        <article class="panel account-panel">
-          <h2>Account Status</h2>
+        <section class="avatar-studio" id="avatarStudio">
+          <h2>Choose Your Icon</h2>
+          <div class="avatar-studio-grid">
+            <button type="button" data-avatar-pick="boy"><span class="avatar-studio-icon">🧢</span><strong>Man</strong></button>
+            <button type="button" data-avatar-pick="girl"><span class="avatar-studio-icon">💅</span><strong>Woman</strong></button>
+            <button type="button" data-avatar-pick="fox"><span class="avatar-studio-icon">🦊</span><strong>Fox</strong></button>
+            <button type="button" data-avatar-pick="lion"><span class="avatar-studio-icon">🦁</span><strong>Lion</strong></button>
+            <button type="button" data-avatar-pick="panda"><span class="avatar-studio-icon">🐼</span><strong>Panda</strong></button>
+            <button type="button" data-avatar-pick="wolf"><span class="avatar-studio-icon">🐺</span><strong>Wolf</strong></button>
+            <button type="button" data-avatar-pick="alien"><span class="avatar-studio-icon">👽</span><strong>Alien</strong></button>
+            <button type="button" data-avatar-pick="crown"><span class="avatar-studio-icon">👑</span><strong>Crown</strong></button>
+          </div>
+          <div style="margin-top:12px;font-weight:900"><span id="avatarPreviewIcon">🧢</span> <span id="avatarPreviewText">Current icon: Man</span></div>
+        </section>
+
+        <section id="accountPanel" class="account-panel">
+          <h2>Account</h2>
           <div class="status-stack">
             <p><strong>Email:</strong> <span id="accountEmail">—</span></p>
             <p><strong>Name:</strong> <span id="accountName">—</span></p>
             <p><strong>Icon:</strong> <span id="accountAvatar">🧢 Man</span></p>
-            <p><strong>Duck Note:</strong> <span id="accountDuck">—</span></p>
-            <p><strong>Buck:</strong> <span id="accountBuck">—</span></p>
+            <p hidden><strong>Duck Note:</strong> <span id="accountDuck">—</span></p>
+            <p hidden><strong>Buck:</strong> <span id="accountBuck">—</span></p>
           </div>
-          <div class="fun-managements">
-            <button type="button" data-funny-action="duckFine">Duck Fine Me</button>
-            <button type="button" data-funny-action="buckAudit">Buck Audit</button>
-            <button type="button" data-funny-action="cleanShoes">Clean My Shoes For VIP</button>
-            <button type="button" data-funny-action="resetPoints">Reset Cool Points</button>
-          </div>
-        </article>
-      </section>
+        </section>
 
-      <section id="loggedOutPanel" class="panel account-panel" hidden>
-        <h2>No ID Active</h2>
-        <p class="sub">Duck Sauce said you walked in with no badge. Buck is pointing at the login button.</p>
-        <a class="auth-pill" href="auth.html?next=account.html">Create / Login</a>
-      </section>
-
-      <div class="actions account-actions">
-        <a href="index.html">Back Home</a>
-        <a href="daily-wheel.html">Daily Spin</a>
-        <a href="vault.html">Vault</a>
-        <a href="auth.html?next=account.html">Create / Login</a>
-        <button id="logoutBtn" type="button">Logout</button>
+        <div class="actions">
+          <a href="index.html">Home</a><a href="vault.html">Vault</a><button id="logoutBtn" type="button">Logout</button>
+        </div>
       </div>
     </section>
   </main>
