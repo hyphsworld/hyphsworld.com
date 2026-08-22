@@ -2,7 +2,6 @@
   'use strict';
 
   const msgEl = document.getElementById('message');
-  const next = new URLSearchParams(location.search).get('next') || 'account.html';
   const googleLoginBtn = document.getElementById('googleLoginBtn');
   const authCard = document.getElementById('authCard');
   const modeSignin = document.getElementById('modeSignin');
@@ -17,6 +16,15 @@
   let mode = 'signin';
   let submitting = false;
 
+  function safeNext() {
+    const requested = new URLSearchParams(location.search).get('next') || 'games.html';
+    const clean = String(requested).trim();
+    if (!clean || /^https?:\/\//i.test(clean) || clean.startsWith('//') || clean.startsWith('javascript:')) return 'games.html';
+    return clean.replace(/^\/+/, '') || 'games.html';
+  }
+
+  const next = safeNext();
+
   function show(text, type) {
     if (!msgEl) return;
     msgEl.textContent = text;
@@ -24,7 +32,7 @@
   }
 
   function redirectToNext(delay) {
-    setTimeout(() => { location.href = next; }, delay || 400);
+    setTimeout(() => { location.href = next; }, delay || 300);
   }
 
   async function refreshPoints() {
@@ -50,9 +58,9 @@
       modeSignup.classList.toggle('is-active', mode === 'signup');
       modeSignup.setAttribute('aria-selected', mode === 'signup' ? 'true' : 'false');
     }
-    if (submitBtn) submitBtn.textContent = mode === 'signup' ? 'Create ID' : 'Login';
+    if (submitBtn) submitBtn.textContent = mode === 'signup' ? 'Create ID & Play' : 'Login & Play';
     if (passwordInput) passwordInput.setAttribute('autocomplete', mode === 'signup' ? 'new-password' : 'current-password');
-    show(mode === 'signup' ? 'Create one HYPHSWORLD ID. Use it everywhere.' : 'Login with your existing HYPHSWORLD ID.', '');
+    show(mode === 'signup' ? 'Create one HYPHSWORLD ID. Then use it everywhere.' : 'Login once. Then play across HYPHSWORLD.', '');
   }
 
   function togglePassword() {
@@ -68,7 +76,7 @@
     if (submitting) return;
     const email = emailInput ? emailInput.value.trim() : '';
     const password = passwordInput ? passwordInput.value : '';
-    if (!email || !password) return show('Email and password required.', 'error');
+    if (!email || !password) return show('Enter your email and password.', 'error');
 
     submitting = true;
     if (submitBtn) submitBtn.disabled = true;
@@ -77,19 +85,19 @@
       if (mode === 'signup') {
         await HWAuth.signUpWithEmail(email, password);
         await refreshPoints();
-        show('ID created. Opening your account…', 'success');
+        show('ID created. Loading your game…', 'success');
       } else {
         await HWAuth.signInWithEmail(email, password);
         const session = await HWAuth.getSession();
         if (!session) throw new Error('Login did not persist. Please try again.');
         await refreshPoints();
-        show('Logged in. Opening your account…', 'success');
+        show('Logged in. Loading your game…', 'success');
       }
-      redirectToNext(450);
+      redirectToNext(300);
     } catch (error) {
       const text = String(error && error.message || 'Auth failed.');
-      if (mode === 'signin' && /invalid|credential|not found|email/i.test(text)) {
-        show('Login failed. New here? Tap Create ID once.', 'error');
+      if (mode === 'signin' && /invalid|credential|not found/i.test(text)) {
+        show('Login failed. New here? Tap Create ID.', 'error');
       } else if (mode === 'signup' && /already|registered|exists/i.test(text)) {
         setMode('signin');
         show('That email already has an ID. Login instead.', 'warn');
@@ -105,7 +113,7 @@
   async function googleLogin() {
     try {
       if (googleLoginBtn) googleLoginBtn.disabled = true;
-      show('Opening Google ID tunnel…', 'success');
+      show('Opening Google login…', 'success');
       await HWAuth.signInWithGoogle({ redirectTo: GOOGLE_REDIRECT_URL });
     } catch (error) {
       if (googleLoginBtn) googleLoginBtn.disabled = false;
@@ -115,10 +123,6 @@
 
   async function boot() {
     setMode('signin');
-
-    // Bind controls before any network/session work. On slower mobile connections,
-    // waiting for Supabase here allowed the form's native submit to reload the page,
-    // making the first tap look like a failed login.
     if (modeSignin) modeSignin.addEventListener('click', () => setMode('signin'));
     if (modeSignup) modeSignup.addEventListener('click', () => setMode('signup'));
     if (togglePasswordBtn) togglePasswordBtn.addEventListener('click', togglePassword);
@@ -129,11 +133,10 @@
       const session = await HWAuth.getSession();
       if (session) {
         await refreshPoints();
-        show('Already logged in. Opening account management…', 'success');
-        redirectToNext(350);
+        show('Already logged in. Loading…', 'success');
+        redirectToNext(180);
       }
     } catch (error) {}
-
   }
 
   boot();
