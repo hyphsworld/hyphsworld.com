@@ -92,10 +92,44 @@ export default function GamePage() {
         engine.start();
     };
 
+    // Lock body/page scroll while on the game screen
+    useEffect(() => {
+        const prevOverflow = document.body.style.overflow;
+        const prevHtmlOverflow = document.documentElement.style.overflow;
+        const prevOverscroll = document.body.style.overscrollBehavior;
+        const prevTouchAction = document.body.style.touchAction;
+        document.body.style.overflow = "hidden";
+        document.documentElement.style.overflow = "hidden";
+        document.body.style.overscrollBehavior = "none";
+        document.body.style.touchAction = "none";
+
+        const preventTouchScroll = (e) => {
+            // Allow multi-touch (pinch) to work in dev tools, but block single-touch drag
+            if (e.touches && e.touches.length === 1) e.preventDefault();
+        };
+        document.addEventListener("touchmove", preventTouchScroll, { passive: false });
+
+        return () => {
+            document.body.style.overflow = prevOverflow;
+            document.documentElement.style.overflow = prevHtmlOverflow;
+            document.body.style.overscrollBehavior = prevOverscroll;
+            document.body.style.touchAction = prevTouchAction;
+            document.removeEventListener("touchmove", preventTouchScroll);
+        };
+    }, []);
+
     return (
         <div
             className="cr-page cr-bg-noir cr-grain"
-            style={{ background: hud.theme ? `radial-gradient(ellipse at top, ${hud.theme.accent}22, transparent 60%), ${hud.theme.bg}` : undefined }}
+            style={{
+                background: hud.theme ? `radial-gradient(ellipse at top, ${hud.theme.accent}22, transparent 60%), ${hud.theme.bg}` : undefined,
+                position: "fixed",
+                inset: 0,
+                overflow: "hidden",
+                padding: "1rem",
+                touchAction: "none",
+                overscrollBehavior: "none",
+            }}
             data-testid="game-page"
         >
             <div className="w-full max-w-3xl flex items-center justify-between mb-3">
