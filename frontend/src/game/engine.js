@@ -45,7 +45,10 @@ function keyOutBackground(img) {
             if (r < 14 && gg < 14 && b < 14) { px[i + 3] = 0; }
         }
         g.putImageData(data, 0, 0);
-    } catch { /* CORS may block; fall back to raw draw */ }
+    } catch (err) {
+        // CORS may block getImageData / putImageData. Fall back to raw image draw.
+        console.debug("[cash-run] sprite alpha-key skipped (CORS?):", err);
+    }
     return c;
 }
 
@@ -56,10 +59,18 @@ function loadCharSprite(key) {
     img.crossOrigin = "anonymous";
     CHAR_LOADING[key] = new Promise((resolve) => {
         img.onload = () => {
-            CHAR_SPRITES[key] = keyOutBackground(img);
+            try {
+                CHAR_SPRITES[key] = keyOutBackground(img);
+            } catch (err) {
+                console.warn(`[cash-run] sprite key-out failed for ${key}:`, err);
+                CHAR_SPRITES[key] = img;
+            }
             resolve(CHAR_SPRITES[key]);
         };
-        img.onerror = () => resolve(null);
+        img.onerror = (err) => {
+            console.warn(`[cash-run] sprite load failed for ${key}:`, err);
+            resolve(null);
+        };
     });
     img.src = CHAR_URLS[key];
     return null;

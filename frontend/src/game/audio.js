@@ -13,7 +13,9 @@ class CashRunAudio {
 
     setMuted(m) {
         this.muted = !!m;
-        try { localStorage.setItem("cr-muted", this.muted ? "1" : "0"); } catch { /* ignore */ }
+        try { localStorage.setItem("cr-muted", this.muted ? "1" : "0"); } catch (err) {
+            console.debug("[cash-run] audio pref persist failed", err);
+        }
         if (this.muted) this.stopMusic();
     }
     isMuted() { return this.muted; }
@@ -231,8 +233,14 @@ class CashRunAudio {
                 this._musicMaster.gain.setValueAtTime(this._musicMaster.gain.value, t);
                 this._musicMaster.gain.linearRampToValueAtTime(0, t + 0.2);
                 const m = this._musicMaster;
-                setTimeout(() => { try { m.disconnect(); } catch { /* ignore */ } }, 300);
-            } catch { /* ignore */ }
+                setTimeout(() => {
+                    try { m.disconnect(); } catch (err) {
+                        console.debug("[cash-run] music disconnect failed", err);
+                    }
+                }, 300);
+            } catch (err) {
+                console.debug("[cash-run] music stop failed", err);
+            }
             this._musicMaster = null;
         }
         this._musicLevel = -1;

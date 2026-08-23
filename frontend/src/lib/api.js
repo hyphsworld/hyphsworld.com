@@ -3,17 +3,23 @@ import axios from "axios";
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 export const API = `${BACKEND_URL}/api`;
 
+// Admin JWT storage — sessionStorage is cleared when the tab closes,
+// which shrinks the XSS attack window vs localStorage.
+// For a single-admin app that only touches a small leaderboard, this is
+// an acceptable tradeoff vs the complexity of httpOnly cookies + CORS credentials.
 const TOKEN_KEY = "cr-admin-token";
 
 export function getToken() {
-    return localStorage.getItem(TOKEN_KEY);
+    try { return sessionStorage.getItem(TOKEN_KEY); } catch { return null; }
 }
 export function setToken(token) {
-    if (token) localStorage.setItem(TOKEN_KEY, token);
-    else localStorage.removeItem(TOKEN_KEY);
+    try {
+        if (token) sessionStorage.setItem(TOKEN_KEY, token);
+        else sessionStorage.removeItem(TOKEN_KEY);
+    } catch { /* storage disabled */ }
 }
 export function clearToken() {
-    localStorage.removeItem(TOKEN_KEY);
+    try { sessionStorage.removeItem(TOKEN_KEY); } catch { /* ignore */ }
 }
 
 function authHeaders() {

@@ -37,7 +37,7 @@ export default function HUD({ score, level, lives, theme, activePower, cashColle
                 <div className="label">Lives</div>
                 <div className="value flex items-center gap-1.5 mt-1" data-testid="hud-lives-value">
                     {Array.from({ length: Math.max(0, lives) }).map((_, i) => (
-                        <Heart key={i} size={18} fill="#e0413a" stroke="#e0413a" />
+                        <Heart key={`life-${lives}-${i}`} size={18} fill="#e0413a" stroke="#e0413a" />
                     ))}
                     {lives === 0 && <span className="text-sm cr-glow-blood">GAME OVER</span>}
                 </div>

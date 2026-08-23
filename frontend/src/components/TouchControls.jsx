@@ -36,7 +36,9 @@ export default function TouchControls({ onDirection, onPause }) {
         const base = baseRef.current;
         if (!base) return;
         e.preventDefault();
-        try { base.setPointerCapture(e.pointerId); } catch { /* ignore */ }
+        try { base.setPointerCapture(e.pointerId); } catch (err) {
+            console.debug("[cash-run] pointer capture unavailable", err);
+        }
         dragRef.current = { active: true, pointerId: e.pointerId, lastDir: null };
         setActive(true);
         movePointer(e);

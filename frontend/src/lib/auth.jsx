@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { adminLogin, adminLogout, fetchMe, getToken, clearToken } from "./api";
 
 const AuthCtx = createContext({ admin: null, loading: true, login: async () => {}, logout: () => {} });
@@ -22,23 +22,28 @@ export function AuthProvider({ children }) {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, []);  // refresh reads only stable module-level fns; safe as no-dep
 
     useEffect(() => { refresh(); }, [refresh]);
 
-    const login = async (email, password) => {
+    const login = useCallback(async (email, password) => {
         const { user } = await adminLogin(email, password);
         setAdmin(user);
         return user;
-    };
+    }, []);
 
-    const logout = () => {
+    const logout = useCallback(() => {
         adminLogout();
         setAdmin(null);
-    };
+    }, []);
+
+    const value = useMemo(
+        () => ({ admin, loading, login, logout }),
+        [admin, loading, login, logout]
+    );
 
     return (
-        <AuthCtx.Provider value={{ admin, loading, login, logout }}>
+        <AuthCtx.Provider value={value}>
             {children}
         </AuthCtx.Provider>
     );

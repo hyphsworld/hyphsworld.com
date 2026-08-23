@@ -6,8 +6,10 @@ import requests
 BASE_URL = os.environ["REACT_APP_BACKEND_URL"].rstrip("/")
 API = f"{BASE_URL}/api"
 
-ADMIN_EMAIL = "admin@cashrun.local"
-ADMIN_PASSWORD = "cashrun-admin-2026"
+# Credentials from env — never hardcode in source.
+# Falls back to values from backend/.env only when env is not injected (e.g. local dev).
+ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "admin@cashrun.local")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "cashrun-admin-2026")
 
 
 @pytest.fixture(scope="module")
@@ -117,7 +119,7 @@ def test_admin_delete_entry(session, auth_headers):
     r = requests.delete(f"{API}/leaderboard/{entry_id}", headers=auth_headers)
     assert r.status_code == 200, r.text
     body = r.json()
-    assert body["deleted"] is True
+    assert body["deleted"] == True  # noqa: E712 - JSON bool round-trip
     assert body["id"] == entry_id
 
     # Verify gone - 404 on second delete
