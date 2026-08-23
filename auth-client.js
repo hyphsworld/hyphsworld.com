@@ -39,6 +39,12 @@
   function avatarType(value) { const clean = String(value || '').toLowerCase().trim(); return AVATARS[clean] ? clean : 'boy'; }
   function avatarIcon(value) { return AVATARS[avatarType(value)] || '🧢'; }
   function isPlaceholder(value) { const text = String(value || '').trim(); return !text || /PASTE_|YOUR_|PROJECT_URL|ANON_PUBLIC_KEY/i.test(text); }
+  function isRetryableSessionError(error) {
+    if (!error) return false;
+    const name = String(error.name || '');
+    const message = String(error.message || '').toLowerCase();
+    return name === 'AuthRetryableFetchError' || error.status === 0 || /failed to fetch|network|timeout|timed out/.test(message);
+  }
   function saveLocalSession(session) { jsonSet(LOCAL_SESSION, session); }
   function localSession() { return jsonGet(LOCAL_SESSION, null); }
   function clearLocalSession() { textRemove(LOCAL_SESSION); }
@@ -239,9 +245,10 @@
     const sb = await getClient();
     if (!sb) return localSession();
     const { data, error } = await sb.auth.getSession();
-    // Do not erase a valid remembered login because of a temporary token or
-    // network read failure. The next check can refresh the Supabase session.
-    if (error) return localSession();
+    // A retryable transport failure cannot establish that the remembered login
+    // is stale. Authentication failures can, so never let those satisfy gates.
+    if (error && isRetryableSessionError(error)) return localSession();
+    if (error) { clearLocalSession(); return null; }
     if (!data || !data.session || !data.session.user) { clearLocalSession(); return null; }
     const session = sessionFromUser(data.session.user);
     saveLocalSession(session);
