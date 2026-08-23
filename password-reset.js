@@ -11,6 +11,11 @@
   let client = null;
   let sessionReadyPromise = null;
 
+  // Capture the recovery URL before Supabase consumes and clears its hash.
+  // This also prevents an ordinary signed-in session from being mistaken for
+  // proof that the user opened a password-recovery email.
+  const initialRecoveryUrl = String(global.location.href || '');
+
   function isPlaceholder(value) {
     const text = String(value || '').trim();
     return !text || /PASTE_|YOUR_|PROJECT_URL|ANON_PUBLIC_KEY/i.test(text);
@@ -101,7 +106,11 @@
           persistSession: true,
           autoRefreshToken: true,
           detectSessionInUrl: true,
-          flowType: 'pkce'
+          // Recovery emails are commonly opened in a different browser than
+          // the one that requested them. The implicit flow keeps the secure
+          // credentials in the email URL instead of requiring a local PKCE
+          // verifier that may not exist in that browser.
+          flowType: 'implicit'
         }
       });
 
@@ -112,8 +121,9 @@
   }
 
   function readUrlParams() {
-    const hash = new URLSearchParams(String(global.location.hash || '').replace(/^#/, ''));
-    const search = new URLSearchParams(String(global.location.search || '').replace(/^\?/, ''));
+    const url = new URL(initialRecoveryUrl, global.location.origin);
+    const hash = new URLSearchParams(String(url.hash || '').replace(/^#/, ''));
+    const search = url.searchParams;
     return { hash, search };
   }
 
@@ -124,8 +134,28 @@
       search.get('type') === 'recovery' ||
       hash.has('access_token') ||
       hash.has('refresh_token') ||
-      search.has('code')
+      search.has('code') ||
+      search.has('token_hash')
     );
+  }
+
+  function recoveryUrlError() {
+    const { hash, search } = readUrlParams();
+    return search.get('error_description') || hash.get('error_description') ||
+      search.get('error') || hash.get('error') || '';
+  }
+
+  async function verifyRecoveryToken(sb) {
+    const { search } = readUrlParams();
+    const tokenHash = search.get('token_hash');
+    if (!tokenHash || !sb.auth || typeof sb.auth.verifyOtp !== 'function') return null;
+
+    const { data, error } = await sb.auth.verifyOtp({
+      token_hash: tokenHash,
+      type: 'recovery'
+    });
+    if (error) throw error;
+    return data && data.session ? data.session : null;
   }
 
   async function exchangeRecoveryCode(sb) {
@@ -168,24 +198,29 @@
   }
 
   async function ensureRecoverySession() {
+    const urlError = recoveryUrlError();
+    if (urlError) throw new Error(urlError);
+    if (!hasRecoveryParams()) {
+      throw new Error('Open this page from the newest password reset email so HYPHSWORLD can verify the reset session.');
+    }
+
     const sb = await getClient();
 
-    const current = await sb.auth.getSession().catch(() => ({ data: null }));
-    if (current && current.data && current.data.session) return current.data.session;
+    const verified = await verifyRecoveryToken(sb);
+    if (verified) return verified;
 
     const exchanged = await exchangeRecoveryCode(sb).catch((error) => { throw error; });
     if (exchanged) return exchanged;
+
+    const current = await sb.auth.getSession().catch(() => ({ data: null }));
+    if (current && current.data && current.data.session) return current.data.session;
 
     await waitForAuthSession(sb);
 
     const next = await sb.auth.getSession().catch(() => ({ data: null }));
     if (next && next.data && next.data.session) return next.data.session;
 
-    if (hasRecoveryParams()) {
-      throw new Error('Reset session is still loading. Refresh once or open the newest reset email again.');
-    }
-
-    throw new Error('Open this page from the newest password reset email so HYPHSWORLD can verify the reset session.');
+    throw new Error('Reset session is still loading. Refresh once or open the newest reset email again.');
   }
 
   async function sendResetEmail(email) {
