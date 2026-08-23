@@ -16,8 +16,8 @@ import { audio } from "./audio";
 
 // Character sprites — loaded once, background-keyed (transparent), reused across engines.
 const CHAR_URLS = {
-    boy:  "https://customer-assets-cm19k8pv.emergentagent.net/job_cash-runner-game/artifacts/lsq3ji5w_IMG_6613.png",
-    girl: "https://customer-assets-cm19k8pv.emergentagent.net/job_cash-runner-game/artifacts/a6esd831_IMG_6641.jpeg",
+    boy:  "https://customer-assets-cm19k8pv.emergentagent.net/job_cash-runner-game/artifacts/a6esd831_IMG_6641.jpeg",
+    girl: "https://customer-assets-cm19k8pv.emergentagent.net/job_cash-runner-game/artifacts/lsq3ji5w_IMG_6613.png",
 };
 const CHAR_SPRITES = {};   // { key: HTMLCanvasElement } — processed sprite
 const CHAR_LOADING = {};   // { key: Promise } — in-flight

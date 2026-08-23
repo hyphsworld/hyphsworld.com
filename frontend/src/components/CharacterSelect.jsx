@@ -6,14 +6,14 @@ export const CHARACTER_ART = {
         label: "TONIO",
         sub: "Chase the bag",
         color: "#e0413a",
-        image: "https://customer-assets-cm19k8pv.emergentagent.net/job_cash-runner-game/artifacts/lsq3ji5w_IMG_6613.png",
+        image: "https://customer-assets-cm19k8pv.emergentagent.net/job_cash-runner-game/artifacts/a6esd831_IMG_6641.jpeg",
     },
     girl: {
         id: "girl",
         label: "NIKKI",
         sub: "Fast hands",
         color: "#ff3ec8",
-        image: "https://customer-assets-cm19k8pv.emergentagent.net/job_cash-runner-game/artifacts/a6esd831_IMG_6641.jpeg",
+        image: "https://customer-assets-cm19k8pv.emergentagent.net/job_cash-runner-game/artifacts/lsq3ji5w_IMG_6613.png",
     },
 };
 
