@@ -126,54 +126,58 @@ export default function GamePage() {
                 position: "fixed",
                 inset: 0,
                 overflow: "hidden",
-                padding: "1rem",
+                padding: "0.5rem",
                 touchAction: "none",
                 overscrollBehavior: "none",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
             }}
             data-testid="game-page"
         >
-            <div className="w-full max-w-3xl flex items-center justify-between mb-3">
+            <div className="w-full max-w-3xl flex items-center justify-between mb-2 gap-2 flex-shrink-0">
                 <button
                     onClick={() => navigate("/")}
                     className="cr-btn"
-                    style={{ fontSize: "0.95rem", padding: "0.45rem 0.9rem" }}
+                    style={{ fontSize: "0.85rem", padding: "0.35rem 0.75rem" }}
                     data-testid="game-back-btn"
                 >
-                    <ArrowLeft className="inline mr-1" size={14} /> Menu
+                    <ArrowLeft className="inline mr-1" size={12} /> Menu
                 </button>
-                <div className="font-arcade text-lg cr-glow-gold flex items-center gap-2" data-testid="game-theme-label">
+                <div className="font-arcade text-sm sm:text-base cr-glow-gold flex items-center gap-2 truncate" data-testid="game-theme-label">
                     {mode === "easy" && (
                         <span
                             data-testid="game-mode-tag"
                             className="cr-tag"
-                            style={{ color: "var(--cr-cash-bright)", borderColor: "var(--cr-cash-bright)" }}
+                            style={{ color: "var(--cr-cash-bright)", borderColor: "var(--cr-cash-bright)", fontSize: "0.7rem" }}
                         >
                             PRACTICE
                         </span>
                     )}
-                    {hud.theme?.name || ""} — <span style={{ color: "var(--cr-ink-dim)" }}>{hud.theme?.sub}</span>
+                    <span className="truncate">{hud.theme?.name || ""}</span>
                 </div>
-                <button
-                    onClick={togglePause}
-                    className="cr-btn"
-                    style={{ fontSize: "0.95rem", padding: "0.45rem 0.9rem" }}
-                    data-testid="game-pause-btn"
-                >
-                    <PauseIcon className="inline mr-1" size={14} /> {paused ? "Resume" : "Pause"}
-                </button>
-                <button
-                    onClick={toggleMute}
-                    className="cr-btn"
-                    style={{ fontSize: "0.95rem", padding: "0.45rem 0.7rem" }}
-                    data-testid="game-mute-btn"
-                    aria-label={muted ? "Unmute" : "Mute"}
-                    title={muted ? "Unmute" : "Mute"}
-                >
-                    {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
-                </button>
+                <div className="flex gap-1 flex-shrink-0">
+                    <button
+                        onClick={togglePause}
+                        className="cr-btn"
+                        style={{ fontSize: "0.85rem", padding: "0.35rem 0.75rem" }}
+                        data-testid="game-pause-btn"
+                    >
+                        <PauseIcon size={12} />
+                    </button>
+                    <button
+                        onClick={toggleMute}
+                        className="cr-btn"
+                        style={{ fontSize: "0.85rem", padding: "0.35rem 0.6rem" }}
+                        data-testid="game-mute-btn"
+                        aria-label={muted ? "Unmute" : "Mute"}
+                    >
+                        {muted ? <VolumeX size={14} /> : <Volume2 size={14} />}
+                    </button>
+                </div>
             </div>
 
-            <div className="w-full max-w-3xl">
+            <div className="w-full max-w-3xl flex-shrink-0">
                 <HUD
                     score={hud.score}
                     level={hud.level}
@@ -184,7 +188,18 @@ export default function GamePage() {
                 />
             </div>
 
-            <div className="cr-canvas-wrap" style={{ borderColor: hud.theme?.accent }}>
+            <div
+                className="cr-canvas-wrap"
+                style={{
+                    borderColor: hud.theme?.accent,
+                    flex: "1 1 auto",
+                    minHeight: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    maxWidth: "100%",
+                }}
+            >
                 <canvas
                     ref={canvasRef}
                     width={CANVAS_W}
@@ -192,19 +207,18 @@ export default function GamePage() {
                     className="pixelated block"
                     style={{
                         maxWidth: "100%",
+                        maxHeight: "100%",
+                        width: "auto",
                         height: "auto",
-                        width: "min(100%, 720px)",
                         display: "block",
                     }}
                     data-testid="game-canvas"
                 />
             </div>
 
-            <TouchControls onDirection={handleDirection} onPause={togglePause} />
-
-            <p className="mt-4 font-mono text-xs text-center" style={{ color: "var(--cr-ink-dim)" }}>
-                Arrow keys / WASD to move · P to pause · Eat the BIG cash to chomp enemies
-            </p>
+            <div className="flex-shrink-0 w-full">
+                <TouchControls onDirection={handleDirection} onPause={togglePause} />
+            </div>
 
             {gameOver && (
                 <GameOverModal

@@ -1,11 +1,24 @@
 import React, { useEffect, useRef, useState } from "react";
 
-const BASE = 150;          // joystick base diameter
-const KNOB = 60;            // knob diameter
-const RADIUS = (BASE - KNOB) / 2;
-const DEADZONE = 14;        // px from center before any direction registers
+const BASE_DESKTOP = 150;
+const BASE_MOBILE = 120;
+const KNOB = 54;
+const DEADZONE = 12;
 
 export default function TouchControls({ onDirection, onPause }) {
+    const [BASE, setBASE] = useState(() =>
+        typeof window !== "undefined" && window.innerWidth < 640 ? BASE_MOBILE : BASE_DESKTOP
+    );
+    const RADIUS = (BASE - KNOB) / 2;
+
+    useEffect(() => {
+        const onResize = () => {
+            setBASE(window.innerWidth < 640 ? BASE_MOBILE : BASE_DESKTOP);
+        };
+        window.addEventListener("resize", onResize);
+        return () => window.removeEventListener("resize", onResize);
+    }, []);
+
     const baseRef = useRef(null);
     const dragRef = useRef({ active: false, pointerId: null, lastDir: null });
     const [knob, setKnob] = useState({ x: 0, y: 0 });
@@ -73,7 +86,7 @@ export default function TouchControls({ onDirection, onPause }) {
     }, []);
 
     return (
-        <div className="flex items-center justify-between w-full max-w-md mt-4 gap-4 select-none" data-testid="touch-controls">
+        <div className="flex items-center justify-between w-full max-w-md mt-2 gap-4 select-none px-2" data-testid="touch-controls">
             <div
                 ref={baseRef}
                 className="cr-joystick-base"
