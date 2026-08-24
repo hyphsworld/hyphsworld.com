@@ -35,7 +35,7 @@ export default function Menu() {
         <div className="cr-page cr-bg-noir cr-grain" data-testid="menu-page">
             <div className="w-full max-w-3xl flex flex-col items-center pt-8 sm:pt-16">
 
-                {/* Headline */}
+                {/* Headline + hero */}
                 <div className="text-center cr-flicker">
                     <div className="cr-marquee mb-3" data-testid="menu-marquee">// CYBER ARCADE //</div>
                     <h1
@@ -51,6 +51,26 @@ export default function Menu() {
                     <p className="font-arcade text-2xl mt-1" style={{ color: "var(--cr-gold)", textShadow: "0 0 12px rgba(255,216,74,0.5)" }} data-testid="menu-tagline">
                         chomp the cash. duck the heat.
                     </p>
+                </div>
+
+                {/* Hero — Tonio & Nikki chasing the bag */}
+                <div
+                    className="w-full mt-6 mb-2 flex items-center justify-center gap-4 sm:gap-8 flex-wrap"
+                    data-testid="menu-hero"
+                    aria-hidden="true"
+                >
+                    <img
+                        src="https://customer-assets-cm19k8pv.emergentagent.net/job_cash-runner-game/artifacts/e9737oor_E1AEC6D1-0E86-4193-AECB-D97C322AAE1B.webp"
+                        alt=""
+                        className="cr-hero"
+                        loading="eager"
+                    />
+                    <img
+                        src="https://customer-assets-cm19k8pv.emergentagent.net/job_cash-runner-game/artifacts/pjqpo9f5_4DA031AD-8330-409E-B1E7-75051DE1B615.webp"
+                        alt=""
+                        className="cr-hero cr-hero-alt"
+                        loading="eager"
+                    />
                 </div>
 
                 {/* Character avatars decorative */}

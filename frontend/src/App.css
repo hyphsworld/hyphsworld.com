@@ -156,7 +156,26 @@
     .cr-dpad { width: 180px; height: 180px; }
 }
 
-/* Character cards — cyber */
+/* Hero characters on menu */
+.cr-hero {
+    height: 220px;
+    max-width: 45%;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 24px rgba(255,62,200,0.35)) drop-shadow(0 0 40px rgba(108,242,255,0.15));
+    pointer-events: none;
+    animation: heroFloat 5s ease-in-out infinite;
+}
+.cr-hero-alt {
+    animation-delay: -2.5s;
+}
+@keyframes heroFloat {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-10px); }
+}
+@media (max-width: 640px) {
+    .cr-hero { height: 130px; max-width: 46%; }
+}
+
 .cr-char-card {
     width: 160px;
     aspect-ratio: 3 / 4;
