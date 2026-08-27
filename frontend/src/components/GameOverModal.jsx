@@ -12,9 +12,11 @@ export default function GameOverModal({ score, level, character, mode, onRestart
 
     useEffect(() => {
         if (isPractice) return;
+        let alive = true;
         fetchRank(score)
-            .then(({ rank }) => setRank(rank))
-            .catch(() => setRank(null));
+            .then(({ rank }) => { if (alive) setRank(rank); })
+            .catch(() => { if (alive) setRank(null); });
+        return () => { alive = false; };
     }, [score, isPractice]);
 
     const handleSubmit = async (e) => {

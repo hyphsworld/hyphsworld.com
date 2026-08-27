@@ -22,7 +22,7 @@ export function AuthProvider({ children }) {
         } finally {
             setLoading(false);
         }
-    }, []);  // refresh reads only stable module-level fns; safe as no-dep
+    }, []);
 
     useEffect(() => { refresh(); }, [refresh]);
 

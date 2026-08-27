@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
     fetchLeaderboard,
@@ -33,7 +33,7 @@ export default function Leaderboard() {
     const [busy, setBusy] = useState(false);
     const [period, setPeriod] = useState("all");
 
-    const load = async (p = period) => {
+    const load = useCallback(async (p = period) => {
         setLoading(true);
         setError("");
         try {
@@ -44,9 +44,9 @@ export default function Leaderboard() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [period]);
 
-    useEffect(() => { load(period); /* eslint-disable-next-line */ }, [period]);
+    useEffect(() => { load(period); }, [period, load]);
 
     const changePeriod = (p) => {
         if (p === period) return;

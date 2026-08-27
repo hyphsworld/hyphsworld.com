@@ -119,7 +119,7 @@ def test_admin_delete_entry(session, auth_headers):
     r = requests.delete(f"{API}/leaderboard/{entry_id}", headers=auth_headers)
     assert r.status_code == 200, r.text
     body = r.json()
-    assert body["deleted"] == True  # noqa: E712 - JSON bool round-trip
+    assert body["deleted"]
     assert body["id"] == entry_id
 
     # Verify gone - 404 on second delete

@@ -39,13 +39,23 @@ Top-of-screen HUD with score/level/lives/cash. Boy/girl character select.
 - How-to-Play page.
 - Analog joystick with direction snapping + deadzone.
 
+## What's Implemented (2026-02, continued)
+- **2026-02-27** Tonio & Nikki transparent WebP hero art (menu + sprites).
+- **2026-02-27** JWT admin auth with bcrypt seed; admin edit/delete/clear-all leaderboard ops.
+- **2026-02-27** Time-based leaderboard filters (Today / Weekly Hustlers / Monthly / All Time).
+- **2026-02-27** Procedural Web Audio SFX + per-level music, mute toggle.
+- **2026-02-27** Holographic glitch level transitions; CRT scanline overlay.
+- **2026-02-27** Practice mode (5 lives, later cops, score not saved).
+- **2026-02-27** Code Quality pass: React hook deps corrected across auth/Game/Leaderboard/GameOverModal/use-toast; api.js catch blocks now log debug; engine.js `_moveEnemies` split into `_updateEnemyRelease/_isOnTile/_enemyTarget/_pickEnemyDirection/_enemySpeed/_advanceEnemy`; engine.js `_render` split into `_computeShakeOffset/_drawFloor/_drawPellets/_drawFloatTexts/_drawReadyOverlay/_drawPauseOverlay`; backend `assert body["deleted"]` cleanup; `test_get_leaderboard_sorted_no_id` split into 3 focused tests. 28/28 backend tests + frontend E2E pass (iteration_4.json).
+
 ## Backlog
-- P1: Sound FX & background music (per level).
-- P1: Persistent best-streak tracker (local).
-- P2: Different mazes per level (instead of theme-only changes).
-- P2: Daily challenge mode (seeded maze).
-- P2: Account-based avatar customization.
+- P1: **Share Card** — composite Tonio/Nikki + final score for social share on Game Over.
+- P2: **Character perks** — Nikki slightly faster; Tonio longer shield window.
+- P2: 3-frame intro comic drop of both characters before the title.
+- P2: Homepage hero as subtle side-scrolling loop animation.
+- P3: Daily-streak counter for leaderboard retention.
+- P3: Different mazes per level (structural, not just theme).
 
 ## Next Tasks
-- Add audio (collect, chomp, death, level-up).
-- Animation polish: cash splash particles when collected.
+- Ship the Share Card feature (P1).
+- Character perks (P2).

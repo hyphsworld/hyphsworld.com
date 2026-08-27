@@ -10,16 +10,20 @@ export const API = `${BACKEND_URL}/api`;
 const TOKEN_KEY = "cr-admin-token";
 
 export function getToken() {
-    try { return sessionStorage.getItem(TOKEN_KEY); } catch { return null; }
+    try { return sessionStorage.getItem(TOKEN_KEY); }
+    catch (err) { console.debug("[cash-run] token read failed:", err); return null; }
 }
 export function setToken(token) {
     try {
         if (token) sessionStorage.setItem(TOKEN_KEY, token);
         else sessionStorage.removeItem(TOKEN_KEY);
-    } catch { /* storage disabled */ }
+    } catch (err) {
+        console.debug("[cash-run] token persist failed:", err);
+    }
 }
 export function clearToken() {
-    try { sessionStorage.removeItem(TOKEN_KEY); } catch { /* ignore */ }
+    try { sessionStorage.removeItem(TOKEN_KEY); }
+    catch (err) { console.debug("[cash-run] token clear failed:", err); }
 }
 
 function authHeaders() {

@@ -454,91 +454,98 @@ export class CashRunEngine {
 
     _moveEnemies(dt) {
         for (const e of this.enemies) {
-            // Release timer
-            if (!e.exited) {
-                e.releaseAt -= dt;
-                if (e.releaseAt > 0) {
-                    // bobble in pen
-                    continue;
-                }
-                e.exited = true;
-                e.state = this.frightened > 0 ? "fright" : "chase";
-            }
-
-            const onTile =
-                Math.abs(e.col - Math.round(e.col)) < EPS &&
-                Math.abs(e.row - Math.round(e.row)) < EPS;
-
-            if (onTile) {
-                e.col = Math.round(e.col);
-                e.row = Math.round(e.row);
-
-                const tc = e.col, tr = e.row;
-                // Determine target
-                let target;
-                if (e.state === "eyes") {
-                    target = e.home;
-                    if (tc === e.home.col && tr === e.home.row) {
-                        e.state = this.frightened > 0 ? "fright" : "chase";
-                    }
-                } else if (e.state === "fright") {
-                    target = null; // random
-                } else {
-                    if (e.type === "thug") {
-                        target = { col: Math.round(this.player.col), row: Math.round(this.player.row) };
-                    } else { // cop
-                        const d = DIRS[this.player.dir];
-                        target = {
-                            col: Math.round(this.player.col) + d.dc * 4,
-                            row: Math.round(this.player.row) + d.dr * 4,
-                        };
-                    }
-                }
-
-                // Available directions (no reverse, no walls)
-                const opts = [];
-                for (const dirName of ["up", "left", "down", "right"]) {
-                    if (dirName === OPP[e.dir]) continue;
-                    const d = DIRS[dirName];
-                    const nx = wrap(tc + d.dc, tr + d.dr);
-                    if (!isWall(this.grid, nx.col, nx.row)) opts.push(dirName);
-                }
-                if (opts.length === 0) {
-                    // dead-end: allow reverse
-                    e.dir = OPP[e.dir];
-                } else if (target == null) {
-                    e.dir = opts[Math.floor(Math.random() * opts.length)];
-                } else {
-                    let best = opts[0];
-                    let bestD = Infinity;
-                    for (const dirName of opts) {
-                        const d = DIRS[dirName];
-                        const nx = wrap(tc + d.dc, tr + d.dr);
-                        const dd = dist2(nx, target);
-                        if (dd < bestD) { bestD = dd; best = dirName; }
-                    }
-                    e.dir = best;
-                }
-            }
-
-            const speed = e.state === "fright" ? e.speed * 0.55
-                        : e.state === "eyes"   ? e.speed * 1.6
-                        :                        e.speed;
-            const d = DIRS[e.dir];
-            const nc = e.col + d.dc * speed * dt;
-            const nr = e.row + d.dr * speed * dt;
-            const aheadTile = wrap(Math.round(e.col) + d.dc, Math.round(e.row) + d.dr);
-            if (isWall(this.grid, aheadTile.col, aheadTile.row)) {
-                e.col = Math.round(e.col);
-                e.row = Math.round(e.row);
-            } else {
-                e.col = nc;
-                e.row = nr;
-            }
-            // Tunnel wrap
-            if (e.col < -0.4) e.col = COLS - 0.5;
-            else if (e.col > COLS - 0.6) e.col = -0.5;
+            if (!this._updateEnemyRelease(e, dt)) continue;
+            if (this._isOnTile(e)) this._pickEnemyDirection(e);
+            this._advanceEnemy(e, dt);
         }
+    }
+
+    _updateEnemyRelease(e, dt) {
+        if (e.exited) return true;
+        e.releaseAt -= dt;
+        if (e.releaseAt > 0) return false; // still bobbling in pen
+        e.exited = true;
+        e.state = this.frightened > 0 ? "fright" : "chase";
+        return true;
+    }
+
+    _isOnTile(e) {
+        return Math.abs(e.col - Math.round(e.col)) < EPS &&
+               Math.abs(e.row - Math.round(e.row)) < EPS;
+    }
+
+    _enemyTarget(e) {
+        if (e.state === "eyes") return e.home;
+        if (e.state === "fright") return null; // random
+        if (e.type === "thug") {
+            return { col: Math.round(this.player.col), row: Math.round(this.player.row) };
+        }
+        // cop — aim 4 tiles ahead of player
+        const d = DIRS[this.player.dir];
+        return {
+            col: Math.round(this.player.col) + d.dc * 4,
+            row: Math.round(this.player.row) + d.dr * 4,
+        };
+    }
+
+    _pickEnemyDirection(e) {
+        e.col = Math.round(e.col);
+        e.row = Math.round(e.row);
+        const tc = e.col, tr = e.row;
+
+        if (e.state === "eyes" && tc === e.home.col && tr === e.home.row) {
+            e.state = this.frightened > 0 ? "fright" : "chase";
+        }
+        const target = this._enemyTarget(e);
+
+        const opts = [];
+        for (const dirName of ["up", "left", "down", "right"]) {
+            if (dirName === OPP[e.dir]) continue;
+            const d = DIRS[dirName];
+            const nx = wrap(tc + d.dc, tr + d.dr);
+            if (!isWall(this.grid, nx.col, nx.row)) opts.push(dirName);
+        }
+        if (opts.length === 0) {
+            e.dir = OPP[e.dir]; // dead-end reverse
+            return;
+        }
+        if (target == null) {
+            e.dir = opts[Math.floor(Math.random() * opts.length)];
+            return;
+        }
+        let best = opts[0];
+        let bestD = Infinity;
+        for (const dirName of opts) {
+            const d = DIRS[dirName];
+            const nx = wrap(tc + d.dc, tr + d.dr);
+            const dd = dist2(nx, target);
+            if (dd < bestD) { bestD = dd; best = dirName; }
+        }
+        e.dir = best;
+    }
+
+    _enemySpeed(e) {
+        if (e.state === "fright") return e.speed * 0.55;
+        if (e.state === "eyes")   return e.speed * 1.6;
+        return e.speed;
+    }
+
+    _advanceEnemy(e, dt) {
+        const speed = this._enemySpeed(e);
+        const d = DIRS[e.dir];
+        const nc = e.col + d.dc * speed * dt;
+        const nr = e.row + d.dr * speed * dt;
+        const aheadTile = wrap(Math.round(e.col) + d.dc, Math.round(e.row) + d.dr);
+        if (isWall(this.grid, aheadTile.col, aheadTile.row)) {
+            e.col = Math.round(e.col);
+            e.row = Math.round(e.row);
+        } else {
+            e.col = nc;
+            e.row = nr;
+        }
+        // Tunnel wrap
+        if (e.col < -0.4) e.col = COLS - 0.5;
+        else if (e.col > COLS - 0.6) e.col = -0.5;
     }
 
     _checkCollisions() {
@@ -628,14 +635,7 @@ export class CashRunEngine {
         const ctx = this.ctx;
         const t = this.theme;
 
-        // Screen shake offset (for bomb impact)
-        let sx = 0, sy = 0;
-        if (this._screenShake > 0) {
-            sx = (Math.random() - 0.5) * 8 * this._screenShake;
-            sy = (Math.random() - 0.5) * 8 * this._screenShake;
-            this._screenShake -= 0.04;
-            if (this._screenShake < 0) this._screenShake = 0;
-        }
+        const { sx, sy } = this._computeShakeOffset();
 
         // Background floor
         ctx.fillStyle = t.bg;
@@ -644,6 +644,46 @@ export class CashRunEngine {
         ctx.save();
         ctx.translate(sx, sy);
 
+        this._drawFloor(ctx, t);
+        this._drawWalls(ctx, t);
+        this._drawPellets(ctx);
+
+        // Power-ups on map
+        for (const pu of this._powerUpsActive) {
+            this._drawPowerUp(ctx, pu);
+        }
+
+        this._drawFloatTexts(ctx);
+
+        // Enemies
+        for (const e of this.enemies) this._drawEnemy(ctx, e);
+
+        // Player
+        this._drawPlayer(ctx);
+
+        ctx.restore();
+
+        // CRT scanline overlay — sweeping horizontal line + static lines
+        this._drawScanlines(ctx);
+
+        // Holographic glitch transition (drawn on top of everything)
+        if (this._transitionTimer > 0) {
+            this._drawGlitchTransition(ctx);
+        }
+
+        this._drawReadyOverlay(ctx, t);
+        this._drawPauseOverlay(ctx);
+    }
+
+    _computeShakeOffset() {
+        if (this._screenShake <= 0) return { sx: 0, sy: 0 };
+        const sx = (Math.random() - 0.5) * 8 * this._screenShake;
+        const sy = (Math.random() - 0.5) * 8 * this._screenShake;
+        this._screenShake = Math.max(0, this._screenShake - 0.04);
+        return { sx, sy };
+    }
+
+    _drawFloor(ctx, t) {
         // Cyber grid background on non-wall cells
         ctx.fillStyle = t.floor;
         ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
@@ -675,59 +715,58 @@ export class CashRunEngine {
                 ctx.globalAlpha = 1;
             }
         }
+    }
 
-        // Walls
-        this._drawWalls(ctx, t);
-
-        // Pellets (cash bundles) / power (cash stack) — with neon glow
+    _drawPellets(ctx) {
         const tnow = performance.now();
         for (let r = 0; r < ROWS; r++) {
             for (let c = 0; c < COLS; c++) {
                 const v = this.grid[r][c];
+                if (v !== T.PELLET && v !== T.POWER) continue;
                 const cx = c * TILE + TILE / 2;
                 const cy = r * TILE + TILE / 2;
-                if (v === T.PELLET) {
-                    // Cash bill with subtle glow
-                    ctx.save();
-                    ctx.shadowColor = "#7ee895";
-                    ctx.shadowBlur = 4;
-                    ctx.fillStyle = "#3a8a4f";
-                    ctx.fillRect(cx - 4, cy - 2, 8, 4);
-                    ctx.fillStyle = "#5cc46f";
-                    ctx.fillRect(cx - 4, cy - 2, 8, 1);
-                    ctx.fillStyle = "#d4af37";
-                    ctx.fillRect(cx - 1, cy - 1, 2, 2);
-                    ctx.restore();
-                } else if (v === T.POWER) {
-                    const pulse = 0.6 + Math.sin(tnow / 180) * 0.4;
-                    const wob = Math.sin(tnow / 220 + c) * 1.2;
-                    ctx.save();
-                    ctx.translate(cx, cy + wob);
-                    ctx.shadowColor = "#d4af37";
-                    ctx.shadowBlur = 18 * pulse;
-                    // Cash stack — three stacked bills + gold band
-                    ctx.fillStyle = "#3a8a4f";
-                    ctx.fillRect(-7, -6, 14, 12);
-                    ctx.fillStyle = "#5cc46f";
-                    ctx.fillRect(-7, -6, 14, 2);
-                    ctx.fillRect(-7, -2, 14, 2);
-                    ctx.fillRect(-7,  2, 14, 2);
-                    ctx.fillStyle = "#d4af37";
-                    ctx.fillRect(-2, -6, 4, 12);  // gold band
-                    ctx.fillStyle = "#fff5c8";
-                    ctx.fillRect(-1, -2, 2, 1);
-                    ctx.shadowBlur = 0;
-                    ctx.restore();
-                }
+                if (v === T.PELLET) this._drawPelletCash(ctx, cx, cy);
+                else this._drawPowerCash(ctx, cx, cy, c, tnow);
             }
         }
+    }
 
-        // Power-ups on map
-        for (const pu of this._powerUpsActive) {
-            this._drawPowerUp(ctx, pu);
-        }
+    _drawPelletCash(ctx, cx, cy) {
+        ctx.save();
+        ctx.shadowColor = "#7ee895";
+        ctx.shadowBlur = 4;
+        ctx.fillStyle = "#3a8a4f";
+        ctx.fillRect(cx - 4, cy - 2, 8, 4);
+        ctx.fillStyle = "#5cc46f";
+        ctx.fillRect(cx - 4, cy - 2, 8, 1);
+        ctx.fillStyle = "#d4af37";
+        ctx.fillRect(cx - 1, cy - 1, 2, 2);
+        ctx.restore();
+    }
 
-        // Float texts
+    _drawPowerCash(ctx, cx, cy, c, tnow) {
+        const pulse = 0.6 + Math.sin(tnow / 180) * 0.4;
+        const wob = Math.sin(tnow / 220 + c) * 1.2;
+        ctx.save();
+        ctx.translate(cx, cy + wob);
+        ctx.shadowColor = "#d4af37";
+        ctx.shadowBlur = 18 * pulse;
+        // Cash stack — three stacked bills + gold band
+        ctx.fillStyle = "#3a8a4f";
+        ctx.fillRect(-7, -6, 14, 12);
+        ctx.fillStyle = "#5cc46f";
+        ctx.fillRect(-7, -6, 14, 2);
+        ctx.fillRect(-7, -2, 14, 2);
+        ctx.fillRect(-7,  2, 14, 2);
+        ctx.fillStyle = "#d4af37";
+        ctx.fillRect(-2, -6, 4, 12);  // gold band
+        ctx.fillStyle = "#fff5c8";
+        ctx.fillRect(-1, -2, 2, 1);
+        ctx.shadowBlur = 0;
+        ctx.restore();
+    }
+
+    _drawFloatTexts(ctx) {
         for (const f of this._floatTexts) {
             ctx.fillStyle = f.color;
             ctx.font = "bold 14px 'IBM Plex Mono', monospace";
@@ -736,46 +775,31 @@ export class CashRunEngine {
             ctx.fillText(f.text, f.col * TILE + TILE / 2, f.row * TILE + TILE / 2);
             ctx.globalAlpha = 1;
         }
+    }
 
-        // Enemies
-        for (const e of this.enemies) this._drawEnemy(ctx, e);
+    _drawReadyOverlay(ctx, t) {
+        if (this._readyTimer <= 0) return;
+        ctx.fillStyle = "rgba(0,0,0,0.5)";
+        ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+        ctx.fillStyle = t.power;
+        ctx.font = "44px 'VT323', monospace";
+        ctx.textAlign = "center";
+        ctx.fillText("READY!", CANVAS_W / 2, CANVAS_H / 2 + 8);
+        ctx.fillStyle = t.ink;
+        ctx.font = "20px 'VT323', monospace";
+        ctx.fillText(`LEVEL ${this.level} — ${t.name.toUpperCase()}`, CANVAS_W / 2, CANVAS_H / 2 - 32);
+    }
 
-        // Player
-        this._drawPlayer(ctx);
-
-        ctx.restore();
-
-        // CRT scanline overlay — sweeping horizontal line + static lines
-        this._drawScanlines(ctx);
-
-        // Holographic glitch transition (drawn on top of everything)
-        if (this._transitionTimer > 0) {
-            this._drawGlitchTransition(ctx);
-        }
-
-        // Ready overlay
-        if (this._readyTimer > 0) {
-            ctx.fillStyle = "rgba(0,0,0,0.5)";
-            ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
-            ctx.fillStyle = t.power;
-            ctx.font = "44px 'VT323', monospace";
-            ctx.textAlign = "center";
-            ctx.fillText("READY!", CANVAS_W / 2, CANVAS_H / 2 + 8);
-            ctx.fillStyle = t.ink;
-            ctx.font = "20px 'VT323', monospace";
-            ctx.fillText(`LEVEL ${this.level} — ${t.name.toUpperCase()}`, CANVAS_W / 2, CANVAS_H / 2 - 32);
-        }
-
-        if (this.paused) {
-            ctx.fillStyle = "rgba(0,0,0,0.65)";
-            ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
-            ctx.fillStyle = "#f5f1e8";
-            ctx.font = "48px 'VT323', monospace";
-            ctx.textAlign = "center";
-            ctx.fillText("PAUSED", CANVAS_W / 2, CANVAS_H / 2);
-            ctx.font = "18px 'VT323', monospace";
-            ctx.fillText("Press P to resume", CANVAS_W / 2, CANVAS_H / 2 + 28);
-        }
+    _drawPauseOverlay(ctx) {
+        if (!this.paused) return;
+        ctx.fillStyle = "rgba(0,0,0,0.65)";
+        ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+        ctx.fillStyle = "#f5f1e8";
+        ctx.font = "48px 'VT323', monospace";
+        ctx.textAlign = "center";
+        ctx.fillText("PAUSED", CANVAS_W / 2, CANVAS_H / 2);
+        ctx.font = "18px 'VT323', monospace";
+        ctx.fillText("Press P to resume", CANVAS_W / 2, CANVAS_H / 2 + 28);
     }
 
     _drawWalls(ctx, t) {

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { CashRunEngine, CANVAS_W, CANVAS_H } from "../game/engine";
 import { audio } from "../game/audio";
@@ -23,18 +23,20 @@ export default function GamePage() {
     const [muted, setMuted] = useState(audio.isMuted());
     const [, force] = useState(0);
 
+    const createEngine = useCallback((canvas) => new CashRunEngine(canvas, {
+        character,
+        mode,
+        onStateChange: (s) => setHud((prev) => ({ ...prev, ...s })),
+        onScoreChange: (score) => setHud((prev) => ({ ...prev, score })),
+        onLifeLost: (lives) => setHud((prev) => ({ ...prev, lives })),
+        onGameOver: (info) => setGameOver(info),
+    }), [character, mode]);
+
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
 
-        const engine = new CashRunEngine(canvas, {
-            character,
-            mode,
-            onStateChange: (s) => setHud((prev) => ({ ...prev, ...s })),
-            onScoreChange: (score) => setHud((prev) => ({ ...prev, score })),
-            onLifeLost: (lives) => setHud((prev) => ({ ...prev, lives })),
-            onGameOver: (info) => setGameOver(info),
-        });
+        const engine = createEngine(canvas);
         engineRef.current = engine;
         engine.start();
 
@@ -58,8 +60,7 @@ export default function GamePage() {
             clearInterval(interval);
             engine.stop();
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [character]);
+    }, [createEngine]);
 
     const handleDirection = (dir) => engineRef.current?.setDirection(dir);
     const togglePause = () => {
@@ -80,14 +81,7 @@ export default function GamePage() {
         setGameOver(null);
         const canvas = canvasRef.current;
         engineRef.current?.stop();
-        const engine = new CashRunEngine(canvas, {
-            character,
-            mode,
-            onStateChange: (s) => setHud((prev) => ({ ...prev, ...s })),
-            onScoreChange: (score) => setHud((prev) => ({ ...prev, score })),
-            onLifeLost: (lives) => setHud((prev) => ({ ...prev, lives })),
-            onGameOver: (info) => setGameOver(info),
-        });
+        const engine = createEngine(canvas);
         engineRef.current = engine;
         engine.start();
     };

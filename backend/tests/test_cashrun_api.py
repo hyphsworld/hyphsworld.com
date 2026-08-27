@@ -39,22 +39,33 @@ def test_post_leaderboard_valid(session):
 
 
 # --- GET leaderboard sorted desc, no _id ---
-def test_get_leaderboard_sorted_no_id(session):
-    # Insert two more entries to ensure sort works
+def _fetch_leaderboard(session):
+    """Seed a couple entries and return the current leaderboard list."""
     session.post(f"{API}/leaderboard", json={"name": "TEST_B", "score": 5000, "level": 1, "character": "girl"})
     session.post(f"{API}/leaderboard", json={"name": "TEST_C", "score": 99999, "level": 5, "character": "boy"})
-
     r = session.get(f"{API}/leaderboard")
     assert r.status_code == 200
     data = r.json()
     assert isinstance(data, list)
     assert len(data) >= 3
-    # Descending sort by score
+    return data
+
+
+def test_get_leaderboard_sorted_desc(session):
+    data = _fetch_leaderboard(session)
     scores = [row["score"] for row in data]
     assert scores == sorted(scores, reverse=True)
-    # _id excluded
+
+
+def test_get_leaderboard_excludes_mongo_id(session):
+    data = _fetch_leaderboard(session)
     for row in data:
         assert "_id" not in row
+
+
+def test_get_leaderboard_rows_have_public_fields(session):
+    data = _fetch_leaderboard(session)
+    for row in data:
         assert "id" in row
         assert "name" in row
         assert "score" in row

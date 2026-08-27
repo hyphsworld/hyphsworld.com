@@ -1,0 +1,25 @@
+{
+  "summary": "Regression testing after Code Quality Report refactor (engine.js _moveEnemies/_render helpers, useCallback in Game/Leaderboard/auth/use-toast, GameOverModal alive flag, backend test split). All 28 pytest backend tests PASS. Frontend end-to-end verified with ZERO console/page errors: Menu renders with Tonio/Nikki hero images; character (cr-character) and mode (cr-mode) persist in localStorage across reload; /play canvas renders (546x494), HUD shows SCORE/LEVEL/LIVES, arrow keys accepted, game ran continuously for 5s exercising refactored enemy helpers, pause overlay toggles, mute toggles aria-label Mute<->Unmute; leaderboard rows load sorted descending, all 4 period tabs (Today/Weekly/Monthly/All Time) reload data; admin login redirects to /leaderboard showing 'Clear All' + edit/delete icons on every row. GameOverModal source verified to contain alive flag guard and 'PRACTICE RUN \u2014 score not saved' tag.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": [
+    "/app/backend/tests/test_admin_auth.py",
+    "/app/backend/tests/test_cashrun_api.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "engine.js refactor into _updateEnemyRelease/_isOnTile/_enemyTarget/_pickEnemyDirection/_enemySpeed/_advanceEnemy and _computeShakeOffset/_drawFloor/_drawPellets/_drawFloatTexts/_drawReadyOverlay/_drawPauseOverlay is functionally equivalent \u2014 no gameplay regressions observed over a 5s live run.",
+    "Game.jsx createEngine now depends on [character, mode]; localStorage keys are 'cr-character' and 'cr-mode' (not cashrun.*). Persistence verified across reload.",
+    "GameOverModal fetchRank uses alive flag \u2014 no state-after-unmount risk confirmed by code inspection.",
+    "Backend test split into test_get_leaderboard_sorted_desc / test_get_leaderboard_excludes_mongo_id / test_get_leaderboard_rows_have_public_fields \u2014 all three PASS."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "100% (28/28)", "frontend": "100% (all reviewed flows)"},
+  "test_credentials": "admin@cashrun.local / cashrun-admin-2026 (from /app/memory/test_credentials.md) \u2014 login OK",
+  "seed_data_creation": "Backend pytest seeds TEST_* rows; cleaned up post-run via admin DELETE /api/leaderboard (deleted_count=10).",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "All refactored code verified with zero regressions. Backend: 28/28 pytest pass. Frontend: menu\u2192play\u2192leaderboard\u2192admin loop works with 0 console errors at 1280x900. localStorage keys are 'cr-character'/'cr-mode'. Menu has 2 buttons matching 'Play' text \u2014 use data-testid='menu-play-btn' to disambiguate. Leaderboard rows use table td cells (no data-testid on row currently) \u2014 selector 'table tbody tr' works.",
+  "rca of the issue": "No new issues found. Prior refactor is clean."
+}
