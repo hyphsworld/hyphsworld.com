@@ -15,6 +15,8 @@
   let frame = 1;
   let ball = 1;
   let score = 0;
+  let rolls = [];
+  let frameRolls = [];
   let power = 0;
   let chargeStart = 0;
   let chargeAnimation = 0;
@@ -50,6 +52,37 @@
   function updateScoreboard() { frameValue.textContent = String(frame); ballValue.textContent = String(ball); scoreValue.textContent = String(score); bestValue.textContent = String(best); }
   function showResult(text) { callout.textContent = text; callout.classList.add("show"); window.setTimeout(function () { callout.classList.remove("show"); }, 1500); }
 
+  function calculateScore(recordedRolls) {
+    let total = 0;
+    let rollIndex = 0;
+    for (let scoredFrame = 1; scoredFrame <= 10 && rollIndex < recordedRolls.length; scoredFrame += 1) {
+      const firstRoll = recordedRolls[rollIndex];
+      if (scoredFrame === 10) {
+        return total + recordedRolls.slice(rollIndex, rollIndex + 3).reduce(function (sum, pinsDown) { return sum + pinsDown; }, 0);
+      }
+      if (firstRoll === 10) {
+        total += 10 + (recordedRolls[rollIndex + 1] || 0) + (recordedRolls[rollIndex + 2] || 0);
+        rollIndex += 1;
+      } else if (rollIndex + 1 < recordedRolls.length) {
+        const secondRoll = recordedRolls[rollIndex + 1];
+        total += firstRoll + secondRoll;
+        if (firstRoll + secondRoll === 10) total += recordedRolls[rollIndex + 2] || 0;
+        rollIndex += 2;
+      } else {
+        total += firstRoll;
+        rollIndex += 1;
+      }
+    }
+    return total;
+  }
+
+  function finishGame() {
+    best = Math.max(best, score);
+    localStorage.setItem("ss-bowling-best", String(best));
+    showResult("Game: " + score);
+    rollButton.disabled = true;
+  }
+
   function finishRoll(shotX, shotPower) {
     let knocked = 0;
     pins.forEach(function (pin) {
@@ -58,12 +91,26 @@
       if (pin.standing && Math.abs(pin.x - shotX) < spread + lucky) { pin.standing = false; knocked += 1; }
     });
     const cleared = !pins.some(function (pin) { return pin.standing; });
-    score += knocked;
-    if (knocked === 10) { score += 20; showResult("Strike!"); }
-    else if (cleared) { score += 10; showResult("Spare!"); }
+    rolls.push(knocked);
+    frameRolls.push(knocked);
+    score = calculateScore(rolls);
+    if (knocked === 10) showResult("Strike!");
+    else if (cleared) showResult("Spare!");
     else showResult(knocked + (knocked === 1 ? " pin" : " pins"));
-    if (knocked === 10 || ball === 2) { frame += 1; ball = 1; resetPins(); } else { ball = 2; }
-    if (frame > 10) { best = Math.max(best, score); localStorage.setItem("ss-bowling-best", String(best)); showResult("Game: " + score); frame = 10; rollButton.disabled = true; }
+    if (frame < 10) {
+      if (knocked === 10 || ball === 2) { frame += 1; ball = 1; frameRolls = []; resetPins(); } else { ball = 2; }
+    } else if (frameRolls.length === 1) {
+      if (knocked === 10) resetPins();
+      ball = 2;
+    } else if (frameRolls.length === 2) {
+      if (frameRolls[0] === 10) {
+        if (knocked === 10) resetPins();
+        ball = 3;
+      } else if (cleared) {
+        resetPins();
+        ball = 3;
+      } else finishGame();
+    } else finishGame();
     rolling = false; updateScoreboard(); drawLane();
   }
 
@@ -90,7 +137,7 @@
     chargeAnimation = requestAnimationFrame(charge);
   }
   function releaseCharge(event) { if (!chargeStart) return; if (event) event.preventDefault(); chargeStart = 0; cancelAnimationFrame(chargeAnimation); rollButton.classList.remove("charging"); rollButton.textContent = "Hold to charge"; roll(); }
-  function newGame() { frame = 1; ball = 1; score = 0; power = 0; rolling = false; rollButton.disabled = false; resetPins(); updateScoreboard(); drawLane(); showResult("Fresh game"); }
+  function newGame() { frame = 1; ball = 1; score = 0; rolls = []; frameRolls = []; power = 0; rolling = false; rollButton.disabled = false; resetPins(); updateScoreboard(); drawLane(); showResult("Fresh game"); }
 
   rollButton.addEventListener("pointerdown", startCharge); window.addEventListener("pointerup", releaseCharge);
   window.addEventListener("keydown", function (event) { if (event.code === "ArrowLeft") angleControl.value = String(Math.max(-36, Number(angleControl.value) - 3)); if (event.code === "ArrowRight") angleControl.value = String(Math.min(36, Number(angleControl.value) + 3)); if (event.code === "Space" && !event.repeat) startCharge(event); });
