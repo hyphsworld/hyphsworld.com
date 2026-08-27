@@ -52,30 +52,6 @@
   function updateScoreboard() { frameValue.textContent = String(frame); ballValue.textContent = String(ball); scoreValue.textContent = String(score); bestValue.textContent = String(best); }
   function showResult(text) { callout.textContent = text; callout.classList.add("show"); window.setTimeout(function () { callout.classList.remove("show"); }, 1500); }
 
-  function calculateScore(recordedRolls) {
-    let total = 0;
-    let rollIndex = 0;
-    for (let scoredFrame = 1; scoredFrame <= 10 && rollIndex < recordedRolls.length; scoredFrame += 1) {
-      const firstRoll = recordedRolls[rollIndex];
-      if (scoredFrame === 10) {
-        return total + recordedRolls.slice(rollIndex, rollIndex + 3).reduce(function (sum, pinsDown) { return sum + pinsDown; }, 0);
-      }
-      if (firstRoll === 10) {
-        total += 10 + (recordedRolls[rollIndex + 1] || 0) + (recordedRolls[rollIndex + 2] || 0);
-        rollIndex += 1;
-      } else if (rollIndex + 1 < recordedRolls.length) {
-        const secondRoll = recordedRolls[rollIndex + 1];
-        total += firstRoll + secondRoll;
-        if (firstRoll + secondRoll === 10) total += recordedRolls[rollIndex + 2] || 0;
-        rollIndex += 2;
-      } else {
-        total += firstRoll;
-        rollIndex += 1;
-      }
-    }
-    return total;
-  }
-
   function finishGame() {
     best = Math.max(best, score);
     localStorage.setItem("ss-bowling-best", String(best));
@@ -93,7 +69,7 @@
     const cleared = !pins.some(function (pin) { return pin.standing; });
     rolls.push(knocked);
     frameRolls.push(knocked);
-    score = calculateScore(rolls);
+    score = window.SSBowlingScoring.calculateScore(rolls);
     if (knocked === 10) showResult("Strike!");
     else if (cleared) showResult("Spare!");
     else showResult(knocked + (knocked === 1 ? " pin" : " pins"));
