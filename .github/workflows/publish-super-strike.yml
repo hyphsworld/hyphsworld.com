@@ -1,0 +1,101 @@
+name: Publish Super Strike
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - deploy/super-strike-web
+    paths:
+      - '.github/workflows/publish-super-strike.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout HYPHSWORLD site
+        uses: actions/checkout@v4
+        with:
+          ref: deploy/super-strike-web
+          path: site
+
+      - name: Checkout Super Strike
+        uses: actions/checkout@v4
+        with:
+          repository: hyphsworld/SS-BOWLING
+          ref: main
+          path: game
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Super Strike dependencies
+        working-directory: game/frontend
+        run: npm install --legacy-peer-deps --no-audit --no-fund
+
+      - name: Export Super Strike web build
+        working-directory: game/frontend
+        run: npx expo export --platform web --output-dir dist
+
+      - name: Rebase exported paths for HYPHSWORLD subfolder
+        working-directory: game/frontend
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          base = '/games/ss-bowling/'
+          dist = Path('dist')
+          text_exts = {'.html', '.js', '.css', '.json', '.map', '.txt', '.webmanifest'}
+          replacements = [
+              ('"/_expo/', f'"{base}_expo/'),
+              ("'/_expo/", f"'{base}_expo/"),
+              ('"/assets/', f'"{base}assets/'),
+              ("'/assets/", f"'{base}assets/"),
+              ('url(/assets/', f'url({base}assets/'),
+              ('href="/favicon.ico"', f'href="{base}favicon.ico"'),
+          ]
+          for p in dist.rglob('*'):
+              if not p.is_file() or p.suffix.lower() not in text_exts:
+                  continue
+              try:
+                  s = p.read_text(encoding='utf-8')
+              except UnicodeDecodeError:
+                  continue
+              original = s
+              for old, new in replacements:
+                  s = s.replace(old, new)
+              if s != original:
+                  p.write_text(s, encoding='utf-8')
+          PY
+
+      - name: Replace website game route
+        run: |
+          rm -rf site/games/ss-bowling
+          mkdir -p site/games/ss-bowling
+          cp -R game/frontend/dist/. site/games/ss-bowling/
+
+      - name: Verify exported route
+        run: |
+          test -f site/games/ss-bowling/index.html
+          test -d site/games/ss-bowling/_expo
+          grep -q '/games/ss-bowling/_expo/' site/games/ss-bowling/index.html
+          if grep -R -E --include='*.html' --include='*.js' --include='*.css' '(^|[^[:alnum:]_./-])(/_expo/|/assets/)' site/games/ss-bowling; then
+            echo 'Found unre-based root asset paths'
+            exit 1
+          fi
+
+      - name: Commit published game
+        working-directory: site
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add games/ss-bowling
+          if git diff --cached --quiet; then
+            echo 'No Super Strike changes to publish.'
+            exit 0
+          fi
+          git commit -m 'Publish Super Strike web build'
+          git push origin HEAD:deploy/super-strike-web

@@ -1,24 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#07030f" />
-  <title>Super Strike | HYPHSWORLD</title>
-  <style>
-    *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#07030f;color:#fff;font-family:Arial,Helvetica,sans-serif}body{min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 20% 10%,rgba(183,255,34,.14),transparent 30%),radial-gradient(circle at 80% 20%,rgba(255,44,156,.18),transparent 30%),#07030f}.card{width:min(760px,100%);padding:28px;border:1px solid rgba(183,255,34,.35);border-radius:28px;background:linear-gradient(145deg,rgba(25,8,44,.95),rgba(3,2,8,.96));box-shadow:0 30px 90px rgba(0,0,0,.5);text-align:center}.kicker{display:inline-block;padding:8px 12px;border-radius:999px;background:#b7ff22;color:#101600;font-weight:900;letter-spacing:.12em;text-transform:uppercase;font-size:.72rem}h1{margin:18px 0 8px;font-size:clamp(2.6rem,10vw,5.5rem);line-height:.9;text-transform:uppercase}h1 span{color:#ff2c9c}p{margin:0 auto;max-width:560px;color:#cfc4dc;line-height:1.6;font-weight:700}.actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:24px}.btn{display:inline-flex;align-items:center;justify-content:center;padding:13px 18px;border-radius:999px;text-decoration:none;font-weight:900}.btn.primary{background:#b7ff22;color:#101600}.btn.secondary{border:1px solid rgba(255,255,255,.2);color:#fff;background:rgba(255,255,255,.06)}.note{margin-top:18px;font-size:.82rem;color:#8f839d}
-  </style>
-</head>
-<body>
-  <main class="card">
-    <span class="kicker">Super Strike Upgrade</span>
-    <h1>SUPER <span>STRIKE</span></h1>
-    <p>The old SS Bowling canvas build has been retired. The new 3D Super Strike version is being connected now so this route no longer drops you into a 404.</p>
-    <div class="actions">
-      <a class="btn primary" href="../../games.html">Back to Casino</a>
-      <a class="btn secondary" href="../../index.html">HYPHSWORLD Home</a>
-    </div>
-    <div class="note">AMS WEST · HYPHSWORLD Arcade</div>
-  </main>
+  <head>
+    <meta charset="utf-8" />
+    <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>frontend</title>
+    <!-- The `react-native-web` recommended style reset: https://necolas.github.io/react-native-web/docs/setup/#root-element -->
+    <style id="expo-reset">
+      /* These styles make the body full-height */
+      html,
+      body {
+        height: 100%;
+      }
+      /* These styles disable body scrolling if you are using <ScrollView> */
+      body {
+        overflow: hidden;
+      }
+      /* These styles make the root element full-height */
+      #root {
+        display: flex;
+        height: 100%;
+        flex: 1;
+      }
+    </style>
+  <link rel="icon" href="/games/ss-bowling/favicon.ico" /></head>
+
+  <body>
+    <!-- Use static rendering with Expo Router to support running without JavaScript. -->
+    <noscript>
+      You need to enable JavaScript to run this app.
+    </noscript>
+    <!-- The root element for your Expo app. -->
+    <div id="root"></div>
+  <script src="/games/ss-bowling/_expo/static/js/web/entry-096f719b19b4ac9e05442391d2d4df0c.js" defer></script>
 </body>
 </html>
