@@ -82,7 +82,7 @@ jobs:
           test -f site/games/ss-bowling/index.html
           test -d site/games/ss-bowling/_expo
           grep -q '/games/ss-bowling/_expo/' site/games/ss-bowling/index.html
-          if grep -R --include='*.html' --include='*.js' --include='*.css' '"/_expo/\|''/_expo/\|"/assets/\|''/assets/' site/games/ss-bowling; then
+          if grep -R -E --include='*.html' --include='*.js' --include='*.css' '(^|[^[:alnum:]_./-])(/_expo/|/assets/)' site/games/ss-bowling; then
             echo 'Found unre-based root asset paths'
             exit 1
           fi
