@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - deploy/super-strike-web
+      - main
     paths:
       - '.github/workflows/publish-super-strike.yml'
 
@@ -18,7 +18,7 @@ jobs:
       - name: Checkout HYPHSWORLD site
         uses: actions/checkout@v4
         with:
-          ref: deploy/super-strike-web
+          ref: main
           path: site
 
       - name: Checkout Super Strike
@@ -98,4 +98,4 @@ jobs:
             exit 0
           fi
           git commit -m 'Publish Super Strike web build'
-          git push origin HEAD:deploy/super-strike-web
+          git push origin HEAD:main
