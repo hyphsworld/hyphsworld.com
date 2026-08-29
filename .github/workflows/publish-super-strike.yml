@@ -100,4 +100,4 @@ jobs:
           git commit -m 'Publish Super Strike web build'
           git push origin HEAD:main
 
-      # republish marker: isolated native startup f4ba55c
+      # republish marker: web-only root 509e405
