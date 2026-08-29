@@ -100,4 +100,4 @@ jobs:
           git commit -m 'Publish Super Strike web build'
           git push origin HEAD:main
 
-      # republish marker: minimal web boot diagnostic 3c032aa
+      # republish marker: isolated native startup f4ba55c
