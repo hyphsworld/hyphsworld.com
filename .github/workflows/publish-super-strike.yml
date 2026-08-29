@@ -99,3 +99,5 @@ jobs:
           fi
           git commit -m 'Publish Super Strike web build'
           git push origin HEAD:main
+
+      # republish marker: blank-screen fix
