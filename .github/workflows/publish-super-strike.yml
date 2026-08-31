@@ -47,9 +47,11 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           base = '/preview/super-strike-audio/'
+          old_base = '/games/ss-bowling/'
           dist = Path('dist')
           text_exts = {'.html', '.js', '.css', '.json', '.map', '.txt', '.webmanifest'}
           replacements = [
+              (old_base, base),
               ('"/_expo/', f'"{base}_expo/'),
               ("'/_expo/", f"'{base}_expo/"),
               ('"/assets/', f'"{base}assets/'),
