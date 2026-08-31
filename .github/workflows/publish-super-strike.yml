@@ -95,5 +95,5 @@ jobs:
             echo 'No preview changes to publish.'
             exit 0
           fi
-          git commit -m 'Publish temporary Super Strike audio preview'
+          git commit -m 'Publish temporary Super Strike hazard preview'
           git push origin HEAD:preview/super-strike-audio
