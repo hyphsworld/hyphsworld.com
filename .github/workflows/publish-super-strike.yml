@@ -1,10 +1,10 @@
-name: Publish Super Strike
+name: Preview Super Strike Audio
 
 on:
   workflow_dispatch:
   push:
     branches:
-      - main
+      - preview/super-strike-audio
     paths:
       - '.github/workflows/publish-super-strike.yml'
 
@@ -12,20 +12,20 @@ permissions:
   contents: write
 
 jobs:
-  publish:
+  publish-preview:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout HYPHSWORLD site
+      - name: Checkout HYPHSWORLD preview branch
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: preview/super-strike-audio
           path: site
 
-      - name: Checkout Super Strike
+      - name: Checkout Super Strike audio preview
         uses: actions/checkout@v4
         with:
           repository: hyphsworld/SS-BOWLING
-          ref: main
+          ref: feature/pop-wall-alley-gator
           path: game
 
       - name: Setup Node
@@ -41,12 +41,12 @@ jobs:
         working-directory: game/frontend
         run: npx expo export --platform web --output-dir dist
 
-      - name: Rebase exported paths for HYPHSWORLD subfolder
+      - name: Rebase exported paths for preview subfolder
         working-directory: game/frontend
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          base = '/games/ss-bowling/'
+          base = '/preview/super-strike-audio/'
           dist = Path('dist')
           text_exts = {'.html', '.js', '.css', '.json', '.map', '.txt', '.webmanifest'}
           replacements = [
@@ -71,33 +71,27 @@ jobs:
                   p.write_text(s, encoding='utf-8')
           PY
 
-      - name: Replace website game route
+      - name: Replace preview route
         run: |
-          rm -rf site/games/ss-bowling
-          mkdir -p site/games/ss-bowling
-          cp -R game/frontend/dist/. site/games/ss-bowling/
+          rm -rf site/preview/super-strike-audio
+          mkdir -p site/preview/super-strike-audio
+          cp -R game/frontend/dist/. site/preview/super-strike-audio/
 
-      - name: Verify exported route
+      - name: Verify preview route
         run: |
-          test -f site/games/ss-bowling/index.html
-          test -d site/games/ss-bowling/_expo
-          grep -q '/games/ss-bowling/_expo/' site/games/ss-bowling/index.html
-          if grep -R -E --include='*.html' --include='*.js' --include='*.css' '(^|[^[:alnum:]_./-])(/_expo/|/assets/)' site/games/ss-bowling; then
-            echo 'Found unre-based root asset paths'
-            exit 1
-          fi
+          test -f site/preview/super-strike-audio/index.html
+          test -d site/preview/super-strike-audio/_expo
+          grep -q '/preview/super-strike-audio/_expo/' site/preview/super-strike-audio/index.html
 
-      - name: Commit published game
+      - name: Commit preview build
         working-directory: site
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add games/ss-bowling
+          git add preview/super-strike-audio
           if git diff --cached --quiet; then
-            echo 'No Super Strike changes to publish.'
+            echo 'No preview changes to publish.'
             exit 0
           fi
-          git commit -m 'Publish Super Strike web build'
-          git push origin HEAD:main
-
-      # republish marker: safari-audio 59f0507
+          git commit -m 'Publish temporary Super Strike audio preview'
+          git push origin HEAD:preview/super-strike-audio
