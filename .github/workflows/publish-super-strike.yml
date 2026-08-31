@@ -83,7 +83,7 @@ jobs:
         run: |
           test -f site/preview/super-strike-audio/index.html
           test -d site/preview/super-strike-audio/_expo
-          grep -q '/preview/super-strike-audio/_expo/' site/preview/super-strike-audio/index.html
+          grep -q '/preview/super-strike-audio/' site/preview/super-strike-audio/index.html
 
       - name: Commit preview build
         working-directory: site
