@@ -21,7 +21,7 @@ jobs:
           ref: preview/super-strike-audio
           path: site
 
-      - name: Checkout Super Strike audio preview
+      - name: Checkout Super Strike gameplay-first audio preview
         uses: actions/checkout@v4
         with:
           repository: hyphsworld/SS-BOWLING
@@ -95,5 +95,5 @@ jobs:
             echo 'No preview changes to publish.'
             exit 0
           fi
-          git commit -m 'Publish temporary Super Strike hazard preview'
+          git commit -m 'Publish gameplay-first Super Strike audio preview'
           git push origin HEAD:preview/super-strike-audio
