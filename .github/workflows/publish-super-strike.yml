@@ -95,5 +95,5 @@ jobs:
             echo 'No preview changes to publish.'
             exit 0
           fi
-          git commit -m 'Publish gameplay-first Super Strike audio preview'
+          git commit -m 'Publish refreshed Super Strike audio preview'
           git push origin HEAD:preview/super-strike-audio
