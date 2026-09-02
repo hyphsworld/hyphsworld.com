@@ -52,10 +52,18 @@
     return next;
   }
 
-  function getSupabaseClient() {
+  async function getSupabaseClient() {
+    if (window.HWAuth && typeof window.HWAuth.getClient === 'function') {
+      try {
+        const client = await window.HWAuth.getClient();
+        if (client) return client;
+      } catch (error) {}
+    }
     if (window.HWAuth && window.HWAuth.supabase) return window.HWAuth.supabase;
     if (!window.supabase || !SUPABASE_ANON_KEY) return null;
-    if (!supabaseClient) supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    if (!supabaseClient) supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+    });
     return supabaseClient;
   }
 
@@ -76,7 +84,7 @@
       } catch (error) {}
     }
 
-    const client = getSupabaseClient();
+    const client = await getSupabaseClient();
     if (client && client.auth && typeof client.auth.getUser === 'function') {
       try {
         const { data } = await client.auth.getUser();
@@ -97,7 +105,7 @@
       } catch (error) {}
     }
 
-    const client = getSupabaseClient();
+    const client = await getSupabaseClient();
     if (!client) return null;
 
     try {
@@ -235,7 +243,7 @@
       const profile = await fetchProfile(user);
 
       if (user && profile) {
-        const remotePoints = toNumber(profile.points ?? user.coolPoints);
+        const remotePoints = toNumber(profile.cool_points ?? profile.points ?? user.coolPoints);
         const lifetimePoints = Math.max(toNumber(profile.lifetime_points ?? user.lifetimePoints), remotePoints);
 
         startAccountRefreshLoop();
@@ -381,22 +389,25 @@
     if (spendButton) spend(spendButton.dataset.pointSpend, spendButton.dataset.pointReason || spendButton.dataset.reason || 'button_spend');
   });
 
-  document.addEventListener('DOMContentLoaded', async () => {
+  async function bootAndSync() {
     await refresh();
     await flushPending();
-  });
+  }
 
-  window.addEventListener('load', async () => {
-    await refresh();
-    await flushPending();
-  });
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootAndSync, { once: true });
+  } else {
+    bootAndSync();
+  }
 
+  window.addEventListener('load', bootAndSync, { once: true });
   window.addEventListener('storage', (event) => {
     if (event.key === CACHE_KEY) refresh();
   });
 
-  document.addEventListener('hyph:auth-signed-in', refresh);
-  window.addEventListener('pageshow', refresh);
+  document.addEventListener('hyph:auth-signed-in', bootAndSync);
+  document.addEventListener('hyph:auth-points-bridge-ready', bootAndSync);
+  window.addEventListener('pageshow', bootAndSync);
 
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) refresh();
