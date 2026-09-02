@@ -118,8 +118,6 @@
     var u = await user(false);
     if (!sb || !u) return null;
     if (!updates && !force && profileCache && profileCache.id === u.id && fresh(profileAt, PROFILE_TTL)) return profileCache;
-    // Hydration is read-only.  In particular, never manufacture defaults and
-    // pass them to update_my_profile merely because a page requested the user.
     if (!updates) {
       var fetched = await sb.from('profiles').select('*').eq('id', u.id).maybeSingle();
       if (fetched.error) throw new Error(fetched.error.message || 'Profile load failed.');
@@ -136,8 +134,8 @@
       p_duck_status: clean.duckStatus || clean.duck_status || current.duck_status || 'Duck Sauce is watching this account.',
       p_buck_clearance: clean.buckClearance || clean.buck_clearance || current.buck_clearance || 'Lobby clearance only',
       p_avatar_type: avatarType(clean.avatarType || clean.avatar_type || current.avatar_type || getText('hyphsworld.avatarType') || 'boy'),
-      p_level_1_unlocked: typeof clean.level1Unlocked === 'boolean' ? clean.level1Unlocked : null,
-      p_level_2_unlocked: typeof clean.level2Unlocked === 'boolean' ? clean.level2Unlocked : null
+      p_level_1_unlocked: null,
+      p_level_2_unlocked: null
     };
     var result = await sb.rpc('update_my_profile', payload);
     if (result.error) throw new Error(result.error.message || 'Profile save failed.');
@@ -209,9 +207,16 @@
       return w.balance;
     };
 
-    window.HWAuth.grantVaultAccess = async function (levelKey) {
-      var level = levelKey || 'level_1';
-      await profile(level === 'level_2' ? { level2Unlocked: true } : { level1Unlocked: true }, true);
+    window.HWAuth.grantVaultAccess = async function (levelKey, code) {
+      var sb = await client();
+      var s = await session(true);
+      if (!sb || !s || !s.user) throw new Error('Login required.');
+      if (!code) throw new Error('Vault code required.');
+      var result = await sb.functions.invoke('vault-unlock', { body: { level: levelKey || 'level_1', code: code } });
+      if (result.error) throw new Error(result.error.message || 'Vault unlock failed.');
+      if (!result.data || result.data.ok !== true) throw new Error(result.data && result.data.error || 'Vault unlock denied.');
+      profileCache = null;
+      profileAt = 0;
       return true;
     };
 
@@ -219,12 +224,10 @@
       window.HWAuth.signInWithEmail = async function (email, password) {
         clearCaches();
         var result = await base.signInWithEmail(email, password);
-        // Authentication succeeded already. Profile/wallet hydration must never
-        // turn that valid first login into an apparent failure that asks the
-        // player to submit the same credentials again.
         await window.HWAuth.getCurrentUser(true).catch(function (error) {
           console.warn('HYPHSWORLD post-login hydration warning:', error && error.message || error);
         });
+        try { document.dispatchEvent(new CustomEvent('hyph:auth-signed-in')); } catch (error) {}
         return result;
       };
     }
@@ -234,6 +237,7 @@
         clearCaches();
         var result = await base.signUpWithEmail(email, password);
         await window.HWAuth.getCurrentUser(true).catch(function () {});
+        try { document.dispatchEvent(new CustomEvent('hyph:auth-signed-in')); } catch (error) {}
         return result;
       };
     }
