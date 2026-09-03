@@ -39,6 +39,9 @@ jobs:
 
       - name: Export Super Strike web build
         working-directory: game/frontend
+        env:
+          EXPO_PUBLIC_SUPABASE_URL: https://yuhxtdkhsltaqiagrtys.supabase.co
+          EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_oYdN-75W3b7k3m1zLukI-A_BKWVDD5e
         run: npx expo export --platform web --output-dir dist
 
       - name: Rebase exported paths for HYPHSWORLD subfolder
@@ -82,6 +85,11 @@ jobs:
           test -f site/games/ss-bowling/index.html
           test -d site/games/ss-bowling/_expo
           grep -q '/games/ss-bowling/_expo/' site/games/ss-bowling/index.html
+          if grep -R --include='*.js' -F 'undefined/api' site/games/ss-bowling; then
+            echo 'Found unresolved backend URL in Super Strike bundle'
+            exit 1
+          fi
+          grep -R -q --include='*.js' 'yuhxtdkhsltaqiagrtys.supabase.co' site/games/ss-bowling
           if grep -R -E --include='*.html' --include='*.js' --include='*.css' '(^|[^[:alnum:]_./-])(/_expo/|/assets/)' site/games/ss-bowling; then
             echo 'Found unre-based root asset paths'
             exit 1
