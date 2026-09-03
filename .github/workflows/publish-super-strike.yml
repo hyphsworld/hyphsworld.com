@@ -84,7 +84,12 @@ jobs:
         run: |
           test -f site/games/ss-bowling/index.html
           test -d site/games/ss-bowling/_expo
-          grep -q '/games/ss-bowling/_expo/' site/games/ss-bowling/index.html
+          for route in game results multiplayer profile leaderboard skins coach; do
+            test -f "site/games/ss-bowling/${route}.html"
+          done
+          for page in site/games/ss-bowling/*.html; do
+            grep -q '/games/ss-bowling/_expo/' "$page"
+          done
           if grep -R --include='*.js' -F 'undefined/api' site/games/ss-bowling; then
             echo 'Found unresolved backend URL in Super Strike bundle'
             exit 1
