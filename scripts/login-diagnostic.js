@@ -39,6 +39,10 @@ assert(authController.includes('await refreshPoints();'), 'login should refresh 
 
 assert(authClient.includes('persistSession: true'), 'Supabase login should persist sessions.');
 assert(authClient.includes('autoRefreshToken: true'), 'Supabase login should refresh sessions automatically.');
+assert(authClient.includes('signInWithOtp'), 'email login links should bypass password and confirmation dead-ends.');
+assert(authClient.includes("type: 'signup'"), 'unconfirmed accounts should be able to resend confirmation email.');
+assert(authClient.includes('onAuthStateChange'), 'all games should receive refreshed login state.');
+assert(authClient.includes('if (hasSession) saveLocalSession(session)'), 'signup must not create a fake local login before confirmation.');
 assert(authClient.includes("new CustomEvent('hyph:auth-signed-in'"), 'auth client should broadcast successful sign-in.');
 assert(authStability.includes("window.HWAuth.getCurrentUser(true).catch"), 'profile hydration must not reject an otherwise successful first login.');
 assert(accountBootstrap.includes("await load('auth-client.js'"), 'legacy pages should bootstrap the shared auth client.');
