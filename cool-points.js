@@ -34,6 +34,7 @@
       await load('auth-points-bridge.js', function () { return Boolean(window.__HYPHSWORLD_AUTH_POINTS_BRIDGE__); });
       await load('global-points-engine.js', function () { return Boolean(window.HWPoints && window.HWPoints.__accountOnlyEngineV2); });
       if (window.HWPoints && typeof window.HWPoints.refresh === 'function') await window.HWPoints.refresh();
+      await load('engagement-points.js', function () { return Boolean(window.__HW_ENGAGEMENT_POINTS_V1__); });
     } catch (error) {
       console.warn('HYPHSWORLD account widget bootstrap warning:', error && error.message || error);
     }
