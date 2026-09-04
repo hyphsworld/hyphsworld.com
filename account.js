@@ -267,6 +267,9 @@
         buckClearance: buckClearanceInput ? buckClearanceInput.value : user.buckClearance || 'Lobby clearance only',
         avatarType
       });
+      if (window.HWEngagementPoints && typeof window.HWEngagementPoints.award === 'function') {
+        await window.HWEngagementPoints.award('profile_update', 'identity');
+      }
       if (!options || !options.quiet) show('Profile updated and synced to your HYPHSWORLD ID.', 'success');
     } catch (error) {
       if (!options || !options.quiet) show('Saved on this device. Account sync will retry next time you save.', 'warn');
