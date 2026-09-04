@@ -113,4 +113,4 @@ jobs:
           git commit -m 'Publish Super Strike web build'
           git push origin HEAD:main
 
-      # republish marker: restore-full-home 6757212
+      # republish marker: brand-assets 46292e0
