@@ -52,6 +52,15 @@
     return n(data.balance ?? data.cool_points ?? data.points ?? data.amount ?? 0);
   }
 
+  function sourceFrom(value, fallback) {
+    const source = String(value || fallback || 'site_action')
+      .toLowerCase()
+      .replace(/[^a-z0-9_-]+/g, '_')
+      .replace(/^_+|_+$/g, '')
+      .slice(0, 64);
+    return source || fallback || 'site_action';
+  }
+
   async function patch() {
     if (!window.HWAuth || !window.HWAuth.getClient || window.HWAuth.__centralPointsBridge) return false;
 
@@ -99,7 +108,7 @@
       try {
         const result = await rpc('earn_cool_points', {
           p_amount: delta,
-          p_source: reason || 'site_action',
+          p_source: sourceFrom(reason, 'site_action'),
           p_reason: reason || 'Cool Points earned',
           p_metadata: metadata || {}
         });
@@ -108,6 +117,15 @@
         if (original.addPoints) return original.addPoints.call(window.HWAuth, amount, reason, metadata);
         throw error;
       }
+    };
+
+    window.HWAuth.awardSongListen = async function bridgedAwardSongListen(trackId, trigger) {
+      const result = await rpc('award_song_listen', {
+        p_track_id: String(trackId || ''),
+        p_trigger: String(trigger || 'ended')
+      });
+      const balance = broadcast(balanceFrom(result), 'song_play_' + String(trackId || 'unknown'));
+      return Object.assign({}, result, { balance });
     };
 
     window.HWAuth.setPoints = async function bridgedSetPoints(value, reason, metadata) {
