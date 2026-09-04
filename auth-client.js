@@ -98,6 +98,18 @@
       if (!global.supabase || !global.supabase.createClient) await loadScript(CDN);
       if (!global.supabase || !global.supabase.createClient) return null;
       client = global.supabase.createClient(c.url, c.anonKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
+      client.auth.onAuthStateChange((event, session) => {
+        clearCurrentUserCache();
+        if (session && session.user) {
+          const saved = sessionFromUser(session.user);
+          saveLocalSession(saved);
+          try { document.dispatchEvent(new CustomEvent('hyph:auth-signed-in', { detail: saved })); } catch (error) {}
+        } else if (event === 'SIGNED_OUT') {
+          clearLocalSession();
+          broadcastPoints(0, 'signed_out');
+        }
+        try { document.dispatchEvent(new CustomEvent('hyph:auth-state-changed', { detail: { event } })); } catch (error) {}
+      });
       return client;
     })();
     return clientPromise;
@@ -172,6 +184,34 @@
     if (error) throw new Error(error.message || 'Google sign-in failed.');
     return data;
   }
+  async function signInWithEmailLink(email, shouldCreateUser = false) {
+    email = normalizeEmail(email);
+    if (!email) throw new Error('Enter your email first.');
+    const sb = await getClient();
+    if (!sb) throw new Error('Email login needs Supabase configuration.');
+    const { error } = await sb.auth.signInWithOtp({
+      email,
+      options: {
+        shouldCreateUser: Boolean(shouldCreateUser),
+        emailRedirectTo: AUTH_REDIRECT_URL
+      }
+    });
+    if (error) throw new Error(error.message || 'Could not send your login link.');
+    return { email, linkSent: true, newAccount: Boolean(shouldCreateUser) };
+  }
+  async function resendConfirmation(email) {
+    email = normalizeEmail(email);
+    if (!email) throw new Error('Enter your email first.');
+    const sb = await getClient();
+    if (!sb) throw new Error('Email confirmation needs Supabase configuration.');
+    const { error } = await sb.auth.resend({
+      type: 'signup',
+      email,
+      options: { emailRedirectTo: AUTH_REDIRECT_URL }
+    });
+    if (error) throw new Error(error.message || 'Could not resend the confirmation email.');
+    return { email, confirmationSent: true };
+  }
   async function signUpWithEmail(email, password) {
     email = normalizeEmail(email);
     if (!email || !password) throw new Error('Email and password are required.');
@@ -185,12 +225,14 @@
       options: { emailRedirectTo: AUTH_REDIRECT_URL, data: { displayName, username: usernameFromEmail(email), avatarType: startingAvatar, avatarIcon: avatarIcon(startingAvatar) } }
     });
     if (error) throw new Error(error.message || 'Sign up failed.');
-    const session = data && data.user ? sessionFromUser(data.user) : { email, userId: '', provider: 'supabase' };
-    saveLocalSession(session);
+    const hasSession = Boolean(data && data.session && data.session.user);
+    const session = hasSession ? sessionFromUser(data.session.user) : { email, userId: data && data.user && data.user.id || '', provider: 'supabase', pendingConfirmation: true };
+    if (hasSession) saveLocalSession(session);
+    else clearLocalSession();
     saveLocalProfileName(displayName);
     saveLocalAvatar(startingAvatar);
     broadcastPoints(0, 'signup');
-    if (data && data.user) {
+    if (hasSession && data && data.user) {
       try {
         await upsertRow(data.user, { displayName, avatarType: startingAvatar });
       } catch (syncError) {
@@ -387,5 +429,5 @@
     saveLocalSession(session);
     return session;
   }
-  global.HWAuth = { getProviderStatus, getClient, signUpWithEmail, signInWithEmail, signInWithGoogle, signOut, getSession, getCurrentUser, updateProfile, getPoints, setPoints, addPoints, grantVaultAccess, avatarIcon };
+  global.HWAuth = { getProviderStatus, getClient, signUpWithEmail, signInWithEmail, signInWithEmailLink, resendConfirmation, signInWithGoogle, signOut, getSession, getCurrentUser, updateProfile, getPoints, setPoints, addPoints, grantVaultAccess, avatarIcon };
 })(window);

@@ -3,6 +3,8 @@
 
   const msgEl = document.getElementById('message');
   const googleLoginBtn = document.getElementById('googleLoginBtn');
+  const emailLinkBtn = document.getElementById('emailLinkBtn');
+  const resendConfirmationBtn = document.getElementById('resendConfirmationBtn');
   const authCard = document.getElementById('authCard');
   const modeSignin = document.getElementById('modeSignin');
   const modeSignup = document.getElementById('modeSignup');
@@ -58,7 +60,9 @@
       modeSignup.classList.toggle('is-active', mode === 'signup');
       modeSignup.setAttribute('aria-selected', mode === 'signup' ? 'true' : 'false');
     }
-    if (submitBtn) submitBtn.textContent = mode === 'signup' ? 'Create ID & Play' : 'Login & Play';
+    if (submitBtn) submitBtn.textContent = mode === 'signup' ? 'Create ID with Secret Code' : 'Use Secret Code';
+    if (emailLinkBtn) emailLinkBtn.textContent = mode === 'signup' ? 'Email My New Player ID Link' : 'Email Me a Login Link';
+    if (resendConfirmationBtn) resendConfirmationBtn.hidden = true;
     if (passwordInput) passwordInput.setAttribute('autocomplete', mode === 'signup' ? 'new-password' : 'current-password');
     show(mode === 'signup' ? 'Create one HYPHSWORLD ID. Then use it everywhere.' : 'Login once. Then play across HYPHSWORLD.', '');
   }
@@ -83,7 +87,12 @@
 
     try {
       if (mode === 'signup') {
-        await HWAuth.signUpWithEmail(email, password);
+        const created = await HWAuth.signUpWithEmail(email, password);
+        if (created && created.pendingConfirmation) {
+          if (resendConfirmationBtn) resendConfirmationBtn.hidden = false;
+          show('Player ID created. Check your email and tap Confirm, then return here to login.', 'warn');
+          return;
+        }
         await refreshPoints();
         show('ID created. Loading your game…', 'success');
       } else {
@@ -96,7 +105,10 @@
       redirectToNext(300);
     } catch (error) {
       const text = String(error && error.message || 'Auth failed.');
-      if (mode === 'signin' && /invalid|credential|not found/i.test(text)) {
+      if (/email not confirmed|email_not_confirmed/i.test(text)) {
+        if (resendConfirmationBtn) resendConfirmationBtn.hidden = false;
+        show('This Player ID needs email confirmation. Tap Resend Confirmation below, then open the email.', 'warn');
+      } else if (mode === 'signin' && /invalid|credential|not found/i.test(text)) {
         show('Login failed. New here? Tap Create ID.', 'error');
       } else if (mode === 'signup' && /already|registered|exists/i.test(text)) {
         setMode('signin');
@@ -107,6 +119,38 @@
     } finally {
       submitting = false;
       if (submitBtn) submitBtn.disabled = false;
+    }
+  }
+
+  async function emailLinkLogin() {
+    const email = emailInput ? emailInput.value.trim() : '';
+    if (!email) return show('Enter your email, then tap Email Me a Login Link.', 'error');
+    try {
+      if (emailLinkBtn) emailLinkBtn.disabled = true;
+      await HWAuth.signInWithEmailLink(email, mode === 'signup');
+      show('Login link sent. Open your email and tap the HYPHSWORLD link. This page can stay open.', 'success');
+    } catch (error) {
+      const text = String(error && error.message || 'Could not send login link.');
+      if (/signups not allowed|user not found/i.test(text)) {
+        setMode('signup');
+        show('No Player ID found for that email. Tap the new-ID link button to create one.', 'warn');
+      } else show(text, 'error');
+    } finally {
+      if (emailLinkBtn) emailLinkBtn.disabled = false;
+    }
+  }
+
+  async function resendConfirmation() {
+    const email = emailInput ? emailInput.value.trim() : '';
+    if (!email) return show('Enter your email first.', 'error');
+    try {
+      if (resendConfirmationBtn) resendConfirmationBtn.disabled = true;
+      await HWAuth.resendConfirmation(email);
+      show('Confirmation email sent again. Open it and tap Confirm Email.', 'success');
+    } catch (error) {
+      show(error.message || 'Could not resend confirmation.', 'error');
+    } finally {
+      if (resendConfirmationBtn) resendConfirmationBtn.disabled = false;
     }
   }
 
@@ -127,7 +171,15 @@
     if (modeSignup) modeSignup.addEventListener('click', () => setMode('signup'));
     if (togglePasswordBtn) togglePasswordBtn.addEventListener('click', togglePassword);
     if (googleLoginBtn) googleLoginBtn.addEventListener('click', googleLogin);
+    if (emailLinkBtn) emailLinkBtn.addEventListener('click', emailLinkLogin);
+    if (resendConfirmationBtn) resendConfirmationBtn.addEventListener('click', resendConfirmation);
     if (form) form.addEventListener('submit', submitAuth);
+
+    const callbackError = new URLSearchParams(location.search).get('error_description') || new URLSearchParams(location.hash.replace(/^#/, '')).get('error_description');
+    if (callbackError) {
+      const decoded = decodeURIComponent(callbackError.replace(/\+/g, ' '));
+      show(/provider|oauth|client/i.test(decoded) ? 'Google login is temporarily unavailable. Use the email login link below.' : decoded, 'error');
+    }
 
     try {
       const session = await HWAuth.getSession();
