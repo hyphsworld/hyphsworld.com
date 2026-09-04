@@ -125,4 +125,4 @@ jobs:
           git commit -m 'Publish Super Strike web build'
           git push origin HEAD:main
 
-      # republish marker: fix-blank-screen 2162f7c
+      # republish marker: fix-roll-symbol 32cc872
