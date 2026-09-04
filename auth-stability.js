@@ -131,13 +131,11 @@
     var clean = updates || {};
     var payload = {
       p_display_name: clean.displayName || clean.display_name || current.display_name || displayFromEmail(u.email),
-      p_duck_status: clean.duckStatus || clean.duck_status || current.duck_status || 'Duck Sauce is watching this account.',
-      p_buck_clearance: clean.buckClearance || clean.buck_clearance || current.buck_clearance || 'Lobby clearance only',
-      p_avatar_type: avatarType(clean.avatarType || clean.avatar_type || current.avatar_type || getText('hyphsworld.avatarType') || 'boy'),
-      p_level_1_unlocked: null,
-      p_level_2_unlocked: null
+      p_avatar_type: avatarType(clean.avatarType || clean.avatar_type || current.avatar_type || getText('hyphsworld.avatarType') || 'boy')
     };
-    var result = await sb.rpc('update_my_profile', payload);
+    // Identity edits use a deliberately narrow RPC. Level unlocks, points, and
+    // clearance fields are not accepted by this endpoint.
+    var result = await sb.rpc('update_my_identity', payload);
     if (result.error) throw new Error(result.error.message || 'Profile save failed.');
     profileCache = result.data && result.data.profile ? result.data.profile : (result.data || {});
     profileCache.id = profileCache.id || u.id;
