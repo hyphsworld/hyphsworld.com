@@ -74,11 +74,23 @@ jobs:
                   p.write_text(s, encoding='utf-8')
           PY
 
-      - name: Replace website game route
+      - name: Replace website game route safely
         run: |
+          previous_bundle=''
+          if test -f site/games/ss-bowling/index.html; then
+            previous_bundle="$(grep -o 'games/ss-bowling/_expo/static/js/web/entry-[^\" ]*\.js' site/games/ss-bowling/index.html | head -n 1 || true)"
+          fi
+          if test -n "$previous_bundle" && test -f "site/$previous_bundle"; then
+            cp "site/$previous_bundle" /tmp/super-strike-previous-entry.js
+            previous_name="$(basename "$previous_bundle")"
+          fi
           rm -rf site/games/ss-bowling
           mkdir -p site/games/ss-bowling
           cp -R game/frontend/dist/. site/games/ss-bowling/
+          if test -f /tmp/super-strike-previous-entry.js; then
+            mkdir -p site/games/ss-bowling/_expo/static/js/web
+            cp -n /tmp/super-strike-previous-entry.js "site/games/ss-bowling/_expo/static/js/web/$previous_name"
+          fi
 
       - name: Verify exported route
         run: |
@@ -113,4 +125,4 @@ jobs:
           git commit -m 'Publish Super Strike web build'
           git push origin HEAD:main
 
-      # republish marker: brand-assets 46292e0
+      # republish marker: fix-blank-screen 2162f7c
