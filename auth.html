@@ -39,12 +39,16 @@
           <p class="scan-copy">Email scan links your Cool Points wallet</p>
         </div>
 
-        <button id="googleLoginBtn" class="one-id-google" type="button">Continue with Google ID</button>
-
         <form id="oneAuthForm" autocomplete="on">
           <label>Your Email
             <input id="authEmail" type="email" autocomplete="email" placeholder="you@email.com" required />
           </label>
+          <button id="emailLinkBtn" class="one-id-submit" type="button">Email Me a Login Link</button>
+          <p class="one-id-small">Recommended: tap the link in your email and your permanent Player ID opens automatically—no password needed.</p>
+          <button id="resendConfirmationBtn" class="one-id-resend" type="button" hidden>Resend Confirmation Email</button>
+
+          <div class="one-id-divider"><span>or use your secret code</span></div>
+
           <label>Your Secret Code
             <span class="password-row">
               <input id="authPassword" type="password" minlength="10" autocomplete="current-password" placeholder="10+ characters" required />
@@ -52,8 +56,11 @@
             </span>
             <p class="password-requirements" data-signup-copy>Use 10+ characters with at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character.</p>
           </label>
-          <button id="oneAuthSubmit" class="one-id-submit" type="submit">Enter HYPHSWORLD</button>
+          <button id="oneAuthSubmit" class="one-id-password-submit" type="submit">Use Secret Code</button>
         </form>
+
+        <div class="one-id-divider"><span>or continue with</span></div>
+        <button id="googleLoginBtn" class="one-id-google" type="button">Continue with Google ID</button>
 
         <p class="one-id-small"><strong>One login.</strong> Use the same email every time. Your points load automatically across slots, games, vault, and account pages.</p>
       </section>
