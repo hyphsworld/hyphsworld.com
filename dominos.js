@@ -70,7 +70,7 @@
     const deck = makeDeck();
     const hostHand = deck.splice(0, START_HAND);
     return {
-      version: 1,
+      version: 2,
       game: "dominos",
       status: "waiting",
       turnUserId: userId,
@@ -79,6 +79,8 @@
       deck,
       log: ["Duck Sauce: Table open. Waiting on player two."],
       winnerUserId: null,
+      finishReason: null,
+      consecutivePasses: 0,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
@@ -88,14 +90,36 @@
     if (state.hands && state.hands[userId]) return state;
     const deck = Array.isArray(state.deck) ? state.deck : makeDeck();
     const hand = deck.splice(0, START_HAND);
+    const hands = { ...(state.hands || {}), [userId]: hand };
+    const starter = chooseStarter(hands);
     return {
       ...state,
       status: "playing",
-      hands: { ...(state.hands || {}), [userId]: hand },
+      hands,
+      turnUserId: starter,
+      openingTile: chooseOpeningTile(hands[starter]),
       deck,
-      log: [...(state.log || []), "Buck: Player two cleared. Game live."],
+      log: [...(state.log || []), `Buck: Player two cleared. ${starter === userId ? "Player two" : "Host"} has the high bone and opens.`],
       updatedAt: new Date().toISOString()
     };
+  }
+
+  function tileScore(tile) { return Number(tile?.[0] || 0) + Number(tile?.[1] || 0); }
+  function handScore(hand) { return (hand || []).reduce((total, tile) => total + tileScore(tile), 0); }
+  function highestOpeningRank(hand) {
+    const doubles = (hand || []).filter((tile) => tile[0] === tile[1]).map((tile) => tile[0]);
+    return doubles.length ? 100 + Math.max(...doubles) : Math.max(0, ...(hand || []).map(tileScore));
+  }
+  function chooseStarter(hands) {
+    return Object.keys(hands || {}).sort((a, b) => highestOpeningRank(hands[b]) - highestOpeningRank(hands[a]))[0] || null;
+  }
+  function chooseOpeningTile(hand) {
+    return [...(hand || [])].sort((a, b) => highestOpeningRank([b]) - highestOpeningRank([a]))[0] || null;
+  }
+  function sameTile(a, b) { return Boolean(a && b && a[0] === b[0] && a[1] === b[1]); }
+  function hasPlayable(hand, board) { return (hand || []).some((tile) => canPlay(tile, board)); }
+  function blockedWinner(hands) {
+    return Object.keys(hands || {}).sort((a, b) => handScore(hands[a]) - handScore(hands[b]))[0] || null;
   }
 
   function tileText(tile) {
@@ -121,9 +145,9 @@
     const playable = Boolean(options && options.playable);
     const tag = clickable ? "button" : "span";
     const attrs = clickable
-      ? ` type="button" data-tile-index="${index}" ${playable ? "" : "aria-disabled=\"true\""}`
-      : "";
-    const classes = `domino-tile${clickable ? " tile-button" : ""}${playable ? " is-playable" : " is-blocked"}`;
+      ? ` type="button" data-tile-index="${index}" ${playable ? "" : "disabled aria-disabled=\"true\""}`
+      : ` role="img"`;
+    const classes = `domino-tile${tile[0] === tile[1] ? " is-double" : ""}${clickable ? " tile-button" : ""}${playable ? " is-playable" : " is-blocked"}`;
     return `<${tag} class="${classes}"${attrs} aria-label="Domino ${tileText(tile)}">${pipFace(tile[0])}${pipFace(tile[1])}</${tag}>`;
   }
 
@@ -140,6 +164,7 @@
     if (!tile) return { state, ok: false, message: "Tile missing." };
     if (state.turnUserId !== userId) return { state, ok: false, message: "Not your turn yet." };
     if (!canPlay(tile, state.board || [])) return { state, ok: false, message: "That tile does not touch the board." };
+    if (!(state.board || []).length && state.openingTile && !sameTile(tile, state.openingTile)) return { state, ok: false, message: `Open with the high bone: ${tileText(state.openingTile)}.` };
 
     hand.splice(tileIndex, 1);
     const board = [...(state.board || [])];
@@ -165,10 +190,12 @@
       state: {
         ...state,
         status: winnerUserId ? "finished" : "playing",
+        finishReason: winnerUserId ? "empty-hand" : null,
         winnerUserId,
         turnUserId: winnerUserId ? userId : nextTurn,
         board,
         hands: { ...(state.hands || {}), [userId]: hand },
+        consecutivePasses: 0,
         log: [...(state.log || []), `${currentUser.displayName || "Player"}: played ${tileText(tile)}.`].slice(-16),
         updatedAt: new Date().toISOString(),
         version: (state.version || 1) + 1
@@ -179,12 +206,13 @@
   function drawTile(state, userId) {
     if (state.turnUserId !== userId) return { state, ok: false, message: "Not your turn to draw." };
     const deck = [...(state.deck || [])];
-    if (!deck.length) return { state, ok: false, message: "Boneyard empty." };
+    if (!deck.length) return { state, ok: false, message: "Boneyard empty. Pass if you have no play." };
+    if (hasPlayable((state.hands || {})[userId], state.board || [])) return { state, ok: false, message: "You already have a playable bone." };
     const tile = deck.shift();
     const hand = [...((state.hands || {})[userId] || []), tile];
     return {
       ok: true,
-      message: "Tile drawn.",
+      message: canPlay(tile, state.board || []) ? "Playable bone drawn. Slap it down." : "No match. Draw again.",
       state: {
         ...state,
         deck,
@@ -194,6 +222,29 @@
         version: (state.version || 1) + 1
       }
     };
+  }
+
+  function passTurn(state, userId) {
+    if (state.turnUserId !== userId) return { state, ok: false, message: "Not your turn to pass." };
+    const hand = (state.hands || {})[userId] || [];
+    if ((state.deck || []).length) return { state, ok: false, message: "Bones remain. Draw until you can play." };
+    if (hasPlayable(hand, state.board || [])) return { state, ok: false, message: "You have a playable bone." };
+    const playerIds = Object.keys(state.hands || {});
+    const nextTurn = playerIds.find((id) => id !== userId) || userId;
+    const passes = Number(state.consecutivePasses || 0) + 1;
+    const finished = passes >= playerIds.length;
+    const winnerUserId = finished ? blockedWinner(state.hands) : null;
+    return { ok: true, message: finished ? "Board blocked. Lowest pip hand wins." : "Pass accepted.", state: {
+      ...state,
+      status: finished ? "finished" : "playing",
+      finishReason: finished ? "blocked" : null,
+      winnerUserId,
+      turnUserId: finished ? winnerUserId : nextTurn,
+      consecutivePasses: passes,
+      log: [...(state.log || []), `${currentUser.displayName || "Player"}: passed.${finished ? ` Board blocked; ${handScore((state.hands || {})[winnerUserId])} pips wins.` : ""}`].slice(-16),
+      updatedAt: new Date().toISOString(),
+      version: (state.version || 1) + 1
+    }};
   }
 
   function setStatus(message) { setText("dominosStatus", message); }
@@ -353,15 +404,16 @@
     setText("opponentName", opponentId ? "PLAYER TWO" : "OPEN SEAT");
     setText("opponentTileCount", opponentId ? `${opponentTiles} tiles remaining` : "Waiting for player");
     setText("boneyardCount", `Boneyard: ${(activeState.deck || []).length}`);
+    setText("playerPipCount", `Your pips: ${handScore((activeState.hands || {})[currentUser.userId])}`);
 
     const boardTiles = activeState.board || [];
     board.innerHTML = boardTiles.length
       ? boardTiles.map((tile) => tileMarkup(tile)).join("")
-      : `<span class="hw-leaderboard-empty">Board empty. First playable tile can go anywhere.</span>`;
+      : `<span class="hw-leaderboard-empty">High double opens. No double? Highest pip bone starts.</span>`;
 
     const myHand = (activeState.hands || {})[currentUser.userId] || [];
     hand.innerHTML = myHand.length
-      ? myHand.map((tile, index) => tileMarkup(tile, { clickable: true, index, playable: isMyTurn && canPlay(tile, boardTiles) })).join("")
+      ? myHand.map((tile, index) => tileMarkup(tile, { clickable: true, index, playable: isMyTurn && canPlay(tile, boardTiles) && (boardTiles.length || !activeState.openingTile || sameTile(tile, activeState.openingTile)) })).join("")
       : `<span class="hw-leaderboard-empty">No tiles in your hand. Submit win if the table is finished.</span>`;
 
     hand.querySelectorAll("[data-tile-index]").forEach((button) => {
@@ -372,12 +424,25 @@
       });
     });
 
+    const drawButton = $("drawTileBtn");
+    const passButton = $("passTurnBtn");
+    const playable = myHand.some((tile) => canPlay(tile, boardTiles) && (boardTiles.length || !activeState.openingTile || sameTile(tile, activeState.openingTile)));
+    if (drawButton) drawButton.disabled = !isMyTurn || playable || !(activeState.deck || []).length || activeState.status !== "playing";
+    if (passButton) passButton.disabled = !isMyTurn || playable || Boolean((activeState.deck || []).length) || activeState.status !== "playing";
+
     log.innerHTML = (activeState.log || []).slice().reverse().map((line) => `<p>${safeText(line, "Table updated.")}</p>`).join("") || `<p>Duck Sauce: “Quiet table. Suspicious.”</p>`;
   }
 
   async function handleDraw() {
     if (!activeState || !currentUser) return setStatus("Join a table first.");
     const result = drawTile(activeState, currentUser.userId);
+    setStatus(result.message);
+    if (result.ok) await saveState(result.state);
+  }
+
+  async function handlePass() {
+    if (!activeState || !currentUser) return setStatus("Join a table first.");
+    const result = passTurn(activeState, currentUser.userId);
     setStatus(result.message);
     if (result.ok) await saveState(result.state);
   }
@@ -420,6 +485,7 @@
     setText("opponentName", "OPEN SEAT");
     setText("opponentTileCount", "Waiting for player");
     setText("boneyardCount", "Boneyard: —");
+    setText("playerPipCount", "Your pips: —");
     if ($("boardTiles")) $("boardTiles").innerHTML = `<span class="hw-leaderboard-empty">Join or create a room to start.</span>`;
     if ($("playerHand")) $("playerHand").innerHTML = "";
     if ($("dominoLog")) $("dominoLog").innerHTML = `<p>Duck Sauce: “Somebody slap a bone on the table.”</p>`;
@@ -441,6 +507,7 @@
     const joinForm = $("joinRoomForm");
     const refresh = $("refreshRooms");
     const draw = $("drawTileBtn");
+    const pass = $("passTurnBtn");
     const submit = $("submitWinBtn");
     const leave = $("leaveRoomBtn");
 
@@ -448,6 +515,7 @@
     if (joinForm) joinForm.addEventListener("submit", joinRoomByCode);
     if (refresh) refresh.addEventListener("click", listRooms);
     if (draw) draw.addEventListener("click", handleDraw);
+    if (pass) pass.addEventListener("click", handlePass);
     if (submit) submit.addEventListener("click", submitWin);
     if (leave) leave.addEventListener("click", leaveView);
 
