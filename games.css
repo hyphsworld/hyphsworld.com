@@ -385,6 +385,7 @@ body.dominos-page{
 /* PR #100 follow-up: keep the live POV controls and bones usable after legacy rules. */
 .domino-pov-room .pov-opponent-seat{
   left:auto;
+  top:82px;
   transform:none;
 }
 .domino-pov-room .pov-board{
@@ -403,6 +404,13 @@ body.dominos-page{
 }
 
 @media(max-width:640px){
+  .domino-pov-room{
+    aspect-ratio:auto;
+    height:auto;
+  }
+  .domino-pov-room .pov-opponent-seat{
+    top:66px;
+  }
   .domino-pov-room>.pov-action-dock{
     position:relative;
     left:auto;
