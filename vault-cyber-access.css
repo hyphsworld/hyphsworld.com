@@ -44,7 +44,8 @@ body.vault-page .motion-grid{
   background:
     conic-gradient(from 0deg,rgba(0,255,230,.58),rgba(0,0,0,0) 12%,rgba(57,255,20,.48) 20%,rgba(0,0,0,0) 34%,rgba(255,43,214,.34) 48%,rgba(0,0,0,0) 64%,rgba(0,255,230,.58) 82%,rgba(0,0,0,0));
   animation:cyberVaultSpin 10s linear infinite;
-  opacity:.95;
+  opacity:.34;
+  z-index:0;
 }
 .access-core::after{
   content:"LEVEL 1 ACCESS";
@@ -72,7 +73,7 @@ body.vault-page .motion-grid{
 .door-side.right{clip-path:polygon(100% 0,0 50%,100% 100%)!important}
 .scan-rings span{border-color:#00ffe6!important;box-shadow:0 0 24px rgba(0,255,230,.34)!important}
 .scan-rings span:nth-child(2){border-color:#39ff14!important}.scan-rings span:nth-child(3){border-color:#ff2bd6!important}
-.body-target,.scan-person{filter:drop-shadow(0 0 18px rgba(0,255,230,.8))!important}
+.body-target,.scan-person{z-index:6;filter:drop-shadow(0 0 18px rgba(0,255,230,.8))!important}
 .body-target .head,.scan-head,.body-target .torso,.scan-torso,.body-target .arm,.body-target .leg,.scan-arm,.scan-leg{
   background:rgba(0,255,230,.08)!important;
   border:2px solid rgba(0,255,230,.82)!important;
