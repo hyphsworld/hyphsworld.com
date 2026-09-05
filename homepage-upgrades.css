@@ -12,6 +12,15 @@
   border-radius: inherit;
   background: linear-gradient(135deg, rgba(255,255,255,0.12), transparent 32%, rgba(69,255,54,0.06));
 }
+
+/* PR #96: one clear first-screen journey — Play, Earn, Unlock, Shop. */
+.home-command-deck{position:relative;z-index:4;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;width:min(1180px,calc(100% - 24px));margin:12px auto 22px;padding:10px;border:1px solid rgba(31,252,255,.28);border-radius:24px;background:rgba(3,5,8,.88);box-shadow:0 18px 44px rgba(0,0,0,.42);backdrop-filter:blur(12px)}
+.home-command{position:relative;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:10px;align-items:center;min-height:74px;padding:12px 14px;border:1px solid rgba(255,255,255,.15);border-radius:18px;color:#fff;text-decoration:none;background:linear-gradient(145deg,rgba(255,255,255,.1),rgba(255,255,255,.025));transition:transform .18s ease,border-color .18s ease,filter .18s ease}
+.home-command:hover,.home-command:focus-visible{transform:translateY(-3px);border-color:#ffe45c;filter:saturate(1.2);outline:none}
+.home-command>span{grid-row:1/3;display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#39ff7a,#1ffcff,#ffe45c);color:#050505;font-weight:1000}
+.home-command strong{align-self:end;font-size:1.05rem;text-transform:uppercase;letter-spacing:.06em}.home-command small{align-self:start;color:#bdebd0;font-weight:800}
+.home-command.earn>span{background:linear-gradient(135deg,#1ffcff,#ff4fd8)}.home-command.unlock>span{background:linear-gradient(135deg,#ffe45c,#39ff7a)}.home-command.shop>span{background:linear-gradient(135deg,#ff4fd8,#ffe45c)}
+@media(max-width:700px){.home-command-deck{grid-template-columns:1fr 1fr;gap:7px;margin-top:8px;padding:7px;border-radius:19px}.home-command{min-height:62px;padding:9px;border-radius:14px;column-gap:7px}.home-command>span{width:31px;height:31px;font-size:.72rem}.home-command strong{font-size:.86rem}.home-command small{font-size:.66rem}}
 .home-page .level-card { position: relative; }
 .home-page .level-card::after {
   content: "SCAN REQUIRED";
