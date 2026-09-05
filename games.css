@@ -381,3 +381,37 @@ body.dominos-page{
   .pov-player-hand .domino-tile{width:62px;height:48px}
   .pov-action-dock{grid-template-columns:1fr 1fr}.pov-action-dock .primary{grid-column:1/-1}.pov-board{grid-template-columns:repeat(5,max-content);grid-auto-rows:40px}.pov-board .domino-tile:nth-child(n+6):nth-child(-n+10){direction:rtl}
 }
+
+/* PR #100 follow-up: keep the live POV controls and bones usable after legacy rules. */
+.domino-pov-room .pov-opponent-seat{
+  left:auto;
+  transform:none;
+}
+.domino-pov-room .pov-board{
+  overflow:auto;
+  scrollbar-width:thin;
+  scrollbar-color:#39ff7a rgba(0,0,0,.25);
+}
+.domino-pov-room .pov-player-hand .domino-tile{
+  grid-template-columns:1fr;
+  grid-template-rows:1fr 1fr;
+  height:clamp(92px,15vw,122px);
+}
+.domino-pov-room .pov-player-hand .domino-tile .pip-face:first-child{
+  border-right:0;
+  border-bottom:3px solid #121212;
+}
+
+@media(max-width:640px){
+  .domino-pov-room>.pov-action-dock{
+    position:relative;
+    left:auto;
+    right:auto;
+    bottom:auto;
+    margin:6px;
+  }
+  .domino-pov-room .pov-player-hand .domino-tile{
+    width:58px;
+    height:92px;
+  }
+}
