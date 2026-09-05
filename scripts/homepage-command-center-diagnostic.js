@@ -9,7 +9,12 @@ assert(html.includes('id="home-id-center"'), 'Homepage must include the ID comma
 assert(html.includes('homepage-command-center.js'), 'Homepage must load the command-center controller');
 assert(css.includes('.home-id-center'), 'Command center must include responsive presentation');
 assert(js.includes('window.HWPoints.getState'), 'Command center must consume the authoritative points state');
+assert(js.includes('Object.assign({}, authoritative || {}, snapshot || {})'), 'Partial point events must preserve the authoritative identity state');
 assert(js.includes('state.profile || state.user'), 'Command center must consume the authenticated profile');
+assert(js.includes("STREAK_KEY + '.' + encodeURIComponent(String(userId))"), 'Daily streak storage must be scoped to the authenticated account');
+assert(!js.includes('toISOString().slice(0, 10)'), 'Daily streak boundaries must use the visitor local date');
+assert(js.includes('parsed === null ? fallback : parsed'), 'A missing streak record must safely use the fallback');
+assert(js.includes("link.matches('[data-home-id-continue]')"), 'Continue CTA must not overwrite recent activity');
 assert(js.includes('Backpack Reward'), 'Command center must show the 10,600 CP backpack target');
 assert(js.includes('While supplies last'), 'Physical backpack target must include the inventory notice');
 assert(!js.includes('.from('), 'Command center must not bypass the shared Supabase/auth client');

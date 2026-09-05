@@ -14,18 +14,34 @@
 
   function storageGet(key) { try { return localStorage.getItem(key); } catch (error) { return null; } }
   function storageSet(key, value) { try { localStorage.setItem(key, value); } catch (error) {} }
-  function parse(value, fallback) { try { return JSON.parse(value); } catch (error) { return fallback; } }
+  function parse(value, fallback) { try { var parsed = JSON.parse(value); return parsed === null ? fallback : parsed; } catch (error) { return fallback; } }
   function text(selector, value) { document.querySelectorAll(selector).forEach(function (el) { el.textContent = value; }); }
   function cleanPoints(value) { var n = Number(value || 0); return Number.isFinite(n) ? Math.max(0, Math.floor(n)) : 0; }
-  function dateKey(offset) { var d = new Date(); d.setDate(d.getDate() + (offset || 0)); return d.toISOString().slice(0, 10); }
+  function dateKey(offset) {
+    var d = new Date();
+    d.setDate(d.getDate() + (offset || 0));
+    return [d.getFullYear(), String(d.getMonth() + 1).padStart(2, '0'), String(d.getDate()).padStart(2, '0')].join('-');
+  }
 
-  function updateStreak(isLoggedIn) {
-    if (!isLoggedIn) return '—';
-    var saved = parse(storageGet(STREAK_KEY), {});
+  function accountId(state) {
+    var user = state.user || {};
+    var profile = state.profile || {};
+    return user.userId || user.id || user.sub || profile.user_id || profile.id || '';
+  }
+
+  function updateStreak(isLoggedIn, userId) {
+    if (!isLoggedIn || !userId) return '—';
+    var scopedKey = STREAK_KEY + '.' + encodeURIComponent(String(userId));
+    var saved = parse(storageGet(scopedKey), {});
     var today = dateKey(0);
     if (saved.date !== today) saved = { date: today, count: saved.date === dateKey(-1) ? Math.max(1, Number(saved.count) + 1) : 1 };
-    storageSet(STREAK_KEY, JSON.stringify(saved));
+    storageSet(scopedKey, JSON.stringify(saved));
     return String(saved.count || 1) + ' day' + ((saved.count || 1) === 1 ? '' : 's');
+  }
+
+  function completeState(snapshot) {
+    var authoritative = window.HWPoints && window.HWPoints.getState ? window.HWPoints.getState() : {};
+    return Object.assign({}, authoritative || {}, snapshot || {});
   }
 
   function nextLevel(points) {
@@ -42,11 +58,11 @@
   }
 
   function render(snapshot) {
-    var state = snapshot || (window.HWPoints && window.HWPoints.getState ? window.HWPoints.getState() : {});
+    var state = completeState(snapshot);
     var loggedIn = Boolean(state.user || state.accountBacked);
     var profile = state.profile || state.user || {};
     var points = loggedIn ? cleanPoints(state.points) : 0;
-    var name = profile.display_name || profile.displayName || profile.username || (profile.email ? String(profile.email).split('@')[0] : '') || 'HYPHSWORLD Guest';
+    var name = state.displayName || profile.display_name || profile.displayName || profile.username || (profile.email ? String(profile.email).split('@')[0] : '') || 'HYPHSWORLD Guest';
     var avatar = state.avatarIcon || profile.avatar_icon || profile.avatarIcon || '🧢';
     var rank = loggedIn ? (state.rankTitle || profile.rank_title || 'Lobby Rookie') : 'Login Required';
     var next = nextLevel(points);
@@ -56,7 +72,7 @@
     text('[data-home-id-name]', name);
     text('[data-home-id-points]', points.toLocaleString());
     text('[data-home-id-rank]', rank);
-    text('[data-home-id-streak]', updateStreak(loggedIn));
+    text('[data-home-id-streak]', updateStreak(loggedIn, accountId(state)));
     text('[data-home-id-recent]', recent);
     text('[data-home-id-next]', loggedIn ? 'Next unlock: ' + next.name : 'Login to start earning');
     text('[data-home-id-needed]', loggedIn ? next.needed.toLocaleString() + ' CP' : '0 CP');
@@ -73,6 +89,7 @@
   document.addEventListener('click', function (event) {
     var link = event.target.closest('a[href]');
     if (!link) return;
+    if (link.matches('[data-home-id-continue]')) return;
     var href = link.getAttribute('href') || '';
     if (SAFE_ROUTES.indexOf(href) !== -1) recordActivity(link.textContent, href);
   }, { passive: true });
