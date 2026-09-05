@@ -73,14 +73,6 @@
   function normalizeCode(code) { return String(code || "").trim().replace(/[^a-z0-9]/gi, "").toUpperCase(); }
   function localCodeGranted(code) { return normalizeCode(code) === LOCAL_BODY_SCAN_CODE; }
 
-  function injectScanBodyStyles() {
-    if (document.getElementById("hwScanBodyFix")) return;
-    const style = document.createElement("style");
-    style.id = "hwScanBodyFix";
-    style.textContent = `.body-target,.scan-person{display:block!important;opacity:1!important;visibility:visible!important;position:absolute!important;left:50%!important;top:50%!important;transform:translate(-50%,-50%)!important;width:150px!important;height:260px!important;z-index:9!important}.body-target span,.scan-person span{display:block!important;position:absolute!important;background:linear-gradient(180deg,#39ff7a,#1ffcff)!important;box-shadow:0 0 18px rgba(57,255,122,.65)!important}.body-target .head,.scan-head{width:52px!important;height:52px!important;border-radius:999px!important;left:49px!important;top:0!important}.body-target .torso,.scan-torso{width:74px!important;height:100px!important;border-radius:28px 28px 18px 18px!important;left:38px!important;top:62px!important}.body-target .arm,.scan-arm{width:24px!important;height:94px!important;border-radius:999px!important;top:68px!important}.body-target .arm.left,.scan-arm.left{left:20px!important;transform:none!important}.body-target .arm.right,.scan-arm.right{right:20px!important;transform:none!important}.body-target .leg,.scan-leg{width:28px!important;height:98px!important;border-radius:999px!important;top:154px!important}.body-target .leg.left,.scan-leg.left{left:43px!important;transform:none!important}.body-target .leg.right,.scan-leg.right{right:43px!important;transform:none!important}.scan-visual.scanning .real-scan-beam,.idle-scan-beam{display:block!important;position:absolute!important;left:0!important;right:0!important;top:40%!important;height:10px!important;background:linear-gradient(90deg,transparent,#fff,#39ff7a,#1ffcff,transparent)!important;box-shadow:0 0 24px #39ff7a!important;z-index:12!important;animation:hwScanBeam 1.25s linear infinite!important}@keyframes hwScanBeam{0%{top:12%}100%{top:84%}}`;
-    document.head.appendChild(style);
-  }
-
   function loadScript(src) {
     return new Promise((resolve, reject) => {
       const existing = Array.from(document.scripts).find((script) => script.src && script.src.includes(src));
@@ -132,7 +124,6 @@
   function rotateChatter() { setText("duckLine", duckLines[Math.floor(Math.random() * duckLines.length)]); setText("buckLine", buckLines[Math.floor(Math.random() * buckLines.length)]); }
 
   function openOverlay() {
-    injectScanBodyStyles();
     const overlay = $("scanOverlay");
     const visual = $("scanVisual");
     if (overlay) { overlay.classList.add("is-active"); overlay.setAttribute("aria-hidden", "false"); }
@@ -212,7 +203,6 @@
   }
 
   function bind() {
-    injectScanBodyStyles();
     const form = $("gateForm");
     const clear = $("clearCode");
     const close = $("closeOverlay");

@@ -66,6 +66,7 @@ body.vault-page * {
   height: 292px;
   transform: translate(-50%, -50%);
   animation: none;
+  rotate:0deg;
 }
 
 .cyber-vault-live .body-target .head {
