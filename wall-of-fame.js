@@ -4,7 +4,7 @@ const wallEntries = [
     tier: 10600,
     image: 'merch/ams-west-grind-mode-backpack.jpeg',
     tag: '10,600 CP Reward',
-    description: 'YOU WON THE BACKPACK. Your 10,600 Cool Point prize is unlocked—use Manage ID to verify your account and claim it.'
+    description: 'YOU WON THE BACKPACK. Your 10,600 Cool Point prize is unlocked—use Manage ID to verify your account and claim it. While supplies last.'
   },
 
   {
@@ -91,10 +91,10 @@ function renderWall() {
 
   if (statusEl) {
     statusEl.textContent = points >= 10600
-      ? 'BACKPACK PRIZE UNLOCKED. Use Manage ID to verify your account and claim your win.'
+      ? 'BACKPACK PRIZE UNLOCKED. Use Manage ID to verify your account and claim your win. While supplies last.'
       : points >= 500
-        ? 'Vault clearance approved. Keep climbing—10,600 CP wins the Grind Mode backpack.'
-        : 'Need 500 Cool Points to fully unlock the wall. The backpack prize unlocks at 10,600 CP.';
+        ? 'Vault clearance approved. Keep climbing—10,600 CP wins the Grind Mode backpack, while supplies last.'
+        : 'Need 500 Cool Points to fully unlock the wall. The backpack prize unlocks at 10,600 CP, while supplies last.';
   }
 
   document.querySelectorAll('.wof-unlock-track article').forEach((card) => {
