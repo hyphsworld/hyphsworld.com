@@ -102,6 +102,31 @@
     return Array.isArray(tile) ? `${tile[0]}|${tile[1]}` : "?|?";
   }
 
+  function pipFace(value) {
+    const patterns = {
+      0: [], 1: [5], 2: [1, 9], 3: [1, 5, 9],
+      4: [1, 3, 7, 9], 5: [1, 3, 5, 7, 9], 6: [1, 3, 4, 6, 7, 9]
+    };
+    const dots = patterns[Number(value)] || [];
+    return `<span class="pip-face" aria-hidden="true">${dots.map((position) => {
+      const row = Math.ceil(position / 3);
+      const column = ((position - 1) % 3) + 1;
+      return `<i style="grid-area:${row}/${column}"></i>`;
+    }).join("")}</span>`;
+  }
+
+  function tileMarkup(tile, options) {
+    const clickable = Boolean(options && options.clickable);
+    const index = options && Number.isInteger(options.index) ? options.index : -1;
+    const playable = Boolean(options && options.playable);
+    const tag = clickable ? "button" : "span";
+    const attrs = clickable
+      ? ` type="button" data-tile-index="${index}" ${playable ? "" : "aria-disabled=\"true\""}`
+      : "";
+    const classes = `domino-tile${clickable ? " tile-button" : ""}${playable ? " is-playable" : " is-blocked"}`;
+    return `<${tag} class="${classes}"${attrs} aria-label="Domino ${tileText(tile)}">${pipFace(tile[0])}${pipFace(tile[1])}</${tag}>`;
+  }
+
   function canPlay(tile, board) {
     if (!board || !board.length) return true;
     const left = board[0][0];
@@ -319,16 +344,24 @@
     if (!activeRoom || !activeState || !currentUser || !board || !hand || !log) return;
 
     setText("activeRoomCode", activeRoom.room_code || "ROOM");
-    setText("activeTurn", activeState.turnUserId === currentUser.userId ? "Your Turn" : "Opponent");
+    const isMyTurn = activeState.turnUserId === currentUser.userId;
+    setText("activeTurn", isMyTurn ? "Your Turn" : "Opponent");
+    setText("povTurnBanner", isMyTurn ? "YOUR TURN" : "OPPONENT'S TURN");
+
+    const opponentId = Object.keys(activeState.hands || {}).find((id) => id !== currentUser.userId);
+    const opponentTiles = opponentId ? (activeState.hands[opponentId] || []).length : 0;
+    setText("opponentName", opponentId ? "PLAYER TWO" : "OPEN SEAT");
+    setText("opponentTileCount", opponentId ? `${opponentTiles} tiles remaining` : "Waiting for player");
+    setText("boneyardCount", `Boneyard: ${(activeState.deck || []).length}`);
 
     const boardTiles = activeState.board || [];
     board.innerHTML = boardTiles.length
-      ? boardTiles.map((tile) => `<span class="domino-tile"><span>${tile[0]}</span><span>${tile[1]}</span></span>`).join("")
+      ? boardTiles.map((tile) => tileMarkup(tile)).join("")
       : `<span class="hw-leaderboard-empty">Board empty. First playable tile can go anywhere.</span>`;
 
     const myHand = (activeState.hands || {})[currentUser.userId] || [];
     hand.innerHTML = myHand.length
-      ? myHand.map((tile, index) => `<button class="domino-tile tile-button" type="button" data-tile-index="${index}"><span>${tile[0]}</span><span>${tile[1]}</span></button>`).join("")
+      ? myHand.map((tile, index) => tileMarkup(tile, { clickable: true, index, playable: isMyTurn && canPlay(tile, boardTiles) })).join("")
       : `<span class="hw-leaderboard-empty">No tiles in your hand. Submit win if the table is finished.</span>`;
 
     hand.querySelectorAll("[data-tile-index]").forEach((button) => {
@@ -383,6 +416,10 @@
     if (refreshTimer) clearInterval(refreshTimer);
     setText("activeRoomCode", "None");
     setText("activeTurn", "Waiting");
+    setText("povTurnBanner", "WAITING FOR TABLE");
+    setText("opponentName", "OPEN SEAT");
+    setText("opponentTileCount", "Waiting for player");
+    setText("boneyardCount", "Boneyard: —");
     if ($("boardTiles")) $("boardTiles").innerHTML = `<span class="hw-leaderboard-empty">Join or create a room to start.</span>`;
     if ($("playerHand")) $("playerHand").innerHTML = "";
     if ($("dominoLog")) $("dominoLog").innerHTML = `<p>Duck Sauce: “Somebody slap a bone on the table.”</p>`;
