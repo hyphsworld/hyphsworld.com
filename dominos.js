@@ -405,7 +405,7 @@
     setText("opponentTileCount", opponentId ? `${opponentTiles} tiles remaining` : "Waiting for player");
     setText("povHudName", opponentId ? "PLAYER TWO" : "OPEN SEAT");
     setText("povHudTiles", opponentId ? `${opponentTiles} bones` : "Waiting for player");
-    setText("povHudTurn", isMyTurn ? "THEIR MOVE" : "PLAYING");
+    setText("povHudTurn", opponentId && activeState.turnUserId === opponentId ? "PLAYING" : "WAITING");
     setText("boneyardCount", `Boneyard: ${(activeState.deck || []).length}`);
     setText("playerPipCount", `Your pips: ${handScore((activeState.hands || {})[currentUser.userId])}`);
 
@@ -487,6 +487,9 @@
     setText("povTurnBanner", "WAITING FOR TABLE");
     setText("opponentName", "OPEN SEAT");
     setText("opponentTileCount", "Waiting for player");
+    setText("povHudName", "OPEN SEAT");
+    setText("povHudTiles", "Waiting for player");
+    setText("povHudTurn", "WAITING");
     setText("boneyardCount", "Boneyard: —");
     setText("playerPipCount", "Your pips: —");
     if ($("boardTiles")) $("boardTiles").innerHTML = `<span class="hw-leaderboard-empty">Join or create a room to start.</span>`;
