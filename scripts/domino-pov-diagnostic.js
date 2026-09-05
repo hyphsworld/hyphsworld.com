@@ -34,5 +34,10 @@ assert(css.includes('aspect-ratio:9/15.8'), 'POV scene must use the tall phone-g
 assert(css.includes('overflow:auto;grid-template-columns'), 'Long live domino chains must remain scrollable instead of clipping');
 assert(css.includes('grid-template-rows:1fr 1fr'), 'Player bones must stand vertically in the foreground');
 assert(js.includes('povHudTiles'), 'Opponent HUD must receive the live hand count');
+assert(css.includes('.domino-pov-room .pov-board{\n  overflow:auto'), 'Final POV board rule must preserve long-chain scrolling');
+assert(css.includes('.domino-pov-room .pov-opponent-seat{\n  left:auto;\n  transform:none'), 'Legacy opponent seat offsets must not overlap the centered HUD');
+assert(css.includes('.domino-pov-room>.pov-action-dock{\n    position:relative'), 'Mobile controls must remain in flow below the tappable hand');
+assert(js.includes('opponentId && activeState.turnUserId === opponentId ? "PLAYING" : "WAITING"'), 'Opponent HUD must identify the active turn correctly');
+assert(js.includes('setText("povHudName", "OPEN SEAT")'), 'Leaving a table must clear the opponent HUD');
 
 console.log('Domino POV diagnostic passed: perspective scene, readable tiles, multiplayer, and points hooks are intact.');
