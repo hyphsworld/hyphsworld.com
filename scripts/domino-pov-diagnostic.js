@@ -4,6 +4,7 @@ function read(file) { return fs.readFileSync(file, 'utf8'); }
 function assert(ok, message) { if (!ok) throw new Error(message); }
 
 const html = read('dominos.html');
+const casino = read('games.html');
 const css = read('games.css');
 const js = read('dominos.js');
 
@@ -11,6 +12,8 @@ assert(html.includes('domino-pov-room'), 'Domino room must include the POV scene
 assert(html.includes('pov-opponent-seat'), 'POV must place the opponent across the table');
 assert(css.includes('url("assets/games/01-domino-room-pov-v1.webp")'), 'POV must render the cinematic room artwork');
 assert(html.includes('pov-player-hand'), 'POV must place the player hand in the foreground');
+assert(casino.includes('<a class="room-btn" href="dominos.html">Enter 01 Domino Room</a>'), 'Casino Domino card must open the live Domino room directly');
+assert(!casino.includes('data-room="dominoes" data-cost="15"'), 'Casino must not present the retired Domino preview buy-in');
 assert(html.includes('pov-player-hud'), 'POV must include an opponent status HUD');
 assert(html.includes('pov-points-hud'), 'POV must show Cool Points inside the game scene');
 assert(html.indexOf('pov-action-dock') < html.indexOf('</div>\n        </div>\n\n        <details'), 'POV action controls must stay inside the first-person scene');
