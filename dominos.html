@@ -84,6 +84,12 @@
 
         <div class="domino-pov-room" aria-label="First-person domino table">
           <div class="pov-neon-sign" aria-hidden="true"><span>01 DOMINO ROOM</span><small>RICHMOND, CA</small></div>
+          <div class="pov-player-hud" aria-label="Opponent game status">
+            <span class="pov-player-hud-avatar" aria-hidden="true">🧢</span>
+            <span><strong id="povHudName">PLAYER TWO</strong><small id="povHudTiles">Waiting for player</small></span>
+            <b id="povHudTurn">—</b>
+          </div>
+          <div class="pov-points-hud"><small>COOL POINTS</small><strong data-hw-points>0</strong></div>
           <div class="pov-opponent-seat">
             <span class="pov-avatar" aria-hidden="true">🧢</span>
             <span><strong id="opponentName">OPPONENT</strong><small id="opponentTileCount">Waiting for player</small></span>
@@ -100,12 +106,11 @@
             <div class="pov-pip-count" id="playerPipCount">Your pips: —</div>
             <div class="player-hand pov-player-hand" id="playerHand"></div>
           </div>
-        </div>
-
-        <div class="pov-action-dock">
-          <button class="games-btn ghost" type="button" id="drawTileBtn">Draw Tile</button>
-          <button class="games-btn ghost" type="button" id="passTurnBtn">Pass</button>
-          <button class="games-btn primary" type="button" id="submitWinBtn">Submit Win</button>
+          <div class="pov-action-dock">
+            <button class="games-btn ghost" type="button" id="drawTileBtn">Draw Bone</button>
+            <button class="games-btn ghost" type="button" id="passTurnBtn">Pass</button>
+            <button class="games-btn primary" type="button" id="submitWinBtn">Submit Win</button>
+          </div>
         </div>
 
         <details class="bones-rules"><summary>Regular Bones Rules</summary><p>28 double-six bones • 7 per player • highest double opens • match either end • doubles turn sideways • draw until playable • pass only on an empty boneyard • first player out wins • blocked board goes to the lowest pip hand.</p></details>

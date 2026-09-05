@@ -403,6 +403,9 @@
     const opponentTiles = opponentId ? (activeState.hands[opponentId] || []).length : 0;
     setText("opponentName", opponentId ? "PLAYER TWO" : "OPEN SEAT");
     setText("opponentTileCount", opponentId ? `${opponentTiles} tiles remaining` : "Waiting for player");
+    setText("povHudName", opponentId ? "PLAYER TWO" : "OPEN SEAT");
+    setText("povHudTiles", opponentId ? `${opponentTiles} bones` : "Waiting for player");
+    setText("povHudTurn", isMyTurn ? "THEIR MOVE" : "PLAYING");
     setText("boneyardCount", `Boneyard: ${(activeState.deck || []).length}`);
     setText("playerPipCount", `Your pips: ${handScore((activeState.hands || {})[currentUser.userId])}`);
 
