@@ -9,7 +9,7 @@
     { points: 100, name: 'Signal Found' }, { points: 500, name: 'Gate Runner' },
     { points: 1000, name: 'Neon Regular' }, { points: 2500, name: 'Grid Captain' },
     { points: 5000, name: 'World Builder' }, { points: 10000, name: 'Chrome Legend' },
-    { points: 10600, name: 'Backpack Reward' }
+    { points: 10600, name: 'Backpack Reward — While supplies last' }
   ];
 
   function storageGet(key) { try { return localStorage.getItem(key); } catch (error) { return null; } }
