@@ -317,3 +317,48 @@ body.dominos-page{
 .pov-player-hand .domino-tile{width:clamp(68px,12vw,92px);height:clamp(50px,9vw,66px);transition:transform .16s ease,filter .16s ease,opacity .16s ease}.pov-player-hand .domino-tile.is-playable{cursor:pointer;transform:translateY(-6px);filter:drop-shadow(0 0 9px rgba(117,255,117,.65))}.pov-player-hand .domino-tile.is-playable:hover,.pov-player-hand .domino-tile.is-playable:focus-visible{transform:translateY(-15px) scale(1.05);outline:3px solid #ffe45c}.pov-player-hand .domino-tile.is-blocked{opacity:.52;filter:grayscale(.55)}
 .pov-action-dock{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0 4px}.pov-action-dock .games-btn{min-height:52px}
 @media(max-width:640px){.domino-pov-game{padding:12px}.domino-pov-room{min-height:610px;padding:12px 7px 0;border-radius:22px}.pov-felt{min-height:510px;padding:82px 6px 10px;border-width:7px;border-radius:42% 42% 18px 18px/13% 13% 18px 18px}.pov-board{min-height:170px;padding:8px;transform:scale(.82)}.domino-pov-game .pov-board .domino-tile{width:54px;height:34px}.pov-player-hand{justify-content:flex-start}.pov-player-hand .domino-tile{width:72px;height:54px}.pov-hand-label span:last-child,.pov-board-label span:last-child{font-size:.62rem}.dominos-scoreboard{grid-template-columns:1fr 1fr}.pov-action-dock{position:sticky;bottom:82px;z-index:20;padding:8px;border-radius:18px;background:rgba(0,0,0,.78);backdrop-filter:blur(10px)}}
+
+/* Cinematic POV room plate; gameplay tiles and controls remain live DOM. */
+.domino-pov-room{
+  width:min(100%,620px);
+  min-height:clamp(640px,155vw,1020px);
+  margin-inline:auto;
+  padding:12px 12px 0;
+  background:
+    linear-gradient(180deg,rgba(0,0,0,.08) 0%,rgba(0,0,0,.02) 48%,rgba(0,0,0,.74) 100%),
+    url("assets/games/01-domino-room-pov-v1.webp") center top/cover no-repeat;
+  box-shadow:0 30px 80px rgba(0,0,0,.7),0 0 42px rgba(31,252,255,.12);
+}
+.domino-pov-room:before{background:linear-gradient(90deg,rgba(0,0,0,.32),transparent 18% 82%,rgba(0,0,0,.32))}
+.domino-pov-room:after{height:34%;background:linear-gradient(0deg,rgba(0,0,0,.88),transparent)}
+.pov-neon-sign{position:absolute;z-index:7;top:14px;left:14px;margin:0;max-width:44%;place-items:start;padding:7px 10px;text-align:left;background:rgba(2,5,5,.82);backdrop-filter:blur(8px)}
+.pov-neon-sign span{font-size:clamp(.66rem,2vw,.9rem)}
+.pov-neon-sign small{font-size:.56rem}
+.pov-opponent-seat{position:absolute;z-index:7;top:14px;right:14px;margin:0;max-width:47%;padding:6px 10px;background:rgba(3,6,8,.86);backdrop-filter:blur(8px)}
+.pov-opponent-seat .pov-avatar{width:34px;height:34px;font-size:1rem}
+.pov-felt{
+  min-height:clamp(470px,108vw,710px);
+  margin-top:clamp(170px,39vw,260px);
+  padding:clamp(64px,14vw,105px) clamp(6px,2vw,18px) 10px;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  transform:none;
+}
+.pov-felt:before{display:none}
+.pov-felt-mark{top:53%;color:rgba(255,255,255,.1);text-shadow:0 2px 4px rgba(0,0,0,.45)}
+.pov-board{background:rgba(1,24,13,.13);border-color:rgba(255,255,255,.11);box-shadow:inset 0 0 32px rgba(0,0,0,.16)}
+.pov-turn-banner{background:rgba(1,4,3,.88);backdrop-filter:blur(8px);box-shadow:0 0 22px rgba(57,255,122,.35)}
+.pov-player-zone{padding:10px;border-radius:22px 22px 0 0;background:linear-gradient(180deg,transparent,rgba(0,0,0,.58));filter:drop-shadow(0 12px 18px rgba(0,0,0,.7))}
+
+@media(max-width:640px){
+  .domino-pov-room{min-height:clamp(620px,174vw,760px);padding:8px 6px 0}
+  .pov-neon-sign{top:9px;left:9px}
+  .pov-neon-sign small{display:none}
+  .pov-opponent-seat{top:9px;right:9px}
+  .pov-opponent-seat .pov-avatar{display:none}
+  .pov-felt{min-height:470px;margin-top:clamp(160px,43vw,195px);padding:54px 2px 6px}
+  .pov-board{min-height:148px;padding:3px;transform:scale(.78)}
+  .pov-player-hand .domino-tile{width:62px;height:48px}
+}
