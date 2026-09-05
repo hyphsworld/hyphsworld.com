@@ -10,7 +10,8 @@ assert(html.includes('homepage-command-center.js'), 'Homepage must load the comm
 assert(css.includes('.home-id-center'), 'Command center must include responsive presentation');
 assert(js.includes('window.HWPoints.getState'), 'Command center must consume the authoritative points state');
 assert(js.includes('state.profile || state.user'), 'Command center must consume the authenticated profile');
-assert(js.includes("'Backpack Reward'"), 'Command center must show the 10,600 CP backpack target');
+assert(js.includes('Backpack Reward'), 'Command center must show the 10,600 CP backpack target');
+assert(js.includes('While supplies last'), 'Physical backpack target must include the inventory notice');
 assert(!js.includes('.from('), 'Command center must not bypass the shared Supabase/auth client');
 assert(!js.includes('service_role'), 'Command center must never expose privileged Supabase credentials');
 
