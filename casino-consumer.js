@@ -38,17 +38,17 @@
 
   const REWARDS = [
     { key: "slots_25", game: "slots", threshold: 25, tier: "Bronze", title: "Duck Slot Spark", detail: "Slots progress hit 25. First machine clue unlocked." },
-    { key: "slots_50", game: "slots", threshold: 50, tier: "Silver", title: "Hidden Track Clue", detail: "Slots progress hit 50. Hidden track preview unlocked plus a shirt giveaway hint drops in your reward feed." },
+    { key: "slots_50", game: "slots", threshold: 50, tier: "Silver", title: "Hidden Track Clue", detail: "Slots progress hit 50. Hidden track preview unlocked plus a shirt giveaway hint drops in your reward feed. Physical prize available while supplies last." },
     { key: "slots_100", game: "slots", threshold: 100, tier: "Gold", title: "Slot Vault Token", detail: "Slots progress hit 100. You unlock an exclusive song snippet and a vault token clue." },
     { key: "blackjack_25", game: "blackjack", threshold: 25, tier: "Bronze", title: "Dealer Read", detail: "Blackjack progress hit 25. Dealer pattern clue unlocked." },
     { key: "blackjack_50", game: "blackjack", threshold: 50, tier: "Silver", title: "Blackjack Backroom Code", detail: "Blackjack progress hit 50. Backroom code clue unlocked plus access to limited shirt drop windows." },
     { key: "blackjack_100", game: "blackjack", threshold: 100, tier: "Gold", title: "Backroom Invite", detail: "Blackjack progress hit 100. Backroom invite plus full exclusive song unlock progress activated." },
     { key: "wheel_25", game: "wheel", threshold: 25, tier: "Bronze", title: "Wheel Signal", detail: "Wheel progress hit 25. Bonus signal unlocked." },
-    { key: "wheel_50", game: "wheel", threshold: 50, tier: "Silver", title: "Vault Wheel Bonus", detail: "Wheel progress hit 50. Bonus clue unlocked and rare shirt raffle eligibility enabled." },
+    { key: "wheel_50", game: "wheel", threshold: 50, tier: "Silver", title: "Vault Wheel Bonus", detail: "Wheel progress hit 50. Bonus clue unlocked and rare shirt raffle eligibility enabled while supplies last." },
     { key: "wheel_100", game: "wheel", threshold: 100, tier: "Gold", title: "Portal Spin Key", detail: "Wheel progress hit 100. Portal key clue unlocked with premium song unlock priority." },
     { key: "casino_100", game: "total", threshold: 100, tier: "Gold", title: "Secret Drop Trigger", detail: "Casino total progress hit 100. Secret drop trigger unlocked." },
     { key: "casino_250", game: "total", threshold: 250, tier: "Platinum", title: "Underground Pass", detail: "Total casino bank hit 250. Underground pass unlocked with merch cabinet access for shirt claims." },
-    { key: "casino_500", game: "total", threshold: 500, tier: "Diamond", title: "Duck Sauce VIP Signal", detail: "Total casino bank hit 500. VIP signal unlocked with full exclusive song vault + shirt winner fast lane." }
+    { key: "casino_500", game: "total", threshold: 500, tier: "Diamond", title: "Duck Sauce VIP Signal", detail: "Total casino bank hit 500. VIP signal unlocked with full exclusive song vault + shirt winner fast lane, while supplies last." }
   ];
 
   const casino = {
