@@ -18,5 +18,14 @@ assert(js.includes('opponentTileCount'), 'Opponent tile count must be visible');
 assert(js.includes('canPlay(tile, boardTiles)'), 'Hand must distinguish playable tiles');
 assert(js.includes('create_domino_room'), 'Supabase room creation must remain connected');
 assert(js.includes('window.HWAuth.addPoints'), 'Cool Points win award must remain connected');
+assert(js.includes('const START_HAND = 7'), 'Regular bones must deal seven tiles per player');
+assert(js.includes('function chooseStarter'), 'Highest double or highest pip bone must choose the opener');
+assert(js.includes('function passTurn'), 'Regular bones must support a legal pass');
+assert(js.includes('Draw until you can play'), 'A player must draw while the boneyard has bones');
+assert(js.includes('disabled aria-disabled'), 'Blocked hand bones must be natively disabled');
+assert(js.includes('role="img"'), 'Board bones must expose an accessible image role');
+assert(html.includes('passTurnBtn'), 'Table must include a pass control');
+assert(html.includes('Regular Bones Rules'), 'Table must explain the standard rule set');
+assert(css.includes('.domino-tile.is-double'), 'Doubles must turn sideways on the table');
 
 console.log('Domino POV diagnostic passed: perspective scene, readable tiles, multiplayer, and points hooks are intact.');
