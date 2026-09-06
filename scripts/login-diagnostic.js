@@ -9,6 +9,9 @@ const authClient = fs.readFileSync('auth-client.js', 'utf8');
 const authStability = fs.readFileSync('auth-stability.js', 'utf8');
 const accountBootstrap = fs.readFileSync('cool-points.js', 'utf8');
 const pointsEngine = fs.readFileSync('global-points-engine.js', 'utf8');
+const accountPage = fs.readFileSync('account.html', 'utf8');
+const tableGamePage = fs.readFileSync('table-game.html', 'utf8');
+const tableGameController = fs.readFileSync('table-game.js', 'utf8');
 
 function assert(condition, message) {
   if (!condition) issues.push(message);
@@ -51,6 +54,9 @@ assert(pointsEngine.includes('data-hw-account-name'), 'central widget should sho
 assert(pointsEngine.includes('data-hw-account-action'), 'central widget should provide one login/account action.');
 assert(/document\.addEventListener\(['"]hyph:auth-signed-in['"],\s*(?:refresh|bootAndSync)\)/.test(pointsEngine), 'central widget should refresh immediately after login.');
 assert(/window\.addEventListener\(['"]pageshow['"],\s*(?:refresh|bootAndSync)\)/.test(pointsEngine), 'central widget should catch up after browser navigation.');
+assert(accountPage.includes('class="account-topnav"') && accountPage.includes('href="index.html"'), 'Manage ID must always expose a Home button.');
+assert(tableGamePage.includes('id="tablePlayerCount"') && ['1 Player', '2 Players', '3 Players', '4 Players'].every((label) => tableGamePage.includes(label)), 'Table setup must expose one through four seats.');
+assert(tableGameController.includes('.eq("host_id", currentUser.userId)'), 'Only the host may resize a newly created table.');
 
 const accountFlowPages = new Set(['auth.html', 'forgot-password.html', 'login.html', 'logout.html', 'update-password.html']);
 fs.readdirSync('.').filter((file) => file.endsWith('.html') && !accountFlowPages.has(file)).forEach((file) => {

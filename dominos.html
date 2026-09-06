@@ -52,16 +52,18 @@
         <h2>Tables</h2>
         <p class="dominos-status" id="dominosStatus">Checking login...</p>
 
-        <form class="dominos-form" id="createRoomForm">
-          <label for="roomName">Create Table</label>
-          <input id="roomName" type="text" maxlength="18" placeholder="01 TABLE" autocomplete="off" />
-          <button class="games-btn primary" type="submit">Create Room</button>
+        <div class="quick-table-steps" aria-label="Three steps to start multiplayer"><span>1. Start</span><span>2. Share code</span><span>3. Play</span></div>
+        <form class="dominos-form quick-table-form" id="createRoomForm">
+          <input id="roomName" type="hidden" value="" />
+          <strong>2-Player Dominoes</strong>
+          <small>A room code is made automatically.</small>
+          <button class="games-btn primary" type="submit">Start Table</button>
         </form>
 
-        <form class="dominos-form" id="joinRoomForm">
-          <label for="roomCodeInput">Join By Room Code</label>
+        <form class="dominos-form quick-table-form" id="joinRoomForm">
+          <label for="roomCodeInput">Have a code?</label>
           <input id="roomCodeInput" type="text" maxlength="12" placeholder="ROOM CODE" autocomplete="off" />
-          <button class="games-btn" type="submit">Join Code</button>
+          <button class="games-btn" type="submit">Join Table</button>
         </form>
 
         <div class="room-list" id="roomList">
