@@ -610,3 +610,13 @@ body.dominos-page{
   .domino-pov-room .pov-player-hand{gap:2px;padding-inline:7px}
   .domino-pov-room .pov-player-hand .domino-tile,.domino-pov-room .pov-player-hand .domino-tile:nth-child(n){height:88px}
 }
+
+/* Connected chain: six bones across, then a vertical turn into the next run. */
+.domino-pov-room .pov-board{display:block!important;min-height:230px;overflow:auto!important;padding:14px!important;transform:none!important;scrollbar-color:#39ff7a rgba(0,0,0,.28)}
+.domino-chain-stage{position:relative;width:var(--chain-width);height:var(--chain-height);min-width:var(--chain-width);min-height:var(--chain-height);margin:auto}
+.domino-pov-game .pov-board .chain-bone{position:absolute;left:0;top:12px;width:70px;height:42px;margin:0!important;direction:ltr!important;transform:translate(var(--chain-x),var(--chain-y)) rotate(var(--chain-r));transform-origin:center;transition:filter .18s ease}
+.domino-pov-game .pov-board .chain-bone.chain-reverse{direction:rtl!important}
+.domino-pov-game .pov-board .chain-bone.chain-turn{z-index:2}
+.domino-pov-game .pov-board .chain-bone.chain-left-end,.domino-pov-game .pov-board .chain-bone.chain-right-end{border-color:#f3ff49;box-shadow:0 0 0 3px rgba(243,255,73,.24),0 0 18px rgba(243,255,73,.65),0 9px 18px rgba(0,0,0,.34)}
+.domino-pov-game .pov-board .chain-bone.is-double:not(.chain-turn){transform:translate(var(--chain-x),var(--chain-y)) rotate(90deg);z-index:3}
+@media(max-width:640px){.domino-pov-room .pov-board{min-height:205px!important;padding:8px!important}.domino-chain-stage{transform:scale(.78);transform-origin:top center;margin-bottom:calc(var(--chain-height) * -.22)}.domino-pov-game .pov-board .chain-bone{width:70px!important;height:42px!important}}

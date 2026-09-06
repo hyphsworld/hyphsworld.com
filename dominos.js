@@ -128,8 +128,29 @@
     const attrs = clickable
       ? ` type="button" data-tile-index="${index}" ${playable ? "" : "disabled aria-disabled=\"true\""}`
       : ` role="img"`;
-    const classes = `domino-tile${tile[0] === tile[1] ? " is-double" : ""}${clickable ? " tile-button" : ""}${playable ? " is-playable" : " is-blocked"}`;
-    return `<${tag} class="${classes}"${attrs} aria-label="Domino ${tileText(tile)}">${pipFace(tile[0])}${pipFace(tile[1])}</${tag}>`;
+    const extraClass = options && options.className ? ` ${options.className}` : "";
+    const style = options && options.style ? ` style="${options.style}"` : "";
+    const classes = `domino-tile${tile[0] === tile[1] ? " is-double" : ""}${clickable ? " tile-button" : ""}${playable ? " is-playable" : " is-blocked"}${extraClass}`;
+    return `<${tag} class="${classes}"${attrs}${style} aria-label="Domino ${tileText(tile)}">${pipFace(tile[0])}${pipFace(tile[1])}</${tag}>`;
+  }
+
+  function boardChainMarkup(tiles) {
+    const run = 6, stepX = 68, stepY = 66;
+    const rows = Math.floor((tiles.length - 1) / (run + 1)) + 1;
+    const width = run * stepX + 74;
+    const height = Math.max(116, rows * stepY + 54);
+    const bones = tiles.map((tile, index) => {
+      const row = Math.floor(index / (run + 1));
+      const position = index % (run + 1);
+      const movingRight = row % 2 === 0;
+      const isTurn = position === run;
+      const x = isTurn ? (movingRight ? (run - 1) * stepX : 0) : (movingRight ? position * stepX : (run - 1 - position) * stepX);
+      const y = row * stepY + (isTurn ? Math.round(stepY / 2) : 0);
+      const directionClass = !movingRight && !isTurn ? " chain-reverse" : "";
+      const endClass = index === 0 ? " chain-left-end" : index === tiles.length - 1 ? " chain-right-end" : "";
+      return tileMarkup(tile, { className: `chain-bone${isTurn ? " chain-turn" : ""}${directionClass}${endClass}`, style: `--chain-x:${x}px;--chain-y:${y}px;--chain-r:${isTurn ? 90 : 0}deg` });
+    }).join("");
+    return `<div class="domino-chain-stage" style="--chain-width:${width}px;--chain-height:${height}px" role="group" aria-label="Connected domino chain">${bones}</div>`;
   }
 
   function canPlay(tile, board) {
@@ -353,7 +374,7 @@
 
     const boardTiles = activeState.board || [];
     board.innerHTML = boardTiles.length
-      ? boardTiles.map((tile) => tileMarkup(tile)).join("")
+      ? boardChainMarkup(boardTiles)
       : `<span class="hw-leaderboard-empty">High double opens. No double? Highest pip bone starts.</span>`;
 
     const myHand = (activeState.hands || {})[currentUser.userId] || [];
