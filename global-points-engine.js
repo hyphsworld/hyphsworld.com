@@ -62,7 +62,7 @@
     if (window.HWAuth && window.HWAuth.supabase) return window.HWAuth.supabase;
     if (!window.supabase || !SUPABASE_ANON_KEY) return null;
     if (!supabaseClient) supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
     });
     return supabaseClient;
   }
@@ -187,13 +187,15 @@
 
   function ensureHud() {
     let hud = document.getElementById('hwGlobalPointsHud');
-    if (hud) return hud;
-
-    hud = document.createElement('aside');
-    hud.id = 'hwGlobalPointsHud';
+    if (!hud) {
+      hud = document.createElement('aside');
+      hud.id = 'hwGlobalPointsHud';
+      document.body.appendChild(hud);
+    }
     hud.setAttribute('aria-live', 'polite');
-    hud.innerHTML = '<div class="hwgp-icon" data-hw-avatar>🧢</div><div><strong data-hw-points>0</strong><span>Cool Points</span><span class="hwgp-name" data-hw-account-name>Checking login…</span></div><small data-hw-rank>Checking…</small><a class="hwgp-action" data-hw-account-action href="/auth.html">Login</a>';
-    document.body.appendChild(hud);
+    if (!hud.querySelector('[data-hw-account-name]') || !hud.querySelector('[data-hw-account-action]')) {
+      hud.innerHTML = '<div class="hwgp-icon" data-hw-avatar>🧢</div><div><strong data-hw-points>0</strong><span>Cool Points</span><span class="hwgp-name" data-hw-account-name>Checking login…</span></div><small data-hw-rank>Checking…</small><a class="hwgp-action" data-hw-account-action href="/auth.html">Login</a>';
+    }
     return hud;
   }
 
@@ -217,13 +219,19 @@
     document.querySelectorAll('[data-points-mode]').forEach((el) => { el.textContent = state.user ? 'Account saved' : 'Login required'; });
 
     const hud = ensureHud();
-    hud.querySelector('[data-hw-avatar]').textContent = avatar;
-    hud.querySelector('[data-hw-points]').textContent = pointsText;
-    hud.querySelector('[data-hw-rank]').textContent = rank;
-    hud.querySelector('[data-hw-account-name]').textContent = accountName;
+    const avatarNode = hud.querySelector('[data-hw-avatar]');
+    const pointsNode = hud.querySelector('[data-hw-points]');
+    const rankNode = hud.querySelector('[data-hw-rank]');
+    const nameNode = hud.querySelector('[data-hw-account-name]');
+    if (avatarNode) avatarNode.textContent = avatar;
+    if (pointsNode) pointsNode.textContent = pointsText;
+    if (rankNode) rankNode.textContent = rank;
+    if (nameNode) nameNode.textContent = accountName;
     const action = hud.querySelector('[data-hw-account-action]');
-    action.textContent = state.user ? 'Account' : 'Login';
-    action.href = state.user ? '/account.html' : '/auth.html?next=' + encodeURIComponent(location.pathname + location.search);
+    if (action) {
+      action.textContent = state.user ? 'Account' : 'Login';
+      action.href = state.user ? '/account.html' : '/auth.html?next=' + encodeURIComponent(location.pathname + location.search);
+    }
     hud.classList.toggle('is-live', Boolean(state.user));
   }
 
