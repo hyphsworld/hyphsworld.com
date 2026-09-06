@@ -5,6 +5,7 @@
   const CDN = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
   const REFRESH_MS = 6500;
   const WIN_POINTS = 100;
+  const TUTORIAL_KEY = "hyphsworld_domino_tutorial_seen_v1";
 
   let sbPromise = null;
   let currentUser = null;
@@ -139,6 +140,31 @@
   }
 
   function setStatus(message) { setText("dominosStatus", message); }
+
+  function tutorialSeen() {
+    try { return window.localStorage.getItem(TUTORIAL_KEY) === "1"; } catch (error) { return false; }
+  }
+
+  function openTutorial() {
+    const tutorial = $("dominoTutorial");
+    if (!tutorial) return;
+    tutorial.hidden = false;
+    document.body.classList.add("domino-tutorial-open");
+    const close = $("closeDominoTutorial");
+    if (close) close.focus();
+  }
+
+  function closeTutorial() {
+    const tutorial = $("dominoTutorial");
+    if (!tutorial) return;
+    tutorial.hidden = true;
+    document.body.classList.remove("domino-tutorial-open");
+    try { window.localStorage.setItem(TUTORIAL_KEY, "1"); } catch (error) {}
+    const open = $("openDominoTutorial");
+    if (open) open.focus();
+  }
+
+  function setCoach(message) { setText("povCoach", message); }
 
   function setGuestControls(enabled) {
     document.querySelectorAll("#createRoomForm input, #createRoomForm button, #joinRoomForm input, #joinRoomForm button").forEach((control) => {
@@ -348,6 +374,20 @@
     if (passButton) passButton.disabled = !isMyTurn || playable || Boolean((activeState.deck || []).length) || activeState.status !== "playing";
     const submitButton = $("submitWinBtn");
     if (submitButton) submitButton.disabled = activeState.status !== "finished" || activeState.winnerUserId !== currentUser.userId;
+
+    if (activeState.status === "waiting") {
+      setCoach(`Share room code ${activeRoom.room_code || "above"} with player two.`);
+    } else if (activeState.status === "finished") {
+      setCoach(activeState.winnerUserId === currentUser.userId ? "You won! Tap Submit Win to collect your Cool Points." : "Game over. Start or join another table for a rematch.");
+    } else if (!isMyTurn) {
+      setCoach("Opponent’s turn. Your bones will unlock when it’s time to play.");
+    } else if (playable) {
+      setCoach(boardTiles.length ? "Your turn: tap any glowing bone that matches either end of the chain." : "Your turn: tap the glowing opening bone to start the chain.");
+    } else if ((activeState.deck || []).length) {
+      setCoach("No matching bone. Tap Draw Bone below.");
+    } else {
+      setCoach("No matching bone and the boneyard is empty. Tap Pass.");
+    }
     const leaveButton = $("leaveRoomBtn");
     if (leaveButton) leaveButton.disabled = false;
 
@@ -385,6 +425,7 @@
     setText("activeRoomCode", "None");
     setText("activeTurn", "Waiting");
     setText("povTurnBanner", "WAITING FOR TABLE");
+    setCoach("Start a table or enter a room code. We’ll guide every move.");
     setText("povHudName", "OPEN SEAT");
     setText("povHudTiles", "Waiting for player");
     setText("povHudTurn", "WAITING");
@@ -423,6 +464,10 @@
     const pass = $("passTurnBtn");
     const submit = $("submitWinBtn");
     const leave = $("leaveRoomBtn");
+    const openTutorialButton = $("openDominoTutorial");
+    const closeTutorialButton = $("closeDominoTutorial");
+    const finishTutorialButton = $("finishDominoTutorial");
+    const tutorial = $("dominoTutorial");
 
     if (createForm) createForm.addEventListener("submit", createRoom);
     if (joinForm) joinForm.addEventListener("submit", joinRoomByCode);
@@ -431,7 +476,14 @@
     if (pass) pass.addEventListener("click", handlePass);
     if (submit) submit.addEventListener("click", submitWin);
     if (leave) leave.addEventListener("click", leaveView);
+    if (openTutorialButton) openTutorialButton.addEventListener("click", openTutorial);
+    if (closeTutorialButton) closeTutorialButton.addEventListener("click", closeTutorial);
+    if (finishTutorialButton) finishTutorialButton.addEventListener("click", closeTutorial);
+    if (tutorial) tutorial.addEventListener("click", (event) => { if (event.target === tutorial) closeTutorial(); });
+    document.addEventListener("keydown", (event) => { if (event.key === "Escape" && tutorial && !tutorial.hidden) closeTutorial(); });
     initTableRadio();
+
+    if (!tutorialSeen()) window.setTimeout(openTutorial, 450);
 
     document.addEventListener("hyph:auth-state-changed", async (event) => {
       if (event?.detail?.event === "SIGNED_OUT") {

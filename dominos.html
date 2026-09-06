@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="homepage-upgrades.css" />
   <link rel="stylesheet" href="leaderboard-widgets.css" />
-  <link rel="stylesheet" href="games.css?v=20260906-whole-domino-3" />
+  <link rel="stylesheet" href="games.css?v=20260906-domino-tutorial-1" />
 </head>
 <body class="dominos-page" data-hide-global-points-hud>
   <header class="site-header">
@@ -84,6 +84,11 @@
           </article>
         </div>
 
+        <div class="domino-help-strip">
+          <span><strong>NEW TO BONES?</strong> Learn the table in under a minute.</span>
+          <button class="games-btn" type="button" id="openDominoTutorial" aria-haspopup="dialog">How to Play</button>
+        </div>
+
         <div class="domino-pov-room" aria-label="First-person domino table">
           <div class="pov-neon-sign" aria-hidden="true"><span>01 DOMINO ROOM</span><small>RICHMOND, CA</small></div>
           <div class="pov-player-hud" aria-label="Opponent game status">
@@ -99,6 +104,7 @@
               <span class="hw-leaderboard-empty">Join or create a room to start.</span>
             </div>
             <div class="pov-turn-banner" id="povTurnBanner">WAITING FOR TABLE</div>
+            <p class="pov-coach" id="povCoach" aria-live="polite">Start a table or enter a room code. We’ll guide every move.</p>
             <div class="table-label pov-hand-label"><span>Your Hand</span><span>Tap a playable tile</span></div>
             <div class="pov-pip-count" id="playerPipCount">Your pips: —</div>
             <div class="pov-self-seat" aria-label="Your player profile">
@@ -138,6 +144,21 @@
       </section>
     </section>
 
+    <div class="domino-tutorial" id="dominoTutorial" hidden>
+      <section class="domino-tutorial-card" role="dialog" aria-modal="true" aria-labelledby="dominoTutorialTitle">
+        <button class="domino-tutorial-close" type="button" id="closeDominoTutorial" aria-label="Close tutorial">×</button>
+        <p class="eyebrow">QUICK START</p>
+        <h2 id="dominoTutorialTitle">How to Play Bones</h2>
+        <div class="domino-tutorial-steps">
+          <article><b>1</b><span><strong>Start or join</strong><small>Tap Start Table, or enter a friend’s room code.</small></span></article>
+          <article><b>2</b><span><strong>Match either end</strong><small>Tap a glowing bone that matches a number at either end of the center chain.</small></span></article>
+          <article><b>3</b><span><strong>No match? Draw</strong><small>Tap Draw Bone. Pass becomes available only when the boneyard is empty.</small></span></article>
+          <article><b>4</b><span><strong>Empty your hand</strong><small>The first player with no bones wins. Tap Submit Win to collect verified Cool Points.</small></span></article>
+        </div>
+        <button class="games-btn primary domino-tutorial-got-it" type="button" id="finishDominoTutorial">Got It — Let’s Play</button>
+      </section>
+    </div>
+
     <section class="hw-leaderboard-wrap" data-hw-leaderboard data-default-mode="games" data-game-key="01_dominos" data-limit="5" aria-label="Domino leaderboard preview">
       <article class="hw-leaderboard-card">
         <div class="hw-leaderboard-head">
@@ -165,7 +186,7 @@
 
   <script src="auth-client.js"></script>
   <script src="leaderboard-widgets.js"></script>
-  <script src="dominos.js?v=20260906-whole-domino-3"></script>
+  <script src="dominos.js?v=20260906-domino-tutorial-1"></script>
   <script src="cool-points.js"></script>
 </body>
 </html>
