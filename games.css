@@ -577,7 +577,10 @@ body.dominos-page{
   .domino-pov-room .pov-board>.hw-leaderboard-empty{box-sizing:border-box;display:block;width:100%;max-width:100%;padding:14px;overflow:hidden;text-overflow:ellipsis;white-space:normal;text-align:center;font-size:.67rem;line-height:1.35}
   .domino-pov-room .pov-player-hand{box-sizing:border-box;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;width:100%;padding:7px 9px 5px;overflow:visible}
   .domino-pov-room .pov-player-hand .domino-tile,
-  .domino-pov-room .pov-player-hand .domino-tile:nth-child(n){box-sizing:border-box;width:100%;min-width:0;max-width:none;height:84px;margin:0;transform:none}
+  .domino-pov-room .pov-player-hand .domino-tile:nth-child(n){box-sizing:border-box;display:grid!important;grid-template-columns:1fr!important;grid-template-rows:repeat(2,minmax(0,1fr))!important;place-items:stretch;width:100%;min-width:0;max-width:none;height:96px;margin:0;padding:0;overflow:hidden;transform:none}
+  .domino-pov-room .pov-player-hand .domino-tile .pip-face{box-sizing:border-box;width:100%;height:auto!important;min-width:0;min-height:0;padding:3px}
+  .domino-pov-room .pov-player-hand .domino-tile .pip-face:first-child{border-right:0!important;border-bottom:3px solid #121212!important}
+  .domino-pov-room .pov-player-hand .domino-tile .pip-face:last-child{border:0!important}
   .domino-pov-room .pov-player-hand .domino-tile.is-playable,
   .domino-pov-room .pov-player-hand .domino-tile.is-playable:hover,
   .domino-pov-room .pov-player-hand .domino-tile.is-playable:focus-visible{transform:translateY(-4px) scale(.96)}
@@ -589,5 +592,5 @@ body.dominos-page{
   .domino-pov-room{min-height:620px}
   .domino-pov-room .pov-felt{min-height:490px;padding-inline:8px}
   .domino-pov-room .pov-player-hand{gap:2px;padding-inline:7px}
-  .domino-pov-room .pov-player-hand .domino-tile,.domino-pov-room .pov-player-hand .domino-tile:nth-child(n){height:76px}
+  .domino-pov-room .pov-player-hand .domino-tile,.domino-pov-room .pov-player-hand .domino-tile:nth-child(n){height:88px}
 }
