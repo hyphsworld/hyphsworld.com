@@ -142,10 +142,28 @@ async def submit_score(payload: LeaderboardSubmit):
 
 
 @api_router.get("/leaderboard", response_model=List[LeaderboardEntry])
-async def get_leaderboard(limit: int = 50):
+async def get_leaderboard(limit: int = 50, period: str = "all"):
+    period = period.lower()
+    if period not in ("day", "week", "month", "all"):
+        raise HTTPException(status_code=400, detail="Period must be day, week, month, or all")
+
+    now = datetime.now(timezone.utc)
+    period_start = {
+        "day": now - timedelta(days=1),
+        "week": now - timedelta(days=7),
+        "month": now - timedelta(days=30),
+        "all": None,
+    }[period]
+
     if db is None:
         logger.warning("Leaderboard requested while database is not configured; serving in-memory entries")
-        rows = in_memory_leaderboard[:limit]
+        rows = in_memory_leaderboard
+        if period_start is not None:
+            rows = [
+                row for row in rows
+                if datetime.fromisoformat(row["timestamp"]) >= period_start
+            ]
+        rows = rows[:limit]
         return [LeaderboardEntry(**row) for row in rows]
 
     database = db
@@ -154,7 +172,11 @@ async def get_leaderboard(limit: int = 50):
     if limit > 200:
         limit = 200
 
-    cursor = database.leaderboard.find({}, {"_id": 0}).sort("score", -1).limit(limit)
+    query = {}
+    if period_start is not None:
+        query["timestamp"] = {"$gte": period_start.isoformat()}
+
+    cursor = database.leaderboard.find(query, {"_id": 0}).sort("score", -1).limit(limit)
     rows = await cursor.to_list(length=limit)
 
     for row in rows:
