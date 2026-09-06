@@ -49,6 +49,10 @@
     if (clientPromise) return clientPromise;
 
     clientPromise = (async () => {
+      if (window.HWAuth && typeof window.HWAuth.getClient === "function") {
+        const shared = await window.HWAuth.getClient();
+        if (shared) return shared;
+      }
       if (!window.HW_SUPABASE_CONFIG) await loadScript(CONFIG_FILE);
 
       const config = window.HW_SUPABASE_CONFIG || {};
@@ -59,9 +63,9 @@
 
       return window.supabase.createClient(config.url, config.anonKey, {
         auth: {
-          persistSession: true,
-          autoRefreshToken: true,
-          detectSessionInUrl: true
+          persistSession: false,
+          autoRefreshToken: false,
+          detectSessionInUrl: false
         }
       });
     })();
@@ -119,24 +123,15 @@
 
   async function fetchPoints(limit) {
     const sb = await getClient();
-    const { data, error } = await sb
-      .from("cool_points_leaderboard")
-      .select("user_id,display_name,username,avatar_icon,points,lifetime_points,level_1_unlocked,level_2_unlocked,updated_at")
-      .order("points", { ascending: false })
-      .order("lifetime_points", { ascending: false })
-      .limit(limit);
+    const { data, error } = await sb.rpc("get_cool_points_leaderboard", { p_limit: limit });
 
     if (error) throw error;
     return data || [];
   }
 
-  async function fetchGames(limit) {
+  async function fetchGames(limit, gameKey) {
     const sb = await getClient();
-    const { data, error } = await sb
-      .from("game_leaderboard")
-      .select("id,user_id,display_name,avatar_icon,game_key,score,points_delta,created_at")
-      .order("score", { ascending: false })
-      .limit(limit);
+    const { data, error } = await sb.rpc("get_game_leaderboard", { p_limit: limit, p_game_key: gameKey || null });
 
     if (error) throw error;
     return data || [];
@@ -146,6 +141,7 @@
     const list = root.querySelector("[data-hw-leaderboard-list]");
     const buttons = Array.from(root.querySelectorAll("[data-hw-board-mode]"));
     const limit = num(root.getAttribute("data-limit")) || DEFAULT_LIMIT;
+    const gameKey = safeText(root.getAttribute("data-game-key"), "") || null;
     let mode = root.getAttribute("data-default-mode") || "points";
 
     async function refresh(nextMode) {
@@ -157,7 +153,7 @@
       renderEmpty(list, "Loading leaderboard...");
 
       try {
-        const rows = mode === "games" ? await fetchGames(limit) : await fetchPoints(limit);
+        const rows = mode === "games" ? await fetchGames(limit, gameKey) : await fetchPoints(limit);
         renderRows(list, rows, mode);
       } catch (error) {
         console.warn("HYPHSWORLD leaderboard warning:", error?.message || error);
@@ -180,16 +176,9 @@
 
     try {
       const sb = await getClient();
-      const { data: topRows } = await sb
-        .from("cool_points_leaderboard")
-        .select("display_name,username,points")
-        .order("points", { ascending: false })
-        .limit(1);
+      const { data: topRows } = await sb.rpc("get_cool_points_leaderboard", { p_limit: 1 });
 
-      const { data: playerRows } = await sb
-        .from("cool_points_leaderboard")
-        .select("user_id")
-        .limit(500);
+      const { data: playerRows } = await sb.rpc("get_cool_points_leaderboard", { p_limit: 100 });
 
       const { data: unlockRows } = await sb
         .from("vault_unlocks")

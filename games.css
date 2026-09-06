@@ -423,3 +423,32 @@ body.dominos-page{
     height:92px;
   }
 }
+
+/* Consumer-readiness pass: the hand and dock always occupy separate tap zones. */
+.domino-pov-room{
+  aspect-ratio:auto;
+  height:auto;
+  overflow:hidden;
+}
+.domino-pov-room .pov-felt{
+  padding-bottom:18px;
+}
+.domino-pov-room .pov-player-hand{
+  padding-bottom:16px;
+  scroll-padding-inline:12px;
+}
+.domino-pov-room>.pov-action-dock{
+  position:relative;
+  left:auto;
+  right:auto;
+  bottom:auto;
+  margin:8px 6px 10px;
+}
+.domino-pov-room .pov-pip-count{
+  margin:0 8px 4px;
+}
+@media(max-width:640px){
+  .domino-pov-room .pov-felt{padding-bottom:12px}
+  .domino-pov-room .pov-player-hand{padding-bottom:12px}
+  .domino-pov-room>.pov-action-dock{bottom:auto;margin-top:8px}
+}
