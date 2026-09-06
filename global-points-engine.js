@@ -192,6 +192,10 @@
       hud.id = 'hwGlobalPointsHud';
       document.body.appendChild(hud);
     }
+    const hideOnPage = Boolean(document.body && document.body.hasAttribute('data-hide-global-points-hud'));
+    hud.hidden = hideOnPage;
+    if (hideOnPage) hud.style.setProperty('display', 'none', 'important');
+    else hud.style.removeProperty('display');
     hud.setAttribute('aria-live', 'polite');
     if (!hud.querySelector('[data-hw-account-name]') || !hud.querySelector('[data-hw-account-action]')) {
       hud.innerHTML = '<div class="hwgp-icon" data-hw-avatar>🧢</div><div><strong data-hw-points>0</strong><span>Cool Points</span><span class="hwgp-name" data-hw-account-name>Checking login…</span></div><small data-hw-rank>Checking…</small><a class="hwgp-action" data-hw-account-action href="/auth.html">Login</a>';

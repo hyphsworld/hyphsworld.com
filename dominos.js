@@ -152,6 +152,23 @@
     }
   }
 
+  function initTableRadio() {
+    const audio = $("dominoRadioAudio");
+    const track = $("dominoRadioTrack");
+    const nowPlaying = $("dominoRadioNowPlaying");
+    if (!audio || !track) return;
+    track.addEventListener("change", () => {
+      const selected = track.options[track.selectedIndex];
+      audio.pause();
+      audio.src = selected.value;
+      audio.load();
+      if (nowPlaying) nowPlaying.textContent = selected.dataset.title || selected.textContent;
+    });
+    audio.addEventListener("error", () => {
+      if (nowPlaying) nowPlaying.textContent = "TRACK UNAVAILABLE — CHOOSE ANOTHER SONG";
+    });
+  }
+
   async function requireUser() {
     if (!window.HWAuth) throw new Error("Auth unavailable.");
     const user = await window.HWAuth.getCurrentUser();
@@ -414,6 +431,7 @@
     if (pass) pass.addEventListener("click", handlePass);
     if (submit) submit.addEventListener("click", submitWin);
     if (leave) leave.addEventListener("click", leaveView);
+    initTableRadio();
 
     document.addEventListener("hyph:auth-state-changed", async (event) => {
       if (event?.detail?.event === "SIGNED_OUT") {

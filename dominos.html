@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="leaderboard-widgets.css" />
   <link rel="stylesheet" href="games.css" />
 </head>
-<body class="dominos-page">
+<body class="dominos-page" data-hide-global-points-hud>
   <header class="site-header">
     <a class="brand-lockup" href="index.html" aria-label="HYPHSWORLD home">
       <span>AMS WEST PRESENTS</span>
@@ -111,6 +111,21 @@
             <button class="games-btn primary" type="button" id="submitWinBtn">Submit Win</button>
           </div>
         </div>
+
+        <section class="domino-radio" aria-label="Domino table music player">
+          <div class="domino-radio-copy">
+            <span>TABLE RADIO</span>
+            <strong id="dominoRadioNowPlaying">WHAT'S HANNIN — HYPH LIFE</strong>
+          </div>
+          <label class="sr-only" for="dominoRadioTrack">Choose a song</label>
+          <select id="dominoRadioTrack" aria-label="Choose a song">
+            <option value="whats-hannin.mp3" data-title="WHAT'S HANNIN — HYPH LIFE">What's Hannin</option>
+            <option value="ham.mp3" data-title="HAM — HYPH LIFE">HAM</option>
+            <option value="mula.mp3" data-title="MULA — HYPH LIFE">MULA</option>
+            <option value="wikked-wayz.mp3" data-title="WIKKED WAYZ — HYPH LIFE x 3D THE CAPO">Wikked Wayz</option>
+          </select>
+          <audio id="dominoRadioAudio" controls preload="metadata" src="whats-hannin.mp3">Your browser does not support audio playback.</audio>
+        </section>
 
         <details class="bones-rules"><summary>Regular Bones Rules</summary><p>28 double-six bones • 7 per player • highest double opens • match either end • doubles turn sideways • draw until playable • pass only on an empty boneyard • first player out wins • blocked board goes to the lowest pip hand.</p></details>
 
