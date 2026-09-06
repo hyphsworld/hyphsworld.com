@@ -564,6 +564,8 @@ body.dominos-page{
   .domino-pov-game .pov-board .domino-tile{width:44px;height:29px}
 }
 
+.quick-table-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0 14px}.quick-table-steps span{display:grid;place-items:center;min-height:38px;padding:5px;border:1px solid rgba(57,255,122,.34);border-radius:12px;background:rgba(57,255,122,.08);color:#baffca;font-size:.62rem;font-weight:1000;text-align:center;text-transform:uppercase}.quick-table-form{gap:9px}.quick-table-form strong,.quick-table-form small{display:block}.quick-table-form small{color:rgba(255,255,255,.68);font-weight:800}.quick-table-form select{width:100%;min-height:48px;padding:0 12px;border:1px solid rgba(255,255,255,.2);border-radius:14px;background:#07110e;color:#fff;font-weight:1000}
+
 /* Domino table final viewport contract. Keep this last so legacy game rules cannot override it. */
 .domino-radio{display:grid;grid-template-columns:minmax(150px,1fr) minmax(130px,.7fr);align-items:center;gap:10px;margin:10px 0;padding:10px 12px;border:1px solid rgba(31,252,255,.42);border-radius:18px;background:linear-gradient(135deg,rgba(0,0,0,.96),rgba(5,26,21,.96));box-shadow:0 10px 28px rgba(0,0,0,.38)}
 .domino-radio-copy span,.domino-radio-copy strong{display:block}.domino-radio-copy span{color:#39ff7a;font-size:.6rem;font-weight:1000;letter-spacing:.16em}.domino-radio-copy strong{margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff;font-size:.72rem;letter-spacing:.04em}.domino-radio select{width:100%;min-height:38px;padding:6px 9px;border:1px solid rgba(255,255,255,.28);border-radius:10px;background:#07110e;color:#fff;font-weight:900}.domino-radio audio{grid-column:1/-1;width:100%;height:34px;accent-color:#39ff7a}

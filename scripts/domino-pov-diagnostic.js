@@ -55,6 +55,7 @@ assert(html.includes('data-hide-global-points-hud'), 'Domino page must opt out o
 assert(points.includes("hasAttribute('data-hide-global-points-hud')"), 'Points engine must honor page-level HUD suppression after injection');
 assert(css.includes('.domino-tile:nth-child(n){box-sizing:border-box;width:100%'), 'Final mobile rack rule must neutralize edge-bone fan transforms');
 assert(html.includes('dominoRadioAudio') && js.includes('initTableRadio'), 'Domino table radio must be wired without autoplay');
+assert(html.includes('Start Table') && html.includes('2-Player Dominoes'), 'Domino multiplayer setup must be one-tap and accurately labeled');
 assert(css.includes('.domino-pov-room>.pov-action-dock{\n  position:relative'), 'Controls must remain in flow below the tappable hand');
 assert(css.includes('.domino-pov-room{\n  aspect-ratio:auto;\n  height:auto'), 'POV room must grow around the in-flow action dock');
 assert(js.includes('opponentId && activeState.turnUserId === opponentId ? "PLAYING" : "WAITING"'), 'Opponent HUD must identify the active turn correctly');

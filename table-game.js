@@ -76,6 +76,10 @@
   }
 
   function setStatus(message) { setText("tableStatus", message); }
+  function requestedPlayerCount() {
+    const value = Number($("tablePlayerCount")?.value || 2);
+    return Math.min(4, Math.max(1, Number.isInteger(value) ? value : 2));
+  }
 
   function getGameType() {
     const params = new URLSearchParams(window.location.search);
@@ -126,8 +130,19 @@
     }
     activeRoom = data.room;
     activeState = data.state;
+    const playerCount = requestedPlayerCount();
+    if (gameType !== "dominos" && Number(activeRoom.max_players) !== playerCount) {
+      const { data: resizedRoom, error: resizeError } = await sb.from("game_rooms")
+        .update({ max_players: playerCount, updated_at: new Date().toISOString() })
+        .eq("id", activeRoom.id)
+        .eq("host_id", currentUser.userId)
+        .select("*")
+        .maybeSingle();
+      if (resizeError) return setStatus(`Table created, but seat setup failed: ${resizeError.message}`);
+      if (resizedRoom) activeRoom = resizedRoom;
+    }
     if (input) input.value = "";
-    setStatus(`Table created: ${activeRoom.room_code}.`);
+    setStatus(`Table ${activeRoom.room_code} ready for ${playerCount} player${playerCount === 1 ? "" : "s"}. Share the code.`);
     renderState();
     startRefresh();
     await listRooms();
