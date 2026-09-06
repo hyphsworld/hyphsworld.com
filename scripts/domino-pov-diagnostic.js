@@ -7,6 +7,7 @@ const html = read('dominos.html');
 const casino = read('games.html');
 const css = read('games.css');
 const js = read('dominos.js');
+const points = read('global-points-engine.js');
 const migration = read('supabase/migrations/20260905223000_secure_domino_multiplayer.sql');
 
 assert(html.includes('domino-pov-room'), 'Domino room must include the POV scene');
@@ -18,7 +19,7 @@ assert(casino.includes('<a class="room-btn secondary" href="leaderboard.html">Al
 assert(!casino.includes('data-room="dominoes" data-cost="15"'), 'Casino must not present the retired Domino preview buy-in');
 assert(html.includes('pov-player-hud'), 'POV must include an opponent status HUD');
 assert(html.includes('pov-points-hud'), 'POV must show Cool Points inside the game scene');
-assert(html.indexOf('pov-action-dock') < html.indexOf('</div>\n        </div>\n\n        <details'), 'POV action controls must stay inside the first-person scene');
+assert(html.indexOf('pov-action-dock') > html.indexOf('domino-pov-room') && html.indexOf('pov-action-dock') < html.indexOf('domino-radio'), 'POV action controls must stay inside the first-person scene');
 assert(css.includes('perspective:1000px'), 'POV scene must use table depth');
 assert(css.includes('.pov-player-hand .domino-tile.is-playable'), 'Playable tiles must be visually obvious');
 assert(js.includes('function pipFace(value)'), 'Dominoes must render visual pips instead of text-only tiles');
@@ -50,6 +51,10 @@ assert(html.includes('povSelfAvatar'), 'The local player seat must reflect the s
 assert(js.includes('avatar_type,avatar_icon'), 'Opponent display must use safe public profile fields');
 assert(js.includes('has-female-opponent'), 'Female opponent profiles must switch the table artwork');
 assert(js.includes('opponentProfileRequest += 1'), 'Leaving a table must invalidate stale opponent profile requests');
+assert(html.includes('data-hide-global-points-hud'), 'Domino page must opt out of the floating account widget');
+assert(points.includes("hasAttribute('data-hide-global-points-hud')"), 'Points engine must honor page-level HUD suppression after injection');
+assert(css.includes('.domino-tile:nth-child(n){box-sizing:border-box;width:100%'), 'Final mobile rack rule must neutralize edge-bone fan transforms');
+assert(html.includes('dominoRadioAudio') && js.includes('initTableRadio'), 'Domino table radio must be wired without autoplay');
 assert(css.includes('.domino-pov-room>.pov-action-dock{\n  position:relative'), 'Controls must remain in flow below the tappable hand');
 assert(css.includes('.domino-pov-room{\n  aspect-ratio:auto;\n  height:auto'), 'POV room must grow around the in-flow action dock');
 assert(js.includes('opponentId && activeState.turnUserId === opponentId ? "PLAYING" : "WAITING"'), 'Opponent HUD must identify the active turn correctly');
