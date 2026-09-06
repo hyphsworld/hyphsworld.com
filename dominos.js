@@ -12,12 +12,53 @@
   let activeState = null;
   let activeVersion = null;
   let refreshTimer = null;
+  let opponentProfile = null;
+  let opponentProfileId = null;
+  let opponentProfileRequest = 0;
 
   function $(id) { return document.getElementById(id); }
   function setText(id, value) { const el = $(id); if (el) el.textContent = value; }
   function safeText(value, fallback) { return String(value || fallback || "").replace(/[<>]/g, "").trim(); }
   function roomCode() { return Math.random().toString(36).replace(/[^a-z0-9]/gi, "").slice(2, 8).toUpperCase(); }
   function readableError(error) { return error && error.message ? error.message : String(error || "Unknown error"); }
+  function dominoAvatar(type, fallback) {
+    if (String(type || "").toLowerCase() === "girl") return "👩🏾";
+    return safeText(fallback, "🧢");
+  }
+
+  async function loadOpponentProfile(userId) {
+    if (!userId || userId === opponentProfileId) return;
+    const request = ++opponentProfileRequest;
+    opponentProfileId = userId;
+    opponentProfile = null;
+    try {
+      const sb = await getClient();
+      const { data, error } = await sb.from("profiles")
+        .select("id,display_name,avatar_type,avatar_icon")
+        .eq("id", userId)
+        .maybeSingle();
+      if (error) throw error;
+      if (request !== opponentProfileRequest || opponentProfileId !== userId) return;
+      opponentProfile = data || null;
+      renderOpponentSeat(userId);
+    } catch (error) {
+      if (request === opponentProfileRequest) renderOpponentSeat(userId);
+    }
+  }
+
+  function renderOpponentSeat(opponentId) {
+    const name = opponentProfile && opponentProfile.id === opponentId
+      ? safeText(opponentProfile.display_name, "PLAYER TWO")
+      : "PLAYER TWO";
+    setText("povHudName", opponentId ? name : "OPEN SEAT");
+    setText("povHudAvatar", opponentId
+      ? dominoAvatar(opponentProfile?.avatar_type, opponentProfile?.avatar_icon)
+      : "＋");
+    const hud = document.querySelector(".pov-player-hud");
+    if (hud) hud.classList.toggle("is-female", Boolean(opponentId && opponentProfile?.avatar_type === "girl"));
+    const room = document.querySelector(".domino-pov-room");
+    if (room) room.classList.toggle("has-female-opponent", Boolean(opponentId && opponentProfile?.avatar_type === "girl"));
+  }
 
   function loadScript(src) {
     return new Promise((resolve, reject) => {
@@ -253,11 +294,19 @@
 
     const opponentId = Object.keys(activeState.hands || {}).find((id) => id !== currentUser.userId);
     const opponentTiles = opponentId ? (activeState.hands[opponentId] || []).length : 0;
-    setText("povHudName", opponentId ? "PLAYER TWO" : "OPEN SEAT");
+    if (opponentId && opponentId !== opponentProfileId) loadOpponentProfile(opponentId);
+    if (!opponentId) {
+      opponentProfileId = null;
+      opponentProfile = null;
+    }
+    renderOpponentSeat(opponentId);
     setText("povHudTiles", opponentId ? `${opponentTiles} bones` : "Waiting for player");
     setText("povHudTurn", opponentId && activeState.turnUserId === opponentId ? "PLAYING" : "WAITING");
     setText("boneyardCount", `Boneyard: ${(activeState.deck || []).length}`);
     setText("playerPipCount", `Your pips: ${handScore((activeState.hands || {})[currentUser.userId])}`);
+    setText("povSelfAvatar", dominoAvatar(currentUser.avatarType, currentUser.avatarIcon));
+    setText("povSelfName", safeText(currentUser.displayName, "YOUR SEAT"));
+    document.body.classList.add("domino-game-active");
 
     const boardTiles = activeState.board || [];
     board.innerHTML = boardTiles.length
@@ -311,6 +360,10 @@
     activeRoom = null;
     activeState = null;
     activeVersion = null;
+    opponentProfileRequest += 1;
+    opponentProfileId = null;
+    opponentProfile = null;
+    document.body.classList.remove("domino-game-active");
     if (refreshTimer) clearInterval(refreshTimer);
     setText("activeRoomCode", "None");
     setText("activeTurn", "Waiting");
@@ -318,6 +371,11 @@
     setText("povHudName", "OPEN SEAT");
     setText("povHudTiles", "Waiting for player");
     setText("povHudTurn", "WAITING");
+    setText("povHudAvatar", "＋");
+    const room = document.querySelector(".domino-pov-room");
+    if (room) room.classList.remove("has-female-opponent");
+    setText("povSelfAvatar", dominoAvatar(currentUser?.avatarType, currentUser?.avatarIcon));
+    setText("povSelfName", currentUser ? safeText(currentUser.displayName, "YOUR SEAT") : "YOUR SEAT");
     setText("boneyardCount", "Boneyard: —");
     setText("playerPipCount", "Your pips: —");
     if ($("boardTiles")) $("boardTiles").innerHTML = `<span class="hw-leaderboard-empty">Join or create a room to start.</span>`;

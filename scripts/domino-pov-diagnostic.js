@@ -43,6 +43,13 @@ assert(migration.includes('STATE_CHANGED_REFRESH'), 'Concurrent moves must use o
 assert(migration.includes('game_scores_domino_room_winner_uidx'), 'A Domino room must award its win only once');
 assert(css.includes('.domino-pov-room .pov-board{\n  overflow:auto'), 'Final POV board rule must preserve long-chain scrolling');
 assert(css.includes('Consumer-readiness pass: the hand and dock always occupy separate tap zones.'), 'Final POV CSS must reserve separate hand and action zones');
+assert(css.includes('grid-template-columns:repeat(7,minmax(0,1fr))'), 'Mobile rack must fit all seven bones inside the viewport');
+assert(css.includes('.dominos-page #hwGlobalPointsHud{display:none!important}'), 'Global points HUD must not cover Domino controls');
+assert(css.includes('01-domino-room-pov-female-v1.webp'), 'Female opponents must have a matching cinematic table plate');
+assert(html.includes('povSelfAvatar'), 'The local player seat must reflect the selected profile avatar');
+assert(js.includes('avatar_type,avatar_icon'), 'Opponent display must use safe public profile fields');
+assert(js.includes('has-female-opponent'), 'Female opponent profiles must switch the table artwork');
+assert(js.includes('opponentProfileRequest += 1'), 'Leaving a table must invalidate stale opponent profile requests');
 assert(css.includes('.domino-pov-room>.pov-action-dock{\n  position:relative'), 'Controls must remain in flow below the tappable hand');
 assert(css.includes('.domino-pov-room{\n  aspect-ratio:auto;\n  height:auto'), 'POV room must grow around the in-flow action dock');
 assert(js.includes('opponentId && activeState.turnUserId === opponentId ? "PLAYING" : "WAITING"'), 'Opponent HUD must identify the active turn correctly');
