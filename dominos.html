@@ -85,7 +85,7 @@
         <div class="domino-pov-room" aria-label="First-person domino table">
           <div class="pov-neon-sign" aria-hidden="true"><span>01 DOMINO ROOM</span><small>RICHMOND, CA</small></div>
           <div class="pov-player-hud" aria-label="Opponent game status">
-            <span class="pov-player-hud-avatar" aria-hidden="true">🧢</span>
+            <span class="pov-player-hud-avatar" id="povHudAvatar" aria-hidden="true">🧢</span>
             <span><strong id="povHudName">PLAYER TWO</strong><small id="povHudTiles">Waiting for player</small></span>
             <b id="povHudTurn">—</b>
           </div>
@@ -99,6 +99,10 @@
             <div class="pov-turn-banner" id="povTurnBanner">WAITING FOR TABLE</div>
             <div class="table-label pov-hand-label"><span>Your Hand</span><span>Tap a playable tile</span></div>
             <div class="pov-pip-count" id="playerPipCount">Your pips: —</div>
+            <div class="pov-self-seat" aria-label="Your player profile">
+              <span id="povSelfAvatar" aria-hidden="true">🧢</span>
+              <small id="povSelfName">YOUR SEAT</small>
+            </div>
             <div class="player-hand pov-player-hand" id="playerHand"></div>
           </div>
           <div class="pov-action-dock">

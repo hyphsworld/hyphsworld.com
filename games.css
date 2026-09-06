@@ -452,3 +452,114 @@ body.dominos-page{
   .domino-pov-room .pov-player-hand{padding-bottom:12px}
   .domino-pov-room>.pov-action-dock{bottom:auto;margin-top:8px}
 }
+
+/* Mobile table v2: one complete POV stage with all seven bones visible. */
+.dominos-page #hwGlobalPointsHud{display:none!important}
+.domino-pov-room.has-female-opponent{
+  background-image:
+    linear-gradient(180deg,rgba(0,0,0,.08) 0%,rgba(0,0,0,.02) 48%,rgba(0,0,0,.74) 100%),
+    url("assets/games/01-domino-room-pov-female-v1.webp");
+}
+.pov-self-seat{display:flex;position:relative;z-index:6;align-items:center;justify-content:center;gap:7px;margin:0 auto -4px;color:#fff;text-shadow:0 2px 4px #000}
+.pov-self-seat span{display:grid;place-items:center;width:34px;height:34px;border:1px solid rgba(255,255,255,.38);border-radius:50%;background:rgba(0,0,0,.78);font-size:1.15rem}
+.pov-self-seat small{max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.62rem;font-weight:1000;letter-spacing:.09em;text-transform:uppercase}
+.pov-player-hud.is-female{border-color:rgba(255,105,205,.72);box-shadow:0 0 20px rgba(255,105,205,.28)}
+
+@media(max-width:640px){
+  .domino-pov-game{padding:8px 4px 12px}
+  .domino-pov-game>h2,.domino-pov-game>.dominos-scoreboard{display:none}
+  .domino-pov-room{
+    width:100%;
+    min-height:0;
+    height:min(780px,calc(100svh - 16px));
+    padding:6px 5px 7px;
+    border-radius:20px;
+    background-position:center top;
+    display:grid;
+    grid-template-rows:minmax(0,1fr) auto;
+  }
+  .domino-pov-room .pov-neon-sign{max-width:38%}
+  .domino-pov-room .pov-player-hud{top:54px;left:auto;right:8px;width:auto;max-width:54%;padding:5px 8px;transform:none}
+  .domino-pov-room .pov-player-hud-avatar{display:grid;width:30px;height:30px;font-size:1rem}
+  .domino-pov-room .pov-felt{
+    align-self:end;
+    min-height:0;
+    height:70%;
+    margin:0;
+    padding:40px 2px 3px;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;
+  }
+  .domino-pov-room .pov-board-label{margin-bottom:2px}
+  .domino-pov-room .pov-board{
+    flex:1 1 auto;
+    width:100%;
+    min-height:100px;
+    max-height:170px;
+    padding:4px;
+    transform:none;
+    grid-template-columns:repeat(5,max-content);
+    grid-auto-rows:36px;
+    justify-content:safe center;
+    align-content:center;
+    overflow:auto;
+  }
+  .domino-pov-game .pov-board .domino-tile{width:48px;height:31px}
+  .domino-pov-room .pov-turn-banner{margin:3px auto;padding:6px 12px;font-size:.66rem}
+  .domino-pov-room .pov-hand-label{margin:0 4px 1px}
+  .domino-pov-room .pov-pip-count{align-self:center;margin:0 0 1px;padding:2px 7px;font-size:.56rem}
+  .domino-pov-room .pov-self-seat{margin-bottom:-3px}
+  .domino-pov-room .pov-player-hand{
+    box-sizing:border-box;
+    display:grid;
+    grid-template-columns:repeat(7,minmax(0,1fr));
+    align-items:end;
+    justify-content:stretch;
+    gap:2px;
+    width:100%;
+    min-height:88px;
+    padding:5px 3px 2px;
+    overflow:visible;
+  }
+  .domino-pov-room .pov-player-hand .domino-tile{
+    box-sizing:border-box;
+    width:100%;
+    min-width:0;
+    max-width:52px;
+    height:82px;
+    margin:0 auto;
+    border-width:2px;
+    border-radius:8px;
+    transform:none;
+  }
+  .domino-pov-room .pov-player-hand .domino-tile:nth-child(1){transform:rotate(-5deg) translateY(4px)}
+  .domino-pov-room .pov-player-hand .domino-tile:nth-child(2){transform:rotate(-3deg) translateY(1px)}
+  .domino-pov-room .pov-player-hand .domino-tile:nth-child(3){transform:rotate(-1deg)}
+  .domino-pov-room .pov-player-hand .domino-tile:nth-child(5){transform:rotate(1deg)}
+  .domino-pov-room .pov-player-hand .domino-tile:nth-child(6){transform:rotate(3deg) translateY(1px)}
+  .domino-pov-room .pov-player-hand .domino-tile:nth-child(7){transform:rotate(5deg) translateY(4px)}
+  .domino-pov-room .pov-player-hand .domino-tile.is-playable{transform:translateY(-5px)}
+  .domino-pov-room>.pov-action-dock{
+    width:100%;
+    margin:5px 0 0;
+    padding:5px;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:5px;
+    border-radius:16px;
+    background:rgba(0,0,0,.9);
+  }
+  .domino-pov-room>.pov-action-dock .games-btn,.domino-pov-room>.pov-action-dock .primary{
+    grid-column:auto;
+    min-height:42px;
+    padding:5px 2px;
+    font-size:.58rem;
+  }
+  .domino-game-active .dominos-hero{padding-bottom:8px}
+}
+
+@media(max-width:380px){
+  .domino-pov-room{height:min(720px,calc(100svh - 10px))}
+  .domino-pov-room .pov-player-hand .domino-tile{height:74px}
+  .domino-pov-game .pov-board .domino-tile{width:44px;height:29px}
+}
