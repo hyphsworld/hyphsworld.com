@@ -53,7 +53,9 @@ assert(js.includes('has-female-opponent'), 'Female opponent profiles must switch
 assert(js.includes('opponentProfileRequest += 1'), 'Leaving a table must invalidate stale opponent profile requests');
 assert(html.includes('data-hide-global-points-hud'), 'Domino page must opt out of the floating account widget');
 assert(points.includes("hasAttribute('data-hide-global-points-hud')"), 'Points engine must honor page-level HUD suppression after injection');
-assert(css.includes('.domino-tile:nth-child(n){box-sizing:border-box;width:100%'), 'Final mobile rack rule must neutralize edge-bone fan transforms');
+assert(css.includes('.domino-tile:nth-child(n){box-sizing:border-box;display:grid!important') && css.includes('overflow:hidden;transform:none'), 'Final mobile rack rule must neutralize edge-bone fan transforms');
+assert(css.includes('display:grid!important;grid-template-columns:1fr!important;grid-template-rows:repeat(2,minmax(0,1fr))!important'), 'Clickable player bones must retain two equal visible pip faces after the button reset');
+assert(html.includes('games.css?v=20260906-whole-domino-3'), 'Domino page must cache-bust the repaired tile layout on mobile browsers');
 assert(html.includes('dominoRadioAudio') && js.includes('initTableRadio'), 'Domino table radio must be wired without autoplay');
 assert(html.includes('Start Table') && html.includes('2-Player Dominoes'), 'Domino multiplayer setup must be one-tap and accurately labeled');
 assert(css.includes('.domino-pov-room>.pov-action-dock{\n  position:relative'), 'Controls must remain in flow below the tappable hand');
