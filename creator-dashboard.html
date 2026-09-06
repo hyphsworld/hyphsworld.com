@@ -1,1 +1,131 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#07080b"><meta name="description" content="Secure HYPHSWORLD creator dashboard for profiles, verification, tools, and submissions."><title>Creator Dashboard | HYPHSWORLD</title><link rel="stylesheet" href="creator-dashboard.css?v=phase-2"></head><body data-hide-global-points-hud><header><a href="index.html"><small>AMS WEST PRESENTS</small><strong>CREATOR DASHBOARD</strong></a><nav><a href="creators.html">Creators</a><a href="creator-access.html">Access</a><a href="account.html">My ID</a></nav></header><main><section class="dash-hero"><p>PHASE 2 • ACCOUNT PROTECTED</p><h1>Control your world.</h1><p>Edit creator information, request verification, review protected tools, and manage incoming opportunities from one authenticated dashboard.</p><div class="status" id="dashboardStatus">Checking your HYPHSWORLD ID…</div></section><section class="dash-grid" id="dashboard" hidden><article class="panel profile-panel"><p>CREATOR PROFILE</p><h2 id="profileTitle">Your draft</h2><form id="creatorForm"><label>Display name<input id="displayName" maxlength="80" required></label><label>Headline<input id="headline" maxlength="160" placeholder="Artist • Producer • Director"></label><label>Location<input id="location" maxlength="120"></label><label>Categories<input id="categories" placeholder="artist, producer, dj"></label><label>Biography<textarea id="bio" maxlength="3000" rows="7"></textarea></label><label>Approved image path<input id="imageUrl" placeholder="creator-photo.jpg"></label><button type="submit">Save Draft</button></form></article><article class="panel"><p>TRUST STATUS</p><h2>Verification</h2><div class="badge-state" id="verificationState">Unverified</div><form id="verificationForm"><label>Requested level<select id="requestedLevel"><option value="identity">Identity Verified</option><option value="professional">Professional Verified</option><option value="partner">World Partner</option><option value="organization">Official Organization</option></select></label><label>Evidence summary<textarea id="evidenceSummary" minlength="20" maxlength="2000" rows="6" placeholder="Describe the identity and professional evidence ready for human review." required></textarea></label><button type="submit">Request Human Review</button></form><div id="verificationHistory" class="stack"></div></article><article class="panel"><p>PROTECTED ACCESS</p><h2>Creator Tools</h2><div id="entitlementList" class="stack"><span>No active tools yet.</span></div><a class="panel-link" href="creator-access.html">View requirements →</a></article><article class="panel inbox-panel"><p>OPPORTUNITIES</p><h2>Submission Inbox</h2><div id="submissionList" class="stack"><span>No submissions yet.</span></div></article></section><section class="start-panel" id="startPanel" hidden><h2>Start a creator draft.</h2><p>Your draft stays private until HYPHSWORLD reviews and publishes it.</p><button id="startCreator" type="button">Create My Draft</button></section></main><script src="supabase-config.js"></script><script src="auth-client.js?v=creator-phase-2"></script><script src="creator-dashboard.js?v=phase-2"></script></body></html>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#07080b" />
+    <meta
+      name="description"
+      content="Secure HYPHSWORLD creator dashboard for profiles, verification, tools, and submissions."
+    />
+    <title>Creator Dashboard | HYPHSWORLD</title>
+    <link rel="stylesheet" href="creator-dashboard.css?v=phase-2" />
+  </head>
+  <body data-hide-global-points-hud>
+    <header>
+      <a href="index.html"
+        ><small>AMS WEST PRESENTS</small><strong>CREATOR DASHBOARD</strong></a
+      >
+      <nav>
+        <a href="creators.html">Creators</a
+        ><a href="creator-access.html">Access</a
+        ><a href="account.html">My ID</a>
+      </nav>
+    </header>
+    <main>
+      <section class="dash-hero">
+        <p>PHASE 2 • ACCOUNT PROTECTED</p>
+        <h1>Control your world.</h1>
+        <p>
+          Edit creator information, request verification, review protected
+          tools, and manage incoming opportunities from one authenticated
+          dashboard.
+        </p>
+        <div class="status" id="dashboardStatus">
+          Checking your HYPHSWORLD ID…
+        </div>
+      </section>
+      <section class="dash-grid" id="dashboard" hidden>
+        <article class="panel">
+          <p>CREATOR INSIGHTS</p>
+          <h2>Performance</h2>
+          <div id="metricList" class="stack"><span>Loading account-backed metrics…</span></div>
+        </article>
+        <article class="panel profile-panel">
+          <p>CREATOR PROFILE</p>
+          <h2 id="profileTitle">Your draft</h2>
+          <form id="creatorForm">
+            <label
+              >Display name<input
+                id="displayName"
+                maxlength="80"
+                required /></label
+            ><label
+              >Headline<input
+                id="headline"
+                maxlength="160"
+                placeholder="Artist • Producer • Director" /></label
+            ><label>Location<input id="location" maxlength="120" /></label
+            ><label
+              >Categories<input
+                id="categories"
+                placeholder="artist, producer, dj" /></label
+            ><label
+              >Biography<textarea
+                id="bio"
+                maxlength="3000"
+                rows="7"
+              ></textarea></label
+            ><label
+              >Approved image path<input
+                id="imageUrl"
+                placeholder="creator-photo.jpg" /></label
+            ><button type="submit">Save Draft</button>
+          </form>
+        </article>
+        <article class="panel">
+          <p>TRUST STATUS</p>
+          <h2>Verification</h2>
+          <div class="badge-state" id="verificationState">Unverified</div>
+          <form id="verificationForm">
+            <label
+              >Requested level<select id="requestedLevel">
+                <option value="identity">Identity Verified</option>
+                <option value="professional">Professional Verified</option>
+                <option value="partner">World Partner</option>
+                <option value="organization">Official Organization</option>
+              </select></label
+            ><label
+              >Evidence summary<textarea
+                id="evidenceSummary"
+                minlength="20"
+                maxlength="2000"
+                rows="6"
+                placeholder="Describe the identity and professional evidence ready for human review."
+                required
+              ></textarea></label
+            ><button type="submit">Request Human Review</button>
+          </form>
+          <div id="verificationHistory" class="stack"></div>
+        </article>
+        <article class="panel">
+          <p>PROTECTED ACCESS</p>
+          <h2>Creator Tools</h2>
+          <div id="entitlementList" class="stack">
+            <span>No active tools yet.</span>
+          </div>
+          <a class="panel-link" href="creator-access.html"
+            >View requirements →</a
+          >
+        </article>
+        <article class="panel inbox-panel">
+          <p>OPPORTUNITIES</p>
+          <h2>Submission Inbox</h2>
+          <div id="submissionList" class="stack">
+            <span>No submissions yet.</span>
+          </div>
+        </article>
+      </section>
+      <section class="start-panel" id="startPanel" hidden>
+        <h2>Start a creator draft.</h2>
+        <p>
+          Your draft stays private until HYPHSWORLD reviews and publishes it.
+        </p>
+        <button id="startCreator" type="button">Create My Draft</button>
+      </section>
+    </main>
+    <script src="supabase-config.js"></script>
+    <script src="auth-client.js?v=creator-phase-2"></script>
+    <script src="creator-dashboard.js?v=phase-2"></script>
+  </body>
+</html>
