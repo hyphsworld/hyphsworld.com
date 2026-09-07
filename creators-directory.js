@@ -45,6 +45,7 @@
     var displayName = text(row.display_name, 'Creator');
     var categories = Array.isArray(row.categories) ? row.categories : [];
     var verification = text(row.verification_level, 'unverified').replaceAll('_', ' ');
+    var isVerified = ['professional', 'verified', 'founder'].indexOf(verification) > -1;
     card.dataset.name = displayName.toLowerCase();
     card.dataset.tags = categories.join(' ').toLowerCase() + ' ' + text(row.location).toLowerCase();
     image.src = safeUrl(row.image_url, 'creator-hyph-life-hero.jpg');
@@ -55,6 +56,14 @@
     roles.textContent = text(row.headline, 'Independent Creator');
     link.href = safeUrl(row.profile_url, 'creators.html');
     link.textContent = 'Enter creator world →';
+    if (isVerified) {
+      var seal = document.createElement('i');
+      card.classList.add('is-verified');
+      seal.className = 'world-seal directory-world-seal';
+      seal.title = 'HYPHSWORLD World Seal — Verified Creator';
+      seal.setAttribute('aria-label', seal.title);
+      card.append(seal);
+    }
     copy.append(small, name, roles, link);
     card.append(image, copy);
     return card;
