@@ -623,7 +623,7 @@ body.dominos-page{
 
 /* Tabletop placement: played bones sit on the green felt, while the hand stays upright. */
 .domino-pov-room .domino-chain-stage{
-  margin:0 auto;
+  margin-inline:auto;
   transform:translateY(42px) perspective(760px) rotateX(15deg) scale(.94);
   transform-origin:top center;
 }
@@ -635,4 +635,23 @@ body.dominos-page{
     margin-bottom:0;
     transform:translateY(62px) perspective(680px) rotateX(18deg) scale(.78);
   }
+}
+
+/* Center the live chain on the felt in every viewport and device orientation. */
+.domino-pov-room .pov-board{
+  box-sizing:border-box;
+  width:100%;
+  max-width:100%;
+  margin-inline:auto;
+}
+.domino-pov-room .domino-chain-stage{
+  position:relative;
+  left:auto;
+  right:auto;
+  margin-left:auto;
+  margin-right:auto;
+}
+@media (orientation:landscape) and (max-height:640px){
+  .domino-pov-room .pov-board{margin-inline:auto}
+  .domino-pov-room .domino-chain-stage{transform-origin:top center}
 }
