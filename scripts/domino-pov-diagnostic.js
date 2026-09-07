@@ -55,7 +55,7 @@ assert(html.includes('data-hide-global-points-hud'), 'Domino page must opt out o
 assert(points.includes("hasAttribute('data-hide-global-points-hud')"), 'Points engine must honor page-level HUD suppression after injection');
 assert(css.includes('.domino-tile:nth-child(n){box-sizing:border-box;display:grid!important') && css.includes('overflow:hidden;transform:none'), 'Final mobile rack rule must neutralize edge-bone fan transforms');
 assert(css.includes('display:grid!important;grid-template-columns:1fr!important;grid-template-rows:repeat(2,minmax(0,1fr))!important'), 'Clickable player bones must retain two equal visible pip faces after the button reset');
-assert(html.includes('games.css?v=20260906-domino-tutorial-1'), 'Domino page must cache-bust the repaired tutorial and tile layout on mobile browsers');
+assert(html.includes('games.css?v=20260907-centered-chain-1'), 'Domino page must cache-bust the centered responsive tabletop layout');
 assert(html.includes('dominoRadioAudio') && js.includes('initTableRadio'), 'Domino table radio must be wired without autoplay');
 assert(html.includes('openDominoTutorial') && html.includes('How to Play Bones'), 'Domino room must include a beginner quick-start tutorial');
 assert(js.includes('function setCoach(message)') && js.includes('No matching bone. Tap Draw Bone below.'), 'Live coach must explain the legal next move');
@@ -72,5 +72,9 @@ assert(js.includes('get_domino_state'), 'Refresh must use the opponent-safe stat
 assert(js.includes('list_domino_rooms'), 'Room discovery must use the authenticated room RPC');
 assert(!js.includes('.from("game_state").upsert'), 'The browser must not overwrite Domino state directly');
 assert(html.includes('data-game-key="01_dominos"'), 'Embedded scores must be restricted to Domino results');
+assert(js.includes('const placements = tiles.map'), 'Played chain stage must be measured from the bones actually on the table');
+assert(js.includes('--chain-width:${width}px;--chain-height:${height}px'), 'Measured chain dimensions must be exposed to responsive tabletop CSS');
+assert(css.includes('Center the live chain on the felt in every viewport and device orientation.'), 'Played bones must remain centered in portrait and landscape layouts');
+assert(html.includes('dominos.js?v=20260907-centered-chain-1'), 'Domino page must cache-bust the centered-chain renderer');
 
 console.log('Domino POV diagnostic passed: perspective scene, readable tiles, multiplayer, and points hooks are intact.');
