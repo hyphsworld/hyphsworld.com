@@ -620,3 +620,19 @@ body.dominos-page{
 .domino-pov-game .pov-board .chain-bone.chain-left-end,.domino-pov-game .pov-board .chain-bone.chain-right-end{border-color:#f3ff49;box-shadow:0 0 0 3px rgba(243,255,73,.24),0 0 18px rgba(243,255,73,.65),0 9px 18px rgba(0,0,0,.34)}
 .domino-pov-game .pov-board .chain-bone.is-double:not(.chain-turn){z-index:3}
 @media(max-width:640px){.domino-pov-room .pov-board{min-height:205px!important;padding:8px!important}.domino-chain-stage{transform:scale(.78);transform-origin:top center;margin-bottom:calc(var(--chain-height) * -.22)}.domino-pov-game .pov-board .chain-bone{width:70px!important;height:42px!important}}
+
+/* Tabletop placement: played bones sit on the green felt, while the hand stays upright. */
+.domino-pov-room .domino-chain-stage{
+  margin:0 auto;
+  transform:translateY(42px) perspective(760px) rotateX(15deg) scale(.94);
+  transform-origin:top center;
+}
+.domino-pov-game .pov-board .chain-bone{
+  box-shadow:0 5px 3px rgba(0,0,0,.5),0 10px 14px rgba(0,0,0,.25),inset 0 0 0 1px rgba(0,0,0,.12);
+}
+@media(max-width:640px){
+  .domino-pov-room .domino-chain-stage{
+    margin-bottom:0;
+    transform:translateY(62px) perspective(680px) rotateX(18deg) scale(.78);
+  }
+}
