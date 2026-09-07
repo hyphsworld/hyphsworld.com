@@ -7,6 +7,19 @@
   var empty = document.getElementById('emptyState');
   var filter = 'all';
 
+  function text(value, fallback) {
+    return typeof value === 'string' && value.trim() ? value.trim() : (fallback || '');
+  }
+
+  function safeUrl(value, fallback) {
+    var candidate = text(value, fallback);
+    try {
+      var parsed = new URL(candidate, location.href);
+      if (parsed.protocol === 'http:' || parsed.protocol === 'https:') return parsed.href;
+    } catch (error) {}
+    return fallback;
+  }
+
   function renderFilter() {
     var term = input.value.trim().toLowerCase();
     var count = 0;
@@ -29,15 +42,18 @@
     var roles = document.createElement('p');
     var link = document.createElement('a');
     card.className = 'creator-card';
-    card.dataset.name = row.display_name.toLowerCase();
-    card.dataset.tags = (row.categories || []).join(' ').toLowerCase() + ' ' + (row.location || '').toLowerCase();
-    image.src = row.image_url;
-    image.alt = row.display_name + ' creator profile';
+    var displayName = text(row.display_name, 'Creator');
+    var categories = Array.isArray(row.categories) ? row.categories : [];
+    var verification = text(row.verification_level, 'unverified').replaceAll('_', ' ');
+    card.dataset.name = displayName.toLowerCase();
+    card.dataset.tags = categories.join(' ').toLowerCase() + ' ' + text(row.location).toLowerCase();
+    image.src = safeUrl(row.image_url, 'creator-hyph-life-hero.jpg');
+    image.alt = displayName + ' creator profile';
     image.loading = 'lazy';
-    small.textContent = (row.creator_number ? '#' + String(row.creator_number).padStart(3, '0') + ' • ' : '') + row.verification_level.replace('_', ' ').toUpperCase();
-    name.textContent = row.display_name;
-    roles.textContent = row.headline;
-    link.href = row.profile_url;
+    small.textContent = (Number.isFinite(Number(row.creator_number)) ? '#' + String(row.creator_number).padStart(3, '0') + ' • ' : '') + verification.toUpperCase();
+    name.textContent = displayName;
+    roles.textContent = text(row.headline, 'Independent Creator');
+    link.href = safeUrl(row.profile_url, 'creators.html');
     link.textContent = 'Enter creator world →';
     copy.append(small, name, roles, link);
     card.append(image, copy);

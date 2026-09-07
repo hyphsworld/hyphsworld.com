@@ -316,8 +316,6 @@
     const delta = Math.floor(Number(amount || 0));
     if (!delta) return getState();
 
-    if (!state.ready) pendingQueue.push({ amount: delta, reason, metadata });
-
     const snapshot = await requireLogin();
     if (!snapshot) return getState();
 
