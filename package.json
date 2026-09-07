@@ -13,6 +13,7 @@
     "diagnostics:full": "npm run diagnostics:consumer && npm run diagnostics:security && npm run diagnostics:login && npm run diagnostics:engagement && npm run diagnostics:domino-pov && npm run diagnostics:vault-scanner && npm run diagnostics:homepage-focus && npm run diagnostics:command-center && npm run diagnostics:reward-supply && npm run diagnostics:ss-bowling-strike && npm run diagnostics:chase-the-bag-deploy && npm run diagnostics",
     "diagnostics:engagement": "node scripts/engagement-points-diagnostic.js",
     "diagnostics:domino-pov": "node scripts/domino-pov-diagnostic.js",
+    "diagnostics:creator-profiles": "node scripts/creator-profile-diagnostic.js",
     "diagnostics:vault-scanner": "node scripts/vault-scanner-diagnostic.js",
     "diagnostics:homepage-focus": "node scripts/homepage-focus-diagnostic.js",
     "diagnostics:command-center": "node scripts/homepage-command-center-diagnostic.js",
