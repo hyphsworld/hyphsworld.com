@@ -14,12 +14,12 @@ verifiedProfiles.forEach((file) => {
   const html = read(file);
   assert(html.includes('class="world-seal"'), `${file} must display the HYPHSWORLD World Seal`);
   assert(html.includes('HYPHSWORLD VERIFIED'), `${file} must label verified identity consistently`);
-  assert(html.includes('creator-access.css?v=world-seal-1'), `${file} must cache-bust the shared profile system`);
+  assert(html.includes('creator-access.css?v=world-seal-jewel-1'), `${file} must cache-bust the shared profile system`);
 });
 
 assert(!featuredProfile.includes('class="world-seal"'), 'Featured-only creators must not receive the verified World Seal');
 assert(accessCss.includes('Shared premium Creator World hero'), 'All creator profiles must use the shared artwork-and-card layout');
-assert(accessCss.includes('conic-gradient(from 30deg'), 'World Seal must use the branded chromatic treatment');
+assert(accessCss.includes('hyphsworld-world-seal-gold-diamond-v1.svg'), 'World Seal must use the branded gold and diamond HW asset');
 assert(accessCss.includes('@media(max-width:700px)'), 'Shared profile layout must include a focused mobile composition');
 assert((directoryHtml.match(/directory-world-seal/g) || []).length === 3, 'Static directory fallback must mark exactly three verified creators');
 assert(directoryJs.includes("['professional', 'partner', 'organization']"), 'Dynamic directory seals must match the persisted verified hierarchy');
