@@ -22,7 +22,7 @@ assert(accessCss.includes('Shared premium Creator World hero'), 'All creator pro
 assert(accessCss.includes('conic-gradient(from 30deg'), 'World Seal must use the branded chromatic treatment');
 assert(accessCss.includes('@media(max-width:700px)'), 'Shared profile layout must include a focused mobile composition');
 assert((directoryHtml.match(/directory-world-seal/g) || []).length === 3, 'Static directory fallback must mark exactly three verified creators');
-assert(directoryJs.includes("['professional', 'verified', 'founder']"), 'Dynamic directory seals must be restricted to approved verification levels');
+assert(directoryJs.includes("['professional', 'partner', 'organization']"), 'Dynamic directory seals must match the persisted verified hierarchy');
 assert(directoryJs.includes('card.append(seal)'), 'Dynamic verified creators must receive the World Seal');
 assert(accessHtml.includes('class="world-seal access-world-seal"'), 'Creator Access must preview the official World Seal instead of a generic check');
 
