@@ -13,7 +13,7 @@
   <title>Cash Runner: Chase the Bag | HYPHSWORLD</title>
   <style>
     html,body,#root{width:100%;min-height:100%;margin:0;overscroll-behavior:none}
-    body{background:#050507;touch-action:manipulation}
+    body{background:#071814;touch-action:manipulation}
     html:not(.hw-id-ready) #root{visibility:hidden}
     #loginCheck{position:fixed;inset:0;z-index:999999;display:grid;place-items:center;background:#050507;color:#fff;font-family:Arial,sans-serif;text-align:center;padding:24px}
     #loginCheck strong{display:block;font-size:clamp(1.8rem,8vw,4rem);text-transform:uppercase;margin-bottom:10px;color:#7ee895}html.hw-id-ready #loginCheck{display:none}
@@ -23,10 +23,17 @@
       [data-testid="touch-controls"]{position:relative!important;z-index:10020!important;min-height:0!important;margin:0!important;padding:0!important;pointer-events:none!important}
       [data-testid="touch-joystick"]{position:fixed!important;z-index:10030!important;left:max(14px,env(safe-area-inset-left))!important;bottom:max(148px,calc(env(safe-area-inset-bottom) + 132px))!important;width:124px!important;height:124px!important;opacity:.92!important;pointer-events:auto!important;touch-action:none!important;-webkit-user-select:none!important;user-select:none!important}
       [data-testid="touch-pause"]{position:fixed!important;z-index:10030!important;right:max(14px,env(safe-area-inset-right))!important;bottom:max(156px,calc(env(safe-area-inset-bottom) + 140px))!important;pointer-events:auto!important}
+
+      /* Pull the actual maze/playfield upward into the unused space without moving the fixed controls. */
+      #root canvas{transform:translateY(-118px)!important;transform-origin:center top!important;filter:brightness(1.28) saturate(1.32) contrast(1.04)!important}
+    }
+    @media (pointer:coarse) and (orientation:portrait),(hover:none) and (orientation:portrait){
+      #root canvas{transform:translateY(-138px)!important}
     }
     @media (pointer:coarse) and (orientation:landscape),(hover:none) and (orientation:landscape){
       [data-testid="touch-joystick"]{left:max(18px,env(safe-area-inset-left))!important;bottom:max(88px,calc(env(safe-area-inset-bottom) + 76px))!important;width:116px!important;height:116px!important}
       [data-testid="touch-pause"]{right:max(18px,env(safe-area-inset-right))!important;bottom:max(96px,calc(env(safe-area-inset-bottom) + 84px))!important}
+      #root canvas{transform:translateY(-72px)!important}
     }
   </style>
   <script>
