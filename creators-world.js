@@ -55,14 +55,24 @@ function renderFollow(){
 function rewardKey(userId,rewardId){return rewardPrefix+rewardId+'.'+userId}
 function storageGet(key){try{return localStorage.getItem(key)}catch(e){return null}}
 function storageSet(key,value){try{localStorage.setItem(key,value)}catch(e){}}
+function pointsUser(){
+  if(user)return user;
+  try{
+    var state=window.HWPoints&&typeof window.HWPoints.getState==='function'?window.HWPoints.getState():null;
+    return state&&state.user?state.user:null;
+  }catch(e){return null}
+}
 async function awardOnce(amount,reason,rewardId){
-  if(!user||!window.HWPoints||typeof window.HWPoints.add!=='function')return;
-  var key=rewardKey(user.id,rewardId);
+  if(!window.HWPoints||typeof window.HWPoints.add!=='function')return;
+  var rewardUser=pointsUser();
+  var rewardUserId=rewardUser&&(rewardUser.id||rewardUser.userId||rewardUser.user_id);
+  if(!rewardUserId)return;
+  var key=rewardKey(rewardUserId,rewardId);
   if(storageGet(key)==='true')return;
   try{
     var state=await window.HWPoints.add(amount,reason,{creator_id:creatorSlug,reward_id:rewardId});
     if(state&&state.user){storageSet(key,'true');show('+'+amount+' Cool Points saved')}
-  }catch(e){show('Follow saved • Cool Points will retry later')}
+  }catch(e){show('Could not save Cool Points yet')}
 }
 async function refreshCreator(){
   if(!client)return;
