@@ -16,6 +16,7 @@ assert(cashRun.includes('window.HW_SUPABASE_ANON_KEY'), 'cash-run page should de
 assert(cashRun.includes('overscroll-behavior:none'), 'cash-run should keep hard viewport lock for touch/overscroll.');
 
 const supabaseSetup = fs.readFileSync('HYPHSWORLD_SUPABASE_SETUP.sql', 'utf8');
+const rpcHardening = fs.readFileSync('supabase/migrations/20260907001000_security_first_rpc_hardening.sql', 'utf8');
 assert(
   supabaseSetup.includes('security invoker') && supabaseSetup.includes('function public.hw_touch_updated_at()'),
   'The profile timestamp trigger should run as SECURITY INVOKER.'
@@ -33,6 +34,22 @@ assert(
     !supabaseSetup.includes("new.raw_user_meta_data ->> 'buckClearance'") &&
     !supabaseSetup.includes("new.raw_user_meta_data ->> 'duckStatus'"),
   'Client signup metadata must not control points, clearance, or account status.'
+);
+assert(
+  rpcHardening.includes("v_result := public.award_engagement_action(v_action, 'legacy_award_points')") &&
+    !rpcHardening.includes('points + p_amount'),
+  'Legacy point awards must use the server-owned engagement catalog instead of client-selected amounts.'
+);
+assert(
+  rpcHardening.includes("if v_game_key <> 'super_strike'") &&
+    rpcHardening.includes('if v_score < 0 or v_score > 300') &&
+    rpcHardening.includes('if coalesce(p_points_delta, 0) <> 0'),
+  'Game score submissions must be restricted to valid Super Strike scores and must not award points.'
+);
+assert(
+  rpcHardening.includes('revoke all on function public.earn_cool_points(integer, text, jsonb)') &&
+    rpcHardening.includes('revoke all on function public.spend_cool_points(integer, text, jsonb)'),
+  'Unused generic Cool Points overloads must not remain browser-executable.'
 );
 
 if (issues.length) {
