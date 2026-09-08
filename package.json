@@ -4,6 +4,8 @@
   "private": true,
   "description": "Diagnostics tooling for the HYPHSWORLD / AMS WEST static site.",
   "scripts": {
+    "test": "jest --runInBand",
+    "test:creators": "jest tests/creators-directory.test.js tests/creators-world.test.js --runInBand",
     "diagnostics": "npm run lint:html && npm run lint:css && npm run lint:js",
     "lint:html": "node scripts/lint-html.js",
     "lint:css": "node scripts/lint-css.js",
@@ -22,5 +24,8 @@
     "diagnostics:chase-the-bag-deploy": "node scripts/chase-the-bag-deploy-diagnostic.js",
     "diagnostics:security": "node scripts/security-diagnostic.js"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "jest": "29.7.0",
+    "jest-environment-jsdom": "29.7.0"
+  }
 }

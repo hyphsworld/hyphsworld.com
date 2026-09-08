@@ -57,12 +57,19 @@
     link.href = safeUrl(row.profile_url, 'creators.html');
     link.textContent = 'Enter creator world →';
     if (isVerified) {
+      var verificationBadge = document.createElement('div');
       var seal = document.createElement('i');
+      var verifiedLabel = document.createElement('span');
       card.classList.add('is-verified');
+      verificationBadge.className = 'world-verification-badge directory-verification-badge';
+      verificationBadge.setAttribute('aria-label', 'HYPHSWORLD Verified Creator');
       seal.className = 'world-seal directory-world-seal';
       seal.title = 'HYPHSWORLD World Seal — Verified Creator';
-      seal.setAttribute('aria-label', seal.title);
-      card.append(seal);
+      seal.setAttribute('aria-hidden', 'true');
+      verifiedLabel.className = 'world-verified-label';
+      verifiedLabel.textContent = 'VERIFIED';
+      verificationBadge.append(seal, verifiedLabel);
+      card.append(verificationBadge);
     }
     copy.append(small, name, roles, link);
     card.append(image, copy);
