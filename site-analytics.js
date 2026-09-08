@@ -5,17 +5,49 @@
   var MEASUREMENT_ID = 'G-CT7CWHCHYC';
   var SCRIPT_ID = 'hw-google-analytics-loader';
   var DUCK_SCRIPT_ID = 'hw-global-duck-helper-loader';
-  var DUCK_SRC = 'duck-helper.js?v=global-duck-20260509-slick-talk-1';
+  var DUCK_SRC = '/duck-helper.js?v=global-duck-20260509-slick-talk-1';
   var REWARD_SCRIPT_ID = 'hw-reward-code-widget-loader';
-  var REWARD_SRC = 'reward-code-widget.js?v=reward-code-live-20260607';
+  var REWARD_SRC = '/reward-code-widget.js?v=reward-code-live-20260607';
   var POINTS_SCRIPT_ID = 'hw-points-core-loader';
-  var POINTS_SRC = 'points-core.js?v=hyphs-points-core-v4-20260613';
+  var POINTS_SRC = '/points-core.js?v=hyphs-points-core-v4-20260613';
   var AUTH_POINTS_BRIDGE_SCRIPT_ID = 'hw-auth-points-bridge-loader';
-  var AUTH_POINTS_BRIDGE_SRC = 'auth-points-bridge.js?v=central-wallet-20260706';
+  var AUTH_POINTS_BRIDGE_SRC = '/auth-points-bridge.js?v=central-wallet-20260706';
+  var EXPERIENCE_STYLE_ID = 'hw-site-experience-style';
+  var EXPERIENCE_SCRIPT_ID = 'hw-site-experience-loader';
+  var EXPERIENCE_STYLE_SRC = '/site-experience.css?v=20260907-1';
+  var EXPERIENCE_SCRIPT_SRC = '/site-experience.js?v=20260907-1';
   var LOCK_STYLE_ID = 'hw-global-page-lock-style';
   var SUPPORT_STYLE_ID = 'hw-paypal-support-style';
   var SUPPORT_CARD_ID = 'hw-paypal-support-card';
   var PAYPAL_URL = 'https://paypal.me/1Hyphsworld';
+  var PATH = String(window.location.pathname || '').toLowerCase();
+  var IS_GAME_RUNTIME = PATH.indexOf('/games/') !== -1 && !PATH.endsWith('/games/');
+
+  function idle(fn, timeout) {
+    if ('requestIdleCallback' in window) {
+      window.requestIdleCallback(fn, { timeout: timeout || 1400 });
+      return;
+    }
+    window.setTimeout(fn, Math.min(timeout || 1400, 550));
+  }
+
+  function loadExperienceLayer() {
+    if (!document.getElementById(EXPERIENCE_STYLE_ID)) {
+      var link = document.createElement('link');
+      link.id = EXPERIENCE_STYLE_ID;
+      link.rel = 'stylesheet';
+      link.href = EXPERIENCE_STYLE_SRC;
+      document.head.appendChild(link);
+    }
+
+    if (!document.getElementById(EXPERIENCE_SCRIPT_ID)) {
+      var script = document.createElement('script');
+      script.id = EXPERIENCE_SCRIPT_ID;
+      script.defer = true;
+      script.src = EXPERIENCE_SCRIPT_SRC;
+      document.head.appendChild(script);
+    }
+  }
 
   function installGlobalPageLock() {
     if (document.getElementById(LOCK_STYLE_ID)) return;
@@ -76,6 +108,7 @@
   }
 
   function loadGlobalDuckSauce() {
+    if (IS_GAME_RUNTIME) return;
     if (window.__HYPHSWORLD_DUCK_HELPER_REQUESTED__) return;
     window.__HYPHSWORLD_DUCK_HELPER_REQUESTED__ = true;
 
@@ -89,13 +122,13 @@
   }
 
   function loadRewardCodeWidget() {
+    if (IS_GAME_RUNTIME) return;
     if (window.__HYPHSWORLD_REWARD_WIDGET_REQUESTED__) return;
     window.__HYPHSWORLD_REWARD_WIDGET_REQUESTED__ = true;
 
     if (document.getElementById(REWARD_SCRIPT_ID)) return;
 
-    var path = String(window.location.pathname || '').toLowerCase();
-    var allowed = path.endsWith('/') || path.endsWith('/index.html') || path.endsWith('/vault.html') || path.endsWith('/games.html') || path.endsWith('/account.html') || path.endsWith('/daily-wheel.html');
+    var allowed = PATH.endsWith('/') || PATH.endsWith('/index.html') || PATH.endsWith('/vault.html') || PATH.endsWith('/account.html');
     if (!allowed) return;
 
     var script = document.createElement('script');
@@ -106,10 +139,10 @@
   }
 
   function installPayPalSupportCard() {
+    if (IS_GAME_RUNTIME) return;
     if (document.getElementById(SUPPORT_CARD_ID)) return;
 
-    var path = String(window.location.pathname || '').toLowerCase();
-    var allowed = path.endsWith('/account.html') || path.endsWith('/vault.html') || path.endsWith('/vault-gate.html') || path.endsWith('/games.html') || path.endsWith('/daily-wheel.html');
+    var allowed = PATH.endsWith('/account.html') || PATH.endsWith('/vault.html') || PATH.endsWith('/vault-gate.html');
     if (!allowed) return;
 
     if (!document.getElementById(SUPPORT_STYLE_ID)) {
@@ -178,17 +211,20 @@
     });
   }
 
+  loadExperienceLayer();
   installGlobalPageLock();
+
+  /* User/session/points stay early. Decorative and promotional UI waits until idle. */
   loadPointsCore();
   loadAuthPointsBridge();
-  loadGlobalDuckSauce();
-  loadRewardCodeWidget();
   installStorefrontAnalytics();
+  idle(loadGlobalDuckSauce, 900);
+  idle(loadRewardCodeWidget, 1300);
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', installPayPalSupportCard);
+    document.addEventListener('DOMContentLoaded', function () { idle(installPayPalSupportCard, 1700); });
   } else {
-    installPayPalSupportCard();
+    idle(installPayPalSupportCard, 1700);
   }
 
   if (!MEASUREMENT_ID || window.__HYPHSWORLD_ANALYTICS_LOADED__) return;
@@ -206,10 +242,13 @@
   });
 
   if (!document.getElementById(SCRIPT_ID)) {
-    var script = document.createElement('script');
-    script.id = SCRIPT_ID;
-    script.async = true;
-    script.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(MEASUREMENT_ID);
-    document.head.appendChild(script);
+    idle(function () {
+      if (document.getElementById(SCRIPT_ID)) return;
+      var script = document.createElement('script');
+      script.id = SCRIPT_ID;
+      script.async = true;
+      script.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(MEASUREMENT_ID);
+      document.head.appendChild(script);
+    }, 1800);
   }
 })();
