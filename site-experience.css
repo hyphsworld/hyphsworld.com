@@ -1,0 +1,70 @@
+/* HYPHSWORLD shared experience layer: speed, spacing, consistency, focus. */
+:root{
+  --hw-bg:#050706;
+  --hw-panel:#0b100d;
+  --hw-panel-2:#101713;
+  --hw-text:#f7fff9;
+  --hw-muted:rgba(247,255,249,.68);
+  --hw-green:#39ff7a;
+  --hw-cyan:#1ffcff;
+  --hw-yellow:#ffe45c;
+  --hw-pink:#ff2d8f;
+  --hw-border:rgba(255,255,255,.13);
+  --hw-radius:20px;
+  --hw-shadow:0 18px 48px rgba(0,0,0,.36);
+  --hw-safe-bottom:max(14px,env(safe-area-inset-bottom));
+}
+
+html.hw-experience{background:var(--hw-bg);color-scheme:dark;scroll-behavior:smooth}
+html.hw-experience,html.hw-experience body{max-width:100%;overflow-x:hidden}
+html.hw-experience body{min-height:100%;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+html.hw-experience *{box-sizing:border-box}
+html.hw-experience img,html.hw-experience video,html.hw-experience canvas,html.hw-experience svg,html.hw-experience iframe{max-width:100%}
+html.hw-experience img{height:auto}
+
+/* Shared page rhythm without flattening each page's personality. */
+body.hw-page main{width:100%;max-width:100%;padding-inline:clamp(14px,3vw,28px)}
+body.hw-page main>section{scroll-margin-top:84px}
+body.hw-page main>section:nth-of-type(n+2){content-visibility:auto;contain-intrinsic-size:1px 720px}
+body.hw-page :is(button,a,[role="button"],input,select,textarea){-webkit-tap-highlight-color:transparent}
+body.hw-page :is(button,.btn,.button,[role="button"]){min-height:44px}
+body.hw-page :is(input,select,textarea){max-width:100%;border-radius:12px}
+body.hw-page :is(.card,.panel,.tile,.lane-card,.project,.product-card,.feature-card){border-radius:var(--hw-radius)}
+
+/* Consistent interactive feedback. */
+body.hw-page :is(button,.btn,.button,[role="button"],a[class*="btn"],a[class*="button"]){transition:transform .16s ease,filter .16s ease,box-shadow .16s ease,opacity .16s ease}
+body.hw-page :is(button,.btn,.button,[role="button"],a[class*="btn"],a[class*="button"]):active{transform:scale(.975)}
+body.hw-page :is(button,.btn,.button,[role="button"],a[class*="btn"],a[class*="button"]):focus-visible{outline:3px solid color-mix(in srgb,var(--hw-cyan) 72%,white);outline-offset:3px}
+
+/* Focus mode for actual games: game first, chrome second. */
+body.hw-game-page{overscroll-behavior:none;background:#050507}
+body.hw-game-page .hw-secondary-ui{display:none!important}
+body.hw-game-page :is(button,[role="button"]){min-width:44px;min-height:44px}
+
+/* One quiet loading cue instead of multiple competing loaders. */
+#hw-load-line{position:fixed;z-index:2147483600;left:0;top:0;height:3px;width:24%;pointer-events:none;background:linear-gradient(90deg,var(--hw-green),var(--hw-cyan),var(--hw-yellow),var(--hw-pink));box-shadow:0 0 14px rgba(31,252,255,.55);transform-origin:left center;transition:width .24s ease,opacity .28s ease}
+#hw-load-line.hw-ready{width:100%;opacity:0}
+
+/* Normalize fixed notices so they do not cover entire mobile screens. */
+html.hw-experience .hw-toast,
+html.hw-experience [role="status"].hw-floating,
+html.hw-experience [aria-live].hw-floating{max-width:min(92vw,520px);max-height:34vh;overflow:auto}
+
+/* Keep secondary prompts secondary. */
+html.hw-experience #app-install-card{z-index:9000!important}
+html.hw-experience .hw-paypal-support-card{box-shadow:var(--hw-shadow)}
+
+@media(max-width:720px){
+  body.hw-page main{padding-inline:14px}
+  body.hw-page main>section{margin-block:clamp(14px,4vw,24px)}
+  body.hw-page :is(button,.btn,.button,[role="button"],a[class*="btn"],a[class*="button"]){min-height:48px}
+  body.hw-page :is(input,select,textarea){font-size:16px!important;min-height:46px}
+  body.hw-page :is(.card,.panel,.tile,.lane-card,.project,.product-card,.feature-card){margin-inline:auto;max-width:100%}
+  body.home-page #login-section{display:none!important}
+  html.hw-experience #app-install-card{max-width:calc(100vw - 28px)!important;left:14px!important;right:14px!important;bottom:calc(var(--hw-safe-bottom) + 8px)!important}
+}
+
+@media(prefers-reduced-motion:reduce){
+  html.hw-experience{scroll-behavior:auto}
+  html.hw-experience *,html.hw-experience *::before,html.hw-experience *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}

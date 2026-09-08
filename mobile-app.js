@@ -7,6 +7,8 @@
   var dismiss = document.getElementById('app-install-dismiss');
   var message = document.getElementById('app-install-message');
   var dismissedKey = 'hyphsworld.install.dismissed';
+  var path = String(window.location.pathname || '').toLowerCase();
+  var isGameRuntime = path.indexOf('/games/') !== -1 && !path.endsWith('/games/');
 
   function isStandalone() {
     return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
@@ -17,13 +19,19 @@
   }
 
   function showCard() {
+    if (isGameRuntime) return;
     if (card && !isStandalone() && !wasDismissed()) card.classList.add('is-visible');
+  }
+
+  function showCardWhenCalm() {
+    if (isGameRuntime || isStandalone() || wasDismissed()) return;
+    window.setTimeout(showCard, 12000);
   }
 
   window.addEventListener('beforeinstallprompt', function (event) {
     event.preventDefault();
     promptEvent = event;
-    showCard();
+    showCardWhenCalm();
   });
 
   if (button) button.addEventListener('click', function () {
@@ -37,12 +45,12 @@
     }
 
     if (/iphone|ipad|ipod/i.test(window.navigator.userAgent)) {
-      message.textContent = 'Tap Share, then “Add to Home Screen” to install HYPHSWORLD.';
+      if (message) message.textContent = 'Tap Share, then “Add to Home Screen” to install HYPHSWORLD.';
       button.textContent = 'Got it';
       return;
     }
 
-    message.textContent = 'Open your browser menu and choose “Install app” or “Add to Home screen.”';
+    if (message) message.textContent = 'Open your browser menu and choose “Install app” or “Add to Home screen.”';
     button.textContent = 'Got it';
   });
 
@@ -57,9 +65,9 @@
 
   if ('serviceWorker' in window.navigator) {
     window.addEventListener('load', function () {
-      window.navigator.serviceWorker.register('service-worker.js').catch(function () {});
-    });
+      window.navigator.serviceWorker.register('/service-worker.js').catch(function () {});
+    }, { once: true });
   }
 
-  if (/iphone|ipad|ipod/i.test(window.navigator.userAgent)) showCard();
+  if (/iphone|ipad|ipod/i.test(window.navigator.userAgent)) showCardWhenCalm();
 })();
