@@ -50,12 +50,18 @@ html.hw-experience .hw-toast,
 html.hw-experience [role="status"].hw-floating,
 html.hw-experience [aria-live].hw-floating{max-width:min(92vw,520px);max-height:34vh;overflow:auto}
 
+/* Keep secondary prompts secondary. */
+html.hw-experience #app-install-card{z-index:9000!important}
+html.hw-experience .hw-paypal-support-card{box-shadow:var(--hw-shadow)}
+
 @media(max-width:720px){
   body.hw-page main{padding-inline:14px}
   body.hw-page main>section{margin-block:clamp(14px,4vw,24px)}
   body.hw-page :is(button,.btn,.button,[role="button"],a[class*="btn"],a[class*="button"]){min-height:48px}
   body.hw-page :is(input,select,textarea){font-size:16px!important;min-height:46px}
   body.hw-page :is(.card,.panel,.tile,.lane-card,.project,.product-card,.feature-card){margin-inline:auto;max-width:100%}
+  body.home-page #login-section{display:none!important}
+  html.hw-experience #app-install-card{max-width:calc(100vw - 28px)!important;left:14px!important;right:14px!important;bottom:calc(var(--hw-safe-bottom) + 8px)!important}
 }
 
 @media(prefers-reduced-motion:reduce){
