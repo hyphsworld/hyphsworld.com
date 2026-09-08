@@ -2,6 +2,8 @@ name: Publish Super Strike
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '*/15 * * * *'
   push:
     branches:
       - main
@@ -11,9 +13,14 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: publish-super-strike
+  cancel-in-progress: false
+
 jobs:
   publish:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Checkout HYPHSWORLD site
         uses: actions/checkout@v4
@@ -28,16 +35,39 @@ jobs:
           ref: main
           path: game
 
+      - name: Check whether Super Strike changed
+        id: source
+        shell: bash
+        run: |
+          source_sha="$(git -C game rev-parse HEAD)"
+          deployed_sha=""
+          if test -f site/games/ss-bowling/.source-sha; then
+            deployed_sha="$(cat site/games/ss-bowling/.source-sha)"
+          fi
+          echo "source_sha=$source_sha" >> "$GITHUB_OUTPUT"
+          if test "$source_sha" = "$deployed_sha"; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "Super Strike $source_sha is already published."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Publishing Super Strike $source_sha (currently ${deployed_sha:-untracked})."
+          fi
+
       - name: Setup Node
+        if: steps.source.outputs.changed == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: npm
+          cache-dependency-path: game/frontend/package-lock.json
 
       - name: Install Super Strike dependencies
+        if: steps.source.outputs.changed == 'true'
         working-directory: game/frontend
-        run: npm install --legacy-peer-deps --no-audit --no-fund
+        run: npm ci --legacy-peer-deps --no-audit --no-fund
 
       - name: Export Super Strike web build
+        if: steps.source.outputs.changed == 'true'
         working-directory: game/frontend
         env:
           EXPO_PUBLIC_SUPABASE_URL: https://yuhxtdkhsltaqiagrtys.supabase.co
@@ -45,6 +75,7 @@ jobs:
         run: npx expo export --platform web --output-dir dist
 
       - name: Rebase exported paths for HYPHSWORLD subfolder
+        if: steps.source.outputs.changed == 'true'
         working-directory: game/frontend
         run: |
           python3 - <<'PY'
@@ -75,6 +106,7 @@ jobs:
           PY
 
       - name: Replace website game route safely
+        if: steps.source.outputs.changed == 'true'
         run: |
           previous_bundle=''
           if test -f site/games/ss-bowling/index.html; then
@@ -87,15 +119,18 @@ jobs:
           rm -rf site/games/ss-bowling
           mkdir -p site/games/ss-bowling
           cp -R game/frontend/dist/. site/games/ss-bowling/
+          printf '%s\n' '${{ steps.source.outputs.source_sha }}' > site/games/ss-bowling/.source-sha
           if test -f /tmp/super-strike-previous-entry.js; then
             mkdir -p site/games/ss-bowling/_expo/static/js/web
             cp -n /tmp/super-strike-previous-entry.js "site/games/ss-bowling/_expo/static/js/web/$previous_name"
           fi
 
       - name: Verify exported route
+        if: steps.source.outputs.changed == 'true'
         run: |
           test -f site/games/ss-bowling/index.html
           test -d site/games/ss-bowling/_expo
+          test "$(cat site/games/ss-bowling/.source-sha)" = '${{ steps.source.outputs.source_sha }}'
           for route in game results multiplayer profile leaderboard skins coach; do
             test -f "site/games/ss-bowling/${route}.html"
           done
@@ -113,6 +148,7 @@ jobs:
           fi
 
       - name: Commit published game
+        if: steps.source.outputs.changed == 'true'
         working-directory: site
         run: |
           git config user.name 'github-actions[bot]'
@@ -122,7 +158,5 @@ jobs:
             echo 'No Super Strike changes to publish.'
             exit 0
           fi
-          git commit -m 'Publish Super Strike web build'
+          git commit -m "Publish Super Strike ${{ steps.source.outputs.source_sha }}"
           git push origin HEAD:main
-
-      # republish marker: fix-roll-symbol 32cc872
