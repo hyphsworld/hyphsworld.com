@@ -1,0 +1,123 @@
+:root{
+  --hw-bg:#050507;
+  --hw-surface:#0b0d10;
+  --hw-surface-2:#11151a;
+  --hw-text:#f7f7f2;
+  --hw-muted:#9ca8b2;
+  --hw-green:#39ff7a;
+  --hw-cyan:#1ffcff;
+  --hw-pink:#ff4fd8;
+  --hw-gold:#ffe45c;
+  --hw-line:rgba(255,255,255,.12);
+  --hw-radius:18px;
+  --hw-radius-sm:12px;
+  --hw-shadow:0 14px 36px rgba(0,0,0,.34);
+  --hw-tap:46px;
+}
+
+html{background:var(--hw-bg);scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{overflow-x:hidden;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased}
+img,video,canvas,svg{max-width:100%}
+button,a,[role="button"],input,select,textarea{touch-action:manipulation}
+button,[role="button"],a.hw-button,.button,.btn{min-height:var(--hw-tap)}
+
+/* Shared site-page language. Games keep their own art direction. */
+body[data-hw-experience="site"]{
+  background:var(--hw-bg);
+  color:var(--hw-text);
+}
+body[data-hw-experience="site"] :is(button,.button,.btn,[role="button"]){
+  border-radius:var(--hw-radius-sm);
+}
+body[data-hw-experience="site"] :is(input,select,textarea){
+  min-height:46px;
+  border-radius:var(--hw-radius-sm);
+}
+body[data-hw-experience="site"] :is(.card,.panel,.tile,.project,.lane-card,.creator-card){
+  border-radius:var(--hw-radius);
+}
+body[data-hw-experience="site"] section:not(:first-of-type){
+  content-visibility:auto;
+  contain-intrinsic-size:1px 760px;
+}
+
+/* Thin native-feeling progress line: communicates motion without blocking the page. */
+#hwExperienceProgress{
+  position:fixed;
+  top:0;
+  left:0;
+  z-index:2147482000;
+  width:34%;
+  height:3px;
+  pointer-events:none;
+  opacity:.9;
+  background:linear-gradient(90deg,var(--hw-green),var(--hw-cyan),var(--hw-pink));
+  box-shadow:0 0 14px rgba(31,252,255,.55);
+  transform-origin:left center;
+  animation:hwExperienceProgress 1s cubic-bezier(.2,.75,.25,1) infinite alternate;
+}
+html.hw-exp-loaded #hwExperienceProgress{
+  opacity:0;
+  transform:scaleX(1);
+  transition:opacity .18s ease;
+}
+@keyframes hwExperienceProgress{
+  from{transform:translateX(-35%) scaleX(.72)}
+  to{transform:translateX(190%) scaleX(1.05)}
+}
+
+/* Fewer competing HUD elements on games. The wallet remains available, but gets out of the way. */
+body[data-hw-experience="game"] #hwGlobalPointsHud.hwgp-compact{
+  left:auto!important;
+  right:max(10px,env(safe-area-inset-right))!important;
+  bottom:max(10px,env(safe-area-inset-bottom))!important;
+  width:auto!important;
+  max-width:180px!important;
+  grid-template-columns:auto auto!important;
+  gap:8px!important;
+  padding:7px 9px!important;
+  border-radius:999px!important;
+  opacity:.88!important;
+  transform:translateZ(0)!important;
+  box-shadow:0 8px 24px rgba(0,0,0,.34)!important;
+  transition:max-width .2s ease,opacity .2s ease,transform .2s ease!important;
+}
+body[data-hw-experience="game"] #hwGlobalPointsHud.hwgp-compact .hwgp-icon{
+  width:30px!important;
+  height:30px!important;
+  font-size:.9rem!important;
+}
+body[data-hw-experience="game"] #hwGlobalPointsHud.hwgp-compact strong{
+  font-size:.95rem!important;
+}
+body[data-hw-experience="game"] #hwGlobalPointsHud.hwgp-compact span:not([data-hw-points]),
+body[data-hw-experience="game"] #hwGlobalPointsHud.hwgp-compact small,
+body[data-hw-experience="game"] #hwGlobalPointsHud.hwgp-compact .hwgp-action{
+  display:none!important;
+}
+body[data-hw-experience="game"] #hwGlobalPointsHud.hwgp-expanded{
+  opacity:.98!important;
+}
+
+/* Mobile rhythm + safe areas. */
+@media(max-width:760px){
+  :root{--hw-radius:16px;--hw-radius-sm:11px;--hw-tap:48px}
+  body[data-hw-experience="site"] main{
+    padding-left:max(14px,env(safe-area-inset-left));
+    padding-right:max(14px,env(safe-area-inset-right));
+  }
+  body[data-hw-experience="site"] :is(section,.section,.panel,.card){
+    scroll-margin-top:72px;
+  }
+  body[data-hw-experience="site"] :is(h1,h2,h3,p){overflow-wrap:anywhere}
+  body[data-hw-experience="site"] :is(.grid,.cards,.project-grid,.lane-grid){
+    gap:12px;
+  }
+  body[data-hw-experience="site"] iframe{max-width:100%}
+}
+
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  #hwExperienceProgress{display:none!important}
+}
