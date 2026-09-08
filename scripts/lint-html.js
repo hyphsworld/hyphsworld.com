@@ -17,9 +17,16 @@ const issues = [];
 for (const file of files) {
   const src = fs.readFileSync(file, 'utf8');
   if (!src.includes('<!DOCTYPE html>')) issues.push(`${file}: missing <!DOCTYPE html>`);
-  const dupIds = [...src.matchAll(/id\s*=\s*"([^"]+)"/g)].map(m=>m[1]);
+
+  // Match only a real HTML id attribute. The old pattern also matched the
+  // "id=" substring inside data-testid, which falsely reported duplicate
+  // joystick and pause IDs in Chase The Bag CSS selectors.
+  const ids = [...src.matchAll(/(?:^|[\s<])id\s*=\s*"([^"]+)"/gm)].map(m=>m[1]);
   const seen = new Set();
-  for (const id of dupIds) { if (seen.has(id)) issues.push(`${file}: duplicate id ${id}`); else seen.add(id); }
+  for (const id of ids) {
+    if (seen.has(id)) issues.push(`${file}: duplicate id ${id}`);
+    else seen.add(id);
+  }
 }
 
 if (issues.length) {
