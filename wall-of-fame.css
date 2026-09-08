@@ -168,11 +168,29 @@ body.wall-page {
   position: relative;
 }
 
-.wof-card img {
+.wof-media {
+  position: relative;
   width: 100%;
-  height: 260px;
-  object-fit: cover;
+  aspect-ratio: 16 / 9;
+  background: #050505;
+  overflow: hidden;
+}
+
+.wof-card img,
+.wof-video-frame {
+  width: 100%;
+  height: 100%;
   display: block;
+  border: 0;
+}
+
+.wof-card img {
+  object-fit: cover;
+}
+
+.wof-card.unlocked:has(.wof-video-frame) {
+  border-color: rgba(255,215,0,0.58);
+  box-shadow: 0 0 34px rgba(255,215,0,0.16), 0 0 22px rgba(123,44,255,0.14);
 }
 
 .wof-card-copy {
@@ -183,12 +201,14 @@ body.wall-page {
   position: absolute;
   top: 12px;
   right: 12px;
+  z-index: 4;
   background: rgba(0,0,0,0.78);
   border: 1px solid rgba(255,255,255,0.14);
   padding: 8px 12px;
   border-radius: 999px;
   font-size: 12px;
   letter-spacing: 0.16em;
+  pointer-events: none;
 }
 
 .wof-card.unlocked .wof-lock {
