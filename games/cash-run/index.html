@@ -17,6 +17,17 @@
     html:not(.hw-id-ready) #root{visibility:hidden}
     #loginCheck{position:fixed;inset:0;z-index:999999;display:grid;place-items:center;background:#050507;color:#fff;font-family:Arial,sans-serif;text-align:center;padding:24px}
     #loginCheck strong{display:block;font-size:clamp(1.8rem,8vw,4rem);text-transform:uppercase;margin-bottom:10px;color:#7ee895}html.hw-id-ready #loginCheck{display:none}
+
+    /* Chase The Bag mobile controls: keep the existing analog stick reachable in either phone orientation. */
+    @media (pointer:coarse),(hover:none){
+      [data-testid="touch-controls"]{position:relative!important;z-index:10020!important;min-height:0!important;margin:0!important;padding:0!important;pointer-events:none!important}
+      [data-testid="touch-joystick"]{position:fixed!important;z-index:10030!important;left:max(14px,env(safe-area-inset-left))!important;bottom:max(148px,calc(env(safe-area-inset-bottom) + 132px))!important;width:124px!important;height:124px!important;opacity:.92!important;pointer-events:auto!important;touch-action:none!important;-webkit-user-select:none!important;user-select:none!important}
+      [data-testid="touch-pause"]{position:fixed!important;z-index:10030!important;right:max(14px,env(safe-area-inset-right))!important;bottom:max(156px,calc(env(safe-area-inset-bottom) + 140px))!important;pointer-events:auto!important}
+    }
+    @media (pointer:coarse) and (orientation:landscape),(hover:none) and (orientation:landscape){
+      [data-testid="touch-joystick"]{left:max(18px,env(safe-area-inset-left))!important;bottom:max(88px,calc(env(safe-area-inset-bottom) + 76px))!important;width:116px!important;height:116px!important}
+      [data-testid="touch-pause"]{right:max(18px,env(safe-area-inset-right))!important;bottom:max(96px,calc(env(safe-area-inset-bottom) + 84px))!important}
+    }
   </style>
   <script>
     window.HW_SUPABASE_URL='https://yuhxtdkhsltaqiagrtys.supabase.co';
