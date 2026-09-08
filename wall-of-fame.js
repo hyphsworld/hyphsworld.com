@@ -1,12 +1,12 @@
 const wallEntries = [
   {
-    title: 'Grind Mode Backpack Prize',
-    tier: 10600,
-    image: 'merch/ams-west-grind-mode-backpack.jpeg',
-    tag: '10,600 CP Reward',
-    description: 'YOU WON THE BACKPACK. Your 10,600 Cool Point prize is unlocked—use Manage ID to verify your account and claim it. While supplies last.'
+    title: 'Hyph Life x Bone Thugs Legendary Freestyle',
+    tier: 7500,
+    image: 'https://img.youtube.com/vi/jy3mRy51qa8/hqdefault.jpg',
+    videoId: 'jy3mRy51qa8',
+    tag: 'Legendary Video',
+    description: 'A classic HYPHSWORLD moment with Hyph Life, Bizzy Bone, and Layzie Bone of Bone Thugs-N-Harmony — featuring a Bizzy Bone freestyle.'
   },
-
   {
     title: 'HYPHSWORLD 5 Archive',
     tier: 500,
@@ -48,7 +48,7 @@ const duckLines = [
   'Duck Sauce: Somebody already tried to screenshot the Legend Wall. System cooked they phone.',
   'Duck Sauce: Half these rooms smell like unreleased music and bad decisions.',
   'Duck Sauce: Cool Points open doors. Complaining opens nothing.',
-  'Duck Sauce: The merch wing got enough hoodies to start a sports franchise.'
+  'Duck Sauce: That Bone Thugs clip is certified history. Earn your way in.'
 ];
 
 const pointsEl = document.getElementById('wof-points');
@@ -85,16 +85,32 @@ function currentPoints() {
   return storedPoints();
 }
 
+function mountUnlockedVideo(media, entry) {
+  if (!entry.videoId) return;
+  const frame = document.createElement('iframe');
+  frame.className = 'wof-video-frame';
+  frame.src = `https://www.youtube-nocookie.com/embed/${entry.videoId}?rel=0&modestbranding=1`;
+  frame.title = entry.title;
+  frame.loading = 'lazy';
+  frame.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+  frame.referrerPolicy = 'strict-origin-when-cross-origin';
+  frame.allowFullscreen = true;
+  media.innerHTML = '';
+  media.appendChild(frame);
+}
+
 function renderWall() {
   const points = currentPoints();
   if (pointsEl) pointsEl.textContent = points.toLocaleString();
 
   if (statusEl) {
-    statusEl.textContent = points >= 10600
-      ? 'BACKPACK PRIZE UNLOCKED. Use Manage ID to verify your account and claim your win. While supplies last.'
-      : points >= 500
-        ? 'Vault clearance approved. Keep climbing—10,600 CP wins the Grind Mode backpack, while supplies last.'
-        : 'Need 500 Cool Points to fully unlock the wall. The backpack prize unlocks at 10,600 CP, while supplies last.';
+    statusEl.textContent = points >= 10000
+      ? 'LEGEND WALL UNLOCKED. Full archive clearance approved.'
+      : points >= 7500
+        ? 'LEGENDARY VIDEO UNLOCKED. The Hyph Life x Bone Thugs freestyle is now open.'
+        : points >= 500
+          ? 'Vault clearance approved. Keep climbing — 7,500 CP unlocks the legendary Bone Thugs freestyle.'
+          : 'Need 500 Cool Points to fully unlock the wall. The legendary video opens at 7,500 CP.';
   }
 
   document.querySelectorAll('.wof-unlock-track article').forEach((card) => {
@@ -108,6 +124,7 @@ function renderWall() {
   wallEntries.forEach((entry) => {
     const clone = template.content.cloneNode(true);
     const card = clone.querySelector('.wof-card');
+    const media = clone.querySelector('.wof-media');
     const img = clone.querySelector('img');
     const tag = clone.querySelector('span');
     const title = clone.querySelector('h3');
@@ -124,11 +141,12 @@ function renderWall() {
       lock.textContent = 'UNLOCKED';
       desc.textContent = entry.description;
       img.style.filter = '';
+      if (entry.videoId) mountUnlockedVideo(media, entry);
     } else {
       card.classList.remove('unlocked');
       lock.textContent = 'LOCKED';
       desc.textContent = `Requires ${entry.tier.toLocaleString()} Cool Points.`;
-      img.style.filter = 'grayscale(1) blur(4px)';
+      img.style.filter = 'grayscale(1) blur(4px) brightness(.55)';
     }
 
     gridEl.appendChild(clone);
