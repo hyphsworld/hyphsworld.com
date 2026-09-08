@@ -20,6 +20,11 @@
     return fallback;
   }
 
+  function followerLabel(value) {
+    var count = Math.max(0, Number(value) || 0);
+    return count.toLocaleString() + ' follower' + (count === 1 ? '' : 's');
+  }
+
   function renderFilter() {
     var term = input.value.trim().toLowerCase();
     var count = 0;
@@ -40,6 +45,7 @@
     var small = document.createElement('small');
     var name = document.createElement('h3');
     var roles = document.createElement('p');
+    var followers = document.createElement('span');
     var link = document.createElement('a');
     card.className = 'creator-card';
     var displayName = text(row.display_name, 'Creator');
@@ -48,12 +54,16 @@
     var isVerified = ['professional', 'partner', 'organization'].indexOf(verification) > -1;
     card.dataset.name = displayName.toLowerCase();
     card.dataset.tags = categories.join(' ').toLowerCase() + ' ' + text(row.location).toLowerCase();
+    card.dataset.creatorSlug = text(row.slug).toLowerCase();
     image.src = safeUrl(row.image_url, 'creator-hyph-life-hero.jpg');
     image.alt = displayName + ' creator profile';
     image.loading = 'lazy';
     small.textContent = (Number.isFinite(Number(row.creator_number)) ? '#' + String(row.creator_number).padStart(3, '0') + ' • ' : '') + verification.toUpperCase();
     name.textContent = displayName;
     roles.textContent = text(row.headline, 'Independent Creator');
+    followers.className = 'creator-follow-count';
+    followers.textContent = followerLabel(row.follower_count);
+    followers.setAttribute('aria-label', displayName + ' ' + followers.textContent);
     link.href = safeUrl(row.profile_url, 'creators.html');
     link.textContent = 'Enter creator world →';
     if (isVerified) {
@@ -71,7 +81,7 @@
       verificationBadge.append(seal, verifiedLabel);
       card.append(verificationBadge);
     }
-    copy.append(small, name, roles, link);
+    copy.append(small, name, roles, followers, link);
     card.append(image, copy);
     return card;
   }
@@ -82,7 +92,7 @@
       var client = await window.HWAuth.getClient();
       if (!client) return;
       var response = await client.from('creators')
-        .select('creator_number,slug,display_name,headline,location,categories,image_url,profile_url,verification_level')
+        .select('creator_number,slug,display_name,headline,location,categories,image_url,profile_url,verification_level,follower_count')
         .eq('status', 'published').order('display_name');
       if (response.error || !response.data || !response.data.length) return;
       grid.replaceChildren(...response.data.map(creatorCard));
