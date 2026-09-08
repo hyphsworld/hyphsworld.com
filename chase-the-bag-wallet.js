@@ -2,6 +2,25 @@
 (function () {
   'use strict';
 
+  function loadExperienceLayer() {
+    if (!document.getElementById('hw-site-experience-style')) {
+      const link = document.createElement('link');
+      link.id = 'hw-site-experience-style';
+      link.rel = 'stylesheet';
+      link.href = '/site-experience.css?v=20260907-1';
+      document.head.appendChild(link);
+    }
+    if (!document.getElementById('hw-site-experience-loader')) {
+      const script = document.createElement('script');
+      script.id = 'hw-site-experience-loader';
+      script.defer = true;
+      script.src = '/site-experience.js?v=20260907-1';
+      document.head.appendChild(script);
+    }
+  }
+
+  loadExperienceLayer();
+
   const KEY = 'hyphsworld-cool-points-state';
   const EVENT = 'hyphsworld:cool-points-sync';
   let lastBalance = 0;
