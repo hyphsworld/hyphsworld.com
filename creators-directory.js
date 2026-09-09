@@ -25,6 +25,46 @@
     return count.toLocaleString() + ' follower' + (count === 1 ? '' : 's');
   }
 
+  function injectInlineBadgeStyles() {
+    if (document.getElementById('creator-inline-badge-style')) return;
+    var style = document.createElement('style');
+    style.id = 'creator-inline-badge-style';
+    style.textContent = [
+      '.creator-card h3.creator-name-row{display:flex!important;align-items:center!important;flex-wrap:wrap!important;gap:8px!important}',
+      '.creator-card h3 .directory-verification-badge{position:relative!important;inset:auto!important;display:inline-flex!important;flex-direction:row!important;align-items:center!important;gap:5px!important;margin:0!important;vertical-align:middle!important}',
+      '.creator-card h3 .directory-world-seal{position:relative!important;inset:auto!important;width:32px!important;height:32px!important;min-width:32px!important;min-height:32px!important;margin:0!important;font-size:32px!important}',
+      '.creator-card h3 .directory-verification-badge .world-verified-label{font-size:8px!important;padding:4px 6px!important;letter-spacing:.13em!important}',
+      '@media(max-width:650px){.creator-card h3 .directory-world-seal{width:29px!important;height:29px!important;min-width:29px!important;min-height:29px!important;font-size:29px!important}.creator-card h3 .directory-verification-badge .world-verified-label{font-size:7px!important}}'
+    ].join('');
+    document.head.appendChild(style);
+  }
+
+  function createVerificationBadge(label) {
+    var verificationBadge = document.createElement('span');
+    var seal = document.createElement('i');
+    var verifiedLabel = document.createElement('span');
+    verificationBadge.className = 'world-verification-badge directory-verification-badge';
+    verificationBadge.setAttribute('aria-label', label || 'HYPHSWORLD Verified Creator');
+    seal.className = 'world-seal directory-world-seal';
+    seal.title = 'HYPHSWORLD World Seal — Verified Creator';
+    seal.setAttribute('aria-hidden', 'true');
+    verifiedLabel.className = 'world-verified-label';
+    verifiedLabel.textContent = 'VERIFIED';
+    verificationBadge.append(seal, verifiedLabel);
+    return verificationBadge;
+  }
+
+  function normalizeStaticBadges() {
+    if (!grid) return;
+    Array.from(grid.querySelectorAll('.creator-card.is-verified')).forEach(function (card) {
+      var name = card.querySelector('h3');
+      var badge = card.querySelector('.directory-verification-badge');
+      if (!name || !badge) return;
+      name.classList.add('creator-name-row');
+      if (badge.parentElement !== name) name.appendChild(badge);
+    });
+  }
+
   function renderFilter() {
     var term = input.value.trim().toLowerCase();
     var count = 0;
@@ -67,19 +107,9 @@
     link.href = safeUrl(row.profile_url, 'creators.html');
     link.textContent = 'Enter creator world →';
     if (isVerified) {
-      var verificationBadge = document.createElement('div');
-      var seal = document.createElement('i');
-      var verifiedLabel = document.createElement('span');
       card.classList.add('is-verified');
-      verificationBadge.className = 'world-verification-badge directory-verification-badge';
-      verificationBadge.setAttribute('aria-label', 'HYPHSWORLD Verified Creator');
-      seal.className = 'world-seal directory-world-seal';
-      seal.title = 'HYPHSWORLD World Seal — Verified Creator';
-      seal.setAttribute('aria-hidden', 'true');
-      verifiedLabel.className = 'world-verified-label';
-      verifiedLabel.textContent = 'VERIFIED';
-      verificationBadge.append(seal, verifiedLabel);
-      card.append(verificationBadge);
+      name.classList.add('creator-name-row');
+      name.appendChild(createVerificationBadge('HYPHSWORLD Verified Creator'));
     }
     copy.append(small, name, roles, followers, link);
     card.append(image, copy);
@@ -102,6 +132,8 @@
     }
   }
 
+  injectInlineBadgeStyles();
+  normalizeStaticBadges();
   input.addEventListener('input', renderFilter);
   buttons.forEach(function (button) {
     button.addEventListener('click', function () {

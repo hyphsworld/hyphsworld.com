@@ -57,6 +57,36 @@
     return SAFE_ROUTES.indexOf(saved) !== -1 ? saved : 'games.html';
   }
 
+  function injectFreshTicker() {
+    var track = document.querySelector('.ticker-track');
+    if (!track || track.querySelector('[data-hw-fresh-ticker]')) return;
+
+    var style = document.createElement('style');
+    style.id = 'hw-fresh-ticker-style';
+    style.textContent = '.home-page .ticker-track .hw-ticker-fresh{display:inline!important}.home-page .ticker-track .hw-ticker-creators{color:#39ff7a!important}.home-page .ticker-track .hw-ticker-football{color:#ffe45c!important}';
+    document.head.appendChild(style);
+
+    var items = [
+      { kind: 'creators', value: 'CREATORS WORLD LIVE • HYPH LIFE #001 • ROJASONTHEBEAT #002 • FRANCOISMUSIC47 #003 • YOUNG TEZ #004' },
+      { kind: 'creators', value: 'FOLLOW CREATORS • VERIFIED CREATOR WORLDS • CREATOR ACCESS OPEN NOW' },
+      { kind: 'football', value: 'NFL WEEK 1 • WED 9/9 PATRIOTS @ SEAHAWKS • THU 9/10 49ERS @ RAMS' },
+      { kind: 'football', value: 'SUN 9/13 EARLY • BEARS @ PANTHERS • RAVENS @ COLTS • FALCONS @ STEELERS • BROWNS @ JAGUARS' },
+      { kind: 'football', value: 'SUN 9/13 EARLY • BUCCANEERS @ BENGALS • JETS @ TITANS • SAINTS @ LIONS • BILLS @ TEXANS' },
+      { kind: 'football', value: 'SUN 9/13 LATE • CARDINALS @ CHARGERS • PACKERS @ VIKINGS • DOLPHINS @ RAIDERS • COMMANDERS @ EAGLES' },
+      { kind: 'football', value: 'SUN NIGHT • COWBOYS @ GIANTS • MON 9/14 BRONCOS @ CHIEFS' }
+    ];
+
+    items.forEach(function (item) {
+      var divider = document.createElement('b');
+      divider.textContent = '✦';
+      var span = document.createElement('span');
+      span.className = 'hw-ticker-fresh hw-ticker-' + item.kind;
+      span.dataset.hwFreshTicker = 'true';
+      span.textContent = item.value;
+      track.append(divider, span);
+    });
+  }
+
   function render(snapshot) {
     var state = completeState(snapshot);
     var loggedIn = Boolean(state.user || state.accountBacked);
@@ -96,5 +126,11 @@
   window.addEventListener('hw:points-ready', function (event) { render(event.detail); });
   window.addEventListener('hw:points-change', function (event) { render(event.detail); });
   document.addEventListener('hyph:auth-signed-in', function () { if (window.HWPoints && window.HWPoints.refresh) window.HWPoints.refresh().then(render); });
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', render, { once: true }); else render();
+
+  function boot() {
+    injectFreshTicker();
+    render();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true }); else boot();
 })();
