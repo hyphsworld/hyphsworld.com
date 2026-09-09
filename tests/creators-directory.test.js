@@ -97,7 +97,7 @@ describe('Creators World directory', () => {
     await flush();
 
     const card = document.querySelector('.creator-card');
-    expect(card.querySelector('h3').textContent).toBe('Safe Creator');
+    expect(card.querySelector('h3').textContent).toContain('Safe Creator');
     expect(card.querySelector('p').textContent).toBe('Independent Creator');
     expect(card.querySelector('img').getAttribute('src')).toBe('creator-hyph-life-hero.jpg');
     expect(card.querySelector('a').getAttribute('href')).toBe('creators.html');
@@ -105,6 +105,16 @@ describe('Creators World directory', () => {
     expect(card.querySelector('.world-seal')).not.toBeNull();
     expect(card.querySelector('.world-verified-label').textContent).toBe('VERIFIED');
     expect(card.querySelector('.world-verification-badge').getAttribute('aria-label')).toBe('HYPHSWORLD Verified Creator');
+    expect(card.querySelector('h3 > .world-verification-badge')).not.toBeNull();
+  });
+
+  test('static verified cards move their World Seal beside the creator name', () => {
+    mountDirectory([
+      '<article class="creator-card is-verified" data-name="hyph life" data-tags="artist"><div class="world-verification-badge directory-verification-badge"><i class="world-seal directory-world-seal"></i><span class="world-verified-label">VERIFIED</span></div><div><h3>Hyph Life</h3><a></a></div></article>'
+    ]);
+
+    expect(document.querySelector('h3 > .directory-verification-badge')).not.toBeNull();
+    expect(document.querySelector('h3').classList.contains('creator-name-row')).toBe(true);
   });
 
   test('missing auth client does not erase static cards', async () => {
