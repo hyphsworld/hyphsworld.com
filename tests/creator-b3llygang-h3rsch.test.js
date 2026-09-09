@@ -37,7 +37,7 @@ describe('B3LLYGANG H3RSCH Creator #005', () => {
   test('keeps the narrow-tablet stat layout override and complete artwork', () => {
     const css = fs.readFileSync(path.join(root, 'creator-b3llygang-h3rsch-fixes.css'), 'utf8');
     const artwork = fs.readFileSync(path.join(root, 'creator-b3llygang-h3rsch.jpg'));
-    expect(css).toContain('max-width: 736px');
+    expect(css).toContain('max-width: 760px');
     expect(css).toContain('flex-wrap: wrap');
     expect(artwork.subarray(-2)).toEqual(Buffer.from([0xff, 0xd9]));
     expect(artwork.length).toBeGreaterThan(300000);
