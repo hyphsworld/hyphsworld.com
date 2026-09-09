@@ -1,5 +1,5 @@
 /* Creator #005 responsive safety overrides. */
-@media (max-width: 736px) and (min-width: 561px) {
+@media (max-width: 760px) and (min-width: 561px) {
   .b3-world .creator-stats {
     flex-wrap: wrap;
   }
