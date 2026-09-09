@@ -9,184 +9,39 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="homepage-upgrades.css" />
   <link rel="stylesheet" href="leaderboard-widgets.css" />
-  <link rel="stylesheet" href="games.css?v=20260907-centered-chain-1" />
+  <link rel="stylesheet" href="games.css?v=20260909-compact-bones-1" />
+  <link rel="stylesheet" href="table-pov-upgrades.css?v=20260909-compact-bones-1" />
 </head>
 <body class="dominos-page" data-hide-global-points-hud>
   <header class="site-header">
-    <a class="brand-lockup" href="index.html" aria-label="HYPHSWORLD home">
-      <span>AMS WEST PRESENTS</span>
-      <strong>HYPHSWORLD</strong>
-    </a>
-    <nav class="main-nav" aria-label="Main navigation">
-      <a href="index.html">Home</a>
-      <a href="vault.html">Vault</a>
-      <a href="games.html">Games</a>
-      <a href="leaderboard.html">Leaderboards</a>
-      <a href="app-player.html">Full Player</a>
-      <a href="shop.html">Merch</a>
-      <a class="nav-cta" href="auth.html" id="dominosAuthLink">Create ID</a>
-    </nav>
+    <a class="brand-lockup" href="index.html" aria-label="HYPHSWORLD home"><span>AMS WEST PRESENTS</span><strong>HYPHSWORLD</strong></a>
+    <nav class="main-nav" aria-label="Main navigation"><a href="index.html">Home</a><a href="vault.html">Vault</a><a href="games.html">Games</a><a href="leaderboard.html">Leaderboards</a><a href="app-player.html">Full Player</a><a href="shop.html">Merch</a><a class="nav-cta" href="auth.html" id="dominosAuthLink">Create ID</a></nav>
   </header>
-
   <main>
-    <section class="ticker" aria-label="01 Domino Room ticker">
-      <div class="ticker-track">
-        <span>01 DOMINO ROOM</span><b>✦</b><span>CREATE A TABLE</span><b>✦</b><span>JOIN A ROOM</span><b>✦</b><span>WINNER GETS COOL POINTS</span><b>✦</b><span>GAME SCORES HIT THE BOARD</span><b>✦</b>
-        <span>01 DOMINO ROOM</span><b>✦</b><span>CREATE A TABLE</span><b>✦</b><span>JOIN A ROOM</span><b>✦</b><span>WINNER GETS COOL POINTS</span><b>✦</b><span>GAME SCORES HIT THE BOARD</span><b>✦</b>
-      </div>
-    </section>
-
-    <section class="dominos-hero">
-      <p class="eyebrow">HYPHSWORLD // LIVE BETA</p>
-      <h1>01 Domino Room</h1>
-      <p>Regular double-six bones from a true player-seat POV. Seven bones each, match either end, draw until you can play, and stack saved Cool Points.</p>
-      <div class="dominos-actions">
-        <a class="games-btn" href="games.html">Games Lobby</a>
-        <a class="games-btn" href="leaderboard.html">Leaderboards</a>
-        <button class="games-btn primary" type="button" id="refreshRooms">Refresh Tables</button>
-      </div>
-    </section>
-
+    <section class="ticker" aria-label="01 Domino Room ticker"><div class="ticker-track"><span>01 DOMINO ROOM</span><b>✦</b><span>CREATE A TABLE</span><b>✦</b><span>JOIN A ROOM</span><b>✦</b><span>WINNER GETS COOL POINTS</span><b>✦</b><span>GAME SCORES HIT THE BOARD</span><b>✦</b><span>01 DOMINO ROOM</span><b>✦</b><span>CREATE A TABLE</span><b>✦</b><span>JOIN A ROOM</span><b>✦</b><span>WINNER GETS COOL POINTS</span><b>✦</b><span>GAME SCORES HIT THE BOARD</span><b>✦</b></div></section>
+    <section class="dominos-hero"><p class="eyebrow">HYPHSWORLD // LIVE BETA</p><h1>01 Domino Room</h1><p>Regular double-six bones from a true player-seat POV. Seven bones each, match either end, draw until you can play, and stack saved Cool Points.</p><div class="dominos-actions"><a class="games-btn" href="games.html">Games Lobby</a><a class="games-btn" href="leaderboard.html">Leaderboards</a><button class="games-btn primary" type="button" id="refreshRooms">Refresh Tables</button></div></section>
     <section class="dominos-app" aria-label="01 Domino Room application">
-      <aside class="dominos-panel">
-        <h2>Tables</h2>
-        <p class="dominos-status" id="dominosStatus">Checking login...</p>
-
-        <div class="quick-table-steps" aria-label="Three steps to start multiplayer"><span>1. Start</span><span>2. Share code</span><span>3. Play</span></div>
-        <form class="dominos-form quick-table-form" id="createRoomForm">
-          <input id="roomName" type="hidden" value="" />
-          <strong>2-Player Dominoes</strong>
-          <small>A room code is made automatically.</small>
-          <button class="games-btn primary" type="submit">Start Table</button>
-        </form>
-
-        <form class="dominos-form quick-table-form" id="joinRoomForm">
-          <label for="roomCodeInput">Have a code?</label>
-          <input id="roomCodeInput" type="text" maxlength="12" placeholder="ROOM CODE" autocomplete="off" />
-          <button class="games-btn" type="submit">Join Table</button>
-        </form>
-
-        <div class="room-list" id="roomList">
-          <div class="hw-leaderboard-empty">Loading open tables...</div>
-        </div>
-      </aside>
-
+      <aside class="dominos-panel"><h2>Tables</h2><p class="dominos-status" id="dominosStatus">Checking login...</p><div class="quick-table-steps" aria-label="Three steps to start multiplayer"><span>1. Start</span><span>2. Share code</span><span>3. Play</span></div><form class="dominos-form quick-table-form" id="createRoomForm"><input id="roomName" type="hidden" value="" /><strong>2-Player Dominoes</strong><small>A room code is made automatically.</small><button class="games-btn primary" type="submit">Start Table</button></form><form class="dominos-form quick-table-form" id="joinRoomForm"><label for="roomCodeInput">Have a code?</label><input id="roomCodeInput" type="text" maxlength="12" placeholder="ROOM CODE" autocomplete="off" /><button class="games-btn" type="submit">Join Table</button></form><div class="room-list" id="roomList"><div class="hw-leaderboard-empty">Loading open tables...</div></div></aside>
       <section class="dominos-table domino-pov-game">
         <h2>Player-Seat POV</h2>
-        <div class="dominos-scoreboard">
-          <article class="score-card">
-            <span>Room</span>
-            <strong id="activeRoomCode">None</strong>
-          </article>
-          <article class="score-card">
-            <span>Turn</span>
-            <strong id="activeTurn">Waiting</strong>
-          </article>
-        </div>
-
-        <div class="domino-help-strip">
-          <span><strong>NEW TO BONES?</strong> Learn the table in under a minute.</span>
-          <button class="games-btn" type="button" id="openDominoTutorial" aria-haspopup="dialog">How to Play</button>
-        </div>
-
+        <div class="dominos-scoreboard"><article class="score-card"><span>Room</span><strong id="activeRoomCode">None</strong></article><article class="score-card"><span>Turn</span><strong id="activeTurn">Waiting</strong></article></div>
+        <div class="domino-help-strip"><span><strong>NEW TO BONES?</strong> Learn the table in under a minute.</span><button class="games-btn" type="button" id="openDominoTutorial" aria-haspopup="dialog">How to Play</button></div>
         <div class="domino-pov-room" aria-label="First-person domino table">
           <div class="pov-neon-sign" aria-hidden="true"><span>01 DOMINO ROOM</span><small>RICHMOND, CA</small></div>
-          <div class="pov-player-hud" aria-label="Opponent game status">
-            <span class="pov-player-hud-avatar" id="povHudAvatar" aria-hidden="true">🧢</span>
-            <span><strong id="povHudName">PLAYER TWO</strong><small id="povHudTiles">Waiting for player</small></span>
-            <b id="povHudTurn">—</b>
-          </div>
+          <div class="pov-player-hud" aria-label="Opponent game status"><span class="pov-player-hud-avatar" id="povHudAvatar" aria-hidden="true">🧢</span><span><strong id="povHudName">PLAYER TWO</strong><small id="povHudTiles">Waiting for player</small></span><b id="povHudTurn">—</b></div>
           <div class="pov-points-hud"><small>COOL POINTS</small><strong data-hw-points>0</strong></div>
-          <div class="pov-felt">
-            <span class="pov-felt-mark" aria-hidden="true">HYPHSWORLD</span>
-            <div class="table-label pov-board-label"><span>Connected Chain</span><span id="boneyardCount">Boneyard: —</span></div>
-            <div class="bone-yard pov-board" id="boardTiles">
-              <span class="hw-leaderboard-empty">Join or create a room to start.</span>
-            </div>
-            <div class="pov-turn-banner" id="povTurnBanner">WAITING FOR TABLE</div>
-            <p class="pov-coach" id="povCoach" aria-live="polite">Start a table or enter a room code. We’ll guide every move.</p>
-            <div class="table-label pov-hand-label"><span>Your Hand</span><span>Tap a playable tile</span></div>
-            <div class="pov-pip-count" id="playerPipCount">Your pips: —</div>
-            <div class="pov-self-seat" aria-label="Your player profile">
-              <span id="povSelfAvatar" aria-hidden="true">🧢</span>
-              <small id="povSelfName">YOUR SEAT</small>
-            </div>
-            <div class="player-hand pov-player-hand" id="playerHand"></div>
-          </div>
-          <div class="pov-action-dock">
-            <button class="games-btn ghost" type="button" id="drawTileBtn">Draw Bone</button>
-            <button class="games-btn ghost" type="button" id="passTurnBtn">Pass</button>
-            <button class="games-btn primary" type="button" id="submitWinBtn">Submit Win</button>
-          </div>
+          <div class="pov-felt"><span class="pov-felt-mark" aria-hidden="true">HYPHSWORLD</span><div class="table-label pov-board-label"><span>Connected Chain</span><span id="boneyardCount">Boneyard: —</span></div><div class="bone-yard pov-board" id="boardTiles"><span class="hw-leaderboard-empty">Join or create a room to start.</span></div><div class="pov-turn-banner" id="povTurnBanner">WAITING FOR TABLE</div><p class="pov-coach" id="povCoach" aria-live="polite">Start a table or enter a room code. We’ll guide every move.</p><div class="table-label pov-hand-label"><span>Your Hand</span><span>Tap a playable tile</span></div><div class="pov-pip-count" id="playerPipCount">Your pips: —</div><div class="pov-self-seat" aria-label="Your player profile"><span id="povSelfAvatar" aria-hidden="true">🧢</span><small id="povSelfName">YOUR SEAT</small></div><div class="player-hand pov-player-hand" id="playerHand"></div></div>
+          <div class="pov-action-dock"><button class="games-btn ghost" type="button" id="drawTileBtn">Draw Bone</button><button class="games-btn ghost" type="button" id="passTurnBtn">Pass</button><button class="games-btn primary" type="button" id="submitWinBtn">Submit Win</button></div>
         </div>
-
-        <section class="domino-radio" aria-label="Domino table music player">
-          <div class="domino-radio-copy">
-            <span>TABLE RADIO</span>
-            <strong id="dominoRadioNowPlaying">WHAT'S HANNIN — HYPH LIFE</strong>
-          </div>
-          <label class="sr-only" for="dominoRadioTrack">Choose a song</label>
-          <select id="dominoRadioTrack" aria-label="Choose a song">
-            <option value="whats-hannin.mp3" data-title="WHAT'S HANNIN — HYPH LIFE">What's Hannin</option>
-            <option value="ham.mp3" data-title="HAM — HYPH LIFE">HAM</option>
-            <option value="mula.mp3" data-title="MULA — HYPH LIFE">MULA</option>
-            <option value="wikked-wayz.mp3" data-title="WIKKED WAYZ — HYPH LIFE x 3D THE CAPO">Wikked Wayz</option>
-          </select>
-          <audio id="dominoRadioAudio" controls preload="metadata" src="whats-hannin.mp3">Your browser does not support audio playback.</audio>
-        </section>
-
+        <section class="domino-radio" aria-label="Domino table music player"><div class="domino-radio-copy"><span>TABLE RADIO</span><strong id="dominoRadioNowPlaying">WHAT'S HANNIN — HYPH LIFE</strong></div><label class="sr-only" for="dominoRadioTrack">Choose a song</label><select id="dominoRadioTrack" aria-label="Choose a song"><option value="whats-hannin.mp3" data-title="WHAT'S HANNIN — HYPH LIFE">What's Hannin</option><option value="ham.mp3" data-title="HAM — HYPH LIFE">HAM</option><option value="mula.mp3" data-title="MULA — HYPH LIFE">MULA</option><option value="wikked-wayz.mp3" data-title="WIKKED WAYZ — HYPH LIFE x 3D THE CAPO">Wikked Wayz</option></select><audio id="dominoRadioAudio" controls preload="metadata" src="whats-hannin.mp3">Your browser does not support audio playback.</audio></section>
         <details class="bones-rules"><summary>Regular Bones Rules</summary><p>28 double-six bones • 7 per player • highest double opens • match either end • doubles turn sideways • draw until playable • pass only on an empty boneyard • first player out wins • blocked board goes to the lowest pip hand.</p></details>
-
-        <div class="table-label"><span>Room Log</span><button class="games-btn ghost" type="button" id="leaveRoomBtn">Leave View</button></div>
-        <div class="domino-log" id="dominoLog">
-          <p>Duck Sauce: “Somebody slap a bone on the table.”</p>
-        </div>
+        <div class="table-label"><span>Room Log</span><button class="games-btn ghost" type="button" id="leaveRoomBtn">Leave View</button></div><div class="domino-log" id="dominoLog"><p>Duck Sauce: “Somebody slap a bone on the table.”</p></div>
       </section>
     </section>
-
-    <div class="domino-tutorial" id="dominoTutorial" hidden>
-      <section class="domino-tutorial-card" role="dialog" aria-modal="true" aria-labelledby="dominoTutorialTitle">
-        <button class="domino-tutorial-close" type="button" id="closeDominoTutorial" aria-label="Close tutorial">×</button>
-        <p class="eyebrow">QUICK START</p>
-        <h2 id="dominoTutorialTitle">How to Play Bones</h2>
-        <div class="domino-tutorial-steps">
-          <article><b>1</b><span><strong>Start or join</strong><small>Tap Start Table, or enter a friend’s room code.</small></span></article>
-          <article><b>2</b><span><strong>Match either end</strong><small>Tap a glowing bone that matches a number at either end of the center chain.</small></span></article>
-          <article><b>3</b><span><strong>No match? Draw</strong><small>Tap Draw Bone. Pass becomes available only when the boneyard is empty.</small></span></article>
-          <article><b>4</b><span><strong>Empty your hand</strong><small>The first player with no bones wins. Tap Submit Win to collect verified Cool Points.</small></span></article>
-        </div>
-        <button class="games-btn primary domino-tutorial-got-it" type="button" id="finishDominoTutorial">Got It — Let’s Play</button>
-      </section>
-    </div>
-
-    <section class="hw-leaderboard-wrap" data-hw-leaderboard data-default-mode="games" data-game-key="01_dominos" data-limit="5" aria-label="Domino leaderboard preview">
-      <article class="hw-leaderboard-card">
-        <div class="hw-leaderboard-head">
-          <div>
-            <span class="hw-leaderboard-kicker">DOMINO RESULTS</span>
-            <h2>Game Board</h2>
-            <p>Submitted wins and future game scores show here after Supabase records them.</p>
-          </div>
-          <div class="hw-leaderboard-actions">
-            <button class="hw-board-btn is-active" type="button" data-hw-board-mode="games">Game Scores</button>
-            <button class="hw-board-btn" type="button" data-hw-board-mode="points">Cool Points</button>
-          </div>
-        </div>
-        <div class="hw-leaderboard-list" data-hw-leaderboard-list>
-          <div class="hw-leaderboard-empty">Loading game board...</div>
-        </div>
-      </article>
-    </section>
+    <div class="domino-tutorial" id="dominoTutorial" hidden><section class="domino-tutorial-card" role="dialog" aria-modal="true" aria-labelledby="dominoTutorialTitle"><button class="domino-tutorial-close" type="button" id="closeDominoTutorial" aria-label="Close tutorial">×</button><p class="eyebrow">QUICK START</p><h2 id="dominoTutorialTitle">How to Play Bones</h2><div class="domino-tutorial-steps"><article><b>1</b><span><strong>Start or join</strong><small>Tap Start Table, or enter a friend’s room code.</small></span></article><article><b>2</b><span><strong>Match either end</strong><small>Tap a glowing bone that matches a number at either end of the center chain.</small></span></article><article><b>3</b><span><strong>No match? Draw</strong><small>Tap Draw Bone. Pass becomes available only when the boneyard is empty.</small></span></article><article><b>4</b><span><strong>Empty your hand</strong><small>The first player with no bones wins. Tap Submit Win to collect verified Cool Points.</small></span></article></div><button class="games-btn primary domino-tutorial-got-it" type="button" id="finishDominoTutorial">Got It — Let’s Play</button></section></div>
+    <section class="hw-leaderboard-wrap" data-hw-leaderboard data-default-mode="games" data-game-key="01_dominos" data-limit="5" aria-label="Domino leaderboard preview"><article class="hw-leaderboard-card"><div class="hw-leaderboard-head"><div><span class="hw-leaderboard-kicker">DOMINO RESULTS</span><h2>Game Board</h2><p>Submitted wins and future game scores show here after Supabase records them.</p></div><div class="hw-leaderboard-actions"><button class="hw-board-btn is-active" type="button" data-hw-board-mode="games">Game Scores</button><button class="hw-board-btn" type="button" data-hw-board-mode="points">Cool Points</button></div></div><div class="hw-leaderboard-list" data-hw-leaderboard-list><div class="hw-leaderboard-empty">Loading game board...</div></div></article></section>
   </main>
-
-  <footer class="site-footer">
-    <span>© <span id="year"></span> AMS WEST LLC</span>
-    <span>01 Domino Room • Live Beta</span>
-  </footer>
-
-  <script src="auth-client.js"></script>
-  <script src="leaderboard-widgets.js"></script>
-  <script src="dominos.js?v=20260907-centered-chain-1"></script>
-  <script src="cool-points.js"></script>
+  <footer class="site-footer"><span>© <span id="year"></span> AMS WEST LLC</span><span>01 Domino Room • Live Beta</span></footer>
+  <script src="auth-client.js"></script><script src="leaderboard-widgets.js"></script><script src="dominos.js?v=20260909-compact-bones-1"></script><script src="cool-points.js"></script>
 </body>
 </html>
