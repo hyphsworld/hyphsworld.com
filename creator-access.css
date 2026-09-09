@@ -15,3 +15,55 @@
 
 /* World Seal + readable status: clean HYPHSWORLD future-tech typography. */
 .world-verification-badge{display:inline-flex!important;align-items:center!important;gap:8px!important;margin-top:0!important;color:#fff!important;-webkit-text-stroke:0!important;letter-spacing:0!important;vertical-align:middle}.world-verification-badge .world-verified-label{display:inline-flex!important;align-items:center!important;min-height:22px!important;margin:0!important;padding:5px 9px 4px!important;border:1px solid rgba(52,234,255,.62)!important;border-radius:4px!important;background:linear-gradient(105deg,rgba(5,10,13,.96),rgba(19,34,31,.96))!important;box-shadow:inset 0 0 12px rgba(70,255,103,.09),0 0 14px rgba(52,234,255,.12)!important;color:#f7ffff!important;-webkit-text-stroke:0!important;font-family:"Avenir Next Condensed","Arial Narrow","Roboto Condensed",system-ui,sans-serif!important;font-size:10px!important;font-style:normal!important;font-weight:900!important;line-height:1!important;letter-spacing:.19em!important;text-transform:uppercase!important;transform:skewX(-5deg)!important}.profile-verification-badge{margin-left:11px!important}.profile-verification-badge .world-seal{margin-left:0!important}.directory-verification-badge{position:absolute!important;z-index:3!important;inset:16px 16px auto auto!important;flex-direction:column!important;gap:5px!important}.directory-verification-badge .directory-world-seal{position:relative!important;inset:auto!important}.directory-verification-badge .world-verified-label{font-size:8px!important;padding:4px 7px!important;letter-spacing:.15em!important}@media(max-width:700px){.profile-verification-badge{gap:5px!important;margin-left:7px!important}.profile-verification-badge .world-verified-label{font-size:8px!important;padding:4px 6px!important;letter-spacing:.13em!important}}@media(max-width:650px){.directory-verification-badge{inset:14px 14px auto auto!important}}
+
+/* Keep the verification lockup attached to the creator's name at every width. */
+.creator-profile h1.verified-creator-name{
+  display:flex;
+  align-items:center;
+  flex-wrap:nowrap;
+  gap:clamp(7px,1.1vw,14px);
+  max-width:none;
+}
+.verified-creator-name .creator-name-text{
+  display:inline-block;
+  min-width:0;
+  white-space:nowrap;
+}
+.verified-creator-name .profile-verification-badge{
+  flex:0 0 auto;
+  margin-left:0!important;
+}
+.rojas-hero .verified-creator-name .creator-name-subline{
+  display:block;
+  margin-top:14px;
+  font-size:.44em;
+  color:transparent;
+  -webkit-text-stroke:1px #fff;
+  letter-spacing:.01em;
+}
+.rojas-hero h1.verified-creator-name .creator-name-text{
+  display:inline-block;
+  margin-top:0;
+  font-size:1em;
+  color:inherit;
+  -webkit-text-stroke:0;
+  letter-spacing:inherit;
+}
+@media(max-width:700px){
+  .creator-profile h1.verified-creator-name{
+    font-size:clamp(32px,10.5vw,44px);
+    letter-spacing:-.075em;
+  }
+  .creator-profile .verified-creator-name .world-seal{
+    width:24px;
+    height:24px;
+    min-width:24px;
+    min-height:24px;
+  }
+  .creator-profile .verified-creator-name .world-verified-label{
+    min-height:20px!important;
+    padding:4px 5px!important;
+    font-size:7px!important;
+    letter-spacing:.1em!important;
+  }
+}
