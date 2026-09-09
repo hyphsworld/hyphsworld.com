@@ -139,6 +139,9 @@ describe('Creators World directory', () => {
       expect(badge.querySelector('.world-seal')).not.toBeNull();
       expect(badge.querySelector('.world-verified-label').textContent.trim()).toBe('VERIFIED');
       expect(badge.getAttribute('aria-label')).toMatch(/^HYPHSWORLD Verified /);
+      expect(badge.parentElement.id).toBe('creator-name');
+      expect(badge.parentElement.classList.contains('verified-creator-name')).toBe(true);
+      expect(badge.previousElementSibling.classList.contains('creator-name-text')).toBe(true);
     }
   );
 });
