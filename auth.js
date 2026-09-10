@@ -7,15 +7,21 @@
   const passwordInput = document.getElementById('authPassword');
   const submitBtn = document.getElementById('oneAuthSubmit');
   const createIdBtn = document.getElementById('createIdBtn');
+  const showCodeBtn = document.getElementById('showCodeBtn');
 
   let mode = 'signin';
   let submitting = false;
 
   function safeNext() {
     const requested = new URLSearchParams(location.search).get('next') || 'games.html';
-    const clean = String(requested).trim();
-    if (!clean || /^https?:\/\//i.test(clean) || clean.startsWith('//') || clean.startsWith('javascript:')) return 'games.html';
-    return clean.replace(/^\/+/, '') || 'games.html';
+    try {
+      const target = new URL(String(requested).trim(), location.origin + '/');
+      if (target.origin !== location.origin || !/^https?:$/.test(target.protocol)) return 'games.html';
+      const clean = (target.pathname + target.search + target.hash).replace(/^\/+/, '');
+      return clean && !/^auth\.html(?:[?#]|$)/i.test(clean) ? clean : 'games.html';
+    } catch (error) {
+      return 'games.html';
+    }
   }
 
   const next = safeNext();
@@ -43,8 +49,12 @@
     mode = nextMode === 'signup' ? 'signup' : 'signin';
     if (submitBtn) submitBtn.textContent = mode === 'signup' ? 'Create HYPHSWORLD ID' : 'Enter HYPHSWORLD';
     if (createIdBtn) createIdBtn.textContent = mode === 'signup' ? 'I Already Have an ID' : 'Create ID';
-    if (passwordInput) passwordInput.setAttribute('autocomplete', mode === 'signup' ? 'new-password' : 'current-password');
-    show(mode === 'signup' ? 'Enter an email and create a secret code.' : '', '');
+    if (passwordInput) {
+      passwordInput.setAttribute('autocomplete', mode === 'signup' ? 'new-password' : 'current-password');
+      if (mode === 'signup') passwordInput.setAttribute('minlength', '10');
+      else passwordInput.removeAttribute('minlength');
+    }
+    show(mode === 'signup' ? 'Create a secret code with at least 10 characters.' : '', '');
   }
 
   async function submitAuth(event) {
@@ -59,6 +69,7 @@
     if (submitBtn) submitBtn.disabled = true;
 
     try {
+      if (!window.HWAuth) throw new Error('Login service did not load. Check your connection and try again.');
       if (mode === 'signup') {
         const created = await HWAuth.signUpWithEmail(email, password);
         if (created && created.pendingConfirmation) {
@@ -97,6 +108,15 @@
   async function boot() {
     if (form) form.addEventListener('submit', submitAuth);
     if (createIdBtn) createIdBtn.addEventListener('click', () => setMode(mode === 'signup' ? 'signin' : 'signup'));
+    if (showCodeBtn && passwordInput) {
+      showCodeBtn.addEventListener('click', () => {
+        const showing = passwordInput.type === 'text';
+        passwordInput.type = showing ? 'password' : 'text';
+        showCodeBtn.textContent = showing ? 'SHOW' : 'HIDE';
+        showCodeBtn.setAttribute('aria-pressed', String(!showing));
+        passwordInput.focus();
+      });
+    }
 
     try {
       const session = await HWAuth.getSession();

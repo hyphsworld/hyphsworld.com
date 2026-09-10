@@ -6,6 +6,7 @@
   const loggedOutPanel = document.getElementById('loggedOutPanel');
   const profileForm = document.getElementById('profileForm');
   const logoutBtn = document.getElementById('logoutBtn');
+  const retryAccountBtn = document.getElementById('retryAccountBtn');
   const coolPointsEl = document.getElementById('accountCoolPoints');
   const displayNameInput = document.getElementById('displayName');
   const displayNameStudio = document.getElementById('displayNameStudio');
@@ -217,7 +218,8 @@
 
   async function renderUser() {
     setBodyState('is-loading-account');
-    if (!window.HWAuth) { show('Auth unavailable. Check auth-client.js.', 'error'); setLoggedOutView(); return; }
+    if (retryAccountBtn) retryAccountBtn.hidden = true;
+    if (!window.HWAuth) throw new Error('Account service did not load.');
 
     const user = await HWAuth.getCurrentUser();
     if (!user) { setLoggedOutView(); return; }
@@ -369,13 +371,25 @@
   document.addEventListener('hyph:points-updated', (event) => { const detail = event.detail || {}; const next = number(detail.points); if (next > 0) savedAccountPoints = next; renderPoints(); renderBadgeSummary(); refreshWidgets(); });
   window.addEventListener('hw:points-change', (event) => { const detail = event.detail || {}; const next = number(detail.points); if (next > 0) savedAccountPoints = next; renderPoints(); renderBadgeSummary(); refreshWidgets(); });
 
+  async function loadAccount() {
+    try {
+      if (window.HWAccountWidgetReady) await window.HWAccountWidgetReady;
+      await renderUser();
+    } catch (error) {
+      setBodyState('is-logged-out');
+      show('We could not connect to your account. Your ID and Cool Points are safe. Check your connection and retry.', 'error');
+      if (retryAccountBtn) retryAccountBtn.hidden = false;
+    }
+  }
+
   setBodyState('is-loading-account');
   bindProfileForm();
   bindDisplayNameStudio();
   bindAvatarPreview();
   bindFunnyManagements();
   bindLogout();
+  if (retryAccountBtn) retryAccountBtn.addEventListener('click', loadAccount);
   syncDisplayInputs(localStorage.getItem('hyphsworld.playerName') || 'Guest');
   setAvatarChoice(localStorage.getItem('hyphsworld.avatarType') || 'boy');
-  renderUser();
+  loadAccount();
 })();
