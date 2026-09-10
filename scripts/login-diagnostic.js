@@ -45,6 +45,10 @@ assert(authController.includes('await refreshPoints();'), 'login should refresh 
 assert(authController.includes("target.origin !== location.origin"), 'login return routing must stay on the HYPHSWORLD origin.');
 assert(authController.includes("passwordInput.removeAttribute('minlength')"), 'existing IDs must not inherit the new-account password minimum.');
 assert(authController.includes("if (!window.HWAuth)"), 'login should explain when the account service did not load.');
+assert(authPage.includes('id="resendConfirmationBtn"'), 'login should provide a confirmation-email resend control.');
+assert(authController.indexOf("setMode('signin')") < authController.indexOf("show('ID created. Open the confirmation link"), 'signup confirmation guidance must remain visible after switching back to sign-in.');
+assert(authController.includes('HWAuth.resendConfirmation'), 'login should connect confirmation resend to the shared auth client.');
+assert(authController.includes('startResendCooldown'), 'confirmation resend should respect the provider cooldown.');
 
 assert(authClient.includes('persistSession: true'), 'Supabase login should persist sessions.');
 assert(authClient.includes('autoRefreshToken: true'), 'Supabase login should refresh sessions automatically.');
