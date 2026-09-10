@@ -145,6 +145,20 @@ describe('Creators World directory', () => {
     }
   );
 
+  test('Young Tez radio includes all five new mastered files', () => {
+    const html = fs.readFileSync(path.join(repositoryRoot, 'creator-young-tez.html'), 'utf8');
+    const masters = [
+      'young-tez-back-in-motion.mp3',
+      'young-tez-idgt.mp3',
+      'young-tez-eazy-ft-project-pat.mp3',
+      'young-tez-evander-holyfield.mp3',
+      'young-tez-twentyfive-eight-mastered.mp3'
+    ];
+
+    masters.forEach((filename) => expect(html).toContain(`data-src="${filename}"`));
+    expect(html).toContain('Young Tez feat. Project Pat');
+  });
+
   test('verified name rows stay inside the hero card at desktop widths', () => {
     const css = fs.readFileSync(path.join(repositoryRoot, 'creator-access.css'), 'utf8');
 
