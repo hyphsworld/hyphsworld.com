@@ -21,6 +21,7 @@
     label{display:grid;gap:7px;font-size:.9rem;font-weight:900}
     input{width:100%;min-height:54px;border-radius:15px;border:1px solid rgba(255,255,255,.16);background:#0a100d;color:#fff;padding:0 15px;font:inherit;outline:none}
     input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(57,255,122,.12)}
+    .secret-code-wrap{position:relative}.secret-code-wrap input{padding-right:72px}.show-code{position:absolute;right:12px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:var(--cyan);font:inherit;font-size:.78rem;font-weight:1000;cursor:pointer}
     .login-btn{min-height:56px;border:0;border-radius:15px;background:linear-gradient(90deg,var(--green),var(--cyan));color:#020604;font-weight:1000;font-size:1rem;text-transform:uppercase;letter-spacing:.08em;cursor:pointer}
     .login-btn:disabled{opacity:.58;cursor:wait}
     .message{min-height:0;margin:0 0 14px;padding:0;text-align:center;font-size:.9rem;font-weight:900}
@@ -49,7 +50,10 @@
         </label>
 
         <label>Secret Code
-          <input id="authPassword" type="password" minlength="10" autocomplete="current-password" placeholder="Enter secret code" required />
+          <span class="secret-code-wrap">
+            <input id="authPassword" type="password" autocomplete="current-password" placeholder="Enter secret code" required />
+            <button id="showCodeBtn" class="show-code" type="button" aria-controls="authPassword" aria-pressed="false">SHOW</button>
+          </span>
         </label>
 
         <button id="oneAuthSubmit" class="login-btn" type="submit">Enter HYPHSWORLD</button>
