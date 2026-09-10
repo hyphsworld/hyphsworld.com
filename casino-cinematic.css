@@ -1,0 +1,28 @@
+/* HYPHSWORLD casino cinematic layer. Presentation only: no game or account rules. */
+.casino-shell{position:relative;isolation:isolate;overflow:hidden}
+.casino-cinematic-layer{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;background:radial-gradient(circle at 50% 110%,rgba(255,32,183,.15),transparent 44%)}
+.casino-skyline{position:absolute;left:-4%;right:-4%;bottom:0;height:24vh;opacity:.24;filter:drop-shadow(0 0 18px rgba(0,229,255,.44));background:linear-gradient(90deg,transparent 0 3%,#090f19 3% 8%,transparent 8% 10%,#111725 10% 15%,transparent 15% 17%,#070b12 17% 24%,transparent 24% 27%,#111725 27% 32%,transparent 32% 35%,#090f19 35% 44%,transparent 44% 47%,#111725 47% 53%,transparent 53% 56%,#070b12 56% 66%,transparent 66% 69%,#111725 69% 76%,transparent 76% 79%,#090f19 79% 87%,transparent 87% 90%,#111725 90% 97%,transparent 97%)}
+.casino-skyline:after{content:"";position:absolute;inset:12% 0 0;background-image:radial-gradient(circle,#ffe600 0 1px,transparent 2px);background-size:31px 23px;mix-blend-mode:screen;animation:casinoWindows 4.8s steps(2,end) infinite}
+.casino-searchlights:before,.casino-searchlights:after{content:"";position:absolute;left:50%;bottom:-18vh;width:16vw;height:115vh;transform-origin:50% 100%;background:linear-gradient(to top,rgba(57,255,20,.2),rgba(0,229,255,.08) 55%,transparent 86%);clip-path:polygon(46% 100%,54% 100%,100% 0,0 0);filter:blur(10px);animation:casinoSearch 7s ease-in-out infinite alternate}
+.casino-searchlights:after{background:linear-gradient(to top,rgba(255,43,214,.2),rgba(255,230,0,.07) 55%,transparent 86%);animation-delay:-3.5s;animation-direction:alternate-reverse}
+.casino-stage{transform-style:preserve-3d}
+.casino-panel,.casino-game-panel{transform-style:preserve-3d;transition:transform .45s cubic-bezier(.2,.75,.2,1),box-shadow .45s ease}
+@media (hover:hover) and (min-width:901px){.casino-panel:hover{transform:translateZ(18px) rotateY(1deg)}.casino-game-panel:hover{transform:translateZ(24px) rotateY(-1deg)}}
+.casino-code-button{border-color:rgba(255,230,0,.7)!important;color:#ffe600!important;box-shadow:inset 0 0 16px rgba(255,230,0,.08),0 0 18px rgba(255,230,0,.08)}
+.casino-code-console{position:fixed;inset:0;z-index:15000;width:100%;height:100%;max-width:none;max-height:none;margin:0;padding:0;border:0;background:rgba(0,0,0,.78);color:#fff}
+.casino-code-console::backdrop{background:rgba(0,0,0,.78);backdrop-filter:blur(8px)}
+.casino-code-card{width:min(92vw,520px);margin:18vh auto 0;padding:24px;border:2px solid #39ff14;border-radius:26px;background:linear-gradient(145deg,#070b12,#160521);box-shadow:0 0 44px rgba(57,255,20,.2),12px 12px 0 rgba(255,43,214,.22);text-align:center}
+.casino-code-card small{display:block;color:#00e5ff;font-weight:900;letter-spacing:.18em}.casino-code-card h2{margin:.35em 0;font-size:clamp(28px,7vw,54px);line-height:.9;text-transform:uppercase}.casino-code-card p{color:rgba(255,255,255,.72)}
+.casino-code-input{box-sizing:border-box;width:100%;margin:12px 0;padding:15px;border:2px solid rgba(255,255,255,.3);border-radius:14px;background:#020305;color:#39ff14;font:900 20px/1.1 monospace;text-align:center;text-transform:uppercase;letter-spacing:.16em;outline:none}.casino-code-input:focus{border-color:#00e5ff;box-shadow:0 0 24px rgba(0,229,255,.2)}
+.casino-code-actions{display:flex;gap:10px}.casino-code-actions button{flex:1;min-height:48px;border-radius:999px;font-weight:1000;text-transform:uppercase;cursor:pointer}.casino-code-submit{border:0;background:linear-gradient(90deg,#39ff14,#ffe600);color:#030403}.casino-code-close{border:1px solid #777;background:#090a0e;color:#fff}
+.casino-code-toast{position:fixed;left:50%;top:12%;z-index:16000;max-width:min(90vw,620px);padding:14px 20px;border:2px solid #ffe600;border-radius:999px;background:#050508;color:#fff;font-weight:1000;letter-spacing:.08em;text-align:center;transform:translate(-50%,-20px);opacity:0;pointer-events:none;transition:.25s ease}.casino-code-toast.show{transform:translate(-50%,0);opacity:1}
+.casino-duck-rain{position:fixed;top:-3rem;z-index:14000;pointer-events:none;font-size:clamp(28px,5vw,54px);filter:drop-shadow(0 0 9px #ffe600);animation:duckDrop 2.8s linear forwards}
+body.cheat-pressure .casino-panel,body.cheat-pressure .casino-game-panel{box-shadow:0 0 42px rgba(255,43,214,.38),0 0 74px rgba(0,229,255,.18)!important}
+body.cheat-pressure .casino-cinematic-layer{filter:saturate(1.55) contrast(1.08)}
+body.cheat-baymode .casino-stage{transform:perspective(1400px) rotateX(1.2deg);transition:transform .6s ease}
+body.cheat-baymode .casino-skyline{opacity:.58;transform:scaleY(1.18);transform-origin:bottom}
+@keyframes casinoWindows{50%{opacity:.45;transform:translateY(1px)}}
+@keyframes casinoSearch{from{transform:rotate(-23deg)}to{transform:rotate(25deg)}}
+@keyframes duckDrop{to{transform:translateY(112vh) rotate(540deg);opacity:.15}}
+@media(max-width:700px){.casino-code-card{margin-top:12vh;padding:20px}.casino-code-actions{flex-direction:column}.casino-skyline{height:18vh}.casino-code-button{order:4}}
+@media(prefers-reduced-motion:reduce){.casino-skyline:after,.casino-searchlights:before,.casino-searchlights:after,.casino-duck-rain{animation:none!important}.casino-panel,.casino-game-panel,.casino-stage{transform:none!important;transition:none!important}}
