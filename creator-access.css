@@ -22,7 +22,9 @@
   align-items:center;
   flex-wrap:nowrap;
   gap:clamp(7px,1.1vw,14px);
-  max-width:none;
+  width:100%;
+  max-width:100%;
+  font-size:clamp(52px,6.6vw,86px);
 }
 .verified-creator-name .creator-name-text{
   display:inline-block;

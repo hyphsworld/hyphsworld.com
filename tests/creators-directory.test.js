@@ -144,4 +144,12 @@ describe('Creators World directory', () => {
       expect(badge.previousElementSibling.classList.contains('creator-name-text')).toBe(true);
     }
   );
+
+  test('verified name rows stay inside the hero card at desktop widths', () => {
+    const css = fs.readFileSync(path.join(repositoryRoot, 'creator-access.css'), 'utf8');
+
+    expect(css).toContain('.creator-profile h1.verified-creator-name');
+    expect(css).toContain('max-width:100%');
+    expect(css).toContain('font-size:clamp(52px,6.6vw,86px)');
+  });
 });
