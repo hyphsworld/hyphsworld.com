@@ -5,7 +5,7 @@
   const CDN = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
   const REFRESH_MS = 5000;
   const GAME_CONFIG = {
-    dice: { title: "Dice Table", intro: "Roll dice from the HYPHSWORLD player-seat table.", scoreKey: "01_dice", winPoints: 75, maxPlayers: 4 },
+    dice: { title: "Craps Table", intro: "Regular Pass Line craps from a premium HYPHSWORLD player-seat table.", scoreKey: "01_dice", winPoints: 75, maxPlayers: 4 },
     blackjack: { title: "Blackjack Table", intro: "Player-seat blackjack with a clean felt view and simple hit / stand controls.", scoreKey: "01_blackjack", winPoints: 100, maxPlayers: 4 },
     poker: { title: "Poker Table", intro: "First-person poker table with your hand at the rail and community cards in the center.", scoreKey: "01_poker_beta", winPoints: 125, maxPlayers: 4 },
     spades: { title: "Spades Table", intro: "Four-seat Spades table with your hand in front, table action in the center, and one shared room code.", scoreKey: "01_spades_beta", winPoints: 125, maxPlayers: 4 }
@@ -33,6 +33,7 @@
     return `<span class="hw-card${red ? " is-red" : ""}"><b>${rankLabel(card.rank)}</b><i>${card.suit}</i></span>`;
   }
   function cardRow(cards) { return `<div class="hw-card-row">${(cards || []).map(cardHtml).join("")}</div>`; }
+  function dieFace(value) { return ["?", "⚀", "⚁", "⚂", "⚃", "⚄", "⚅"][Number(value)] || "?"; }
   function handTotal(cards) {
     let total = 0, aces = 0;
     (cards || []).forEach((card) => { if (card.rank === 1) { aces += 1; total += 11; } else total += cardValue(card); });
@@ -99,7 +100,9 @@
     setText("tableGameTitle", cfg.title); setText("tableGameIntro", cfg.intro);
     setText("tableSideTitle", `${cfg.title} Tables`); setText("tableBoardTitle", cfg.title);
     setText("tableModeLabel", gameType.toUpperCase()); setText("tickerGameName", cfg.title.toUpperCase()); setText("tickerGameName2", cfg.title.toUpperCase());
+    setText("tableActionLabel", gameType === "dice" ? "Pass Line Action" : `${cfg.title.replace(" Table", "")} Action`);
     setText("cardPovSign", `${cfg.title.toUpperCase()} // 01`);
+    document.body.dataset.tableGame = gameType;
     const playerSelect = $("tablePlayerCount");
     if (playerSelect && gameType === "spades") playerSelect.value = "4";
   }
@@ -175,10 +178,32 @@
   function startRefresh() { if (refreshTimer) clearInterval(refreshTimer); refreshTimer = setInterval(refreshActiveRoom, REFRESH_MS); }
 
   async function diceRound() {
-    if (!activeRoom || !activeState) return setStatus("Create or join a Dice table first.");
-    const player = [rand(6)+1, rand(6)+1], table = [rand(6)+1, rand(6)+1];
-    const pt = player[0]+player[1], tt = table[0]+table[1]; localScore = Math.max(0, pt*10-tt*3);
-    activeState = { ...activeState, rolls: { ...(activeState.rolls||{}), [currentUser.userId]: player, table }, lastResult: pt >= tt ? "WIN" : "LOSS", lastScore: localScore, log: [...(activeState.log||[]), `${currentUser.displayName||"Player"}: rolled ${pt} vs ${tt}.`].slice(-16), updatedAt:new Date().toISOString() };
+    if (!activeRoom || !activeState) return setStatus("Create or join a Craps table first.");
+    const previous = activeState.craps || { point: null, rollCount: 0 };
+    const dice = [rand(6) + 1, rand(6) + 1];
+    const total = dice[0] + dice[1];
+    const pointBeforeRoll = Number(previous.point) || null;
+    let point = pointBeforeRoll;
+    let result = "rolling";
+    let message = `Rolled ${total}. Roll again.`;
+
+    if (!pointBeforeRoll) {
+      if (total === 7 || total === 11) {
+        result = "natural"; message = `${total} on the come-out — Pass Line wins.`; localScore = 100;
+      } else if (total === 2 || total === 3 || total === 12) {
+        result = "craps"; message = `${total} on the come-out — craps.`; localScore = 0;
+      } else {
+        point = total; result = "point"; message = `Point is ${total}. Roll ${total} again before a 7.`; localScore = total * 5;
+      }
+    } else if (total === pointBeforeRoll) {
+      result = "made-point"; message = `${total} — point made. Pass Line wins.`; localScore = 150; point = null;
+    } else if (total === 7) {
+      result = "seven-out"; message = "Seven out. New come-out roll is next."; localScore = 0; point = null;
+    } else {
+      localScore = Math.max(Number(activeState.lastScore) || 0, total * 5);
+    }
+
+    activeState = { ...activeState, craps: { dice, point, pointBeforeRoll, total, result, message, rollCount: Number(previous.rollCount || 0) + 1 }, rolls: { ...(activeState.rolls || {}), [currentUser.userId]: dice }, lastResult: result, lastScore: localScore, log: [...(activeState.log||[]), `${currentUser.displayName||"Player"}: ${message}`].slice(-16), updatedAt:new Date().toISOString() };
     await saveState(activeRoom, activeState); renderState();
   }
   async function blackjackDeal() {
@@ -220,11 +245,13 @@
   function renderState() {
     const stage=$("tableStage"),controls=$("tableControls"),log=$("tableLog"); if(!stage||!controls||!log)return;
     if(!activeRoom||!activeState||!currentUser){stage.innerHTML=`<div class="hw-leaderboard-empty">Create or join a table to start.</div>`;controls.innerHTML="";return;}
-    setText("tableActiveRoomCode",activeRoom.room_code||"ROOM");setText("tableModeLabel",gameType.toUpperCase());
+    setText("tableActiveRoomCode",activeRoom.room_code||"ROOM");setText("tableModeLabel",GAME_CONFIG[gameType].title.replace(" Table", "").toUpperCase());
     if(gameType==="dice"){
-      const rolls=activeState.rolls||{},player=rolls[currentUser.userId]||[],table=rolls.table||[];
-      stage.innerHTML=`<div class="card-zone"><strong>Your Roll</strong><div class="hw-card-row"><span class="hw-card"><b>${player[0]||"?"}</b><i>⚄</i></span><span class="hw-card"><b>${player[1]||"?"}</b><i>⚄</i></span></div><strong>Table</strong><div class="hw-card-row"><span class="hw-card"><b>${table[0]||"?"}</b><i>⚄</i></span><span class="hw-card"><b>${table[1]||"?"}</b><i>⚄</i></span></div><div class="card-table-score">Score ${activeState.lastScore||0}</div></div>`;
-      controls.innerHTML=`<button class="games-btn primary" type="button" data-action="dice-roll">Roll Dice</button>`;
+      const craps=activeState.craps||{dice:[],point:null,total:null,result:"come-out",message:"Come-out roll: 7 or 11 wins; 2, 3, or 12 craps."};
+      const activePoint=Number(craps.point)||null;
+      const pointNumbers=[4,5,6,8,9,10];
+      stage.innerHTML=`<div class="craps-table" aria-label="Standard Pass Line craps layout"><div class="craps-number-row">${pointNumbers.map((number)=>`<span class="craps-number${activePoint===number?" is-point":""}">${number}${activePoint===number?'<b>ON</b>':''}</span>`).join("")}</div><div class="craps-bet-row"><span>COME</span><span>FIELD<br><small>2 3 4 9 10 11 12</small></span></div><div class="craps-bet-row dont-pass"><span>DON’T PASS BAR 12</span></div><div class="craps-pass-line">PASS LINE</div><div class="craps-dice" aria-label="Last roll"><span>${dieFace(craps.dice?.[0])}</span><span>${dieFace(craps.dice?.[1])}</span></div><div class="craps-puck ${craps.point?'is-on':'is-off'}">${craps.point?`ON ${craps.point}`:"OFF"}</div><div class="craps-result"><strong>${craps.total?`ROLL ${craps.total}`:"COME-OUT"}</strong><small>${safeText(craps.message,"Roll the dice to start.")}</small></div></div>`;
+      controls.innerHTML=`<button class="games-btn primary craps-roll-btn" type="button" data-action="dice-roll">Roll Dice</button>`;
     }else if(gameType==="blackjack"){
       const bj=activeState.blackjack||{player:[],dealer:[],result:"waiting"};stage.innerHTML=`<div class="card-zone"><strong>Dealer • ${handTotal(bj.dealer||[])}</strong>${cardRow(bj.dealer||[])}<strong>Your Hand • ${handTotal(bj.player||[])}</strong>${cardRow(bj.player||[])}<div class="card-table-score">${safeText(bj.result,"waiting").toUpperCase()} • ${activeState.lastScore||0}</div></div>`;
       controls.innerHTML=`<button class="games-btn primary" type="button" data-action="blackjack-deal">Deal</button><button class="games-btn" type="button" data-action="blackjack-hit">Hit</button><button class="games-btn ghost" type="button" data-action="blackjack-stand">Stand</button>`;

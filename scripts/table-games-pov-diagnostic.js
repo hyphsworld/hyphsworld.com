@@ -1,0 +1,24 @@
+const fs = require('fs');
+
+function read(file) { return fs.readFileSync(file, 'utf8'); }
+function assert(ok, message) { if (!ok) throw new Error(message); }
+
+const html = read('table-game.html');
+const js = read('table-game.js');
+const css = read('table-pov-upgrades.css');
+const lobby = read('games.html');
+
+assert(css.includes('01-domino-room-pov-v1.webp'), 'Table games must share the Domino room art direction');
+assert(html.includes('card-pov-room'), 'Shared table page must keep its POV scene');
+assert(js.includes('document.body.dataset.tableGame = gameType'), 'Each table view must expose its game theme');
+assert(js.includes('result = "natural"') && js.includes('result = "craps"'), 'Craps must implement come-out naturals and craps');
+assert(js.includes('result = "made-point"') && js.includes('result = "seven-out"'), 'Craps must implement point wins and seven-out');
+assert(js.includes('pointNumbers=[4,5,6,8,9,10]'), 'Craps layout must show standard point numbers');
+assert(js.includes('scoreKey: "01_dice"'), 'Existing Dice score key must remain stable');
+assert(js.includes('requested_game_type: gameType'), 'Existing multiplayer room contract must remain stable');
+assert(js.includes('window.HWAuth.addPoints'), 'Existing Cool Points hook must remain intact');
+assert(html.includes('auth-client.js') && html.includes('cool-points.js'), 'Login and Cool Points clients must remain loaded');
+assert(lobby.includes('🎲 Craps<br>1–4 Players'), 'Casino lobby must identify Dice as Craps');
+assert(!js.includes('sb.rpc("create_craps'), 'Craps upgrade must not introduce a database migration or new RPC');
+
+console.log('Table games POV diagnostic passed: premium scene, regular craps, and protected integration hooks are intact.');
