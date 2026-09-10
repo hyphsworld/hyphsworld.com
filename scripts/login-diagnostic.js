@@ -10,6 +10,9 @@ const authStability = fs.readFileSync('auth-stability.js', 'utf8');
 const accountBootstrap = fs.readFileSync('cool-points.js', 'utf8');
 const pointsEngine = fs.readFileSync('global-points-engine.js', 'utf8');
 const accountPage = fs.readFileSync('account.html', 'utf8');
+const accountController = fs.readFileSync('account.js', 'utf8');
+const adminPage = fs.readFileSync('creator-admin.html', 'utf8');
+const adminController = fs.readFileSync('creator-admin.js', 'utf8');
 const tableGamePage = fs.readFileSync('table-game.html', 'utf8');
 const tableGameController = fs.readFileSync('table-game.js', 'utf8');
 
@@ -39,6 +42,9 @@ assert(bindPosition >= 0 && bindPosition < sessionCheckPosition, 'login submit m
 assert(authController.includes('if (submitting) return;'), 'login should reject duplicate submissions.');
 assert(authController.includes("if (!session) throw new Error('Login did not persist."), 'login should verify the persisted session before redirecting.');
 assert(authController.includes('await refreshPoints();'), 'login should refresh the account-backed points wallet before redirecting.');
+assert(authController.includes("target.origin !== location.origin"), 'login return routing must stay on the HYPHSWORLD origin.');
+assert(authController.includes("passwordInput.removeAttribute('minlength')"), 'existing IDs must not inherit the new-account password minimum.');
+assert(authController.includes("if (!window.HWAuth)"), 'login should explain when the account service did not load.');
 
 assert(authClient.includes('persistSession: true'), 'Supabase login should persist sessions.');
 assert(authClient.includes('autoRefreshToken: true'), 'Supabase login should refresh sessions automatically.');
@@ -55,6 +61,14 @@ assert(pointsEngine.includes('data-hw-account-action'), 'central widget should p
 assert(/document\.addEventListener\(['"]hyph:auth-signed-in['"],\s*(?:refresh|bootAndSync)\)/.test(pointsEngine), 'central widget should refresh immediately after login.');
 assert(/window\.addEventListener\(['"]pageshow['"],\s*(?:refresh|bootAndSync)\)/.test(pointsEngine), 'central widget should catch up after browser navigation.');
 assert(accountPage.includes('class="account-topnav"') && accountPage.includes('href="index.html"'), 'Manage ID must always expose a Home button.');
+assert(position(accountPage, 'src="auth-stability.js"') > position(accountPage, 'src="auth-client.js"'), 'Manage ID should load safe profile updates after the auth client.');
+assert(position(accountPage, 'src="auth-points-bridge.js"') > position(accountPage, 'src="auth-stability.js"'), 'Manage ID should load the account points bridge after auth stability.');
+assert(accountController.includes('await window.HWAccountWidgetReady'), 'Manage ID should wait for the shared account stack before reading the user.');
+assert(accountPage.includes('Retry Account Connection'), 'Manage ID should offer a friendly recovery from connection failures.');
+assert(adminPage.includes('id="adminRetry"') && adminPage.includes('href="account.html"'), 'Owner Control should expose retry and account navigation.');
+assert(adminController.includes('client.auth.getUser()'), 'Owner Control should validate the user with Supabase before showing protected tools.');
+assert(adminController.includes('friendlyError') && adminController.includes('try {'), 'Owner Control should recover cleanly from connection and permission failures.');
+assert(!adminController.includes('user_metadata'), 'Owner Control must not trust editable user metadata for authorization.');
 assert(tableGamePage.includes('id="tablePlayerCount"') && ['1 Player', '2 Players', '3 Players', '4 Players'].every((label) => tableGamePage.includes(label)), 'Table setup must expose one through four seats.');
 assert(tableGameController.includes('.eq("host_id", currentUser.userId)'), 'Only the host may resize a newly created table.');
 
