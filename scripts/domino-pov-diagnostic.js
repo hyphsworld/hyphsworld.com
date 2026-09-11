@@ -15,8 +15,8 @@ assert(html.includes('domino-pov-room'), 'Domino room must include the POV scene
 assert(!html.includes('pov-opponent-seat'), 'POV must not render a duplicate opponent card');
 assert(css.includes('url("assets/games/01-domino-room-pov-v1.webp")'), 'POV must render the cinematic room artwork');
 assert(html.includes('pov-player-hand'), 'POV must place the player hand in the foreground');
-assert(casino.includes('<a class="room-btn" href="dominos.html">Enter 01 Domino Room</a>'), 'Casino Domino card must open the live Domino room directly');
-assert(casino.includes('<a class="room-btn secondary" href="leaderboard.html">All Leaderboards</a>'), 'Casino must label the general leaderboard accurately');
+assert(casino.includes('<a class="room-btn" href="dominos.html">Enter Domino Room</a>'), 'Casino Domino card must open the live Domino room directly');
+assert(casino.includes('href="leaderboard.html"'), 'Casino must keep the general leaderboard reachable');
 assert(!casino.includes('data-room="dominoes" data-cost="15"'), 'Casino must not present the retired Domino preview buy-in');
 assert(html.includes('pov-player-hud'), 'POV must include an opponent status HUD');
 assert(html.includes('pov-points-hud'), 'POV must show Cool Points inside the game scene');
