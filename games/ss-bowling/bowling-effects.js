@@ -3,7 +3,7 @@
 
   const STYLE_ID = 'hw-bowling-effects-style';
   const OVERLAY_ID = 'hw-alley-gator';
-  const THROW_TEST = /(throw|roll|bowl|release|shoot)/i;
+  const THROW_TEST = /(lock[\s-]*aim|throw|roll|bowl|release|shoot)/i;
   const STRIKE_TEXT = 'STRIKE!';
   let sequenceRunning = false;
   let lastTrigger = 0;
@@ -111,7 +111,7 @@
     lastTrigger = now;
     const throwCount = Number(sessionStorage.getItem('hwBowlingThrowCount') || 0) + 1;
     sessionStorage.setItem('hwBowlingThrowCount', String(throwCount));
-    if (throwCount % 3 === 0) runGatorSequence();
+    if (throwCount === 1 || throwCount % 3 === 0) runGatorSequence();
   }
 
   function start() {
