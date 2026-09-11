@@ -16,6 +16,8 @@
   let gameType = "dice";
   let localScore = 0;
   let scoreSubmissionId = null;
+  let roomViewToken = 0;
+  let roomListTimer = null;
 
   function $(id) { return document.getElementById(id); }
   function setText(id, value) { const el = $(id); if (el) el.textContent = value; }
@@ -74,6 +76,17 @@
     return user;
   }
   function setStatus(message) { setText("tableStatus", message); }
+  function setGuestControls(enabled) {
+    document.querySelectorAll("#tableCreateForm input, #tableCreateForm select, #tableCreateForm button, #tableJoinForm input, #tableJoinForm button").forEach((control) => {
+      control.disabled = !enabled;
+    });
+    const submit = $("tableSubmitScoreBtn");
+    const reset = $("tableResetRoundBtn");
+    const leave = $("tableLeaveBtn");
+    if (submit && !activeRoom) submit.disabled = true;
+    if (reset && !activeRoom) reset.disabled = true;
+    if (leave && !activeRoom) leave.disabled = true;
+  }
   function requestedPlayerCount() {
     const value = Number($("tablePlayerCount")?.value || 2);
     return Math.min(4, Math.max(1, Number.isInteger(value) ? value : 2));
@@ -114,6 +127,10 @@
 
   async function listRooms() {
     const list = $("tableRoomList"); if (!list) return;
+    if (!currentUser) {
+      list.innerHTML = '<div class="hw-leaderboard-empty">Login to view and join live tables.</div>';
+      return;
+    }
     try {
       const sb = await getClient();
       const { data, error } = await sb.from("game_rooms").select("id,room_code,game_type,status,max_players,created_at").eq("game_type", gameType).in("status", ["waiting", "playing"]).order("created_at", { ascending: false }).limit(10);
@@ -126,11 +143,13 @@
 
   async function createRoom(event) {
     event.preventDefault();
+    const requestToken = roomViewToken;
     try {
       await requireUser(); const sb = await getClient(); const code = roomCode();
       setStatus(`Creating ${gameType} table...`);
       const { data, error } = await sb.rpc("create_table_game_room", { requested_code: code, requested_game_type: gameType });
       if (error || !data || data.ok === false) throw error || new Error(safeText(data?.error, "Room create failed."));
+      if (requestToken !== roomViewToken || !currentUser) return;
       activeRoom = data.room; activeState = data.state;
       const playerCount = gameType === "spades" ? 4 : requestedPlayerCount();
       if (Number(activeRoom.max_players) !== playerCount) {
@@ -155,6 +174,7 @@
     } catch (error) { setStatus(safeText(error?.message,"Room code not found.")); }
   }
   async function joinRoomById(roomId) {
+    const requestToken = roomViewToken;
     try {
       const user = await requireUser(); const sb = await getClient(); setStatus("Joining table...");
       const { data: room, error: roomError } = await sb.from("game_rooms").select("*").eq("id", roomId).maybeSingle();
@@ -168,6 +188,7 @@
       }
       const { data: stateRow } = await sb.from("game_state").select("state").eq("room_id", room.id).maybeSingle();
       const nextState = { ...(stateRow?.state || {}), status: "playing", updatedAt: new Date().toISOString(), log: [...(stateRow?.state?.log || []), `${currentUser.displayName || "Player"}: joined the table.`].slice(-16) };
+      if (requestToken !== roomViewToken || !currentUser || currentUser.userId !== user.userId) return;
       activeRoom = room; activeState = nextState; await saveState(room, nextState);
       setStatus("Joined table. You’re in your seat."); renderState(); startRefresh(); await listRooms();
     } catch (error) { setStatus(`Join failed: ${safeText(error?.message,"Please try again.")}`); }
@@ -181,9 +202,24 @@
   }
   async function refreshActiveRoom() {
     if (!activeRoom) return;
-    try { const sb = await getClient(); const { data } = await sb.from("game_state").select("state").eq("room_id", activeRoom.id).maybeSingle(); if (data?.state) { activeState = data.state; renderState(); } } catch (_) {}
+    const roomId = activeRoom.id;
+    const requestToken = roomViewToken;
+    try {
+      const sb = await getClient();
+      const { data } = await sb.from("game_state").select("state").eq("room_id", roomId).maybeSingle();
+      if (requestToken !== roomViewToken || !activeRoom || activeRoom.id !== roomId) return;
+      if (data?.state) { activeState = data.state; renderState(); }
+    } catch (_) {}
   }
-  function startRefresh() { if (refreshTimer) clearInterval(refreshTimer); refreshTimer = setInterval(refreshActiveRoom, REFRESH_MS); }
+  function stopRoomRefresh() {
+    roomViewToken += 1;
+    if (refreshTimer) clearInterval(refreshTimer);
+    refreshTimer = null;
+  }
+  function startRefresh() {
+    if (refreshTimer) clearInterval(refreshTimer);
+    refreshTimer = setInterval(refreshActiveRoom, REFRESH_MS);
+  }
 
   async function diceRound() {
     if (!activeRoom || !activeState) return setStatus("Create or join a Craps table first.");
@@ -277,7 +313,7 @@
   function renderState() {
     const stage=$("tableStage"),controls=$("tableControls"),log=$("tableLog"); if(!stage||!controls||!log)return;
     stage.dataset.game=gameType;
-    if(!activeRoom||!activeState||!currentUser){document.body.classList.remove("table-game-active");setText("tableTurnBanner","CREATE OR JOIN A TABLE");stage.innerHTML=`<div class="table-empty-state"><b>TAKE YOUR SEAT</b><span>Start a table or enter a room code.</span></div>`;controls.innerHTML="";applySeatCapacity(requestedPlayerCount());return;}
+    if(!activeRoom||!activeState||!currentUser){resetTableHud();return;}
     document.body.classList.add("table-game-active");
     applySeatCapacity(activeRoom.max_players || requestedPlayerCount());
     setText("tableActiveRoomCode",activeRoom.room_code||"ROOM");setText("tableModeLabel",GAME_CONFIG[gameType].title.replace(" Table", "").toUpperCase());
@@ -302,7 +338,85 @@
     controls.querySelectorAll("[data-action]").forEach((button)=>button.addEventListener("click",async()=>{button.disabled=true;try{const action=button.getAttribute("data-action");if(action==="dice-roll")await diceRound();if(action==="blackjack-deal")await blackjackDeal();if(action==="blackjack-hit")await blackjackHit();if(action==="blackjack-stand")await blackjackStand();if(action==="poker-round")await pokerRound();if(action==="spades-round")await spadesRound();}finally{button.disabled=false;}}));
     log.innerHTML=(activeState.log||[]).slice().reverse().map((line)=>`<p>${safeText(line,"Table updated.")}</p>`).join("")||`<p>Duck Sauce: “Quiet table. Suspicious.”</p>`;
   }
-  function leaveView(){activeRoom=null;activeState=null;if(refreshTimer)clearInterval(refreshTimer);document.body.classList.remove("table-game-active");setText("tableActiveRoomCode","None");renderState();setStatus("Left table view.");}
-  async function boot(){const year=$("year");if(year)year.textContent=new Date().getFullYear();gameType=getGameType();applyGameCopy();applySeatCapacity(requestedPlayerCount());try{await requireUser();setStatus(`Logged in. Create or join a ${gameType} table.`);}catch(_){setStatus("Login required to create, join, and save scores.");}$("tableCreateForm")?.addEventListener("submit",createRoom);$("tablePlayerCount")?.addEventListener("change",()=>applySeatCapacity(requestedPlayerCount()));$("tableJoinForm")?.addEventListener("submit",joinRoomByCode);$("tableRefreshRooms")?.addEventListener("click",listRooms);$("tableSubmitScoreBtn")?.addEventListener("click",submitScore);$("tableLeaveBtn")?.addEventListener("click",leaveView);$("tableResetRoundBtn")?.addEventListener("click",async()=>{if(gameType==="dice")await diceRound();else if(gameType==="blackjack")await blackjackDeal();else if(gameType==="poker")await pokerRound();else await spadesRound();});await listRooms();setInterval(listRooms,30000);}
+  function resetTableHud() {
+    document.body.classList.remove("table-game-active");
+    setText("tableActiveRoomCode", "None");
+    setText("tableTurnBanner", "CREATE OR JOIN A TABLE");
+    setText("tableSelfSeatName", currentUser?.displayName || "YOUR SEAT");
+    const stage = $("tableStage");
+    const controls = $("tableControls");
+    const log = $("tableLog");
+    if (stage) {
+      stage.dataset.game = gameType;
+      stage.innerHTML = '<div class="table-empty-state"><b>TAKE YOUR SEAT</b><span>Start a table or enter a room code.</span></div>';
+    }
+    if (controls) controls.innerHTML = "";
+    if (log) log.innerHTML = '<p>Duck Sauce: “Pick a table. I’m watching the points.”</p>';
+    document.querySelectorAll(".card-seat").forEach((seat) => seat.classList.remove("is-active", "is-playing", "is-ready"));
+    applySeatCapacity(requestedPlayerCount());
+    setGuestControls(Boolean(currentUser));
+  }
+
+  function leaveView(options) {
+    const signedOut = Boolean(options?.signedOut);
+    stopRoomRefresh();
+    activeRoom = null;
+    activeState = null;
+    localScore = 0;
+    scoreSubmissionId = null;
+    resetTableHud();
+    setStatus(signedOut ? "Login required to create, join, and save scores." : "Left table view. Open tables are still listed.");
+  }
+
+  async function boot() {
+    const year = $("year");
+    if (year) year.textContent = new Date().getFullYear();
+    gameType = getGameType();
+    applyGameCopy();
+    applySeatCapacity(requestedPlayerCount());
+    try {
+      await requireUser();
+      setGuestControls(true);
+      setStatus(`Logged in. Create or join a ${gameType} table.`);
+    } catch (_) {
+      currentUser = null;
+      resetTableHud();
+      setGuestControls(false);
+      setStatus("Login required to create, join, and save scores.");
+    }
+    $("tableCreateForm")?.addEventListener("submit", createRoom);
+    $("tablePlayerCount")?.addEventListener("change", () => applySeatCapacity(requestedPlayerCount()));
+    $("tableJoinForm")?.addEventListener("submit", joinRoomByCode);
+    $("tableRefreshRooms")?.addEventListener("click", listRooms);
+    $("tableSubmitScoreBtn")?.addEventListener("click", submitScore);
+    $("tableLeaveBtn")?.addEventListener("click", () => leaveView());
+    $("tableResetRoundBtn")?.addEventListener("click", async () => {
+      if (gameType === "dice") await diceRound();
+      else if (gameType === "blackjack") await blackjackDeal();
+      else if (gameType === "poker") await pokerRound();
+      else await spadesRound();
+    });
+
+    document.addEventListener("hyph:auth-state-changed", async (event) => {
+      if (event?.detail?.event === "SIGNED_OUT") {
+        currentUser = null;
+        leaveView({ signedOut: true });
+        setGuestControls(false);
+        const authLink = $("tableAuthLink");
+        if (authLink) { authLink.textContent = "Create ID"; authLink.href = "auth.html"; }
+        await listRooms();
+        return;
+      }
+      try {
+        await requireUser();
+        setGuestControls(true);
+        await listRooms();
+      } catch (_) {}
+    });
+
+    window.addEventListener("pagehide", stopRoomRefresh);
+    await listRooms();
+    roomListTimer = setInterval(listRooms, 30000);
+  }
   document.addEventListener("DOMContentLoaded",boot);
 })();
