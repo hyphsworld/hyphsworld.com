@@ -414,7 +414,11 @@
       } catch (_) {}
     });
 
-    window.addEventListener("pagehide", stopRoomRefresh);
+    window.addEventListener("pagehide", () => {
+      stopRoomRefresh();
+      if (roomListTimer) clearInterval(roomListTimer);
+      roomListTimer = null;
+    });
     await listRooms();
     roomListTimer = setInterval(listRooms, 30000);
   }
