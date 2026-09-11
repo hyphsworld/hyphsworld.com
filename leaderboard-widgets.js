@@ -5,6 +5,12 @@
   const CDN = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
   const DEFAULT_LIMIT = 8;
   const REFRESH_MS = 45000;
+  const TABLE_GAME_KEYS = {
+    dice: "01_dice",
+    blackjack: "01_blackjack",
+    poker: "01_poker_beta",
+    spades: "01_spades_beta"
+  };
 
   let clientPromise = null;
 
@@ -102,7 +108,7 @@
       const score = mode === "games" ? row.score : row.points;
       const label = mode === "games" ? safeText(row.game_key, "game score") : "cool points";
       const meta = mode === "games"
-        ? `${safeText(row.game_key, "game")} • +${formatNumber(row.points_delta)} points`
+        ? `PERSONAL BEST • ${safeText(row.game_key, "game")} • +${formatNumber(row.points_delta)} points`
         : `${row.level_2_unlocked ? "Level 2" : row.level_1_unlocked ? "Level 1" : "Lobby"} clearance`;
 
       return `
@@ -137,11 +143,19 @@
     return data || [];
   }
 
+  function resolvedGameKey(root) {
+    const configured = safeText(root.getAttribute("data-game-key"), "");
+    if (configured) return configured;
+    if (!/\/table-game\.html$/i.test(window.location.pathname)) return null;
+    const game = safeText(new URLSearchParams(window.location.search).get("game"), "dice").toLowerCase();
+    return TABLE_GAME_KEYS[game] || TABLE_GAME_KEYS.dice;
+  }
+
   async function hydrateLeaderboard(root) {
     const list = root.querySelector("[data-hw-leaderboard-list]");
     const buttons = Array.from(root.querySelectorAll("[data-hw-board-mode]"));
     const limit = num(root.getAttribute("data-limit")) || DEFAULT_LIMIT;
-    const gameKey = safeText(root.getAttribute("data-game-key"), "") || null;
+    const gameKey = resolvedGameKey(root);
     let mode = root.getAttribute("data-default-mode") || "points";
 
     async function refresh(nextMode) {
