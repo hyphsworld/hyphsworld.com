@@ -20,5 +20,12 @@ assert(js.includes('window.HWAuth.addPoints'), 'Existing Cool Points hook must r
 assert(html.includes('auth-client.js') && html.includes('cool-points.js'), 'Login and Cool Points clients must remain loaded');
 assert(lobby.includes('🎲 Craps<br>1–4 Players'), 'Casino lobby must identify Dice as Craps');
 assert(!js.includes('sb.rpc("create_craps'), 'Craps upgrade must not introduce a database migration or new RPC');
+assert(html.includes('table-turn-banner') && html.includes('card-control-dock'), 'Every table must use the shared Domino-style layer order');
+assert(js.includes('stage.dataset.game=gameType'), 'Each live stage must expose its game-specific presentation hook');
+assert(js.includes('applySeatCapacity(activeRoom.max_players'), 'POV seats must reflect the selected one-to-four player capacity');
+assert(js.includes('table-center-zone') && js.includes('player-rail-zone'), 'Cards must separate center play from the local player rail');
+assert(css.includes('Unified Domino-style POV contract') && css.includes('grid-template-rows:auto auto minmax(310px,1fr) auto'), 'Shared POV CSS must reserve non-overlapping table layers');
+assert(css.includes('.spades-zone .player-rail-zone .hw-card'), 'Thirteen-card Spades hands must fit the player rail');
+assert(html.includes('20260911-unified-pov-1'), 'Mobile browsers must receive the unified POV cache-busted assets');
 
 console.log('Table games POV diagnostic passed: premium scene, regular craps, and protected integration hooks are intact.');

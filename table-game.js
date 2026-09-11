@@ -103,8 +103,17 @@
     setText("tableActionLabel", gameType === "dice" ? "Pass Line Action" : `${cfg.title.replace(" Table", "")} Action`);
     setText("cardPovSign", `${cfg.title.toUpperCase()} // 01`);
     document.body.dataset.tableGame = gameType;
+    const room = document.querySelector(".card-pov-room");
+    if (room) room.setAttribute("aria-label", `${cfg.title} first-person player seat`);
     const playerSelect = $("tablePlayerCount");
     if (playerSelect && gameType === "spades") playerSelect.value = "4";
+  }
+
+  function applySeatCapacity(playerCount) {
+    const count = Math.min(4, Math.max(1, Number(playerCount || 2)));
+    document.querySelector(".card-seat-top")?.toggleAttribute("hidden", count < 2);
+    document.querySelector(".card-seat-left")?.toggleAttribute("hidden", count < 3);
+    document.querySelector(".card-seat-right")?.toggleAttribute("hidden", count < 4);
   }
 
   async function listRooms() {
@@ -244,26 +253,33 @@
 
   function renderState() {
     const stage=$("tableStage"),controls=$("tableControls"),log=$("tableLog"); if(!stage||!controls||!log)return;
-    if(!activeRoom||!activeState||!currentUser){stage.innerHTML=`<div class="hw-leaderboard-empty">Create or join a table to start.</div>`;controls.innerHTML="";return;}
+    stage.dataset.game=gameType;
+    if(!activeRoom||!activeState||!currentUser){document.body.classList.remove("table-game-active");setText("tableTurnBanner","CREATE OR JOIN A TABLE");stage.innerHTML=`<div class="table-empty-state"><b>TAKE YOUR SEAT</b><span>Start a table or enter a room code.</span></div>`;controls.innerHTML="";applySeatCapacity(requestedPlayerCount());return;}
+    document.body.classList.add("table-game-active");
+    applySeatCapacity(activeRoom.max_players || requestedPlayerCount());
     setText("tableActiveRoomCode",activeRoom.room_code||"ROOM");setText("tableModeLabel",GAME_CONFIG[gameType].title.replace(" Table", "").toUpperCase());
     if(gameType==="dice"){
+      setText("tableTurnBanner","YOUR ROLL • PASS LINE");
       const craps=activeState.craps||{dice:[],point:null,total:null,result:"come-out",message:"Come-out roll: 7 or 11 wins; 2, 3, or 12 craps."};
       const activePoint=Number(craps.point)||null;
       const pointNumbers=[4,5,6,8,9,10];
       stage.innerHTML=`<div class="craps-table" aria-label="Standard Pass Line craps layout"><div class="craps-number-row">${pointNumbers.map((number)=>`<span class="craps-number${activePoint===number?" is-point":""}">${number}${activePoint===number?'<b>ON</b>':''}</span>`).join("")}</div><div class="craps-bet-row"><span>COME</span><span>FIELD<br><small>2 3 4 9 10 11 12</small></span></div><div class="craps-bet-row dont-pass"><span>DON’T PASS BAR 12</span></div><div class="craps-pass-line">PASS LINE</div><div class="craps-dice" aria-label="Last roll"><span>${dieFace(craps.dice?.[0])}</span><span>${dieFace(craps.dice?.[1])}</span></div><div class="craps-puck ${craps.point?'is-on':'is-off'}">${craps.point?`ON ${craps.point}`:"OFF"}</div><div class="craps-result"><strong>${craps.total?`ROLL ${craps.total}`:"COME-OUT"}</strong><small>${safeText(craps.message,"Roll the dice to start.")}</small></div></div>`;
       controls.innerHTML=`<button class="games-btn primary craps-roll-btn" type="button" data-action="dice-roll">Roll Dice</button>`;
     }else if(gameType==="blackjack"){
-      const bj=activeState.blackjack||{player:[],dealer:[],result:"waiting"};stage.innerHTML=`<div class="card-zone"><strong>Dealer • ${handTotal(bj.dealer||[])}</strong>${cardRow(bj.dealer||[])}<strong>Your Hand • ${handTotal(bj.player||[])}</strong>${cardRow(bj.player||[])}<div class="card-table-score">${safeText(bj.result,"waiting").toUpperCase()} • ${activeState.lastScore||0}</div></div>`;
+      setText("tableTurnBanner","BLACKJACK • MAKE YOUR MOVE");
+      const bj=activeState.blackjack||{player:[],dealer:[],result:"waiting"};stage.innerHTML=`<div class="card-zone blackjack-zone"><div class="table-center-zone"><strong>Dealer • ${handTotal(bj.dealer||[])}</strong>${cardRow(bj.dealer||[])}</div><div class="player-rail-zone"><strong>Your Hand • ${handTotal(bj.player||[])}</strong>${cardRow(bj.player||[])}</div><div class="card-table-score">${safeText(bj.result,"waiting").toUpperCase()} • ${activeState.lastScore||0}</div></div>`;
       controls.innerHTML=`<button class="games-btn primary" type="button" data-action="blackjack-deal">Deal</button><button class="games-btn" type="button" data-action="blackjack-hit">Hit</button><button class="games-btn ghost" type="button" data-action="blackjack-stand">Stand</button>`;
     }else if(gameType==="poker"){
-      const poker=activeState.poker||{hand:[],community:[]};stage.innerHTML=`<div class="card-zone"><strong>Community</strong>${cardRow(poker.community||[])}<strong>Your Hand</strong>${cardRow(poker.hand||[])}<div class="card-table-score">Table Score ${activeState.lastScore||0}</div></div>`;controls.innerHTML=`<button class="games-btn primary" type="button" data-action="poker-round">Deal Poker Hand</button>`;
+      setText("tableTurnBanner","POKER • CARDS IN THE CENTER");
+      const poker=activeState.poker||{hand:[],community:[]};stage.innerHTML=`<div class="card-zone poker-zone"><div class="table-center-zone"><strong>Community Cards</strong>${cardRow(poker.community||[])}</div><div class="player-rail-zone"><strong>Your Hole Cards</strong>${cardRow(poker.hand||[])}</div><div class="card-table-score">Table Score ${activeState.lastScore||0}</div></div>`;controls.innerHTML=`<button class="games-btn primary" type="button" data-action="poker-round">Deal Poker Hand</button>`;
     }else{
-      const spades=activeState.spades||{hand:[],lead:null};stage.innerHTML=`<div class="card-zone"><strong>Lead Card</strong>${cardRow(spades.lead?[spades.lead]:[])}<strong>Your Hand</strong>${cardRow(spades.hand||[])}<div class="card-table-score">Round Score ${activeState.lastScore||0}</div></div>`;controls.innerHTML=`<button class="games-btn primary" type="button" data-action="spades-round">Deal Spades Hand</button>`;
+      setText("tableTurnBanner","SPADES • FOLLOW SUIT");
+      const spades=activeState.spades||{hand:[],lead:null};stage.innerHTML=`<div class="card-zone spades-zone"><div class="table-center-zone"><strong>Center Trick</strong>${cardRow(spades.lead?[spades.lead]:[])}</div><div class="player-rail-zone"><strong>Your Hand</strong>${cardRow(spades.hand||[])}</div><div class="card-table-score">Round Score ${activeState.lastScore||0}</div></div>`;controls.innerHTML=`<button class="games-btn primary" type="button" data-action="spades-round">Deal Spades Hand</button>`;
     }
     controls.querySelectorAll("[data-action]").forEach((button)=>button.addEventListener("click",async()=>{button.disabled=true;try{const action=button.getAttribute("data-action");if(action==="dice-roll")await diceRound();if(action==="blackjack-deal")await blackjackDeal();if(action==="blackjack-hit")await blackjackHit();if(action==="blackjack-stand")await blackjackStand();if(action==="poker-round")await pokerRound();if(action==="spades-round")await spadesRound();}finally{button.disabled=false;}}));
     log.innerHTML=(activeState.log||[]).slice().reverse().map((line)=>`<p>${safeText(line,"Table updated.")}</p>`).join("")||`<p>Duck Sauce: “Quiet table. Suspicious.”</p>`;
   }
-  function leaveView(){activeRoom=null;activeState=null;if(refreshTimer)clearInterval(refreshTimer);setText("tableActiveRoomCode","None");renderState();setStatus("Left table view.");}
-  async function boot(){const year=$("year");if(year)year.textContent=new Date().getFullYear();gameType=getGameType();applyGameCopy();try{await requireUser();setStatus(`Logged in. Create or join a ${gameType} table.`);}catch(_){setStatus("Login required to create, join, and save scores.");}$("tableCreateForm")?.addEventListener("submit",createRoom);$("tableJoinForm")?.addEventListener("submit",joinRoomByCode);$("tableRefreshRooms")?.addEventListener("click",listRooms);$("tableSubmitScoreBtn")?.addEventListener("click",submitScore);$("tableLeaveBtn")?.addEventListener("click",leaveView);$("tableResetRoundBtn")?.addEventListener("click",async()=>{if(gameType==="dice")await diceRound();else if(gameType==="blackjack")await blackjackDeal();else if(gameType==="poker")await pokerRound();else await spadesRound();});await listRooms();setInterval(listRooms,30000);}
+  function leaveView(){activeRoom=null;activeState=null;if(refreshTimer)clearInterval(refreshTimer);document.body.classList.remove("table-game-active");setText("tableActiveRoomCode","None");renderState();setStatus("Left table view.");}
+  async function boot(){const year=$("year");if(year)year.textContent=new Date().getFullYear();gameType=getGameType();applyGameCopy();applySeatCapacity(requestedPlayerCount());try{await requireUser();setStatus(`Logged in. Create or join a ${gameType} table.`);}catch(_){setStatus("Login required to create, join, and save scores.");}$("tableCreateForm")?.addEventListener("submit",createRoom);$("tablePlayerCount")?.addEventListener("change",()=>applySeatCapacity(requestedPlayerCount()));$("tableJoinForm")?.addEventListener("submit",joinRoomByCode);$("tableRefreshRooms")?.addEventListener("click",listRooms);$("tableSubmitScoreBtn")?.addEventListener("click",submitScore);$("tableLeaveBtn")?.addEventListener("click",leaveView);$("tableResetRoundBtn")?.addEventListener("click",async()=>{if(gameType==="dice")await diceRound();else if(gameType==="blackjack")await blackjackDeal();else if(gameType==="poker")await pokerRound();else await spadesRound();});await listRooms();setInterval(listRooms,30000);}
   document.addEventListener("DOMContentLoaded",boot);
 })();
