@@ -58,6 +58,7 @@
   let refreshTimer = null;
   let queue = Promise.resolve();
   let lastEventStamp = '';
+  let authEpoch = 0;
 
   function toNumber(value) {
     const n = Number(value || 0);
@@ -181,6 +182,7 @@
 
   function ensureHud() {
     ensureHudStyle();
+    if (!document.body) return null;
     let hud = document.getElementById('hwGlobalPointsHud');
     if (hud) return hud;
 
@@ -209,6 +211,7 @@
     if (loginLink && state.accountBacked && state.displayName) loginLink.textContent = state.displayName;
 
     const hud = ensureHud();
+    if (!hud) return;
     const hudAvatar = hud.querySelector('[data-hw-avatar]');
     const hudPoints = hud.querySelector('[data-hw-points]');
     const hudRank = hud.querySelector('[data-hw-rank]');
@@ -270,9 +273,11 @@
   async function refresh(reason) {
     if (state.busy && reason !== 'force') return snapshot();
     state.busy = true;
+    const requestEpoch = authEpoch;
 
     try {
       const user = await getAccountUser();
+      if (requestEpoch !== authEpoch) { state.busy = false; return snapshot(); }
       if (!user) return applyLoggedOut(reason || 'login_required');
 
       const cached = readCachedBalance();
@@ -283,6 +288,7 @@
       if (cached > accountPoints && window.HWAuth && typeof window.HWAuth.setPoints === 'function') {
         const recovered = cached;
         await window.HWAuth.setPoints(recovered, 'recover_higher_cached_balance', { source: VERSION, previousAccountPoints: accountPoints });
+        if (requestEpoch !== authEpoch) { state.busy = false; return snapshot(); }
         safeUser.coolPoints = recovered;
         safeUser.lifetimePoints = Math.max(lifetimePoints, recovered);
         return applyAccount(safeUser, 'recovered_cached_to_account');
@@ -388,21 +394,23 @@
 
   function wireEvents() {
     document.addEventListener('click', (event) => {
-      const addButton = event.target.closest('[data-point-add]');
+      const target = event.target instanceof Element ? event.target : event.target?.parentElement;
+      if (!target || typeof target.closest !== 'function') return;
+      const addButton = target.closest('[data-point-add]');
       if (addButton) {
         event.preventDefault();
         add(addButton.dataset.pointAdd, addButton.dataset.pointReason || addButton.dataset.reason || 'button_award');
         return;
       }
 
-      const legacyEarnButton = event.target.closest('[data-points]');
+      const legacyEarnButton = target.closest('[data-points]');
       if (legacyEarnButton) {
         event.preventDefault();
         add(legacyEarnButton.dataset.points, legacyEarnButton.dataset.reason || legacyEarnButton.dataset.pointReason || 'legacy_button_award');
         return;
       }
 
-      const spendButton = event.target.closest('[data-point-spend]');
+      const spendButton = target.closest('[data-point-spend]');
       if (spendButton) {
         event.preventDefault();
         spend(spendButton.dataset.pointSpend, spendButton.dataset.pointReason || spendButton.dataset.reason || 'button_spend');
@@ -417,6 +425,16 @@
     document.addEventListener('hw:points:add', (event) => {
       const detail = event.detail || {};
       add(detail.amount || detail.points || 0, detail.reason || 'site_event', detail.metadata || {});
+    });
+
+    document.addEventListener('hyph:auth-state-changed', (event) => {
+      authEpoch += 1;
+      if (event?.detail?.event === 'SIGNED_OUT') {
+        writeCachedBalance(0);
+        applyLoggedOut('signed_out');
+      } else {
+        refresh('auth_changed');
+      }
     });
   }
 
