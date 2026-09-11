@@ -1,8 +1,6 @@
 (function () {
   "use strict";
 
-  const CONFIG_FILE = "supabase-config.js";
-  const CDN = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
   const REFRESH_MS = 5000;
   const GAME_CONFIG = {
     dice: { title: "Craps Table", intro: "Regular Pass Line craps from a premium HYPHSWORLD player-seat table.", scoreKey: "01_dice", winPoints: 75, maxPlayers: 4 },
@@ -11,7 +9,6 @@
     spades: { title: "Spades Table", intro: "Four-seat Spades table with your hand in front, table action in the center, and one shared room code.", scoreKey: "01_spades_beta", winPoints: 125, maxPlayers: 4 }
   };
 
-  let sbPromise = null;
   let currentUser = null;
   let activeRoom = null;
   let activeState = null;
@@ -56,32 +53,15 @@
     return deck;
   }
 
-  function loadScript(src) {
-    return new Promise((resolve, reject) => {
-      const existing = Array.from(document.scripts).find((script) => script.src && script.src.includes(src));
-      if (existing) { setTimeout(resolve, 80); return; }
-      const script = document.createElement("script");
-      script.src = src; script.async = false; script.onload = resolve;
-      script.onerror = () => reject(new Error("Could not load " + src));
-      document.head.appendChild(script);
-    });
-  }
-  function configReady(config) {
-    const url = String(config?.url || "").trim();
-    const anonKey = String(config?.anonKey || config?.anon_key || "").trim();
-    return Boolean(url && anonKey && !/PASTE_|YOUR_|PROJECT_URL|ANON_PUBLIC_KEY/i.test(url + anonKey));
-  }
   async function getClient() {
-    if (sbPromise) return sbPromise;
-    sbPromise = (async () => {
-      if (!window.HW_SUPABASE_CONFIG) await loadScript(CONFIG_FILE);
-      const config = window.HW_SUPABASE_CONFIG || {};
-      if (!configReady(config)) throw new Error("Supabase config missing.");
-      if (!window.supabase?.createClient) await loadScript(CDN);
-      if (!window.supabase?.createClient) throw new Error("Supabase client unavailable.");
-      return window.supabase.createClient(config.url, config.anonKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
-    })();
-    return sbPromise;
+    if (!window.HWAuth || typeof window.HWAuth.getClient !== "function") {
+      throw new Error("HYPHSWORLD account service unavailable.");
+    }
+    const client = await window.HWAuth.getClient();
+    if (!client || typeof client.from !== "function" || typeof client.rpc !== "function") {
+      throw new Error("Supabase client unavailable.");
+    }
+    return client;
   }
   async function requireUser() {
     if (!window.HWAuth) throw new Error("Auth unavailable.");
