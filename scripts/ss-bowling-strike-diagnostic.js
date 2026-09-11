@@ -10,6 +10,8 @@ assert(effects.includes('linear-gradient'), 'Strike text must use a bright multi
 assert(effects.includes('@keyframes hwStrikePop'), 'Strike text must include an entrance animation');
 assert(effects.includes('@keyframes hwStrikeGlow'), 'Strike text must include an animated glow');
 assert(effects.includes('hw-gator-eyes'), 'Alley Gator must show warning eyes before the chomp');
+assert(effects.includes('lock[\\s-]*aim'), 'Alley Gator must recognize the live LOCK AIM control');
+assert(effects.includes('throwCount === 1'), 'Alley Gator must appear on the first qualifying throw so players can discover it');
 assert(effects.includes("root.dataset.stage = 'warning'"), 'Alley Gator sequence must begin with a warning');
 assert(effects.includes("root.dataset.stage = 'chomp'"), 'Alley Gator warning must advance to the chomp');
 assert(effects.indexOf("root.dataset.stage = 'warning'") < effects.indexOf("root.dataset.stage = 'chomp'"), 'Warning must occur before the chomp');
