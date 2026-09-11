@@ -26,8 +26,9 @@ assert(js.includes('applySeatCapacity(activeRoom.max_players'), 'POV seats must 
 assert(js.includes('table-center-zone') && js.includes('player-rail-zone'), 'Cards must separate center play from the local player rail');
 assert(css.includes('Unified Domino-style POV contract') && css.includes('grid-template-rows:auto auto minmax(310px,1fr) auto'), 'Shared POV CSS must reserve non-overlapping table layers');
 assert(css.includes('.spades-zone .player-rail-zone .hw-card'), 'Thirteen-card Spades hands must fit the player rail');
-assert(css.includes('margin:clamp(170px,39vw,250px) 0 0'), 'Desktop card and craps tables must use the lowered Domino-style sightline');
-assert(css.includes('margin-top:clamp(160px,43vw,195px)'), 'Mobile card and craps tables must begin as low as the Domino felt');
-assert(html.includes('20260911-lower-tables-1'), 'Mobile browsers must receive the lowered table position immediately');
+assert(css.includes('padding:clamp(230px,32vw,320px) 10px 10px'), 'Desktop card and craps tables must reserve the full character sightline above the felt');
+assert(css.includes('padding:clamp(270px,62vw,340px) 6px 6px'), 'Mobile card and craps tables must begin below the character like the Domino table');
+assert(css.includes('min-height:690px;padding-top:180px'), 'Landscape mode must keep a lower table without wasting the short viewport');
+assert(html.includes('20260911-lower-tables-2'), 'Mobile browsers must receive the corrected lower table position immediately');
 
 console.log('Table games POV diagnostic passed: premium scene, regular craps, and protected integration hooks are intact.');

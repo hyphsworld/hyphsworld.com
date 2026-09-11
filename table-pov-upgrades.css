@@ -28,12 +28,12 @@
 @media(max-width:640px){.domino-pov-game .pov-player-hand{min-height:76px!important;padding:10px 2px 6px!important}.domino-pov-game .pov-player-hand .domino-tile{width:44px!important;height:68px!important;margin-inline:-3px!important}.domino-pov-game .pov-board .domino-tile{width:48px!important;height:30px!important}.table-game-page .card-pov-room{min-height:670px;padding:8px}.table-game-page .card-pov-neon{top:8px;left:8px;max-width:22%;padding:5px 7px}.table-game-page .card-pov-points{top:8px;right:8px;padding:5px 7px}.table-game-page .card-seat{min-width:74px;min-height:38px;padding:5px 7px}.table-game-page .card-seat strong{font-size:.58rem}.table-game-page .card-seat small{font-size:.46rem}.table-game-page .card-seat-top{top:8px}.table-game-page .card-seat-left,.table-game-page .card-seat-right{top:29%}.table-game-page .card-felt{min-height:590px;margin-top:54px;padding:92px 6px 68px;border-width:8px}.table-game-page .game-table-stage{min-height:270px;padding:4px}.table-game-page .game-table-stage .bone-yard{min-height:220px;padding:4px}.table-game-page .hw-card{width:38px;height:58px;border-radius:7px}.table-game-page .hw-card-row{gap:3px}}
 
 /* Unified Domino-style POV contract: background, seats, center play, player rail, controls. */
-.table-game-page .card-pov-room{box-sizing:border-box;display:grid;grid-template-rows:minmax(0,1fr);width:min(100%,620px);min-height:760px;margin-inline:auto;padding:10px;overflow:hidden;background-position:center top}
+.table-game-page .card-pov-room{box-sizing:border-box;display:grid;grid-template-rows:minmax(0,1fr);width:min(100%,620px);min-height:900px;margin-inline:auto;padding:clamp(230px,32vw,320px) 10px 10px;overflow:hidden;background-position:center top}
 .table-game-page .card-seat[hidden]{display:none!important}
 .table-game-page .card-seat-top{top:72px}
 .table-game-page .card-seat-left{top:44%;left:-4px}.table-game-page .card-seat-right{top:44%;right:-4px}
 .table-game-page .card-seat-self{z-index:9;bottom:78px}
-.table-game-page .card-felt{box-sizing:border-box;display:grid;grid-template-rows:auto auto minmax(310px,1fr) auto;align-self:end;width:100%;min-height:600px;margin:clamp(170px,39vw,250px) 0 0;padding:78px 18px 72px;border-radius:44% 44% 22px 22px/13% 13% 22px 22px;transform:none}
+.table-game-page .card-felt{box-sizing:border-box;display:grid;grid-template-rows:auto auto minmax(310px,1fr) auto;align-self:end;width:100%;min-height:600px;margin:0;padding:78px 18px 72px;border-radius:44% 44% 22px 22px/13% 13% 22px 22px;transform:none}
 .table-game-page .card-table-toolbar{position:absolute;z-index:8;top:20px;left:28px;right:28px;display:flex;align-items:center;justify-content:space-between;gap:12px;color:#aaffcf;font-size:.68rem;font-weight:1000;letter-spacing:.12em;text-transform:uppercase}
 .table-game-page .card-table-toolbar .games-btn{min-height:38px;padding:6px 12px;background:rgba(0,0,0,.68)}
 .table-game-page .table-turn-banner{position:relative;z-index:6;justify-self:center;max-width:86%;margin:0 auto 6px;padding:7px 18px;border:1px solid rgba(57,255,122,.75);border-radius:999px;background:rgba(0,0,0,.76);color:#baffca;font-size:.68rem;font-weight:1000;letter-spacing:.1em;text-align:center;box-shadow:0 0 18px rgba(57,255,122,.25)}
@@ -56,9 +56,9 @@
 @media(max-width:640px){
   .table-game-page .dominos-hero{margin-top:12px;padding:18px}.table-game-page .dominos-hero h1{font-size:2.25rem}.table-game-page .dominos-hero>p:not(.eyebrow){display:none}
   .table-game-page .card-pov-game{padding:7px 4px 10px}.table-game-page .card-pov-game>h2,.table-game-page .card-pov-game>.dominos-scoreboard{display:none}
-  .table-game-page .card-pov-room{width:100%;min-height:720px;padding:6px;border-radius:20px}
+  .table-game-page .card-pov-room{width:100%;min-height:880px;padding:clamp(270px,62vw,340px) 6px 6px;border-radius:20px}
   .table-game-page .card-pov-neon{max-width:30%}.table-game-page .card-seat-top{top:55px}.table-game-page .card-seat-left,.table-game-page .card-seat-right{top:43%}.table-game-page .card-seat-self{bottom:72px}
-  .table-game-page .card-felt{grid-template-rows:auto auto minmax(290px,1fr) auto;min-height:580px;margin-top:clamp(160px,43vw,195px);padding:65px 7px 68px;border-width:8px}
+  .table-game-page .card-felt{grid-template-rows:auto auto minmax(290px,1fr) auto;min-height:580px;margin-top:0;padding:65px 7px 68px;border-width:8px}
   .table-game-page .card-table-toolbar{top:16px;left:15px;right:15px}.table-game-page .card-table-toolbar .games-btn{font-size:.55rem}
   .table-game-page .table-turn-banner{max-width:92%;padding:6px 10px;font-size:.58rem}
   .table-game-page .game-table-stage{min-height:290px;padding:3px}.table-game-page .card-zone{min-height:285px;padding:4px}
@@ -69,5 +69,5 @@
 }
 
 @media(orientation:landscape) and (max-height:640px){
-  .table-game-page .card-pov-room{min-height:620px}.table-game-page .card-felt{min-height:500px;margin-top:140px;padding-top:58px}.table-game-page .card-seat-left,.table-game-page .card-seat-right{top:40%}
+  .table-game-page .card-pov-room{min-height:690px;padding-top:180px}.table-game-page .card-felt{min-height:500px;margin-top:0;padding-top:58px}.table-game-page .card-seat-left,.table-game-page .card-seat-right{top:40%}
 }
