@@ -13,6 +13,8 @@
   let activeState = null;
   let activeVersion = null;
   let refreshTimer = null;
+  let roomViewToken = 0;
+  let roomListTimer = null;
   let opponentProfile = null;
   let opponentProfileId = null;
   let opponentProfileRequest = 0;
@@ -275,6 +277,7 @@
 
   async function createRoom(event) {
     event.preventDefault();
+    const requestToken = roomViewToken;
     try {
       await requireUser();
       const sb = await getClient();
@@ -283,6 +286,7 @@
       setStatus("Creating table through Supabase...");
       const { data, error } = await sb.rpc("create_domino_room", { requested_code: code });
       if (error || !data || data.ok === false) throw error || new Error(safeText(data && data.error, "Room create failed."));
+      if (requestToken !== roomViewToken || !currentUser) return;
       activeRoom = data.room;
       activeState = data.state;
       activeVersion = Number(data.state?.version || 1);
@@ -306,12 +310,14 @@
   }
 
   async function joinRoomByCodeValue(code) {
+    const requestToken = roomViewToken;
     try {
       await requireUser();
       const sb = await getClient();
       setStatus("Joining table...");
       const { data, error } = await sb.rpc("join_domino_room", { p_room_code: code });
       if (error || !data || data.ok === false) throw error || new Error("Join failed.");
+      if (requestToken !== roomViewToken || !currentUser) return;
       activeRoom = data.room;
       activeState = data.state;
       activeVersion = Number(data.version || data.state?.version || 1);
@@ -344,14 +350,23 @@
 
   async function refreshActiveRoom() {
     if (!activeRoom) return;
+    const roomId = activeRoom.id;
+    const requestToken = roomViewToken;
     const sb = await getClient();
-    const { data, error } = await sb.rpc("get_domino_state", { p_room_id: activeRoom.id });
+    const { data, error } = await sb.rpc("get_domino_state", { p_room_id: roomId });
+    if (requestToken !== roomViewToken || !activeRoom || activeRoom.id !== roomId) return;
     if (!error && data && data.state) {
       activeRoom = data.room || activeRoom;
       activeState = data.state;
       activeVersion = Number(data.version || data.state.version);
       renderState();
     }
+  }
+
+  function stopRoomRefresh() {
+    roomViewToken += 1;
+    if (refreshTimer) clearInterval(refreshTimer);
+    refreshTimer = null;
   }
 
   function startRefresh() {
@@ -457,7 +472,7 @@
     opponentProfileId = null;
     opponentProfile = null;
     document.body.classList.remove("domino-game-active");
-    if (refreshTimer) clearInterval(refreshTimer);
+    stopRoomRefresh();
     setText("activeRoomCode", "None");
     setText("activeTurn", "Waiting");
     setText("povTurnBanner", "WAITING FOR TABLE");
@@ -537,8 +552,13 @@
       } catch (error) {}
     });
 
+    window.addEventListener("pagehide", () => {
+      stopRoomRefresh();
+      if (roomListTimer) clearInterval(roomListTimer);
+      roomListTimer = null;
+    });
     await listRooms();
-    setInterval(listRooms, 30000);
+    roomListTimer = setInterval(listRooms, 30000);
   }
 
   document.addEventListener("DOMContentLoaded", boot);
