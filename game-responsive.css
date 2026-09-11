@@ -1,0 +1,659 @@
+/*
+  HYPHSWORLD responsive game contract
+  Loaded after legacy game styles so portrait, landscape, tablet, and desktop
+  share one final layout authority. Gameplay and Supabase behavior stay untouched.
+*/
+
+:root{
+  --hw-game-tap:44px;
+  --hw-game-gap:clamp(8px,1.4vw,16px);
+}
+
+.games-page,
+.dominos-page{
+  overflow-x:hidden;
+}
+
+.games-page *,
+.dominos-page *{
+  box-sizing:border-box;
+}
+
+.dominos-page main{
+  width:min(100%,1440px);
+  margin-inline:auto;
+}
+
+.dominos-page .dominos-hero{
+  margin:clamp(10px,2vw,24px) auto;
+  padding:clamp(14px,2vw,24px);
+}
+
+.dominos-page .dominos-hero h1{
+  margin-block:3px 7px;
+  line-height:.95;
+}
+
+.dominos-page .dominos-actions{
+  gap:7px;
+}
+
+.dominos-page .dominos-actions .games-btn,
+.games-page .quick-table-links a{
+  min-height:var(--hw-game-tap);
+}
+
+.dominos-page .dominos-app{
+  align-items:start;
+  gap:var(--hw-game-gap);
+}
+
+.dominos-page .dominos-panel,
+.dominos-page .dominos-table{
+  min-width:0;
+}
+
+.dominos-page .room-list{
+  max-height:310px;
+  overflow:auto;
+  overscroll-behavior:contain;
+  scrollbar-width:thin;
+  scrollbar-color:#39ff7a rgba(0,0,0,.3);
+}
+
+.domino-pov-game .domino-pov-room,
+.table-game-page .card-pov-room{
+  margin-inline:auto;
+}
+
+.domino-pov-room .pov-board{
+  width:100%!important;
+  max-width:100%!important;
+  overflow:auto!important;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}
+
+.domino-pov-room .pov-player-hand{
+  width:100%!important;
+  max-width:100%!important;
+}
+
+.domino-pov-room>.pov-action-dock{
+  position:relative!important;
+  inset:auto!important;
+  z-index:12;
+  width:calc(100% - 12px)!important;
+  margin:8px 6px 10px!important;
+}
+
+.domino-pov-room>.pov-action-dock .games-btn{
+  min-width:0;
+  min-height:var(--hw-game-tap);
+}
+
+.table-game-page .card-pov-room{
+  width:min(100%,720px)!important;
+  min-height:clamp(720px,70vw,820px)!important;
+  padding:clamp(190px,25vw,250px) 10px 10px!important;
+}
+
+.table-game-page .card-felt{
+  min-height:520px!important;
+  padding:64px clamp(8px,2.5vw,22px) 12px!important;
+}
+
+.table-game-page .game-table-stage{
+  min-width:0;
+  min-height:250px!important;
+  overflow:hidden!important;
+}
+
+.table-game-page .card-zone,
+.table-game-page .table-center-zone,
+.table-game-page .player-rail-zone{
+  min-width:0;
+  max-width:100%;
+}
+
+.table-game-page .player-rail-zone .hw-card-row{
+  max-width:100%;
+  overflow-x:auto;
+  overscroll-behavior:contain;
+  scrollbar-width:thin;
+  scrollbar-color:#39ff7a rgba(0,0,0,.3);
+}
+
+.table-game-page .card-control-dock{
+  position:relative!important;
+  inset:auto!important;
+  z-index:10;
+  width:100%;
+  margin-top:8px;
+}
+
+.table-game-page .card-control-dock #tableControls{
+  min-width:0;
+  overflow-x:auto;
+  overscroll-behavior:contain;
+}
+
+.table-game-page .card-control-dock .games-btn{
+  min-height:var(--hw-game-tap);
+}
+
+.table-game-active .dominos-panel,
+.domino-game-active .dominos-panel{
+  display:none;
+}
+
+.table-game-active .dominos-app,
+.domino-game-active .dominos-app{
+  grid-template-columns:minmax(0,1fr);
+}
+
+.table-game-active .dominos-table,
+.domino-game-active .dominos-table{
+  width:min(100%,820px);
+  margin-inline:auto;
+}
+
+.games-page .quick-table-links{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:8px;
+}
+
+.games-page .quick-table-links a{
+  display:grid;
+  place-items:center;
+  padding:10px;
+  text-align:center;
+}
+
+@media (min-width:641px) and (max-width:1024px){
+  .dominos-page .dominos-app{
+    grid-template-columns:minmax(210px,28%) minmax(0,1fr);
+  }
+
+  .dominos-page .dominos-panel{
+    padding:14px;
+  }
+
+  .domino-pov-room{
+    width:100%!important;
+  }
+
+  .domino-pov-room .pov-player-hand{
+    display:grid!important;
+    grid-template-columns:repeat(7,minmax(0,1fr))!important;
+    gap:3px!important;
+  }
+
+  .domino-pov-room .pov-player-hand .domino-tile,
+  .domino-pov-room .pov-player-hand .domino-tile:nth-child(n){
+    width:100%!important;
+    min-width:0!important;
+    max-width:66px!important;
+    height:90px!important;
+    margin:0 auto!important;
+    transform:none!important;
+  }
+
+  .table-game-page .card-pov-room{
+    min-height:760px!important;
+    padding-top:210px!important;
+  }
+
+  .table-game-page .card-felt{
+    min-height:520px!important;
+  }
+
+  .games-page .quick-table-links{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+}
+
+@media (max-width:640px){
+  .dominos-page .site-header{
+    padding:9px 10px;
+  }
+
+  .dominos-page .site-header .brand-lockup span{
+    display:none;
+  }
+
+  .dominos-page .site-header .brand-lockup strong{
+    font-size:clamp(.92rem,5vw,1.18rem);
+  }
+
+  .dominos-page .main-nav{
+    flex-wrap:nowrap;
+    max-width:100%;
+    padding-bottom:3px;
+    overflow-x:auto;
+    overscroll-behavior-inline:contain;
+    scrollbar-width:none;
+  }
+
+  .dominos-page .main-nav::-webkit-scrollbar{
+    display:none;
+  }
+
+  .dominos-page .main-nav a{
+    flex:0 0 auto;
+    min-height:40px;
+  }
+
+  .dominos-page .ticker{
+    min-height:30px;
+  }
+
+  .dominos-page .dominos-hero{
+    margin:6px 7px;
+    padding:10px 11px!important;
+  }
+
+  .dominos-page .dominos-hero .eyebrow,
+  .dominos-page .dominos-hero>p:not(.eyebrow){
+    display:none;
+  }
+
+  .dominos-page .dominos-hero h1{
+    font-size:clamp(1.65rem,9vw,2.3rem)!important;
+  }
+
+  .dominos-page .dominos-actions{
+    display:flex;
+    flex-wrap:nowrap;
+    width:100%;
+    padding-bottom:3px;
+    overflow-x:auto;
+    overscroll-behavior-inline:contain;
+    scrollbar-width:none;
+  }
+
+  .dominos-page .dominos-actions::-webkit-scrollbar{
+    display:none;
+  }
+
+  .dominos-page .dominos-actions .games-btn{
+    flex:0 0 auto;
+    min-height:42px;
+  }
+
+  .dominos-page .dominos-app{
+    display:flex!important;
+    flex-direction:column;
+    gap:8px;
+    padding-inline:4px;
+  }
+
+  .dominos-page .dominos-panel{
+    width:100%;
+    margin:0!important;
+    padding:11px;
+  }
+
+  .dominos-page .dominos-panel h2{
+    margin-bottom:4px;
+    font-size:1.25rem;
+  }
+
+  .dominos-page .quick-table-steps{
+    margin:7px 0;
+  }
+
+  .dominos-page .quick-table-form{
+    padding:9px;
+  }
+
+  .dominos-page .quick-table-form input,
+  .dominos-page .quick-table-form select,
+  .dominos-page .quick-table-form button{
+    min-height:var(--hw-game-tap);
+  }
+
+  .dominos-page .room-list{
+    max-height:154px;
+  }
+
+  .dominos-page .room-row{
+    min-height:52px;
+    padding:7px;
+  }
+
+  .dominos-page .dominos-table{
+    width:100%;
+    padding:8px 4px 12px!important;
+    overflow:hidden;
+  }
+
+  .dominos-page .dominos-scoreboard{
+    gap:6px;
+    margin-bottom:7px;
+  }
+
+  .dominos-page .score-card{
+    min-height:54px;
+    padding:8px;
+  }
+
+  .domino-help-strip{
+    margin-inline:0!important;
+  }
+
+  .domino-pov-room{
+    display:flex!important;
+    flex-direction:column;
+    width:100%!important;
+    height:auto!important;
+    min-height:650px!important;
+    max-height:none!important;
+    padding:6px 5px 7px!important;
+    overflow:hidden!important;
+  }
+
+  .domino-pov-room .pov-felt{
+    display:flex!important;
+    flex:1 1 auto;
+    flex-direction:column;
+    justify-content:flex-end;
+    width:100%;
+    height:auto!important;
+    min-height:530px!important;
+    margin:0!important;
+    padding:150px 8px 8px!important;
+  }
+
+  .domino-pov-room .pov-board{
+    flex:1 1 190px;
+    min-height:190px!important;
+    max-height:230px!important;
+    padding:7px!important;
+  }
+
+  .domino-pov-room .domino-chain-stage{
+    margin-inline:auto!important;
+    margin-bottom:0!important;
+    transform:translateY(28px) perspective(680px) rotateX(16deg) scale(.78)!important;
+    transform-origin:top center!important;
+  }
+
+  .domino-pov-room .pov-player-hand{
+    display:grid!important;
+    grid-template-columns:repeat(7,minmax(0,1fr))!important;
+    align-items:end!important;
+    justify-content:stretch!important;
+    gap:3px!important;
+    min-height:96px!important;
+    padding:6px 5px 4px!important;
+    overflow:visible!important;
+  }
+
+  .domino-pov-room .pov-player-hand .domino-tile,
+  .domino-pov-room .pov-player-hand .domino-tile:nth-child(n){
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    grid-template-rows:repeat(2,minmax(0,1fr))!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:54px!important;
+    height:clamp(82px,24vw,98px)!important;
+    margin:0 auto!important;
+    padding:0!important;
+    overflow:hidden!important;
+    transform:none!important;
+  }
+
+  .domino-pov-room .pov-player-hand .domino-tile .pip-face{
+    width:100%!important;
+    min-width:0!important;
+    height:auto!important;
+    min-height:0!important;
+    padding:2px!important;
+  }
+
+  .domino-pov-room .pov-player-hand .domino-tile .pip-face:first-child{
+    border-right:0!important;
+    border-bottom:2px solid #121212!important;
+  }
+
+  .domino-pov-room .pov-player-hand .domino-tile.is-playable,
+  .domino-pov-room .pov-player-hand .domino-tile.is-playable:hover,
+  .domino-pov-room .pov-player-hand .domino-tile.is-playable:focus-visible{
+    transform:translateY(-4px)!important;
+  }
+
+  .domino-pov-room>.pov-action-dock{
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:5px!important;
+  }
+
+  .domino-pov-room>.pov-action-dock .games-btn,
+  .domino-pov-room>.pov-action-dock .primary{
+    grid-column:auto!important;
+    min-height:46px!important;
+    padding:6px 3px!important;
+    font-size:.64rem!important;
+  }
+
+  .domino-game-active .dominos-hero,
+  .table-game-active .dominos-hero{
+    display:none;
+  }
+
+  .domino-game-active .dominos-table>h2,
+  .domino-game-active .dominos-scoreboard,
+  .table-game-active .dominos-table>h2,
+  .table-game-active .dominos-scoreboard{
+    display:none;
+  }
+
+  .table-game-page .card-pov-room{
+    display:flex!important;
+    flex-direction:column;
+    width:100%!important;
+    height:auto!important;
+    min-height:700px!important;
+    padding:190px 6px 7px!important;
+    overflow:hidden!important;
+  }
+
+  .table-game-page .card-felt{
+    display:grid!important;
+    grid-template-rows:auto auto minmax(250px,1fr) auto!important;
+    width:100%;
+    min-height:500px!important;
+    margin:0!important;
+    padding:54px 7px 9px!important;
+  }
+
+  .table-game-page .game-table-stage{
+    min-height:250px!important;
+    padding:3px!important;
+  }
+
+  .table-game-page .card-zone{
+    width:100%;
+    min-height:245px!important;
+    padding:7px!important;
+  }
+
+  .table-game-page .table-center-zone .hw-card-row{
+    justify-content:center;
+    flex-wrap:wrap;
+  }
+
+  .table-game-page .player-rail-zone .hw-card-row{
+    display:flex;
+    flex-wrap:nowrap!important;
+    justify-content:flex-start!important;
+    gap:3px!important;
+    width:100%;
+    padding:5px 2px;
+    overflow-x:auto!important;
+  }
+
+  .table-game-page .player-rail-zone .hw-card{
+    flex:0 0 38px;
+    width:38px!important;
+    height:58px!important;
+  }
+
+  .table-game-page .card-control-dock{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    gap:5px!important;
+    padding:5px!important;
+  }
+
+  .table-game-page .card-control-dock #tableControls{
+    display:flex!important;
+    flex-wrap:nowrap!important;
+    justify-content:flex-start!important;
+    gap:5px!important;
+  }
+
+  .table-game-page .card-control-dock .games-btn{
+    flex:0 0 auto;
+    min-height:46px!important;
+    padding:6px 9px!important;
+    font-size:.65rem!important;
+  }
+
+  .table-game-page .card-seat-left{
+    left:4px!important;
+  }
+
+  .table-game-page .card-seat-right{
+    right:4px!important;
+  }
+
+  .games-page .quick-table-links{
+    grid-template-columns:1fr;
+  }
+
+  .games-page .quick-table-links a{
+    min-height:58px;
+    font-size:.9rem;
+  }
+
+  .games-page .casino-grid{
+    grid-template-columns:1fr!important;
+  }
+
+  .games-page .casino-room{
+    min-width:0;
+  }
+}
+
+@media (max-width:380px){
+  .domino-pov-room{
+    min-height:620px!important;
+  }
+
+  .domino-pov-room .pov-felt{
+    min-height:500px!important;
+    padding-inline:5px!important;
+  }
+
+  .domino-pov-room .pov-player-hand{
+    gap:2px!important;
+    padding-inline:3px!important;
+  }
+
+  .domino-pov-room .pov-player-hand .domino-tile,
+  .domino-pov-room .pov-player-hand .domino-tile:nth-child(n){
+    height:82px!important;
+  }
+
+  .domino-pov-room .domino-chain-stage{
+    transform:translateY(25px) perspective(680px) rotateX(16deg) scale(.7)!important;
+  }
+
+  .table-game-page .card-control-dock{
+    grid-template-columns:1fr!important;
+  }
+
+  .table-game-page .card-control-dock #tableControls,
+  .table-game-page #tableSubmitScoreBtn{
+    width:100%;
+  }
+
+  .table-game-page #tableSubmitScoreBtn{
+    min-height:46px;
+  }
+}
+
+@media (orientation:landscape) and (max-height:640px){
+  .dominos-page .site-header,
+  .dominos-page .ticker,
+  .dominos-page .dominos-hero,
+  .domino-game-active .domino-help-strip{
+    display:none;
+  }
+
+  .dominos-page main{
+    padding:4px;
+  }
+
+  .dominos-page .dominos-panel{
+    max-height:calc(100dvh - 8px);
+    overflow:auto;
+  }
+
+  .domino-game-active .dominos-table,
+  .table-game-active .dominos-table{
+    width:min(100%,980px);
+  }
+
+  .domino-pov-room{
+    width:min(100%,900px)!important;
+    min-height:540px!important;
+  }
+
+  .domino-pov-room .pov-felt{
+    min-height:425px!important;
+    padding:108px 10px 6px!important;
+  }
+
+  .domino-pov-room .pov-board{
+    min-height:140px!important;
+    max-height:170px!important;
+  }
+
+  .domino-pov-room .pov-player-hand .domino-tile,
+  .domino-pov-room .pov-player-hand .domino-tile:nth-child(n){
+    height:76px!important;
+  }
+
+  .table-game-page .card-pov-room{
+    width:min(100%,900px)!important;
+    min-height:560px!important;
+    padding:145px 8px 7px!important;
+  }
+
+  .table-game-page .card-felt{
+    min-height:405px!important;
+    padding:44px 8px 8px!important;
+  }
+
+  .table-game-page .game-table-stage,
+  .table-game-page .card-zone{
+    min-height:190px!important;
+  }
+
+  .table-game-page .card-seat-left,
+  .table-game-page .card-seat-right{
+    top:38%!important;
+  }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .domino-pov-room *,
+  .table-game-page .card-pov-room *{
+    scroll-behavior:auto!important;
+  }
+}
