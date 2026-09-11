@@ -106,7 +106,15 @@
     const room = document.querySelector(".card-pov-room");
     if (room) room.setAttribute("aria-label", `${cfg.title} first-person player seat`);
     const playerSelect = $("tablePlayerCount");
-    if (playerSelect && gameType === "spades") playerSelect.value = "4";
+    if (playerSelect && gameType === "spades") {
+      playerSelect.value = "4";
+      playerSelect.hidden = true;
+      setText("tablePlayerCountLabel", "Classic Partners");
+      setText("tableCreateHint", "4 players • 2 teams • room code made automatically.");
+      setText("tableCreateButton", "Start Classic Table");
+      const steps = $("tableQuickSteps");
+      if (steps) steps.innerHTML = "<span>1. Start</span><span>2. Share</span><span>3. Play</span>";
+    }
   }
 
   function applySeatCapacity(playerCount) {
@@ -143,7 +151,10 @@
       }
       setStatus(`Table ${activeRoom.room_code} ready for ${playerCount} player${playerCount === 1 ? "" : "s"}. Share the code.`);
       renderState(); startRefresh(); await listRooms();
-    } catch (error) { setStatus(`Table did not create: ${safeText(error?.message,"Please try again.")}`); }
+    } catch (error) {
+      const message = safeText(error?.message, "Please try again.");
+      setStatus(message.includes("UNSUPPORTED_GAME_TYPE") ? "Spades tables are temporarily unavailable. Please refresh and retry." : `Table did not create: ${message}`);
+    }
   }
   async function joinRoomByCode(event) {
     event.preventDefault();

@@ -58,18 +58,18 @@
         <h2 id="tableSideTitle">Tables</h2>
         <p class="dominos-status" id="tableStatus">Checking login...</p>
 
-        <div class="quick-table-steps" aria-label="Three steps to start multiplayer"><span>1. Seats</span><span>2. Start</span><span>3. Share</span></div>
+        <div class="quick-table-steps" id="tableQuickSteps" aria-label="Three steps to start multiplayer"><span>1. Seats</span><span>2. Start</span><span>3. Share</span></div>
         <form class="dominos-form quick-table-form" id="tableCreateForm">
           <input id="tableRoomName" type="hidden" value="" />
-          <label for="tablePlayerCount">Players</label>
+          <label for="tablePlayerCount" id="tablePlayerCountLabel">Players</label>
           <select id="tablePlayerCount" aria-label="Number of players">
             <option value="1">1 Player</option>
             <option value="2" selected>2 Players</option>
             <option value="3">3 Players</option>
             <option value="4">4 Players</option>
           </select>
-          <small>A room code is made automatically.</small>
-          <button class="games-btn primary" type="submit">Start Table</button>
+          <small id="tableCreateHint">A room code is made automatically.</small>
+          <button class="games-btn primary" id="tableCreateButton" type="submit">Start Table</button>
         </form>
 
         <form class="dominos-form quick-table-form" id="tableJoinForm">
