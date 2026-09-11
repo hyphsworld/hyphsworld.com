@@ -18,12 +18,20 @@
   let refreshTimer = null;
   let gameType = "dice";
   let localScore = 0;
+  let scoreSubmissionId = null;
 
   function $(id) { return document.getElementById(id); }
   function setText(id, value) { const el = $(id); if (el) el.textContent = value; }
   function safeText(value, fallback) { return String(value || fallback || "").replace(/[<>]/g, "").trim(); }
   function rand(max) { return Math.floor(Math.random() * max); }
   function roomCode() { return Math.random().toString(36).replace(/[^a-z0-9]/gi, "").slice(2, 8).toUpperCase(); }
+  function submissionId() {
+    if (window.crypto?.randomUUID) return window.crypto.randomUUID();
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (token) => {
+      const value = Math.floor(Math.random() * 16);
+      return (token === "x" ? value : (value & 3) | 8).toString(16);
+    });
+  }
   function cardValue(card) { return Math.min(card.rank, 10); }
   function rankLabel(rank) { return ({ 1: "A", 11: "J", 12: "Q", 13: "K" })[rank] || String(rank); }
   function cardLabel(card) { return `${rankLabel(card.rank)}${card.suit}`; }
@@ -186,7 +194,7 @@
   }
   async function saveState(room, nextState) {
     if (!room || !currentUser) return;
-    const sb = await getClient(); activeState = nextState;
+    const sb = await getClient(); scoreSubmissionId = null; activeState = nextState;
     const { error } = await sb.from("game_state").upsert({ room_id: room.id, state: nextState, updated_by: currentUser.userId }, { onConflict: "room_id" });
     if (error) throw error;
     await sb.from("game_rooms").update({ status: nextState.status || "playing", current_turn_user_id: currentUser.userId, updated_at: new Date().toISOString() }).eq("id", room.id);
@@ -257,9 +265,33 @@
 
   async function submitScore() {
     if (!activeRoom || !activeState || !currentUser) return setStatus("Create or join a table first.");
-    const score=Math.max(1,Number(activeState.lastScore||localScore||1)),cfg=GAME_CONFIG[gameType];
-    try { const sb=await getClient(); const { error }=await sb.from("game_scores").insert({user_id:currentUser.userId,game_key:cfg.scoreKey,score,points_delta:cfg.winPoints,metadata:{room_code:activeRoom.room_code,source:"table_game",game_type:gameType}}); if(error)throw error; if(window.HWAuth?.addPoints)try{await window.HWAuth.addPoints(cfg.winPoints,`${cfg.scoreKey}_win`);}catch(_){} setStatus(`Score saved: ${score}. +${cfg.winPoints} Cool Points.`); }
-    catch(error){setStatus(`Score save failed: ${safeText(error?.message,"Please retry.")}`);}
+    const score = Math.max(1, Number(activeState.lastScore || localScore || 1));
+    const cfg = GAME_CONFIG[gameType];
+    if (!scoreSubmissionId) {
+      scoreSubmissionId = submissionId();
+    }
+    try {
+      const sb = await getClient();
+      const { data, error } = await sb.rpc("submit_game_run", {
+        p_game_key: cfg.scoreKey,
+        p_score: score,
+        p_points_delta: 0,
+        p_metadata: {
+          room_code: activeRoom.room_code,
+          source: "table_game",
+          game_type: gameType,
+          submission_id: scoreSubmissionId
+        }
+      });
+      if (error) throw error;
+      const awarded = Math.max(0, Number(data?.points_delta || 0));
+      setStatus(data?.duplicate
+        ? `Score already saved. No duplicate Cool Points added.`
+        : `Score saved: ${score}. +${awarded} Cool Points.`);
+      window.dispatchEvent(new CustomEvent("hyph:points:changed", { detail: { balance: Number(data?.balance || 0) } }));
+    } catch (error) {
+      setStatus(`Score save failed: ${safeText(error?.message, "Please retry.")}`);
+    }
   }
 
   function renderState() {
