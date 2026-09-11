@@ -99,7 +99,7 @@
   }
 
   function isThrowControl(target) {
-    const control = target.closest('[data-testid],button,[role="button"]');
+    const control = target instanceof Element ? target.closest('[data-testid],button,[role="button"]') : null;
     if (!control) return false;
     return THROW_TEST.test(control.dataset.testid || control.textContent || '');
   }
@@ -118,10 +118,12 @@
     installStyles();
     installOverlay();
     markStrikes();
+    document.addEventListener('pointerup', onGameAction, true);
     document.addEventListener('click', onGameAction, true);
     observer = new MutationObserver(markStrikes);
     observer.observe(document.getElementById('root') || document.body, {childList:true,subtree:true,characterData:true});
-    window.HWAlleyGator = Object.freeze({ preview: runGatorSequence });
+    window.HWAlleyGator = Object.freeze({ version: '177', preview: runGatorSequence });
+    window.setTimeout(runGatorSequence, 1300);
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, {once:true});
