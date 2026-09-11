@@ -6,6 +6,8 @@
   var SCRIPT_ID = 'hw-google-analytics-loader';
   var DUCK_SCRIPT_ID = 'hw-global-duck-helper-loader';
   var DUCK_SRC = '/duck-helper.js?v=global-duck-20260509-slick-talk-1';
+  var LUCKY_SCRIPT_ID = 'hw-lucky-code-ticker-loader';
+  var LUCKY_SRC = '/lucky-code-ticker.js?v=game-code-hints-20260911';
   var REWARD_SCRIPT_ID = 'hw-reward-code-widget-loader';
   var REWARD_SRC = '/reward-code-widget.js?v=reward-code-live-20260607';
   var POINTS_SCRIPT_ID = 'hw-points-core-loader';
@@ -121,6 +123,15 @@
     document.head.appendChild(script);
   }
 
+  function loadLuckyCodeTicker() {
+    if (IS_GAME_RUNTIME || document.getElementById(LUCKY_SCRIPT_ID)) return;
+    var script = document.createElement('script');
+    script.id = LUCKY_SCRIPT_ID;
+    script.defer = true;
+    script.src = LUCKY_SRC;
+    document.head.appendChild(script);
+  }
+
   function loadRewardCodeWidget() {
     if (IS_GAME_RUNTIME) return;
     if (window.__HYPHSWORLD_REWARD_WIDGET_REQUESTED__) return;
@@ -128,7 +139,7 @@
 
     if (document.getElementById(REWARD_SCRIPT_ID)) return;
 
-    var allowed = PATH.endsWith('/') || PATH.endsWith('/index.html') || PATH.endsWith('/vault.html') || PATH.endsWith('/account.html');
+    var allowed = PATH.endsWith('/') || PATH.endsWith('/index.html') || PATH.endsWith('/vault.html') || PATH.endsWith('/account.html') || PATH.endsWith('/games.html') || PATH.endsWith('/dominos.html') || PATH.endsWith('/table-game.html') || PATH.endsWith('/casino-arcade.html');
     if (!allowed) return;
 
     var script = document.createElement('script');
@@ -219,6 +230,7 @@
   loadAuthPointsBridge();
   installStorefrontAnalytics();
   idle(loadGlobalDuckSauce, 900);
+  idle(loadLuckyCodeTicker, 1100);
   idle(loadRewardCodeWidget, 1300);
 
   if (document.readyState === 'loading') {

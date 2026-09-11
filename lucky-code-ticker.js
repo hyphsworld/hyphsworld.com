@@ -11,11 +11,16 @@
 
   const rewardLines = [
     'REWARD CODE HINT: DUCKSAUCE50 MAY DROP BONUS POINTS',
-    'REWARD CODE HINT: AMSCADET100 IS FOR FUTURE CADETS',
+    'REWARD CODE HINT: AMSWESTCADET IS FOR FUTURE CADETS',
     'REWARD CODE HINT: BUCKAPPROVED MEANS CLEAN CLEARANCE',
     'REWARD CODE HINT: GREENLIGHT POINTS TO THE GATE',
     'DAILY SPIN CAN DROP POINTS, CLUES, AND BOOSTS',
     'SLOT JACKPOTS CAN REVEAL CODE HINTS',
+    'DOMINO CLUE: DUCK LEFT SAUCE BY THE BONEYARD',
+    'SPADES CLUE: GREEN LIGHT MEANS CUT THE DECK',
+    'BLACKJACK CLUE: THE NEON JACKPOT PAYS 150',
+    'CRAPS CLUE: BUCK APPROVES A CLEAN PASS LINE',
+    'BOWLING CLUE: SPIN TO WIN BEFORE YOU STRIKE',
     'KIDS CAN BUILD COOL POINTS WITH DAILY CHECK-INS',
     'USE ONE HYPHSWORLD ID SO REWARDS DO NOT RESET'
   ];
@@ -85,8 +90,22 @@
   }
 
   function render() {
-    document.querySelectorAll('[data-lucky-code-ticker], .ticker-track').forEach((track) => {
+    document.querySelectorAll('[data-lucky-code-ticker]').forEach((track) => {
       track.innerHTML = buildText();
+    });
+
+    const hints = currentLines().filter((line) => /CODE|CLUE|JACKPOT|SPIN/i.test(line)).slice(0, 4);
+    document.querySelectorAll('.ticker-track:not([data-lucky-code-ticker])').forEach((track) => {
+      track.querySelectorAll('[data-hw-reward-hint]').forEach((node) => node.remove());
+      hints.concat(hints).forEach((line) => {
+        const item = document.createElement('span');
+        item.dataset.hwRewardHint = 'true';
+        item.textContent = line;
+        const star = document.createElement('b');
+        star.dataset.hwRewardHint = 'true';
+        star.textContent = '✦';
+        track.append(item, star);
+      });
     });
   }
 
