@@ -17,7 +17,7 @@ assert(js.includes('result = "made-point"') && js.includes('result = "seven-out"
 assert(js.includes('pointNumbers=[4,5,6,8,9,10]'), 'Craps layout must show standard point numbers');
 assert(js.includes('scoreKey: "01_dice"'), 'Existing Dice score key must remain stable');
 assert(js.includes('requested_game_type: gameType'), 'Existing multiplayer room contract must remain stable');
-assert(js.includes('window.HWAuth.addPoints'), 'Existing Cool Points hook must remain intact');
+assert(js.includes('sb.rpc("submit_game_run"'), 'Atomic Cool Points and high-score submission must remain intact');
 assert(html.includes('auth-client.js') && html.includes('cool-points.js'), 'Login and Cool Points clients must remain loaded');
 assert(lobby.includes('🎲 Craps<br>1–4 Players'), 'Casino lobby must identify Dice as Craps');
 assert(!js.includes('sb.rpc("create_craps'), 'Craps upgrade must not introduce a database migration or new RPC');
