@@ -11,6 +11,9 @@ assert(effects.includes('@keyframes hwStrikePop'), 'Strike text must include an 
 assert(effects.includes('@keyframes hwStrikeGlow'), 'Strike text must include an animated glow');
 assert(effects.includes('hw-gator-eyes'), 'Alley Gator must show warning eyes before the chomp');
 assert(effects.includes('lock[\\s-]*aim'), 'Alley Gator must recognize the live LOCK AIM control');
+assert(game.includes('bowling-effects.js?v=177'), 'Bowling page must cache-bust the corrected effects file for mobile Safari');
+assert(effects.includes('setTimeout(runGatorSequence, 1300)'), 'Alley Gator must provide a guaranteed visible lane preview after load');
+assert(effects.includes("'pointerup'"), 'Alley Gator must listen for pointer-safe mobile controls');
 assert(effects.includes('throwCount === 1'), 'Alley Gator must appear on the first qualifying throw so players can discover it');
 assert(effects.includes("root.dataset.stage = 'warning'"), 'Alley Gator sequence must begin with a warning');
 assert(effects.includes("root.dataset.stage = 'chomp'"), 'Alley Gator warning must advance to the chomp');
