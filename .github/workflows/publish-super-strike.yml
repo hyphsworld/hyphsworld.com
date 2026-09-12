@@ -125,7 +125,7 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           page = Path('site/games/ss-bowling/game.html')
-          script = '<script src="/games/ss-bowling/bowling-effects.js?v=177" defer></script>'
+          script = '<script src="/games/ss-bowling/bowling-effects.js?v=179" defer></script>'
           html = page.read_text(encoding='utf-8')
           if script not in html:
               entry = '<script src="/games/ss-bowling/_expo/'
@@ -147,7 +147,7 @@ jobs:
           test -d site/games/ss-bowling/_expo
           test -f site/games/ss-bowling/bowling-effects.js
           cmp -s site/scripts/super-strike-overrides/bowling-effects.js site/games/ss-bowling/bowling-effects.js
-          grep -q 'bowling-effects.js?v=177' site/games/ss-bowling/game.html
+          grep -q 'bowling-effects.js?v=179' site/games/ss-bowling/game.html
           test "$(cat site/games/ss-bowling/.source-sha)" = '${{ steps.source.outputs.source_sha }}'
           for route in game results multiplayer profile leaderboard skins coach; do
             test -f "site/games/ss-bowling/${route}.html"
