@@ -116,9 +116,24 @@ jobs:
             cp "site/$previous_bundle" /tmp/super-strike-previous-entry.js
             previous_name="$(basename "$previous_bundle")"
           fi
+          effects_source='site/scripts/super-strike-overrides/bowling-effects.js'
+          test -f "$effects_source"
           rm -rf site/games/ss-bowling
           mkdir -p site/games/ss-bowling
           cp -R game/frontend/dist/. site/games/ss-bowling/
+          cp "$effects_source" site/games/ss-bowling/bowling-effects.js
+          python3 - <<'PY'
+          from pathlib import Path
+          page = Path('site/games/ss-bowling/game.html')
+          script = '<script src="/games/ss-bowling/bowling-effects.js?v=177" defer></script>'
+          html = page.read_text(encoding='utf-8')
+          if script not in html:
+              entry = '<script src="/games/ss-bowling/_expo/'
+              marker = html.find(entry)
+              if marker < 0:
+                  raise SystemExit('Super Strike game page is missing its Expo entry script')
+              page.write_text(html[:marker] + script + html[marker:], encoding='utf-8')
+          PY
           printf '%s\n' '${{ steps.source.outputs.source_sha }}' > site/games/ss-bowling/.source-sha
           if test -f /tmp/super-strike-previous-entry.js; then
             mkdir -p site/games/ss-bowling/_expo/static/js/web
@@ -130,6 +145,9 @@ jobs:
         run: |
           test -f site/games/ss-bowling/index.html
           test -d site/games/ss-bowling/_expo
+          test -f site/games/ss-bowling/bowling-effects.js
+          cmp -s site/scripts/super-strike-overrides/bowling-effects.js site/games/ss-bowling/bowling-effects.js
+          grep -q 'bowling-effects.js?v=177' site/games/ss-bowling/game.html
           test "$(cat site/games/ss-bowling/.source-sha)" = '${{ steps.source.outputs.source_sha }}'
           for route in game results multiplayer profile leaderboard skins coach; do
             test -f "site/games/ss-bowling/${route}.html"

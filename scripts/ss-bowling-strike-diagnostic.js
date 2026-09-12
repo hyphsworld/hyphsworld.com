@@ -3,8 +3,14 @@ function assert(ok, message) { if (!ok) throw new Error(message); }
 
 const game = fs.readFileSync('games/ss-bowling/game.html', 'utf8');
 const effects = fs.readFileSync('games/ss-bowling/bowling-effects.js', 'utf8');
+const effectsSource = fs.readFileSync('scripts/super-strike-overrides/bowling-effects.js', 'utf8');
+const publisher = fs.readFileSync('.github/workflows/publish-super-strike.yml', 'utf8');
 
 assert(game.includes('/games/ss-bowling/bowling-effects.js'), 'Super Strike game must load the presentation effects');
+assert(effects === effectsSource, 'Published effects must match the preserved site-owned source');
+assert(publisher.includes("effects_source='site/scripts/super-strike-overrides/bowling-effects.js'"), 'Publisher must restore the site-owned Alley Gator effect after replacing the export');
+assert(publisher.includes('cmp -s site/scripts/super-strike-overrides/bowling-effects.js site/games/ss-bowling/bowling-effects.js'), 'Publisher must verify the restored effect is byte-for-byte correct');
+assert(publisher.includes("grep -q 'bowling-effects.js?v=177' site/games/ss-bowling/game.html"), 'Publisher must verify the game loads the restored effect');
 assert(effects.includes("STRIKE_TEXT = 'STRIKE!'"), 'Effects must recognize the live STRIKE! message');
 assert(effects.includes('linear-gradient'), 'Strike text must use a bright multicolor treatment');
 assert(effects.includes('@keyframes hwStrikePop'), 'Strike text must include an entrance animation');
