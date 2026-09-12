@@ -52,6 +52,27 @@ assert(
   'Unused generic Cool Points overloads must not remain browser-executable.'
 );
 
+
+const skinRewards = fs.readFileSync('supabase/migrations/20260912103000_super_strike_skin_rewards.sql', 'utf8');
+assert(
+  skinRewards.includes("check (skin_id in ('graffiti_bomb'))") &&
+    skinRewards.includes("('graffiti_bomb'::text, 1500::integer)"),
+  'Super Strike skin purchases must use the fixed server-owned Graffiti Bomb catalog and price.'
+);
+assert(
+  skinRewards.includes("security definer") &&
+    skinRewards.includes("set search_path = ''") &&
+    skinRewards.includes("auth.uid()") &&
+    skinRewards.includes("for update"),
+  'The skin purchase RPC must authenticate callers and serialize wallet deductions.'
+);
+assert(
+  skinRewards.includes('revoke all on function public.purchase_super_strike_skin(text)') &&
+    skinRewards.includes('to authenticated, service_role') &&
+    skinRewards.includes('(select auth.uid()) = user_id'),
+  'Skin ownership and purchase access must remain restricted to authenticated owners.'
+);
+
 if (issues.length) {
   console.error('Security diagnostic failed:');
   issues.forEach((i) => console.error('- ' + i));
