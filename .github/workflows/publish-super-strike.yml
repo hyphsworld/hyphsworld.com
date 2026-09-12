@@ -128,9 +128,11 @@ jobs:
           script = '<script src="/games/ss-bowling/bowling-effects.js?v=177" defer></script>'
           html = page.read_text(encoding='utf-8')
           if script not in html:
-              if '</body>' not in html:
-                  raise SystemExit('Super Strike game page is missing </body>')
-              page.write_text(html.replace('</body>', f'{script}</body>', 1), encoding='utf-8')
+              entry = '<script src="/games/ss-bowling/_expo/'
+              marker = html.find(entry)
+              if marker < 0:
+                  raise SystemExit('Super Strike game page is missing its Expo entry script')
+              page.write_text(html[:marker] + script + html[marker:], encoding='utf-8')
           PY
           printf '%s\n' '${{ steps.source.outputs.source_sha }}' > site/games/ss-bowling/.source-sha
           if test -f /tmp/super-strike-previous-entry.js; then
