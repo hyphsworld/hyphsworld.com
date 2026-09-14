@@ -27,13 +27,13 @@
       [data-testid="touch-joystick"] span{opacity:.56!important;font-size:9px!important}
       [data-testid="touch-pause"]{position:fixed!important;z-index:10030!important;right:max(16px,env(safe-area-inset-right))!important;bottom:max(174px,calc(env(safe-area-inset-bottom) + 156px))!important;min-width:68px!important;padding:.55rem .85rem!important;font-size:.9rem!important;opacity:.78!important;pointer-events:auto!important;backdrop-filter:blur(10px)!important;-webkit-backdrop-filter:blur(10px)!important}
       html.hw-game-over [data-testid="touch-joystick"],html.hw-game-over [data-testid="touch-pause"]{opacity:0!important;pointer-events:none!important;transform:scale(.88)!important}
-      #root canvas{transform:translateY(-118px)!important;transform-origin:center top!important;filter:brightness(1.28) saturate(1.32) contrast(1.04)!important}
+      #root canvas{transform:none!important;transform-origin:center!important}
     }
-    @media (pointer:coarse) and (orientation:portrait),(hover:none) and (orientation:portrait){#root canvas{transform:translateY(-138px)!important}}
+    @media (pointer:coarse) and (orientation:portrait),(hover:none) and (orientation:portrait){#root canvas{transform:none!important}}
     @media (pointer:coarse) and (orientation:landscape),(hover:none) and (orientation:landscape){
       [data-testid="touch-joystick"]{left:max(20px,env(safe-area-inset-left))!important;bottom:max(76px,calc(env(safe-area-inset-bottom) + 64px))!important;width:102px!important;height:102px!important}
       [data-testid="touch-pause"]{right:max(20px,env(safe-area-inset-right))!important;bottom:max(86px,calc(env(safe-area-inset-bottom) + 74px))!important}
-      #root canvas{transform:translateY(-72px)!important}
+      #root canvas{transform:none!important}
     }
   </style>
   <script>
