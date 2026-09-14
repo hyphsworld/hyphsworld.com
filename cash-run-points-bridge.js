@@ -61,8 +61,8 @@
     if (document.getElementById('hwChaseTheBagBridgeHud')) return;
     const hud = document.createElement('aside');
     hud.id = 'hwChaseTheBagBridgeHud';
-    hud.innerHTML = '<strong>Chase the Bag Bridge</strong><span>Global Cool Points linked</span><small>Best: <b id="hwChaseTheBagBest">0</b></small>';
-    hud.style.cssText = 'position:fixed;left:12px;top:max(12px,env(safe-area-inset-top));z-index:2147483646;display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 10px;border-radius:16px;background:#1a1a1a;border:1px solid #00ff66;color:#00ff66;font-family:monospace;font-size:11px;box-shadow:0 0 16px rgba(0,255,102,.16),inset 0 0 6px rgba(0,255,102,.06);';
+    hud.innerHTML = '<strong>CP LINKED</strong><small>BEST <b id="hwChaseTheBagBest">0</b></small>';
+    hud.style.cssText = 'position:fixed;left:max(8px,env(safe-area-inset-left));top:max(8px,env(safe-area-inset-top));z-index:2147483646;display:flex;gap:7px;align-items:center;padding:5px 9px;border-radius:999px;background:rgba(5,10,18,.86);border:1px solid rgba(0,255,102,.7);color:#00ff66;font-family:monospace;font-size:10px;line-height:1;box-shadow:0 0 12px rgba(0,255,102,.14);backdrop-filter:blur(8px);pointer-events:none;';
     document.body.appendChild(hud);
     setText('#hwChaseTheBagBest', bestScore);
   }
