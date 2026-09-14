@@ -110,8 +110,8 @@ returns table(
   name text,
   score integer,
   level integer,
-  character text,
-  timestamp timestamptz
+  "character" text,
+  "timestamp" timestamptz
 )
 language sql
 stable
@@ -124,8 +124,8 @@ as $function$
       coalesce(nullif(gs.metadata->>'name', ''), 'HUSTLER') as name,
       gs.score,
       greatest(1, least(99, coalesce((gs.metadata->>'level')::integer, 1))) as level,
-      case when gs.metadata->>'character' = 'girl' then 'girl' else 'boy' end as character,
-      gs.created_at as timestamp,
+      case when gs.metadata->>'character' = 'girl' then 'girl' else 'boy' end as "character",
+      gs.created_at as "timestamp",
       row_number() over (
         partition by gs.user_id
         order by gs.score desc, gs.created_at asc, gs.id
@@ -133,10 +133,10 @@ as $function$
     from public.game_scores gs
     where gs.game_key = 'cash_run'
   )
-  select pb.id, pb.name, pb.score, pb.level, pb.character, pb.timestamp
+  select pb.id, pb.name, pb.score, pb.level, pb."character", pb."timestamp"
   from personal_bests pb
   where pb.best_rank = 1
-  order by pb.score desc, pb.timestamp asc
+  order by pb.score desc, pb."timestamp" asc
   limit least(greatest(coalesce(p_limit, 50), 1), 100);
 $function$;
 
