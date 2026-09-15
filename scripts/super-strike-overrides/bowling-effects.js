@@ -8,6 +8,7 @@
   let sequenceRunning = false;
   let lastTrigger = 0;
   let observer;
+  let previewShown = false;
 
   function installStyles() {
     if (document.getElementById(STYLE_ID)) return;
@@ -108,6 +109,12 @@
     });
   }
 
+  function previewWhenGameIsReady() {
+    if (previewShown || !document.querySelector('[data-testid="lock-aim-button"]')) return;
+    previewShown = true;
+    window.setTimeout(runGatorSequence, 450);
+  }
+
   function isThrowControl(target) {
     const control = target instanceof Element ? target.closest('[data-testid],button,[role="button"]') : null;
     if (!control) return false;
@@ -130,10 +137,13 @@
     markStrikes();
     document.addEventListener('pointerup', onGameAction, true);
     document.addEventListener('click', onGameAction, true);
-    observer = new MutationObserver(markStrikes);
+    observer = new MutationObserver(() => {
+      markStrikes();
+      previewWhenGameIsReady();
+    });
     observer.observe(document.getElementById('root') || document.body, {childList:true,subtree:true,characterData:true});
-    window.HWAlleyGator = Object.freeze({ version: 'gator-eyes-1', preview: runGatorSequence });
-    window.setTimeout(runGatorSequence, 1300);
+    window.HWAlleyGator = Object.freeze({ version: 'gator-eyes-2', preview: runGatorSequence });
+    previewWhenGameIsReady();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, {once:true});
