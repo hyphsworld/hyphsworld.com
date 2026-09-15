@@ -19,8 +19,9 @@
       .hw-gator-lane{position:absolute;inset:0;perspective:700px;isolation:isolate}
       .hw-gator-water{position:absolute;left:50%;top:48%;width:clamp(118px,30vw,190px);height:clamp(24px,6vw,38px);transform:translate(-50%,-50%) rotateX(68deg);border-radius:50%;background:radial-gradient(ellipse,rgba(5,18,14,.88) 0 34%,rgba(43,255,153,.35) 42%,rgba(64,220,255,.18) 56%,transparent 72%);box-shadow:0 0 14px rgba(43,255,153,.45);opacity:0}
       .hw-gator-ripple{position:absolute;inset:0;border:2px solid rgba(106,255,190,.72);border-radius:50%;opacity:0}
-      .hw-gator-eyes{position:absolute;left:50%;top:47%;width:112px;height:32px;transform:translate(-50%,12px) scale(.78);filter:drop-shadow(0 0 12px #b7ff00);opacity:0}
-      .hw-gator-eye{position:absolute;top:0;width:34px;height:20px;border-radius:56% 56% 44% 44%;background:radial-gradient(circle at 54% 55%,#050505 0 19%,#fff719 22% 44%,#6dff00 48% 68%,transparent 72%);box-shadow:0 0 10px #dfff00,0 0 24px #5dff00}
+      .hw-gator-eyes{position:absolute;left:50%;top:47%;width:124px;height:36px;transform:translate(-50%,12px) scale(.78);filter:drop-shadow(0 0 12px #b7ff00);opacity:0}
+      .hw-gator-eye{position:absolute;top:0;width:38px;height:24px;overflow:hidden;border:3px solid #4b7d13;border-radius:56% 56% 44% 44%;background:linear-gradient(#efff55,#a9f424);box-shadow:0 0 10px #dfff00,0 0 24px #5dff00;transform-origin:center}
+      .hw-gator-pupil{position:absolute;left:50%;top:3px;width:5px;height:16px;transform:translateX(-50%);border-radius:50%;background:#030706;box-shadow:0 0 3px #000}
       .hw-gator-eye:first-child{left:10px;transform:rotate(8deg)}.hw-gator-eye:last-child{right:10px;transform:rotate(-8deg)}
       .hw-gator-head{position:absolute;left:50%;top:47%;width:min(76vw,430px);aspect-ratio:1.55;transform:translate(-50%,72%) scale(.4);border-radius:48% 48% 38% 38%;background:radial-gradient(circle at 30% 35%,#c9ff51 0 2%,transparent 3%),radial-gradient(circle at 70% 35%,#c9ff51 0 2%,transparent 3%),linear-gradient(155deg,#3c9b36,#183f20 68%,#07170b);border:5px solid #75ff51;box-shadow:0 0 30px #35ff62,inset 0 -18px 30px #07170b;opacity:0}
       .hw-gator-snout{position:absolute;left:12%;right:12%;top:44%;bottom:8%;border-radius:45%;background:linear-gradient(#347f32,#15371b);border:3px solid rgba(198,255,108,.7)}
@@ -29,12 +30,14 @@
       #${OVERLAY_ID}[data-stage="warning"] .hw-gator-ripple{animation:hwGatorRipple .9s ease-out infinite}
       #${OVERLAY_ID}[data-stage="warning"] .hw-gator-ripple:last-child{animation-delay:.3s}
       #${OVERLAY_ID}[data-stage="warning"] .hw-gator-eyes{animation:hwGatorEyes .72s cubic-bezier(.2,.9,.2,1) both}
+      #${OVERLAY_ID}[data-stage="warning"] .hw-gator-eye{animation:hwGatorBlink .9s ease-in-out both}
       #${OVERLAY_ID}[data-stage="chomp"] .hw-gator-eyes,#${OVERLAY_ID}[data-stage="chomp"] .hw-gator-water{opacity:0}
       #${OVERLAY_ID}[data-stage="chomp"] .hw-gator-head{animation:hwGatorChomp 1.05s cubic-bezier(.2,.9,.2,1) both}
       .hw-strike-pop{position:relative!important;z-index:2;color:transparent!important;background:linear-gradient(90deg,#fff719,#55ff73,#22e1ff,#ff45e6,#ff8a00)!important;background-size:250% 100%!important;-webkit-background-clip:text!important;background-clip:text!important;filter:drop-shadow(0 0 8px #22e1ff);animation:hwStrikePop .6s cubic-bezier(.2,1.6,.3,1),hwStrikeGlow 1.1s linear infinite!important}
       @keyframes hwGatorWater{0%{opacity:0;transform:translate(-50%,-50%) rotateX(68deg) scale(.35)}100%{opacity:1;transform:translate(-50%,-50%) rotateX(68deg) scale(1)}}
       @keyframes hwGatorRipple{0%{opacity:.85;transform:scale(.35)}100%{opacity:0;transform:scale(1.45)}}
       @keyframes hwGatorEyes{0%{opacity:0;transform:translate(-50%,15px) scale(.72)}55%{opacity:1}100%{opacity:1;filter:drop-shadow(0 0 25px #fff719);transform:translate(-50%,-50%) scale(1)}}
+      @keyframes hwGatorBlink{0%,18%,36%,66%,82%,100%{scale:1 1}27%,74%{scale:1 .08}}
       @media (orientation:landscape) and (max-height:600px){.hw-gator-water{top:45%}.hw-gator-eyes,.hw-gator-head{top:44%}}
       @keyframes hwGatorChomp{0%{opacity:0;transform:translate(-50%,72%) scale(.4)}42%{opacity:1;transform:translate(-50%,-12%) scale(1)}62%{transform:translate(-50%,-7%) scale(1.08,.78)}78%{transform:translate(-50%,-10%) scale(1)}100%{opacity:0;transform:translate(-50%,34%) scale(.7)}}
       @keyframes hwStrikePop{0%{transform:scale(.35) rotate(-8deg);opacity:0}72%{transform:scale(1.16) rotate(2deg)}100%{transform:scale(1);opacity:1}}
@@ -50,7 +53,7 @@
     root = document.createElement('div');
     root.id = OVERLAY_ID;
     root.setAttribute('aria-hidden', 'true');
-    root.innerHTML = '<div class="hw-gator-lane"><div class="hw-gator-water"><i class="hw-gator-ripple"></i><i class="hw-gator-ripple"></i></div><div class="hw-gator-eyes"><i class="hw-gator-eye"></i><i class="hw-gator-eye"></i></div><div class="hw-gator-head"><i class="hw-gator-snout"></i><i class="hw-gator-teeth"></i></div></div>';
+    root.innerHTML = '<div class="hw-gator-lane"><div class="hw-gator-water"><i class="hw-gator-ripple"></i><i class="hw-gator-ripple"></i></div><div class="hw-gator-eyes"><i class="hw-gator-eye"><b class="hw-gator-pupil"></b></i><i class="hw-gator-eye"><b class="hw-gator-pupil"></b></i></div><div class="hw-gator-head"><i class="hw-gator-snout"></i><i class="hw-gator-teeth"></i></div></div>';
     document.body.appendChild(root);
     return root;
   }
@@ -129,7 +132,7 @@
     document.addEventListener('click', onGameAction, true);
     observer = new MutationObserver(markStrikes);
     observer.observe(document.getElementById('root') || document.body, {childList:true,subtree:true,characterData:true});
-    window.HWAlleyGator = Object.freeze({ version: '179', preview: runGatorSequence });
+    window.HWAlleyGator = Object.freeze({ version: 'gator-eyes-1', preview: runGatorSequence });
     window.setTimeout(runGatorSequence, 1300);
   }
 
