@@ -124,7 +124,7 @@ jobs:
           cp "$effects_source" site/games/ss-bowling/bowling-effects.js
           python3 - <<'PY'
           from pathlib import Path
-          script = '<script src="/games/ss-bowling/bowling-effects.js?v=gator-eyes-2" defer></script>'
+          script = '<script src="/games/ss-bowling/bowling-effects.js?v=source-gator-1" defer></script>'
           for page in Path('site/games/ss-bowling').glob('*.html'):
               html = page.read_text(encoding='utf-8')
               if script in html:
@@ -149,7 +149,7 @@ jobs:
           test -f site/games/ss-bowling/bowling-effects.js
           cmp -s site/scripts/super-strike-overrides/bowling-effects.js site/games/ss-bowling/bowling-effects.js
           for page in site/games/ss-bowling/*.html; do
-            grep -q 'bowling-effects.js?v=gator-eyes-2' "$page"
+            grep -q 'bowling-effects.js?v=source-gator-1' "$page"
           done
           test "$(cat site/games/ss-bowling/.source-sha)" = '${{ steps.source.outputs.source_sha }}'
           for route in game results multiplayer profile leaderboard skins coach; do
