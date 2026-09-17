@@ -720,6 +720,10 @@ body.dominos-page{
 .domino-pov-game .pov-board .chain-right-end{
   animation:domino-end-breathe 1.9s ease-in-out infinite;
 }
+.domino-pov-game .pov-board .chain-left-end.chain-new,
+.domino-pov-game .pov-board .chain-right-end.chain-new{
+  animation:domino-land .52s cubic-bezier(.18,.9,.28,1.24) both,domino-end-breathe 1.9s .56s ease-in-out infinite;
+}
 .domino-pov-room.is-my-turn .pov-turn-banner{
   animation:domino-turn-pulse 1.35s ease-in-out infinite;
 }
