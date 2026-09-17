@@ -655,3 +655,28 @@ body.dominos-page{
   .domino-pov-room .pov-board{margin-inline:auto}
   .domino-pov-room .domino-chain-stage{transform-origin:top center}
 }
+
+
+/* Stable bone identity + edge-to-edge live chain.
+   Keep last: this overrides legacy nth-child pip colors and old turn spacing. */
+.domino-pov-game .domino-tile.tile-color-0{--pip:#ff2f8e!important}
+.domino-pov-game .domino-tile.tile-color-1{--pip:#00aef3!important}
+.domino-pov-game .domino-tile.tile-color-2{--pip:#2dcc70!important}
+.domino-pov-game .domino-tile.tile-color-3{--pip:#e2a900!important}
+.domino-pov-game .domino-tile.tile-color-4{--pip:#9b6cff!important}
+.domino-pov-game .domino-tile.tile-color-5{--pip:#ff6b35!important}
+.domino-pov-room .domino-chain-stage{
+  transform:translateY(42px) perspective(760px) rotateX(15deg) scale(.94);
+}
+.domino-pov-game .pov-board .chain-bone{
+  box-sizing:border-box;
+  margin:0!important;
+  transform-origin:center center!important;
+}
+.domino-pov-game .pov-board .chain-bone.chain-double{z-index:3}
+@media(max-width:640px){
+  .domino-pov-room .domino-chain-stage{
+    margin-bottom:0;
+    transform:translateY(52px) perspective(680px) rotateX(18deg) scale(.86);
+  }
+}

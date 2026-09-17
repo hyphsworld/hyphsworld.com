@@ -122,6 +122,15 @@
     }).join("")}</span>`;
   }
 
+  function tileColorClass(tile) {
+    // A double-six set contains each unordered pair once. Deriving the color
+    // from that pair makes the bone keep its identity if the server flips it
+    // to connect to the left end or moves it from a hand onto the table.
+    const low = Math.min(Number(tile?.[0] || 0), Number(tile?.[1] || 0));
+    const high = Math.max(Number(tile?.[0] || 0), Number(tile?.[1] || 0));
+    return ` tile-color-${((low * 7) + high) % 6}`;
+  }
+
   function tileMarkup(tile, options) {
     const clickable = Boolean(options && options.clickable);
     const index = options && Number.isInteger(options.index) ? options.index : -1;
@@ -132,31 +141,40 @@
       : ` role="img"`;
     const extraClass = options && options.className ? ` ${options.className}` : "";
     const style = options && options.style ? ` style="${options.style}"` : "";
-    const classes = `domino-tile${tile[0] === tile[1] ? " is-double" : ""}${clickable ? " tile-button" : ""}${playable ? " is-playable" : " is-blocked"}${extraClass}`;
+    const classes = `domino-tile${tileColorClass(tile)}${tile[0] === tile[1] ? " is-double" : ""}${clickable ? " tile-button" : ""}${playable ? " is-playable" : " is-blocked"}${extraClass}`;
     return `<${tag} class="${classes}"${attrs}${style} aria-label="Domino ${tileText(tile)}">${pipFace(tile[0])}${pipFace(tile[1])}</${tag}>`;
   }
 
   function boardChainMarkup(tiles) {
-    const run = 6, stepX = 68, stepY = 66;
+    const tileWidth = 70;
+    const tileHeight = 42;
+    const uprightWidth = tileHeight;
+    const overlap = 2;
+    const sidePadding = (tileWidth - uprightWidth) / 2;
+    const centerY = 43;
+    let cursor = sidePadding;
+
     const placements = tiles.map((tile, index) => {
-      const row = Math.floor(index / (run + 1));
-      const position = index % (run + 1);
-      const movingRight = row % 2 === 0;
-      const isTurn = position === run;
-      const x = isTurn ? (movingRight ? (run - 1) * stepX : 0) : (movingRight ? position * stepX : (run - 1 - position) * stepX);
-      const y = row * stepY + (isTurn ? Math.round(stepY / 2) : 0);
-      const rotation = isTurn || tile[0] === tile[1] ? 90 : 0;
-      return { tile, index, x, y, rotation, movingRight, isTurn };
+      const isDouble = Number(tile[0]) === Number(tile[1]);
+      const visualWidth = isDouble ? uprightWidth : tileWidth;
+      // Rotated doubles keep a 70px layout box. Pull that box left so its
+      // visible 42px edge touches the preceding bone with no floating gap.
+      const x = cursor - (isDouble ? sidePadding : 0);
+      const y = centerY - (tileHeight / 2);
+      cursor += visualWidth - overlap;
+      return { tile, index, x, y, rotation: isDouble ? 90 : 0 };
     });
-    // Size the stage from the bones that are actually down. A fixed six-bone
-    // stage centers an empty footprint and leaves short chains hanging left.
-    const width = Math.max(74, ...placements.map(({ x, rotation }) => x + (rotation ? 54 : 74)));
-    const height = Math.max(116, ...placements.map(({ y, rotation }) => 12 + y + (rotation ? 74 : 54)));
-    const bones = placements.map(({ tile, index, x, y, rotation, movingRight, isTurn }) => {
-      const directionClass = !movingRight && !isTurn ? " chain-reverse" : "";
+
+    const width = Math.max(96, Math.ceil(cursor + sidePadding + overlap));
+    const height = 86;
+    const bones = placements.map(({ tile, index, x, y, rotation }) => {
       const endClass = index === 0 ? " chain-left-end" : index === tiles.length - 1 ? " chain-right-end" : "";
-      return tileMarkup(tile, { className: `chain-bone${isTurn ? " chain-turn" : ""}${directionClass}${endClass}`, style: `left:${x}px;top:${12 + y}px;transform:rotate(${rotation}deg)` });
+      return tileMarkup(tile, {
+        className: `chain-bone${tile[0] === tile[1] ? " chain-double" : ""}${endClass}`,
+        style: `left:${x}px;top:${y}px;transform:rotate(${rotation}deg)`
+      });
     }).join("");
+
     return `<div class="domino-chain-stage" style="--chain-width:${width}px;--chain-height:${height}px;width:${width}px;height:${height}px;min-width:${width}px;min-height:${height}px" role="group" aria-label="Connected domino chain with ${tiles.length} played ${tiles.length === 1 ? "bone" : "bones"}">${bones}</div>`;
   }
 
