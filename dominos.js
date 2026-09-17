@@ -6,6 +6,8 @@
   const REFRESH_MS = 6500;
   const WIN_POINTS = 100;
   const TUTORIAL_KEY = "hyphsworld_domino_tutorial_seen_v1";
+  const CPU_ID = "__hyphsworld_cpu__";
+  const LOCAL_PLAYER_ID = "__hyphsworld_local_player__";
 
   let sbPromise = null;
   let currentUser = null;
@@ -20,6 +22,8 @@
   let opponentProfileRequest = 0;
   let lastRenderedBoard = [];
   let resizeTimer = null;
+  let cpuMode = false;
+  let cpuTimer = null;
 
   function $(id) { return document.getElementById(id); }
   function setText(id, value) { const el = $(id); if (el) el.textContent = value; }
@@ -334,7 +338,7 @@
   async function listRooms() {
     const list = $("roomList");
     if (!list) return;
-    if (!currentUser) {
+    if (!currentUser || currentUser.userId === LOCAL_PLAYER_ID) {
       list.innerHTML = `<div class="hw-leaderboard-empty">Login to view and join live tables.</div>`;
       return;
     }
@@ -364,8 +368,182 @@
     });
   }
 
+
+  function createDoubleSixDeck() {
+    const deck = [];
+    for (let low = 0; low <= 6; low += 1) {
+      for (let high = low; high <= 6; high += 1) deck.push([low, high]);
+    }
+    return deck;
+  }
+
+  function shuffledCopy(tiles) {
+    const copy = tiles.map((tile) => [tile[0], tile[1]]);
+    for (let index = copy.length - 1; index > 0; index -= 1) {
+      const swapIndex = Math.floor(Math.random() * (index + 1));
+      [copy[index], copy[swapIndex]] = [copy[swapIndex], copy[index]];
+    }
+    return copy;
+  }
+
+  function handRank(hand) {
+    return (hand || []).reduce((best, tile) => {
+      const score = Number(tile[0]) === Number(tile[1]) ? 100 + Number(tile[0]) : tileScore(tile);
+      return Math.max(best, score);
+    }, -1);
+  }
+
+  function openingBone(hand) {
+    return (hand || []).slice().sort((left, right) => {
+      const rightRank = Number(right[0]) === Number(right[1]) ? 100 + Number(right[0]) : tileScore(right);
+      const leftRank = Number(left[0]) === Number(left[1]) ? 100 + Number(left[0]) : tileScore(left);
+      return rightRank - leftRank;
+    })[0] || null;
+  }
+
+  function connectedBoard(board, tile) {
+    const next = (board || []).map((bone) => [bone[0], bone[1]]);
+    const played = [Number(tile[0]), Number(tile[1])];
+    if (!next.length) return [played];
+    const left = Number(next[0][0]);
+    const right = Number(next[next.length - 1][1]);
+    const a = played[0];
+    const b = played[1];
+    if (b === left) next.unshift(played);
+    else if (a === left) next.unshift([b, a]);
+    else if (a === right) next.push(played);
+    else if (b === right) next.push([b, a]);
+    return next;
+  }
+
+  function cpuPlayableIndexes(hand, board, openingTile) {
+    return (hand || []).reduce((indexes, tile, index) => {
+      const openingMatch = (board || []).length || !openingTile || sameTile(tile, openingTile);
+      if (openingMatch && canPlay(tile, board)) indexes.push(index);
+      return indexes;
+    }, []);
+  }
+
+  function clearCpuTimer() {
+    if (cpuTimer) clearTimeout(cpuTimer);
+    cpuTimer = null;
+  }
+
+  function localPlayer() {
+    return currentUser || { userId: LOCAL_PLAYER_ID, displayName: "GUEST PLAYER", avatarType: "", avatarIcon: "🧢" };
+  }
+
+  function localOpponent(playerId) {
+    return playerId === CPU_ID ? currentUser.userId : CPU_ID;
+  }
+
+  function finishCpuGame(winnerId, reason) {
+    activeState.status = "finished";
+    activeState.winnerUserId = winnerId;
+    activeState.finishReason = reason;
+    activeState.turnUserId = winnerId;
+    activeRoom.status = "finished";
+    activeState.log.push(winnerId === currentUser.userId
+      ? "Duck Sauce: You got the CPU off the table."
+      : "Duck Sauce: CPU took that hand. Run it back.");
+  }
+
+  function localDominoAction(action, tileIndex, playerId) {
+    if (!cpuMode || !activeState || activeState.status !== "playing" || activeState.turnUserId !== playerId) return;
+    const hand = activeState.hands[playerId] || [];
+    const board = activeState.board || [];
+    const deck = activeState.deck || [];
+    const playable = cpuPlayableIndexes(hand, board, activeState.openingTile);
+    const actor = playerId === CPU_ID ? "CPU" : safeText(currentUser.displayName, "You");
+
+    if (action === "play") {
+      if (!Number.isInteger(tileIndex) || !playable.includes(tileIndex)) return;
+      const tile = hand[tileIndex];
+      activeState.board = connectedBoard(board, tile);
+      hand.splice(tileIndex, 1);
+      activeState.consecutivePasses = 0;
+      activeState.log.push(`${actor}: played ${tileText(tile)}.`);
+      if (!hand.length) finishCpuGame(playerId, "empty-hand");
+      else activeState.turnUserId = localOpponent(playerId);
+    } else if (action === "draw") {
+      if (playable.length || !deck.length) return;
+      const tile = deck.shift();
+      hand.push(tile);
+      activeState.log.push(`${actor}: drew a bone.`);
+    } else if (action === "pass") {
+      if (playable.length || deck.length) return;
+      activeState.consecutivePasses = Number(activeState.consecutivePasses || 0) + 1;
+      activeState.log.push(`${actor}: passed.`);
+      if (activeState.consecutivePasses >= 2) {
+        const playerScore = handScore(activeState.hands[currentUser.userId]);
+        const cpuScore = handScore(activeState.hands[CPU_ID]);
+        finishCpuGame(playerScore <= cpuScore ? currentUser.userId : CPU_ID, "blocked");
+      } else activeState.turnUserId = localOpponent(playerId);
+    }
+
+    activeVersion = Number(activeVersion || 0) + 1;
+    activeState.version = activeVersion;
+    activeState.updatedAt = new Date().toISOString();
+  }
+
+  function scheduleCpuTurn() {
+    clearCpuTimer();
+    if (!cpuMode || !activeState || activeState.status !== "playing" || activeState.turnUserId !== CPU_ID) return;
+    setStatus("CPU is studying the table...");
+    cpuTimer = setTimeout(() => {
+      cpuTimer = null;
+      if (!cpuMode || !activeState || activeState.status !== "playing" || activeState.turnUserId !== CPU_ID) return;
+      const hand = activeState.hands[CPU_ID] || [];
+      let playable = cpuPlayableIndexes(hand, activeState.board, activeState.openingTile);
+      while (!playable.length && activeState.deck.length) {
+        localDominoAction("draw", null, CPU_ID);
+        playable = cpuPlayableIndexes(hand, activeState.board, activeState.openingTile);
+      }
+      if (playable.length) {
+        playable.sort((left, right) => {
+          const leftTile = hand[left];
+          const rightTile = hand[right];
+          const leftValue = tileScore(leftTile) + (leftTile[0] === leftTile[1] ? 20 : 0);
+          const rightValue = tileScore(rightTile) + (rightTile[0] === rightTile[1] ? 20 : 0);
+          return rightValue - leftValue;
+        });
+        localDominoAction("play", playable[0], CPU_ID);
+      } else localDominoAction("pass", null, CPU_ID);
+      renderState();
+      if (activeState.status === "playing") setStatus("Your move against the CPU.");
+      scheduleCpuTurn();
+    }, 720);
+  }
+
+  async function startCpuGame() {
+    clearCpuTimer();
+    stopRoomRefresh();
+    if (!currentUser) currentUser = localPlayer();
+    cpuMode = true;
+    lastRenderedBoard = [];
+    const deck = shuffledCopy(createDoubleSixDeck());
+    const playerHand = deck.splice(0, 7);
+    const cpuHand = deck.splice(0, 7);
+    const starter = handRank(playerHand) >= handRank(cpuHand) ? currentUser.userId : CPU_ID;
+    const openingTile = openingBone(starter === CPU_ID ? cpuHand : playerHand);
+    activeRoom = { id: "cpu-practice", room_code: "VS CPU", game_type: "dominos", status: "playing", cpu: true };
+    activeVersion = 1;
+    activeState = {
+      version: 1, status: "playing",
+      hands: { [currentUser.userId]: playerHand, [CPU_ID]: cpuHand },
+      board: [], deck, turnUserId: starter, openingTile,
+      consecutivePasses: 0, winnerUserId: null, finishReason: null,
+      updatedAt: new Date().toISOString(),
+      log: ["CPU Practice started. High bone opens. Practice games do not award Cool Points."]
+    };
+    setStatus(starter === currentUser.userId ? "Your move against the CPU." : "CPU has the opening bone.");
+    renderState();
+    scheduleCpuTurn();
+  }
+
   async function createRoom(event) {
     event.preventDefault();
+    if (cpuMode) leaveView();
     const requestToken = roomViewToken;
     try {
       await requireUser();
@@ -399,6 +577,7 @@
   }
 
   async function joinRoomByCodeValue(code) {
+    if (cpuMode) leaveView();
     const requestToken = roomViewToken;
     try {
       await requireUser();
@@ -421,6 +600,12 @@
 
   async function performAction(action, tileIndex) {
     if (!activeRoom || !currentUser || !Number.isInteger(activeVersion)) return setStatus("Join a table first.");
+    if (cpuMode) {
+      localDominoAction(action, tileIndex, currentUser.userId);
+      renderState();
+      scheduleCpuTurn();
+      return;
+    }
     const sb = await getClient();
     const params = { p_room_id: activeRoom.id, p_action: action, p_expected_version: activeVersion };
     if (Number.isInteger(tileIndex)) params.p_tile_index = tileIndex;
@@ -438,7 +623,7 @@
   }
 
   async function refreshActiveRoom() {
-    if (!activeRoom) return;
+    if (!activeRoom || cpuMode) return;
     const roomId = activeRoom.id;
     const requestToken = roomViewToken;
     const sb = await getClient();
@@ -459,6 +644,7 @@
   }
 
   function startRefresh() {
+    if (cpuMode) return;
     if (refreshTimer) clearInterval(refreshTimer);
     refreshTimer = setInterval(refreshActiveRoom, REFRESH_MS);
   }
@@ -476,12 +662,21 @@
 
     const opponentId = Object.keys(activeState.hands || {}).find((id) => id !== currentUser.userId);
     const opponentTiles = opponentId ? (activeState.hands[opponentId] || []).length : 0;
-    if (opponentId && opponentId !== opponentProfileId) loadOpponentProfile(opponentId);
-    if (!opponentId) {
+    const cpuOpponent = cpuMode && opponentId === CPU_ID;
+    if (cpuOpponent) {
       opponentProfileId = null;
       opponentProfile = null;
+      setText("povHudName", "HYPHSWORLD CPU");
+      setText("povHudAvatar", "🤖");
+      const hud = document.querySelector(".pov-player-hud");
+      if (hud) hud.classList.remove("is-female");
+      const cpuRoom = document.querySelector(".domino-pov-room");
+      if (cpuRoom) cpuRoom.classList.remove("has-female-opponent");
+    } else {
+      if (opponentId && opponentId !== opponentProfileId) loadOpponentProfile(opponentId);
+      if (!opponentId) { opponentProfileId = null; opponentProfile = null; }
+      renderOpponentSeat(opponentId);
     }
-    renderOpponentSeat(opponentId);
     setText("povHudTiles", opponentId ? `${opponentTiles} bones` : "Waiting for player");
     setText("povHudTurn", opponentId && activeState.turnUserId === opponentId ? "PLAYING" : "WAITING");
     setText("boneyardCount", `Boneyard: ${(activeState.deck || []).length}`);
@@ -517,14 +712,23 @@
     if (drawButton) drawButton.disabled = !isMyTurn || playable || !(activeState.deck || []).length || activeState.status !== "playing";
     if (passButton) passButton.disabled = !isMyTurn || playable || Boolean((activeState.deck || []).length) || activeState.status !== "playing";
     const submitButton = $("submitWinBtn");
-    if (submitButton) submitButton.disabled = activeState.status !== "finished" || activeState.winnerUserId !== currentUser.userId;
+    if (submitButton) {
+      if (cpuMode) {
+        submitButton.textContent = activeState.status === "finished" ? "Play Again" : "CPU Practice";
+        submitButton.disabled = activeState.status !== "finished";
+      } else {
+        submitButton.textContent = "Submit Win";
+        submitButton.disabled = activeState.status !== "finished" || activeState.winnerUserId !== currentUser.userId;
+      }
+    }
 
     if (activeState.status === "waiting") {
       setCoach(`Share room code ${activeRoom.room_code || "above"} with player two.`);
     } else if (activeState.status === "finished") {
-      setCoach(activeState.winnerUserId === currentUser.userId ? "You won! Tap Submit Win to collect your Cool Points." : "Game over. Start or join another table for a rematch.");
+      if (cpuMode) setCoach(activeState.winnerUserId === currentUser.userId ? "You beat the CPU! Tap Play Again for another hand." : "CPU won that hand. Tap Play Again for a rematch.");
+      else setCoach(activeState.winnerUserId === currentUser.userId ? "You won! Tap Submit Win to collect your Cool Points." : "Game over. Start or join another table for a rematch.");
     } else if (!isMyTurn) {
-      setCoach("Opponent’s turn. Your bones will unlock when it’s time to play.");
+      setCoach(cpuMode ? "CPU is thinking. Your bones unlock when it finishes." : "Opponent’s turn. Your bones will unlock when it’s time to play.");
     } else if (playable) {
       setCoach(boardTiles.length ? "Your turn: tap any glowing bone that matches either end of the chain." : "Your turn: tap the glowing opening bone to start the chain.");
     } else if ((activeState.deck || []).length) {
@@ -550,6 +754,10 @@
 
   async function submitWin() {
     if (!activeRoom || !activeState || !currentUser) return setStatus("Join a table first.");
+    if (cpuMode) {
+      if (activeState.status === "finished") await startCpuGame();
+      return;
+    }
     const sb = await getClient();
     const { data, error } = await sb.rpc("claim_domino_win", { p_room_id: activeRoom.id });
     if (error || !data || data.ok === false) return setStatus(`Win rejected: ${readableError(error || data?.error).replaceAll("_", " ")}`);
@@ -558,6 +766,8 @@
   }
 
   function leaveView() {
+    clearCpuTimer();
+    cpuMode = false;
     activeRoom = null;
     activeState = null;
     activeVersion = null;
@@ -584,8 +794,10 @@
     if ($("boardTiles")) $("boardTiles").innerHTML = `<span class="hw-leaderboard-empty">Join or create a room to start.</span>`;
     if ($("playerHand")) $("playerHand").innerHTML = "";
     if ($("dominoLog")) $("dominoLog").innerHTML = `<p>Duck Sauce: “Somebody slap a bone on the table.”</p>`;
+    const submitButton = $("submitWinBtn");
+    if (submitButton) submitButton.textContent = "Submit Win";
     setStatus("Left table view. Open tables are still listed.");
-    setGuestControls(Boolean(currentUser));
+    setGuestControls(Boolean(currentUser && currentUser.userId !== LOCAL_PLAYER_ID));
   }
 
   async function boot() {
@@ -603,6 +815,7 @@
     }
 
     const createForm = $("createRoomForm");
+    const cpuButton = $("startCpuGame");
     const joinForm = $("joinRoomForm");
     const refresh = $("refreshRooms");
     const draw = $("drawTileBtn");
@@ -615,6 +828,7 @@
     const tutorial = $("dominoTutorial");
 
     if (createForm) createForm.addEventListener("submit", createRoom);
+    if (cpuButton) cpuButton.addEventListener("click", startCpuGame);
     if (joinForm) joinForm.addEventListener("submit", joinRoomByCode);
     if (refresh) refresh.addEventListener("click", listRooms);
     if (draw) draw.addEventListener("click", handleDraw);
@@ -657,6 +871,7 @@
       stopRoomRefresh();
       if (roomListTimer) clearInterval(roomListTimer);
       if (resizeTimer) clearTimeout(resizeTimer);
+      clearCpuTimer();
       roomListTimer = null;
       resizeTimer = null;
     });
