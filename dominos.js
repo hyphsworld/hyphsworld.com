@@ -18,6 +18,8 @@
   let opponentProfile = null;
   let opponentProfileId = null;
   let opponentProfileRequest = 0;
+  let lastRenderedBoard = [];
+  let resizeTimer = null;
 
   function $(id) { return document.getElementById(id); }
   function setText(id, value) { const el = $(id); if (el) el.textContent = value; }
@@ -145,45 +147,108 @@
     return `<${tag} class="${classes}"${attrs}${style} aria-label="Domino ${tileText(tile)}">${pipFace(tile[0])}${pipFace(tile[1])}</${tag}>`;
   }
 
-  function boardChainMarkup(tiles) {
+  function tileSequenceMatches(left, right) {
+    return left.length === right.length && left.every((tile, index) => sameTile(tile, right[index]));
+  }
+
+  function addedTileIndex(previous, next) {
+    if (next.length !== previous.length + 1) return next.length ? next.length - 1 : -1;
+    if (tileSequenceMatches(previous, next.slice(1))) return 0;
+    if (tileSequenceMatches(previous, next.slice(0, -1))) return next.length - 1;
+    return next.length - 1;
+  }
+
+  function boardChainMarkup(tiles, boardWidth, animateIndex) {
     const tileWidth = 70;
     const tileHeight = 42;
     const uprightWidth = tileHeight;
     const overlap = 2;
-    const sidePadding = (tileWidth - uprightWidth) / 2;
-    const centerY = 43;
-    let cursor = sidePadding;
+    const rotationInset = (tileWidth - uprightWidth) / 2;
+    const rowStep = 76;
+    const horizontalTop = 14;
+    const turnTop = 52;
+    const run = Math.max(3, Math.min(6, Math.floor(((Number(boardWidth) || 420) - 50) / 68)));
 
-    const placements = tiles.map((tile, index) => {
+    let direction = 1;
+    let edge = 0;
+    let rowY = 0;
+    let rowCount = 0;
+    const placements = [];
+
+    tiles.forEach((tile, index) => {
+      const isTurn = rowCount === run;
       const isDouble = Number(tile[0]) === Number(tile[1]);
-      const visualWidth = isDouble ? uprightWidth : tileWidth;
-      // Rotated doubles keep a 70px layout box. Pull that box left so its
-      // visible 42px edge touches the preceding bone with no floating gap.
-      const x = cursor - (isDouble ? sidePadding : 0);
-      const y = centerY - (tileHeight / 2);
-      cursor += visualWidth - overlap;
-      return { tile, index, x, y, rotation: isDouble ? 90 : 0 };
+      const rotation = isTurn || isDouble ? 90 : 0;
+      const visualWidth = rotation ? uprightWidth : tileWidth;
+      let visualLeft;
+
+      if (direction > 0) {
+        visualLeft = edge;
+        edge += visualWidth - overlap;
+      } else {
+        visualLeft = edge - visualWidth;
+        edge -= visualWidth - overlap;
+      }
+
+      const x = visualLeft - (rotation ? rotationInset : 0);
+      const y = rowY + (isTurn ? turnTop : horizontalTop);
+      const visualTop = rotation ? y - rotationInset : y;
+      const visualHeight = rotation ? tileWidth : tileHeight;
+      placements.push({
+        tile, index, x, y, rotation, isTurn,
+        visualLeft,
+        visualRight: visualLeft + visualWidth,
+        visualTop,
+        visualBottom: visualTop + visualHeight
+      });
+
+      if (isTurn) {
+        // The vertical turn overlaps both rows so the train reads as one
+        // continuous physical chain, then travels back across the table.
+        edge = direction > 0 ? visualLeft + overlap : visualLeft + visualWidth - overlap;
+        direction *= -1;
+        rowY += rowStep;
+        rowCount = 0;
+      } else {
+        rowCount += 1;
+      }
     });
 
-    const width = Math.max(96, Math.ceil(cursor + sidePadding + overlap));
-    const height = 86;
-    const bones = placements.map(({ tile, index, x, y, rotation }) => {
+    const minX = Math.min(0, ...placements.map((item) => item.visualLeft));
+    const maxX = Math.max(tileWidth, ...placements.map((item) => item.visualRight));
+    const minY = Math.min(0, ...placements.map((item) => item.visualTop));
+    const maxY = Math.max(86, ...placements.map((item) => item.visualBottom));
+    const padding = 14;
+    const shiftX = padding - minX;
+    const shiftY = padding - minY;
+    const width = Math.ceil(maxX - minX + (padding * 2));
+    const height = Math.ceil(maxY - minY + (padding * 2));
+
+    const bones = placements.map(({ tile, index, x, y, rotation, isTurn }) => {
       const endClass = index === 0 ? " chain-left-end" : index === tiles.length - 1 ? " chain-right-end" : "";
+      const animationClass = index === animateIndex ? " chain-new" : "";
       return tileMarkup(tile, {
-        className: `chain-bone${tile[0] === tile[1] ? " chain-double" : ""}${endClass}`,
-        style: `left:${x}px;top:${y}px;transform:rotate(${rotation}deg)`
+        className: `chain-bone${isTurn ? " chain-turn" : ""}${tile[0] === tile[1] ? " chain-double" : ""}${endClass}${animationClass}`,
+        style: `--chain-index:${index};left:${x + shiftX}px;top:${y + shiftY}px;transform:rotate(${rotation}deg)`
       });
     }).join("");
 
-    return `<div class="domino-chain-stage" style="--chain-width:${width}px;--chain-height:${height}px;width:${width}px;height:${height}px;min-width:${width}px;min-height:${height}px" role="group" aria-label="Connected domino chain with ${tiles.length} played ${tiles.length === 1 ? "bone" : "bones"}">${bones}</div>`;
+    const targetHeight = Number(boardWidth) < 430 ? 300 : 340;
+    const scale = Math.max(0.56, Math.min(0.94, ((Number(boardWidth) || width) - 8) / width, targetHeight / height));
+    const renderedWidth = Math.ceil(width * scale);
+    const renderedHeight = Math.ceil(height * scale);
+    return `<div class="domino-chain-viewport" style="width:${renderedWidth}px;height:${renderedHeight}px;min-width:${renderedWidth}px;min-height:${renderedHeight}px"><div class="domino-chain-stage" style="--chain-width:${width}px;--chain-height:${height}px;--chain-scale:${scale};width:${width}px;height:${height}px;min-width:${width}px;min-height:${height}px" role="group" aria-label="Connected domino chain with ${tiles.length} played ${tiles.length === 1 ? "bone" : "bones"}">${bones}</div></div>`;
   }
 
   function keepPlayedEndVisible(board) {
     const end = board && board.querySelector(".chain-right-end");
     if (!end || typeof board.scrollTo !== "function") return;
     window.requestAnimationFrame(() => {
-      const target = Math.max(0, end.offsetLeft - (board.clientWidth - end.offsetWidth) / 2);
-      board.scrollTo({ left: target, behavior: "smooth" });
+      const boardRect = board.getBoundingClientRect();
+      const endRect = end.getBoundingClientRect();
+      const left = Math.max(0, board.scrollLeft + (endRect.left - boardRect.left) - ((board.clientWidth - endRect.width) / 2));
+      const top = Math.max(0, board.scrollTop + (endRect.top - boardRect.top) - ((board.clientHeight - endRect.height) / 2));
+      board.scrollTo({ left, top, behavior: "smooth" });
     });
   }
 
@@ -420,9 +485,13 @@
     document.body.classList.add("domino-game-active");
 
     const boardTiles = activeState.board || [];
+    const animateIndex = addedTileIndex(lastRenderedBoard, boardTiles);
     board.innerHTML = boardTiles.length
-      ? boardChainMarkup(boardTiles)
+      ? boardChainMarkup(boardTiles, Math.max(280, board.clientWidth - 16), animateIndex)
       : `<span class="hw-leaderboard-empty">High double opens. No double? Highest pip bone starts.</span>`;
+    lastRenderedBoard = boardTiles.map((tile) => [tile[0], tile[1]]);
+    const room = document.querySelector(".domino-pov-room");
+    if (room) room.classList.toggle("is-my-turn", isMyTurn);
     if (boardTiles.length) keepPlayedEndVisible(board);
 
     const myHand = (activeState.hands || {})[currentUser.userId] || [];
@@ -500,7 +569,8 @@
     setText("povHudTurn", "WAITING");
     setText("povHudAvatar", "＋");
     const room = document.querySelector(".domino-pov-room");
-    if (room) room.classList.remove("has-female-opponent");
+    if (room) room.classList.remove("has-female-opponent", "is-my-turn");
+    lastRenderedBoard = [];
     setText("povSelfAvatar", dominoAvatar(currentUser?.avatarType, currentUser?.avatarIcon));
     setText("povSelfName", currentUser ? safeText(currentUser.displayName, "YOUR SEAT") : "YOUR SEAT");
     setText("boneyardCount", "Boneyard: —");
@@ -570,10 +640,19 @@
       } catch (error) {}
     });
 
+    window.addEventListener("resize", () => {
+      if (resizeTimer) clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        if (activeRoom && activeState && currentUser) renderState();
+      }, 160);
+    }, { passive: true });
+
     window.addEventListener("pagehide", () => {
       stopRoomRefresh();
       if (roomListTimer) clearInterval(roomListTimer);
+      if (resizeTimer) clearTimeout(resizeTimer);
       roomListTimer = null;
+      resizeTimer = null;
     });
     await listRooms();
     roomListTimer = setInterval(listRooms, 30000);
