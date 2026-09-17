@@ -232,7 +232,11 @@
       });
     }).join("");
 
-    const targetHeight = Number(boardWidth) < 430 ? 300 : 340;\n    const scale = Math.max(0.56, Math.min(0.94, ((Number(boardWidth) || width) - 8) / width, targetHeight / height));\n    const renderedWidth = Math.ceil(width * scale);\n    const renderedHeight = Math.ceil(height * scale);\n    return `<div class="domino-chain-viewport" style="width:${renderedWidth}px;height:${renderedHeight}px;min-width:${renderedWidth}px;min-height:${renderedHeight}px"><div class="domino-chain-stage" style="--chain-width:${width}px;--chain-height:${height}px;--chain-scale:${scale};width:${width}px;height:${height}px;min-width:${width}px;min-height:${height}px" role="group" aria-label="Connected domino chain with ${tiles.length} played ${tiles.length === 1 ? "bone" : "bones"}">${bones}</div></div>`;
+    const targetHeight = Number(boardWidth) < 430 ? 300 : 340;
+    const scale = Math.max(0.56, Math.min(0.94, ((Number(boardWidth) || width) - 8) / width, targetHeight / height));
+    const renderedWidth = Math.ceil(width * scale);
+    const renderedHeight = Math.ceil(height * scale);
+    return `<div class="domino-chain-viewport" style="width:${renderedWidth}px;height:${renderedHeight}px;min-width:${renderedWidth}px;min-height:${renderedHeight}px"><div class="domino-chain-stage" style="--chain-width:${width}px;--chain-height:${height}px;--chain-scale:${scale};width:${width}px;height:${height}px;min-width:${width}px;min-height:${height}px" role="group" aria-label="Connected domino chain with ${tiles.length} played ${tiles.length === 1 ? "bone" : "bones"}">${bones}</div></div>`;
   }
 
   function keepPlayedEndVisible(board) {
