@@ -680,3 +680,103 @@ body.dominos-page{
     transform:translateY(52px) perspective(680px) rotateX(18deg) scale(.86);
   }
 }
+
+
+/* HYPHSWORLD Domino motion pass — classic clarity with premium table feedback. */
+.domino-pov-game .domino-tile,
+.domino-pov-game .domino-tile[class*="tile-color-"]{
+  --pip:#21e6a5!important;
+}
+.domino-pov-room .pov-board{
+  min-height:260px!important;
+  max-height:340px!important;
+  padding:12px!important;
+  scroll-behavior:smooth;
+  overscroll-behavior:contain;
+  background:
+    radial-gradient(circle at 50% 45%,rgba(33,230,165,.08),transparent 48%),
+    rgba(1,24,13,.18);
+}
+.domino-chain-viewport{
+  position:relative;
+  margin:auto;
+}
+.domino-pov-room .domino-chain-stage{
+  margin:0!important;
+  transform:perspective(900px) rotateX(8deg) scale(var(--chain-scale, .94))!important;
+  transform-origin:top left!important;
+}
+.domino-pov-game .pov-board .chain-bone{
+  transition:filter .2s ease,box-shadow .2s ease;
+  will-change:transform,filter,opacity;
+}
+.domino-pov-game .pov-board .chain-bone.chain-turn{
+  z-index:4;
+}
+.domino-pov-game .pov-board .chain-bone.chain-new{
+  animation:domino-land .52s cubic-bezier(.18,.9,.28,1.24) both;
+}
+.domino-pov-game .pov-board .chain-left-end,
+.domino-pov-game .pov-board .chain-right-end{
+  animation:domino-end-breathe 1.9s ease-in-out infinite;
+}
+.domino-pov-room.is-my-turn .pov-turn-banner{
+  animation:domino-turn-pulse 1.35s ease-in-out infinite;
+}
+.domino-pov-room.is-my-turn .pov-player-hand .domino-tile.is-playable{
+  filter:drop-shadow(0 0 8px rgba(33,230,165,.72));
+}
+.domino-pov-room .pov-felt::after{
+  content:"";
+  position:absolute;
+  z-index:1;
+  inset:10% 4% 18%;
+  pointer-events:none;
+  background:linear-gradient(112deg,transparent 30%,rgba(120,255,215,.07) 47%,rgba(255,255,255,.11) 50%,rgba(120,255,215,.06) 53%,transparent 70%);
+  transform:translateX(-75%);
+  animation:domino-felt-sheen 8s ease-in-out infinite;
+}
+.domino-pov-room .pov-player-hud{
+  animation:domino-hud-float 4.2s ease-in-out infinite;
+}
+@keyframes domino-land{
+  0%{opacity:0;scale:1.55;filter:brightness(1.8) drop-shadow(0 0 18px rgba(33,230,165,.95))}
+  58%{opacity:1;scale:.9;filter:brightness(1.2) drop-shadow(0 7px 8px rgba(0,0,0,.55))}
+  78%{scale:1.06}
+  100%{opacity:1;scale:1;filter:none}
+}
+@keyframes domino-end-breathe{
+  0%,100%{box-shadow:0 0 0 2px rgba(33,230,165,.18),0 0 10px rgba(33,230,165,.38),0 8px 14px rgba(0,0,0,.36)}
+  50%{box-shadow:0 0 0 4px rgba(33,230,165,.24),0 0 22px rgba(33,230,165,.72),0 9px 17px rgba(0,0,0,.4)}
+}
+@keyframes domino-turn-pulse{
+  0%,100%{box-shadow:0 0 10px rgba(57,255,122,.38),0 0 24px rgba(57,255,122,.3)}
+  50%{box-shadow:0 0 18px rgba(57,255,122,.82),0 0 38px rgba(57,255,122,.46)}
+}
+@keyframes domino-felt-sheen{
+  0%,28%{transform:translateX(-75%);opacity:0}
+  42%{opacity:1}
+  62%,100%{transform:translateX(75%);opacity:0}
+}
+@keyframes domino-hud-float{
+  0%,100%{margin-top:0}
+  50%{margin-top:-3px}
+}
+@media(max-width:640px){
+  .domino-pov-room .pov-board{
+    min-height:250px!important;
+    max-height:310px!important;
+    padding:8px!important;
+  }
+  .domino-pov-room .domino-chain-stage{
+    transform:perspective(760px) rotateX(7deg) scale(var(--chain-scale, .86))!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .domino-pov-game .pov-board .chain-bone,
+  .domino-pov-room .pov-turn-banner,
+  .domino-pov-room .pov-felt::after,
+  .domino-pov-room .pov-player-hud{
+    animation:none!important;
+  }
+}
