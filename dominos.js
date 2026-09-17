@@ -19,6 +19,7 @@
   let opponentProfileId = null;
   let opponentProfileRequest = 0;
   let lastRenderedBoard = [];
+  let resizeTimer = null;
 
   function $(id) { return document.getElementById(id); }
   function setText(id, value) { const el = $(id); if (el) el.textContent = value; }
@@ -568,7 +569,8 @@
     setText("povHudTurn", "WAITING");
     setText("povHudAvatar", "＋");
     const room = document.querySelector(".domino-pov-room");
-    if (room) room.classList.remove("has-female-opponent");
+    if (room) room.classList.remove("has-female-opponent", "is-my-turn");
+    lastRenderedBoard = [];
     setText("povSelfAvatar", dominoAvatar(currentUser?.avatarType, currentUser?.avatarIcon));
     setText("povSelfName", currentUser ? safeText(currentUser.displayName, "YOUR SEAT") : "YOUR SEAT");
     setText("boneyardCount", "Boneyard: —");
@@ -638,10 +640,19 @@
       } catch (error) {}
     });
 
+    window.addEventListener("resize", () => {
+      if (resizeTimer) clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        if (activeRoom && activeState && currentUser) renderState();
+      }, 160);
+    }, { passive: true });
+
     window.addEventListener("pagehide", () => {
       stopRoomRefresh();
       if (roomListTimer) clearInterval(roomListTimer);
+      if (resizeTimer) clearTimeout(resizeTimer);
       roomListTimer = null;
+      resizeTimer = null;
     });
     await listRooms();
     roomListTimer = setInterval(listRooms, 30000);
