@@ -12,7 +12,7 @@
     "lint:js": "node scripts/lint-js.js",
     "diagnostics:consumer": "node scripts/consumer-diagnostic.js",
     "diagnostics:login": "node scripts/login-diagnostic.js",
-    "diagnostics:full": "npm run diagnostics:consumer && npm run diagnostics:security && npm run diagnostics:login && npm run diagnostics:engagement && npm run diagnostics:daily-spin && npm run diagnostics:domino-pov && npm run diagnostics:table-games-pov && npm run diagnostics:vault-scanner && npm run diagnostics:homepage-focus && npm run diagnostics:command-center && npm run diagnostics:reward-supply && npm run diagnostics:ss-bowling-strike && npm run diagnostics:chase-the-bag-deploy && npm run diagnostics",
+    "diagnostics:full": "npm run diagnostics:consumer && npm run diagnostics:security && npm run diagnostics:login && npm run diagnostics:engagement && npm run diagnostics:daily-spin && npm run diagnostics:domino-pov && npm run diagnostics:table-games-pov && npm run diagnostics:vault-scanner && npm run diagnostics:homepage-focus && npm run diagnostics:command-center && npm run diagnostics:reward-supply && npm run diagnostics:error-sweatsuit && npm run diagnostics:ss-bowling-strike && npm run diagnostics:chase-the-bag-deploy && npm run diagnostics",
     "diagnostics:engagement": "node scripts/engagement-points-diagnostic.js",
     "diagnostics:daily-spin": "node scripts/daily-spin-diagnostic.js",
     "diagnostics:domino-pov": "node scripts/domino-pov-diagnostic.js",
@@ -22,6 +22,7 @@
     "diagnostics:homepage-focus": "node scripts/homepage-focus-diagnostic.js",
     "diagnostics:command-center": "node scripts/homepage-command-center-diagnostic.js",
     "diagnostics:reward-supply": "node scripts/reward-supply-diagnostic.js",
+    "diagnostics:error-sweatsuit": "node scripts/error-sweatsuit-reward-diagnostic.js",
     "diagnostics:ss-bowling-strike": "node scripts/ss-bowling-strike-diagnostic.js",
     "diagnostics:chase-the-bag-deploy": "node scripts/chase-the-bag-deploy-diagnostic.js",
     "diagnostics:security": "node scripts/security-diagnostic.js"

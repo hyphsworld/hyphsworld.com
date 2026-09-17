@@ -68,6 +68,21 @@ gtag('config','G-CT7CWHCHYC');
   color:#bdbdbd;
   line-height:1.6;
 }
+.exclusive-reward{
+  border:2px solid rgba(255,45,85,.72);
+  background:radial-gradient(circle at 50% 0%,rgba(255,45,85,.20),transparent 42%),linear-gradient(180deg,#111,#020202);
+  grid-column:1/-1;
+}
+.exclusive-reward:before{background:linear-gradient(115deg,transparent 0 42%,rgba(255,255,255,.10) 50%,transparent 58% 100%);animation:errorRewardSheen 5s ease-in-out infinite}
+.exclusive-layout{display:grid;grid-template-columns:minmax(220px,420px) minmax(0,1fr);gap:26px;align-items:center}
+.exclusive-image{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:center;border-radius:22px;border:1px solid rgba(255,255,255,.18);box-shadow:0 20px 46px rgba(0,0,0,.58)}
+.exclusive-flags{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+.exclusive-flags span{border-radius:999px;padding:7px 10px;background:#ff2d55;color:#fff;font-weight:1000;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase}
+.exclusive-reward .reward-price{font-size:1.2rem;color:#ffe600;border-color:#ffe600}
+.exclusive-status{margin-top:12px;color:#7dff9b;font-weight:1000}
+.winner-shipping-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@keyframes errorRewardSheen{0%,60%{transform:translateX(-120%)}85%,100%{transform:translateX(120%)}}
+@media(max-width:720px){.exclusive-layout{grid-template-columns:1fr}.exclusive-reward{grid-column:auto}.winner-shipping-grid{grid-template-columns:1fr}.winner-shipping-grid input{grid-column:1!important}}
 .reward-owned{
   color:#7dff9b;
   font-weight:900;
@@ -223,6 +238,22 @@ gtag('config','G-CT7CWHCHYC');
     </div>
 
     <div class="reward-grid">
+      <article class="reward-card exclusive-reward" data-id="chase-the-bag-error-sweatsuit" data-cost="20600" data-exclusive="true">
+        <div class="exclusive-layout">
+          <img class="exclusive-image" src="assets/rewards/chase-the-bag-error-sweatsuit-large.jpeg" alt="Black CHASE THE BAG ERROR sweatsuit, size Large" width="1536" height="2048">
+          <div>
+            <div class="exclusive-flags"><span>1 of 1</span><span>Error Edition</span><span>Large Only</span></div>
+            <p class="eyebrow">Exclusive Physical Reward</p>
+            <h3>Black CHASE THE BAG ERROR Sweatsuit</h3>
+            <div class="reward-price">20,600 Cool Points</div>
+            <p>The first eligible HYPHSWORLD member to redeem wins this one-of-one Large ERROR outfit and permanent VIP access to HYPHSWORLD events and gated content.</p>
+            <p><strong>Size Large is intentional:</strong> the sizing error makes this collectible unique. No restock and no alternate sizes.</p>
+            <button class="btn btn-gold buy-reward exclusive-redeem" type="button">CLAIM THE 1 OF 1</button>
+            <div class="exclusive-status" role="status" aria-live="polite">Checking availability…</div>
+          </div>
+        </div>
+      </article>
+
       <article class="reward-card" data-id="discount10" data-cost="800">
         <p class="eyebrow">Merch</p>
         <h3>10% Off Code</h3>
@@ -324,6 +355,7 @@ gtag('config','G-CT7CWHCHYC');
     button.addEventListener("click",async()=>{
       const card = button.closest(".reward-card");
       if(!card) return;
+      if(card.dataset.exclusive === "true") return;
       const id = card.dataset.id;
       const cost = parseInt(card.dataset.cost,10) || 0;
       const bought = getPurchases();
@@ -370,5 +402,6 @@ gtag('config','G-CT7CWHCHYC');
   render();
 })();
 </script>
+<script src="point-store-exclusive-reward.js"></script>
 </body>
 </html>
