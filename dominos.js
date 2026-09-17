@@ -163,41 +163,46 @@
     const tileWidth = 70;
     const tileHeight = 42;
     const uprightWidth = tileHeight;
-    const overlap = 2;
+    const overlap = 4;
     const rotationInset = (tileWidth - uprightWidth) / 2;
-    const rowStep = 76;
-    const horizontalTop = 14;
-    const turnTop = 52;
-    const run = Math.max(3, Math.min(6, Math.floor(((Number(boardWidth) || 420) - 50) / 68)));
+    // Five bones fit as one readable mobile run. Wider tables can hold six.
+    const run = Math.max(5, Math.min(6, Math.floor(((Number(boardWidth) || 420) - 20) / 62)));
 
     let direction = 1;
-    let edge = 0;
-    let rowY = 0;
+    let connectorX = 0;
+    let rowCenter = tileWidth / 2;
     let rowCount = 0;
     const placements = [];
 
     tiles.forEach((tile, index) => {
-      const isTurn = rowCount === run;
       const isDouble = Number(tile[0]) === Number(tile[1]);
-      // A backward snake row travels right-to-left. Rotate its horizontal
-      // bones so the logical pip order still touches the correct neighbors.
+      // Do not make a double perform two jobs at once. A double stays
+      // crosswise; the next non-double creates the downward turn.
+      const isTurn = rowCount >= run && !isDouble;
       const rotation = isTurn || isDouble ? 90 : (direction < 0 ? 180 : 0);
       const isQuarterTurn = Math.abs(rotation) === 90;
       const visualWidth = isQuarterTurn ? uprightWidth : tileWidth;
+      const visualHeight = isQuarterTurn ? tileWidth : tileHeight;
       let visualLeft;
+      let visualTop;
 
-      if (direction > 0) {
-        visualLeft = edge;
-        edge += visualWidth - overlap;
+      if (isTurn) {
+        // Both rows share this bone's center line: its top overlaps the
+        // outgoing row and its bottom overlaps the returning row.
+        visualLeft = connectorX - (uprightWidth / 2);
+        visualTop = rowCenter - overlap;
+      } else if (direction > 0) {
+        visualLeft = connectorX - (index === 0 ? 0 : overlap);
+        visualTop = rowCenter - (visualHeight / 2);
+        connectorX = visualLeft + visualWidth;
       } else {
-        visualLeft = edge - visualWidth;
-        edge -= visualWidth - overlap;
+        visualLeft = connectorX + overlap - visualWidth;
+        visualTop = rowCenter - (visualHeight / 2);
+        connectorX = visualLeft;
       }
 
       const x = visualLeft - (isQuarterTurn ? rotationInset : 0);
-      const y = rowY + (isTurn ? turnTop : horizontalTop);
-      const visualTop = isQuarterTurn ? y - rotationInset : y;
-      const visualHeight = isQuarterTurn ? tileWidth : tileHeight;
+      const y = visualTop + (isQuarterTurn ? rotationInset : 0);
       placements.push({
         tile, index, x, y, rotation, isTurn,
         visualLeft,
@@ -207,11 +212,8 @@
       });
 
       if (isTurn) {
-        // The vertical turn overlaps both rows so the train reads as one
-        // continuous physical chain, then travels back across the table.
-        edge = direction > 0 ? visualLeft + overlap : visualLeft + visualWidth - overlap;
+        rowCenter = visualTop + visualHeight - overlap;
         direction *= -1;
-        rowY += rowStep;
         rowCount = 0;
       } else {
         rowCount += 1;
