@@ -376,8 +376,8 @@
   .domino-pov-room .domino-chain-stage{
     margin-inline:auto!important;
     margin-bottom:0!important;
-    transform:translateY(28px) perspective(680px) rotateX(16deg) scale(.78)!important;
-    transform-origin:top center!important;
+    transform:perspective(760px) rotateX(7deg) scale(var(--chain-scale,.86))!important;
+    transform-origin:top left!important;
   }
 
   .domino-pov-room .pov-player-hand{
@@ -570,7 +570,8 @@
   }
 
   .domino-pov-room .domino-chain-stage{
-    transform:translateY(25px) perspective(680px) rotateX(16deg) scale(.7)!important;
+    transform:perspective(760px) rotateX(7deg) scale(var(--chain-scale,.8))!important;
+    transform-origin:top left!important;
   }
 
   .table-game-page .card-control-dock{
