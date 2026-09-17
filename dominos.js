@@ -166,7 +166,7 @@
     const rowStep = 76;
     const horizontalTop = 14;
     const turnTop = 52;
-    const run = Math.max(3, Math.min(6, Math.floor(((Number(boardWidth) || 420) - 90) / 68)));
+    const run = Math.max(3, Math.min(6, Math.floor(((Number(boardWidth) || 420) - 50) / 68)));
 
     let direction = 1;
     let edge = 0;
@@ -232,15 +232,18 @@
       });
     }).join("");
 
-    return `<div class="domino-chain-stage" style="--chain-width:${width}px;--chain-height:${height}px;width:${width}px;height:${height}px;min-width:${width}px;min-height:${height}px" role="group" aria-label="Connected domino chain with ${tiles.length} played ${tiles.length === 1 ? "bone" : "bones"}">${bones}</div>`;
+    const targetHeight = Number(boardWidth) < 430 ? 300 : 340;\n    const scale = Math.max(0.56, Math.min(0.94, ((Number(boardWidth) || width) - 8) / width, targetHeight / height));\n    const renderedWidth = Math.ceil(width * scale);\n    const renderedHeight = Math.ceil(height * scale);\n    return `<div class="domino-chain-viewport" style="width:${renderedWidth}px;height:${renderedHeight}px;min-width:${renderedWidth}px;min-height:${renderedHeight}px"><div class="domino-chain-stage" style="--chain-width:${width}px;--chain-height:${height}px;--chain-scale:${scale};width:${width}px;height:${height}px;min-width:${width}px;min-height:${height}px" role="group" aria-label="Connected domino chain with ${tiles.length} played ${tiles.length === 1 ? "bone" : "bones"}">${bones}</div></div>`;
   }
 
   function keepPlayedEndVisible(board) {
     const end = board && board.querySelector(".chain-right-end");
     if (!end || typeof board.scrollTo !== "function") return;
     window.requestAnimationFrame(() => {
-      const target = Math.max(0, end.offsetLeft - (board.clientWidth - end.offsetWidth) / 2);
-      board.scrollTo({ left: target, behavior: "smooth" });
+      const boardRect = board.getBoundingClientRect();
+      const endRect = end.getBoundingClientRect();
+      const left = Math.max(0, board.scrollLeft + (endRect.left - boardRect.left) - ((board.clientWidth - endRect.width) / 2));
+      const top = Math.max(0, board.scrollTop + (endRect.top - boardRect.top) - ((board.clientHeight - endRect.height) / 2));
+      board.scrollTo({ left, top, behavior: "smooth" });
     });
   }
 
