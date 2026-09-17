@@ -152,6 +152,7 @@
   }
 
   function addedTileIndex(previous, next) {
+    if (tileSequenceMatches(previous, next)) return -1;
     if (next.length !== previous.length + 1) return next.length ? next.length - 1 : -1;
     if (tileSequenceMatches(previous, next.slice(1))) return 0;
     if (tileSequenceMatches(previous, next.slice(0, -1))) return next.length - 1;
@@ -178,7 +179,9 @@
     tiles.forEach((tile, index) => {
       const isTurn = rowCount === run;
       const isDouble = Number(tile[0]) === Number(tile[1]);
-      const rotation = isTurn || isDouble ? 90 : 0;
+      // A backward snake row travels right-to-left. Rotate its horizontal
+      // bones so the logical pip order still touches the correct neighbors.
+      const rotation = isTurn || isDouble ? 90 : (direction < 0 ? 180 : 0);
       const visualWidth = rotation ? uprightWidth : tileWidth;
       let visualLeft;
 
