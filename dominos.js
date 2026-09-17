@@ -182,7 +182,8 @@
       // A backward snake row travels right-to-left. Rotate its horizontal
       // bones so the logical pip order still touches the correct neighbors.
       const rotation = isTurn || isDouble ? 90 : (direction < 0 ? 180 : 0);
-      const visualWidth = rotation ? uprightWidth : tileWidth;
+      const isQuarterTurn = Math.abs(rotation) === 90;
+      const visualWidth = isQuarterTurn ? uprightWidth : tileWidth;
       let visualLeft;
 
       if (direction > 0) {
@@ -193,10 +194,10 @@
         edge -= visualWidth - overlap;
       }
 
-      const x = visualLeft - (rotation ? rotationInset : 0);
+      const x = visualLeft - (isQuarterTurn ? rotationInset : 0);
       const y = rowY + (isTurn ? turnTop : horizontalTop);
-      const visualTop = rotation ? y - rotationInset : y;
-      const visualHeight = rotation ? tileWidth : tileHeight;
+      const visualTop = isQuarterTurn ? y - rotationInset : y;
+      const visualHeight = isQuarterTurn ? tileWidth : tileHeight;
       placements.push({
         tile, index, x, y, rotation, isTurn,
         visualLeft,
