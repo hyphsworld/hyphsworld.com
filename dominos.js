@@ -176,9 +176,9 @@
 
     tiles.forEach((tile, index) => {
       const isDouble = Number(tile[0]) === Number(tile[1]);
-      // Do not make a double perform two jobs at once. A double stays
-      // crosswise; the next non-double creates the downward turn.
-      const isTurn = rowCount >= run && !isDouble;
+      // A boundary double is symmetric, so it can safely serve as the
+      // connected corner instead of stacking beside a second vertical bone.
+      const isTurn = rowCount >= run;
       const rotation = isTurn || isDouble ? 90 : (direction < 0 ? 180 : 0);
       const isQuarterTurn = Math.abs(rotation) === 90;
       const visualWidth = isQuarterTurn ? uprightWidth : tileWidth;
