@@ -9,6 +9,76 @@
   --hw-game-gap:clamp(8px,1.4vw,16px);
 }
 
+/* Premium ivory bone contract + exact connected-chain geometry.
+   This file loads last, so legacy compact-table rules cannot shrink played
+   bones after the JavaScript has positioned them on a 70x42 grid. */
+.domino-pov-game .pov-board .domino-tile.chain-bone{
+  box-sizing:border-box!important;
+  width:70px!important;
+  min-width:70px!important;
+  max-width:70px!important;
+  height:42px!important;
+  min-height:42px!important;
+  max-height:42px!important;
+  margin:0!important;
+  border:2px solid #d6aa45!important;
+  border-radius:9px!important;
+  background:linear-gradient(145deg,#fffdf0 0%,#f2ead2 48%,#cdbf9e 100%)!important;
+  box-shadow:0 3px 0 #8d7137,0 8px 13px rgba(0,0,0,.42),inset 1px 1px 0 rgba(255,255,255,.95),inset -1px -1px 0 rgba(78,59,22,.2)!important;
+}
+
+.domino-pov-game .pov-player-hand .domino-tile,
+.domino-pov-game .pov-player-hand .domino-tile:nth-child(n){
+  position:relative;
+  isolation:isolate;
+  box-sizing:border-box!important;
+  border:2px solid #d8ae51!important;
+  border-radius:11px!important;
+  background:linear-gradient(145deg,#fffef5 0%,#f6efd9 42%,#d8c9a6 78%,#b9a272 100%)!important;
+  box-shadow:0 4px 0 #8d7137,0 10px 17px rgba(0,0,0,.48),inset 2px 2px 1px rgba(255,255,255,.96),inset -2px -2px 2px rgba(84,61,18,.2)!important;
+  filter:saturate(.96) contrast(1.04)!important;
+  transition:transform .18s cubic-bezier(.2,.8,.2,1),filter .18s ease,box-shadow .18s ease!important;
+}
+
+.domino-pov-game .pov-player-hand .domino-tile::before{
+  content:"";
+  position:absolute;
+  z-index:2;
+  inset:2px 3px auto;
+  height:30%;
+  border-radius:8px 8px 45% 45%;
+  pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.72),rgba(255,255,255,0));
+}
+
+.domino-pov-game .pov-player-hand .domino-tile .pip-face{
+  position:relative;
+  z-index:3;
+}
+
+.domino-pov-game .pov-player-hand .domino-tile .pip-face:first-child{
+  border-color:#8d7137!important;
+}
+
+.domino-pov-game .pov-player-hand .domino-tile .pip-face i,
+.domino-pov-game .pov-board .domino-tile.chain-bone .pip-face i{
+  background:#087f5b!important;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.5),0 1px 2px rgba(0,0,0,.55),0 0 5px rgba(21,231,164,.26)!important;
+}
+
+.domino-pov-room.is-my-turn .pov-player-hand .domino-tile.is-playable,
+.domino-pov-room .pov-player-hand .domino-tile.is-playable:hover,
+.domino-pov-room .pov-player-hand .domino-tile.is-playable:focus-visible{
+  transform:translateY(-8px) scale(1.035)!important;
+  filter:brightness(1.08) saturate(1.04)!important;
+  box-shadow:0 5px 0 #9b7a32,0 15px 23px rgba(0,0,0,.52),0 0 0 2px rgba(33,230,165,.42),0 0 24px rgba(33,230,165,.72),inset 2px 2px 1px rgba(255,255,255,.98)!important;
+}
+
+.domino-pov-game .pov-player-hand .domino-tile.is-blocked{
+  opacity:.72!important;
+  filter:saturate(.72) brightness(.82)!important;
+}
+
 .games-page,
 .dominos-page{
   overflow-x:hidden;
