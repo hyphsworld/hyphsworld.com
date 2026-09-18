@@ -477,7 +477,10 @@
       if (activeState.consecutivePasses >= 2) {
         const playerScore = handScore(activeState.hands[currentUser.userId]);
         const cpuScore = handScore(activeState.hands[CPU_ID]);
-        finishCpuGame(playerScore <= cpuScore ? currentUser.userId : CPU_ID, "blocked");
+        const winnerId = playerScore === cpuScore
+          ? playerId
+          : (playerScore < cpuScore ? currentUser.userId : CPU_ID);
+        finishCpuGame(winnerId, "blocked");
       } else activeState.turnUserId = localOpponent(playerId);
     }
 
@@ -606,10 +609,13 @@
       scheduleCpuTurn();
       return;
     }
+    const requestToken = roomViewToken;
+    const roomId = activeRoom.id;
     const sb = await getClient();
-    const params = { p_room_id: activeRoom.id, p_action: action, p_expected_version: activeVersion };
+    const params = { p_room_id: roomId, p_action: action, p_expected_version: activeVersion };
     if (Number.isInteger(tileIndex)) params.p_tile_index = tileIndex;
     const { data, error } = await sb.rpc("domino_action", params);
+    if (requestToken !== roomViewToken || cpuMode || !activeRoom || activeRoom.id !== roomId) return;
     if (error || !data || data.ok === false) {
       setStatus(`Move rejected: ${readableError(error || data?.error).replaceAll("_", " ")}`);
       await refreshActiveRoom();
@@ -854,7 +860,13 @@
         return;
       }
       try {
+        const previousUserId = currentUser?.userId || null;
+        const wasCpuMode = cpuMode;
         await requireUser();
+        if (wasCpuMode && previousUserId && previousUserId !== currentUser.userId) {
+          leaveView();
+          setStatus("Signed in. Start a new CPU practice hand with your player ID.");
+        }
         setGuestControls(true);
         await listRooms();
       } catch (error) {}
@@ -874,6 +886,11 @@
       clearCpuTimer();
       roomListTimer = null;
       resizeTimer = null;
+    });
+    window.addEventListener("pageshow", (event) => {
+      if (event.persisted && cpuMode && activeState?.status === "playing" && activeState.turnUserId === CPU_ID) {
+        scheduleCpuTurn();
+      }
     });
     await listRooms();
     roomListTimer = setInterval(listRooms, 30000);
