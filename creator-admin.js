@@ -76,15 +76,28 @@
   }
 
   async function loadCreators() {
-    var result = await client.from('creators').select('id,display_name').order('display_name');
+    var result = await client.from('creators').select('id,display_name,owner_user_id').order('display_name');
     if (result.error) throw result.error;
     var select = el('adminCreator');
+    var ownerSelect = el('ownerCreator');
     select.replaceChildren();
+    ownerSelect.replaceChildren();
     (result.data || []).forEach(function (creator) {
       var option = node('option', creator.display_name);
       option.value = creator.id;
       select.append(option);
+      var ownerOption = node('option', creator.display_name + (creator.owner_user_id ? ' • LOGIN LINKED' : ' • NOT LINKED'));
+      ownerOption.value = creator.id;
+      ownerOption.dataset.linked = creator.owner_user_id ? 'true' : 'false';
+      ownerSelect.append(ownerOption);
     });
+    renderOwnerState();
+  }
+
+  function renderOwnerState() {
+    var option = el('ownerCreator').selectedOptions[0];
+    var box = el('ownerAssignmentState');
+    box.replaceChildren(node('span', option && option.dataset.linked === 'true' ? 'This Creator World already has a linked login. Submitting a different email requires confirmation.' : 'No creator login is linked yet.'));
   }
 
   async function loadAudit() {
@@ -113,6 +126,21 @@
     status('Creator tool access updated and logged.');
     el('entitlementKey').value = '';
     try { await loadAudit(); } catch (error) { status(friendlyError(error)); }
+  });
+
+  el('ownerCreator').addEventListener('change', renderOwnerState);
+  el('ownerAssignmentForm').addEventListener('submit', async function (event) {
+    event.preventDefault();
+    var option = el('ownerCreator').selectedOptions[0];
+    if (option && option.dataset.linked === 'true' && !window.confirm('Replace the current creator login with this HYPHSWORLD ID?')) return;
+    var result = await client.rpc('creator_admin_assign_owner', {
+      p_creator_id: el('ownerCreator').value,
+      p_owner_email: el('ownerEmail').value.trim().toLowerCase()
+    });
+    if (result.error) { status(result.error.message || friendlyError(result.error)); return; }
+    status('Creator login connected and audit logged.');
+    el('ownerEmail').value = '';
+    await Promise.all([loadCreators(), loadAudit()]);
   });
 
   el('adminRetry').addEventListener('click', load);

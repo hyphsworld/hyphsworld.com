@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#07080b">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Secure HYPHSWORLD Creator Login for account-linked Creator Worlds.">
+  <title>Creator Login | HYPHSWORLD</title>
+  <link rel="stylesheet" href="creator-login.css?v=creator-login-1">
+</head>
+<body data-hide-global-points-hud>
+  <a class="skip-link" href="#creatorLoginMain">Skip to Creator Login</a>
+  <header>
+    <a class="brand" href="index.html"><small>AMS WEST PRESENTS</small><strong>CREATOR LOGIN</strong></a>
+    <nav aria-label="Creator Login navigation"><a href="creators.html">Creators</a><a href="creator-access.html">Access</a><a href="account.html">My ID</a></nav>
+  </header>
+
+  <main id="creatorLoginMain">
+    <section class="creator-login-shell">
+      <div class="creator-login-copy">
+        <p>CREATOR WORLD // SECURE ACCESS</p>
+        <h1>Control your<br><span>own world.</span></h1>
+        <p>Use the same HYPHSWORLD ID you use everywhere else. Approved creators are matched to one protected Creator World—no second account and no duplicate password.</p>
+        <div class="security-row"><span>🔒 Account-linked</span><span>✓ Server checked</span><span>🛡 Owner-only tools</span></div>
+      </div>
+
+      <section class="login-card" aria-labelledby="loginTitle">
+        <div class="creator-mark" aria-hidden="true"><span>HW</span><b>CREATOR</b></div>
+        <p class="eyebrow">CREATOR ACCESS</p>
+        <h2 id="loginTitle">Enter the control room.</h2>
+        <div id="creatorLoginStatus" class="login-status" role="status" aria-live="polite">Checking your HYPHSWORLD ID…</div>
+
+        <div id="creatorReady" class="creator-ready" hidden>
+          <small>ACCOUNT CONNECTED</small>
+          <strong id="connectedCreatorName">Creator World</strong>
+          <a href="creator-dashboard.html">Open Creator Dashboard →</a>
+        </div>
+
+        <form id="creatorLoginForm" autocomplete="on">
+          <label>Email<input id="creatorEmail" type="email" autocomplete="email" placeholder="creator@email.com" required></label>
+          <label>Secret Code<input id="creatorPassword" type="password" autocomplete="current-password" placeholder="Your HYPHSWORLD secret code" required></label>
+          <button id="creatorLoginButton" class="primary" type="submit">Enter Creator Dashboard</button>
+        </form>
+
+        <div class="login-divider"><span>OR</span></div>
+        <button id="creatorMagicLink" class="secondary" type="button">Email Me a Creator Login Link</button>
+        <button id="creatorGoogleLogin" class="secondary" type="button">Continue With Google</button>
+
+        <div id="creatorNotLinked" class="not-linked" hidden>
+          <strong>Your ID is signed in, but no Creator World is linked yet.</strong>
+          <p>Ask HYPHSWORLD administration to connect this email to your approved creator profile.</p>
+          <a href="mailto:tone@amsenterprisecorp.com?subject=Connect%20My%20Creator%20Login">Request account connection</a>
+        </div>
+
+        <div class="login-links"><a href="auth.html?next=creator-login.html">Create a HYPHSWORLD ID</a><a href="forgot-password.html">Forgot Secret Code?</a><a href="creators.html">Back to Creators</a></div>
+      </section>
+    </section>
+  </main>
+
+  <script src="supabase-config.js"></script>
+  <script src="auth-client.js?v=creator-login-1"></script>
+  <script src="creator-login.js?v=creator-login-1"></script>
+  <script src="global-my-id.js?v=my-id-global-1" defer></script>
+</body>
+</html>
