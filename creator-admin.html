@@ -37,6 +37,16 @@
           <div class="stack" id="verificationQueue"></div>
         </article>
         <article class="panel">
+          <p>CREATOR LOGIN</p>
+          <h2>Connect an Owner ID</h2>
+          <form id="ownerAssignmentForm">
+            <label>Creator<select id="ownerCreator" required></select></label>
+            <label>Creator account email<input id="ownerEmail" type="email" autocomplete="off" placeholder="creator@email.com" required></label>
+            <button type="submit">Connect Creator Login</button>
+          </form>
+          <div id="ownerAssignmentState" class="stack"><span>Select a creator and enter the exact email used for their HYPHSWORLD ID.</span></div>
+        </article>
+        <article class="panel">
           <p>TOOL CONTROL</p>
           <h2>Grant or Revoke</h2>
           <form id="entitlementForm">
