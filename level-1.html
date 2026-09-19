@@ -43,5 +43,6 @@
   <script>
     const spinButton=document.getElementById('slot-spin');const slotDisplay=document.getElementById('slot-display');const slotNote=document.getElementById('slot-note');if(spinButton&&window.HWPoints){spinButton.addEventListener('click',()=>{const rolls=['777','01$','AMS','BUC','DUK','RCH','888'];const result=rolls[Math.floor(Math.random()*rolls.length)];const bonus=result==='777'?25:result==='01$'?15:7;slotDisplay.textContent=result;window.HWPoints.add(bonus,'Duck Sauce Slot '+result);slotNote.textContent=result==='777'?'Buck: “That one actually hit. Rare Duck W.”':'Duck Sauce: “See? I told you I knew the machine.”';});}
   </script>
+  <script src="global-my-id.js?v=my-id-global-1" defer></script>
 </body>
 </html>
