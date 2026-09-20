@@ -63,9 +63,12 @@
 .domino-pov-game .pov-player-hand .domino-tile .pip-face i,
 .domino-pov-game .pov-board .domino-tile.chain-bone .pip-face i{
   background:#087f5b!important;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.5),0 1px 2px rgba(0,0,0,.55),0 0 5px rgba(21,231,164,.26)!important;
+}
+
+.domino-pov-game .pov-board .domino-tile.chain-bone .pip-face i{
   width:5px!important;
   height:5px!important;
-  box-shadow:inset 0 1px 1px rgba(255,255,255,.5),0 1px 2px rgba(0,0,0,.55),0 0 5px rgba(21,231,164,.26)!important;
 }
 
 .domino-pov-room.is-my-turn .pov-player-hand .domino-tile.is-playable,
