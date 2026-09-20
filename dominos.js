@@ -165,15 +165,15 @@
 
   function boardChainMarkup(tiles, boardWidth, animateIndex) {
     const compactBoard = (Number(boardWidth) || 420) < 430;
-    const tileWidth = compactBoard ? 52 : 60;
-    const tileHeight = compactBoard ? 32 : 36;
+    const tileWidth = compactBoard ? 42 : 54;
+    const tileHeight = compactBoard ? 26 : 32;
     const uprightWidth = tileHeight;
-    const overlap = compactBoard ? 3 : 4;
+    const overlap = 2;
     const rotationInset = (tileWidth - uprightWidth) / 2;
     // Keep longer runs on narrow tables so turns stay readable instead of
     // stacking oversized bones into the center of the felt.
     const runStep = tileWidth - overlap;
-    const run = Math.max(6, Math.min(8, Math.floor(((Number(boardWidth) || 420) - 20) / runStep)));
+    const run = Math.max(7, Math.min(10, Math.floor(((Number(boardWidth) || 420) - 20) / runStep)));
 
     let direction = 1;
     let connectorX = 0;
