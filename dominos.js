@@ -164,13 +164,16 @@
   }
 
   function boardChainMarkup(tiles, boardWidth, animateIndex) {
-    const tileWidth = 70;
-    const tileHeight = 42;
+    const compactBoard = (Number(boardWidth) || 420) < 430;
+    const tileWidth = compactBoard ? 52 : 60;
+    const tileHeight = compactBoard ? 32 : 36;
     const uprightWidth = tileHeight;
-    const overlap = 4;
+    const overlap = compactBoard ? 3 : 4;
     const rotationInset = (tileWidth - uprightWidth) / 2;
-    // Five bones fit as one readable mobile run. Wider tables can hold six.
-    const run = Math.max(5, Math.min(6, Math.floor(((Number(boardWidth) || 420) - 20) / 62)));
+    // Keep longer runs on narrow tables so turns stay readable instead of
+    // stacking oversized bones into the center of the felt.
+    const runStep = tileWidth - overlap;
+    const run = Math.max(6, Math.min(8, Math.floor(((Number(boardWidth) || 420) - 20) / runStep)));
 
     let direction = 1;
     let connectorX = 0;
@@ -239,7 +242,7 @@
       const animationClass = index === animateIndex ? " chain-new" : "";
       return tileMarkup(tile, {
         className: `chain-bone${isTurn ? " chain-turn" : ""}${tile[0] === tile[1] ? " chain-double" : ""}${endClass}${animationClass}`,
-        style: `--chain-index:${index};left:${x + shiftX}px;top:${y + shiftY}px;transform:rotate(${rotation}deg)`
+        style: `--chain-index:${index};--chain-bone-width:${tileWidth}px;--chain-bone-height:${tileHeight}px;left:${x + shiftX}px;top:${y + shiftY}px;transform:rotate(${rotation}deg)`
       });
     }).join("");
 
