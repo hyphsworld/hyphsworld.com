@@ -69,11 +69,11 @@
     var items = [
       { kind: 'creators', value: 'CREATORS WORLD LIVE • HYPH LIFE #001 • ROJASONTHEBEAT #002 • FRANCOISMUSIC47 #003 • YOUNG TEZ #004' },
       { kind: 'creators', value: 'FOLLOW CREATORS • VERIFIED CREATOR WORLDS • CREATOR ACCESS OPEN NOW' },
-      { kind: 'football', value: 'NFL WEEK 1 • WED 9/9 PATRIOTS @ SEAHAWKS • THU 9/10 49ERS @ RAMS' },
-      { kind: 'football', value: 'SUN 9/13 EARLY • BEARS @ PANTHERS • RAVENS @ COLTS • FALCONS @ STEELERS • BROWNS @ JAGUARS' },
-      { kind: 'football', value: 'SUN 9/13 EARLY • BUCCANEERS @ BENGALS • JETS @ TITANS • SAINTS @ LIONS • BILLS @ TEXANS' },
-      { kind: 'football', value: 'SUN 9/13 LATE • CARDINALS @ CHARGERS • PACKERS @ VIKINGS • DOLPHINS @ RAIDERS • COMMANDERS @ EAGLES' },
-      { kind: 'football', value: 'SUN NIGHT • COWBOYS @ GIANTS • MON 9/14 BRONCOS @ CHIEFS' }
+      { kind: 'football', value: 'NFL WEEK 2 SCOREBOARD • UPDATED SUN 9/20 • THU FINAL: BILLS 41, LIONS 31' },
+      { kind: 'football', value: 'SUN FINALS • VIKINGS 9, BEARS 3 • BROWNS 23, BUCCANEERS 19 • BENGALS 20, TEXANS 6 • PATRIOTS 20, STEELERS 3' },
+      { kind: 'football', value: 'SUN FINALS • SAINTS 24, RAVENS 17 • PANTHERS 34, FALCONS 3 • JETS 17, PACKERS 14 • TITANS 20, EAGLES 17' },
+      { kind: 'football', value: 'SUN LATE • JAGUARS @ BRONCOS • RAIDERS @ CHARGERS • COMMANDERS @ COWBOYS • DOLPHINS @ 49ERS • SEAHAWKS @ CARDINALS' },
+      { kind: 'football', value: 'SUN NIGHT • COLTS @ CHIEFS • MON NIGHT 9/21 • GIANTS @ RAMS' }
     ];
 
     items.forEach(function (item) {
