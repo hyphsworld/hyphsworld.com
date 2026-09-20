@@ -10,8 +10,8 @@
 }
 
 /* Premium ivory bone contract + exact connected-chain geometry.
-   This file loads last, so legacy compact-table rules cannot shrink played
-   bones after the JavaScript has positioned them on a 70x42 grid. */
+   This file loads last and follows the renderer's responsive geometry so
+   played bones stay compact, connected, and readable on every table size. */
 .domino-pov-game .pov-board .domino-tile.chain-bone{
   box-sizing:border-box!important;
   width:var(--chain-bone-width,60px)!important;
