@@ -67,8 +67,8 @@
     document.head.appendChild(style);
 
     var items = [
-      { kind: 'creators', value: 'CREATORS WORLD LIVE • HYPH LIFE #001 • ROJASONTHEBEAT #002 • FRANCOISMUSIC47 #003 • YOUNG TEZ #004' },
-      { kind: 'creators', value: 'FOLLOW CREATORS • VERIFIED CREATOR WORLDS • CREATOR ACCESS OPEN NOW' },
+      { kind: 'creators', value: 'CREATORS WORLD LIVE • #001 HYPH LIFE • #002 ROJASONTHEBEAT • #003 FRANCOISMUSIC47 • #004 YOUNG TEZ • #005 B3LLYGANG H3RSCH • #006 NITTI BO' },
+      { kind: 'creators', value: 'FOLLOW CREATORS • VERIFIED CREATOR WORLDS • CREATOR APPLICATIONS OPEN NOW' },
       { kind: 'football', value: 'NFL WEEK 2 SCOREBOARD • UPDATED SUN 9/20 • THU FINAL: BILLS 41, LIONS 31' },
       { kind: 'football', value: 'SUN FINALS • VIKINGS 9, BEARS 3 • BROWNS 23, BUCCANEERS 19 • BENGALS 20, TEXANS 6 • PATRIOTS 20, STEELERS 3' },
       { kind: 'football', value: 'SUN FINALS • SAINTS 24, RAVENS 17 • PANTHERS 34, FALCONS 3 • JETS 17, PACKERS 14 • TITANS 20, EAGLES 17' },
