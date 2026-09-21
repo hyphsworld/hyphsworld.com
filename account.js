@@ -17,6 +17,8 @@
   const buckClearanceInput = document.getElementById('buckClearance');
   const avatarPreviewIcon = document.getElementById('avatarPreviewIcon');
   const avatarPreviewText = document.getElementById('avatarPreviewText');
+  const ownerControl = document.getElementById('ownerControl');
+  const ownerControlStatus = document.getElementById('ownerControlStatus');
 
   let pointRefreshInFlight = false;
   let lastBadgeRenderAt = 0;
@@ -201,12 +203,38 @@
     if (accountPanel) { accountPanel.hidden = true; accountPanel.classList.add('hw-force-hidden'); }
     if (loggedOutPanel) { loggedOutPanel.hidden = false; loggedOutPanel.classList.remove('hw-force-hidden'); }
     if (logoutBtn) logoutBtn.disabled = true;
+    if (ownerControl) ownerControl.hidden = true;
     savedAccountPoints = 0;
     renderPoints(); renderBadgeSummary(true);
     syncDisplayInputs(localStorage.getItem('hyphsworld.playerName') || 'Guest');
     setAvatarChoice(localStorage.getItem('hyphsworld.avatarType') || 'boy');
     refreshWidgets();
     show('No active ID. You can still change name and avatar. Login to sync across devices.', 'warn');
+  }
+
+  async function loadOwnerControl() {
+    if (!ownerControl || !window.HWAuth || typeof window.HWAuth.getClient !== 'function') return;
+    try {
+      const client = await window.HWAuth.getClient();
+      const authResult = await client.auth.getUser();
+      const authUser = authResult && authResult.data && authResult.data.user;
+      const metadata = authUser && authUser.app_metadata || {};
+      const isCreatorAdmin = metadata.creator_admin === true || metadata.role === 'admin';
+      ownerControl.hidden = !isCreatorAdmin;
+      if (!isCreatorAdmin) return;
+
+      const [verification, applications] = await Promise.all([
+        client.from('creator_verification_requests').select('id', { count: 'exact', head: true }).in('status', ['pending', 'in_review']),
+        client.from('creator_applications').select('id', { count: 'exact', head: true }).in('status', ['pending', 'in_review', 'needs_info'])
+      ]);
+      if (verification.error) throw verification.error;
+      if (applications.error) throw applications.error;
+      const badgeCount = verification.count || 0;
+      const applicationCount = applications.count || 0;
+      if (ownerControlStatus) ownerControlStatus.textContent = applicationCount + ' application' + (applicationCount === 1 ? '' : 's') + ' • ' + badgeCount + ' badge request' + (badgeCount === 1 ? '' : 's') + ' waiting';
+    } catch (error) {
+      ownerControl.hidden = true;
+    }
   }
 
   function setLoggedInView() {
@@ -239,7 +267,7 @@
     setText('accountDuck', user.duckStatus);
     setText('accountBuck', user.buckClearance);
 
-    renderPoints(); await refreshPoints(); refreshWidgets();
+    renderPoints(); await refreshPoints(); refreshWidgets(); await loadOwnerControl();
     show('Account loaded. Display name and avatar can be changed anytime.', 'success');
   }
 
