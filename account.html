@@ -27,13 +27,14 @@
     .account-points span{display:block;color:rgba(255,255,255,.7);font-weight:900;text-transform:uppercase}.account-points strong{font-size:2.6rem;color:#ffe45c}
     .identity-studio,.avatar-studio,.account-panel{border:1px solid rgba(57,255,122,.28);border-radius:24px;padding:18px;margin:16px 0;background:rgba(0,0,0,.25)}
     .identity-studio h2,.avatar-studio h2,.account-panel h2{margin:0 0 8px;text-transform:uppercase}
+    .owner-control{border-color:rgba(255,228,92,.62);background:radial-gradient(circle at 90% 0,rgba(255,79,216,.18),transparent 38%),linear-gradient(145deg,rgba(255,228,92,.12),rgba(0,0,0,.42))}.owner-control .mini-kicker{font-size:.7rem}.owner-control-grid{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:center}.owner-control-status{color:#ffe45c;font-weight:1000}.owner-control .play-pill{white-space:nowrap}
     .display-name-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:end}.display-name-row label{font-weight:900}.display-name-row input{width:100%;min-height:50px;margin-top:7px;border-radius:14px;padding:0 14px}
     .avatar-studio-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.avatar-studio-grid button{min-height:78px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:#fff!important;border-radius:18px;display:grid;gap:5px}.avatar-studio-grid button.is-active{border-color:#39ff7a;box-shadow:0 0 22px rgba(57,255,122,.2)}.avatar-studio-icon{font-size:1.6rem}
     .status-stack{display:grid;gap:8px}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}.actions a{color:#050505!important;font-weight:900}.actions #logoutBtn{background:#ff315e;color:#fff!important}
     .message{margin:14px 0;font-weight:900}.message.warn{color:#ffe45c}.message.success{color:#75ff75}.message.error{color:#ff6b83}
     body:not(.is-logged-in) #signedInContent,body:not(.is-logged-in) .account-points,body:not(.is-logged-in) [data-user-widget]{display:none!important}
     body.is-logged-in #loggedOutPanel{display:none!important}
-    @media(max-width:640px){.avatar-studio-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.display-name-row{grid-template-columns:1fr}}
+    @media(max-width:640px){.avatar-studio-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.display-name-row,.owner-control-grid{grid-template-columns:1fr}.owner-control .play-pill{width:100%}}
   </style>
 </head>
 <body class="account-page is-loading-account" data-hide-global-points-hud>
@@ -61,6 +62,18 @@
       </section>
 
       <div id="signedInContent">
+        <section class="account-panel owner-control" id="ownerControl" hidden>
+          <div class="owner-control-grid">
+            <div>
+              <p class="mini-kicker">AMS WEST OWNER</p>
+              <h2>Creator World Control</h2>
+              <p class="sub">Review applications and badge requests, connect creator logins, control protected tools, and inspect the audit trail.</p>
+              <p class="owner-control-status" id="ownerControlStatus">Checking Creator World queues…</p>
+            </div>
+            <a class="play-pill" href="creator-admin.html">Open Creator Operations</a>
+          </div>
+        </section>
+
         <div class="actions">
           <a class="play-pill" href="games.html">🎮 Play Games</a>
           <a class="play-pill" href="games/cash-run/">🏃 Chase The Bag</a>
