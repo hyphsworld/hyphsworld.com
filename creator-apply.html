@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#07080b">
+  <meta name="description" content="Apply for a reviewed HYPHSWORLD Creator World profile.">
+  <link rel="canonical" href="https://hyphsworld.com/creator-apply.html">
+  <title>Apply to Creator World | HYPHSWORLD</title>
+  <link rel="stylesheet" href="creator-dashboard.css?v=rollout-1">
+</head>
+<body data-hide-global-points-hud>
+  <header><a href="index.html"><small>AMS WEST PRESENTS</small><strong>CREATOR APPLICATION</strong></a><nav><a href="creators.html">Creators</a><a href="creator-login.html">Creator Login</a><a href="account.html">My ID</a></nav></header>
+  <main>
+    <section class="dash-hero"><p>CREATOR WORLD // HUMAN REVIEW</p><h1>Build your world.</h1><p>Artists, producers, designers, developers, DJs, filmmakers, athletes, and culture-builders can apply. Every profile is reviewed—applications never auto-publish or auto-verify.</p><div class="status" id="applicationStatus" role="status" aria-live="polite">Checking your HYPHSWORLD ID…</div></section>
+    <section class="start-panel" id="applicationPanel" hidden>
+      <h2>Apply for Creator World</h2>
+      <form id="creatorApplicationForm">
+        <label>Creator or brand name<input id="applicationName" maxlength="80" required></label>
+        <label>Creative categories<input id="applicationCategories" maxlength="160" placeholder="artist, producer, designer" required></label>
+        <label>City / region<input id="applicationCity" maxlength="120" required></label>
+        <label>Contact email<input id="applicationEmail" type="email" maxlength="160" autocomplete="email" required></label>
+        <label>Portfolio or public work link<input id="applicationPortfolio" type="url" maxlength="500" placeholder="https://" required></label>
+        <label>Your creator story<textarea id="applicationBio" minlength="40" maxlength="2000" rows="8" placeholder="Tell us what you create, what you have released or built, and what you want your Creator World to showcase." required></textarea></label>
+        <button type="submit" id="applicationSubmit">Submit for Review</button>
+      </form>
+    </section>
+  </main>
+  <script src="supabase-config.js"></script><script src="auth-client.js?v=creator-rollout-1"></script><script src="creator-apply.js?v=creator-rollout-1"></script><script src="global-my-id.js?v=my-id-global-1" defer></script>
+</body>
+</html>

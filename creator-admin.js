@@ -41,13 +41,47 @@
       el('adminPanel').hidden = false;
       status('OWNER VERIFIED • SERVER-AUDITED ACTIONS');
       renderQueue(queue.data || []);
-      await Promise.all([loadCreators(), loadAudit()]);
+      await Promise.all([loadApplications(), loadCreators(), loadAudit()]);
     } catch (error) {
       status(friendlyError(error));
       setRetry(!/permission|policy|row-level|42501|403/i.test(String(error && error.message || '')));
     } finally {
       loading = false;
     }
+  }
+
+  async function loadApplications() {
+    var result = await client.from('creator_applications')
+      .select('id,display_name,categories,city,bio,portfolio_url,contact_email,status,created_at')
+      .in('status', ['pending', 'in_review', 'needs_info']).order('created_at');
+    if (result.error) throw result.error;
+    var box = el('applicationQueue');
+    box.replaceChildren();
+    (result.data || []).forEach(function (application) {
+      var card = node('article', '');
+      var link = node('a', 'Review public work ↗');
+      link.href = application.portfolio_url; link.target = '_blank'; link.rel = 'noopener';
+      card.append(
+        node('strong', application.display_name + ' • ' + application.city),
+        node('small', application.categories.join(' • ') + ' • ' + application.contact_email),
+        node('p', application.bio), link
+      );
+      [['in_review','Start Review'],['needs_info','Request Info'],['approved','Approve'],['rejected','Reject']].forEach(function (action) {
+        var button = node('button', action[1]); button.type = 'button';
+        button.addEventListener('click', function () { decideApplication(application.id, action[0]); });
+        card.append(button);
+      });
+      box.append(card);
+    });
+    if (!box.children.length) box.append(node('span', 'Application queue clear.'));
+  }
+
+  async function decideApplication(id, decision) {
+    var notes = window.prompt('Private review note or applicant instructions:', '') || '';
+    var result = await client.rpc('creator_admin_decide_application', { p_application_id: id, p_decision: decision, p_notes: notes });
+    if (result.error) { status(friendlyError(result.error)); return; }
+    status('Application marked ' + decision.replace('_', ' ') + '.');
+    await loadApplications();
   }
 
   function renderQueue(rows) {

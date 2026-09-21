@@ -3,7 +3,7 @@ const path = require('node:path');
 
 const source = fs.readFileSync(path.join(__dirname, '..', 'creators-world.js'), 'utf8');
 const followKey = 'hyphsworld.creator.hyph-life.following';
-const rewardKey = 'hyphsworld.creator.hyph-life.reward.follow';
+const rewardKey = 'hyphsworld.creator.hyph-life.reward.follow.user-1';
 
 function mountProfile() {
   document.body.innerHTML = `
@@ -50,13 +50,13 @@ describe('Hyph Life creator profile', () => {
     });
   });
 
-  test('renders a persisted follow state on first load', () => {
+  test('does not trust an old browser-only follow flag', () => {
     localStorage.setItem(followKey, 'true');
     mountProfile();
 
     const button = document.getElementById('followCreator');
-    expect(button.getAttribute('aria-pressed')).toBe('true');
-    expect(button.textContent).toContain('Following');
+    expect(button.getAttribute('aria-pressed')).toBe('false');
+    expect(button.textContent).toContain('Follow');
   });
 
   test('does not award Cool Points when no authenticated user exists', () => {
@@ -65,7 +65,7 @@ describe('Hyph Life creator profile', () => {
     document.getElementById('followCreator').click();
 
     expect(window.HWPoints.add).not.toHaveBeenCalled();
-    expect(document.getElementById('worldToast').textContent).toBe('Log in to save Cool Points');
+    expect(document.getElementById('worldToast').textContent).toBe('Creator connection is still loading');
   });
 
   test('awards a follow once and blocks duplicate rewards', async () => {
@@ -73,12 +73,19 @@ describe('Hyph Life creator profile', () => {
       getState: () => ({ user: { id: 'user-1' } }),
       add: jest.fn().mockResolvedValue({ user: { id: 'user-1' } })
     };
+    const creatorMaybeSingle = jest.fn().mockResolvedValue({ data: { id: 'creator-1', slug: 'hyph-life', follower_count: 0 }, error: null });
+    const followMaybeSingle = jest.fn().mockResolvedValue({ data: null, error: null });
+    window.HWAuth = { getClient: jest.fn().mockResolvedValue({
+      auth: { getSession: jest.fn().mockResolvedValue({ data: { session: { user: { id: 'user-1' } } } }) },
+      from: jest.fn((table) => table === 'creators'
+        ? { select: () => ({ eq: () => ({ maybeSingle: creatorMaybeSingle }) }) }
+        : { select: () => ({ eq: () => ({ eq: () => ({ maybeSingle: followMaybeSingle }) }) }), insert: jest.fn().mockResolvedValue({ data: null, error: null }), delete: () => ({ eq: () => ({ eq: jest.fn().mockResolvedValue({ data: null, error: null }) }) }) })
+    }) };
     mountProfile();
+    await flush(); await flush();
     const follow = document.getElementById('followCreator');
     follow.click();
     await flush();
-    follow.click();
-    follow.click();
     await flush();
 
     expect(window.HWPoints.add).toHaveBeenCalledTimes(1);

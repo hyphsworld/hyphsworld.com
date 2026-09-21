@@ -26,6 +26,7 @@
   max-width:100%;
   font-size:clamp(52px,6.6vw,86px);
 }
+.tool-grid .tool-apply{display:inline-flex;align-items:center;border-radius:999px;background:#fff;color:#050505;padding:11px 14px;font-weight:1000;text-decoration:none}.tool-grid .tool-apply:hover,.tool-grid .tool-apply:focus-visible{background:#46ff67}
 .verified-creator-name .creator-name-text{
   display:inline-block;
   min-width:0;
