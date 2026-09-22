@@ -94,8 +94,8 @@
   z-index:1!important;
   height:55%!important;
   background:
-    linear-gradient(0deg,rgba(0,0,0,.84),transparent 70%),
-    repeating-linear-gradient(90deg,transparent 0 58px,rgba(114,255,210,.025) 59px 60px)!important;
+    linear-gradient(0deg,rgba(0,0,0,.56),transparent 74%),
+    repeating-linear-gradient(90deg,transparent 0 58px,rgba(114,255,210,.018) 59px 60px)!important;
 }
 .domino-cinema-intro{
   position:absolute;
@@ -181,12 +181,13 @@
   z-index:2;
   border-color:#1c1209!important;
   background:
-    radial-gradient(ellipse at 50% 36%,rgba(10,122,74,.98),#044c2b 52%,#012214 100%)!important;
+    radial-gradient(ellipse at 50% 42%,rgba(7,119,69,.56),rgba(3,75,42,.5) 54%,rgba(1,24,14,.74) 100%)!important;
+  backdrop-filter:saturate(1.12) contrast(1.04);
   box-shadow:
     inset 0 0 0 2px rgba(246,201,85,.44),
-    inset 0 0 90px rgba(0,0,0,.7),
-    inset 0 24px 44px rgba(114,255,210,.08),
-    0 28px 46px rgba(0,0,0,.7)!important;
+    inset 0 0 64px rgba(0,0,0,.42),
+    inset 0 24px 44px rgba(114,255,210,.07),
+    0 28px 46px rgba(0,0,0,.58)!important;
 }
 .domino-pov-room .pov-felt::before{
   border:1px solid rgba(246,201,85,.2)!important;
