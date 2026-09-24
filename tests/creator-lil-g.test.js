@@ -1,0 +1,9 @@
+const fs=require('fs');
+const path=require('path');
+const root=__dirname;
+const html=fs.readFileSync(path.join(root,'creator-lil-g.html'),'utf8');
+const css=fs.readFileSync(path.join(root,'creator-lil-g.css'),'utf8');
+const js=fs.readFileSync(path.join(root,'creator-lil-g.js'),'utf8');
+test('youth athlete profile is guardian managed and keeps contact details private',()=>{expect(html).toMatch(/GUARDIAN MANAGED/);expect(html).not.toMatch(/mailto:/);expect(html).not.toMatch(/@icloud|@gmail/i)});
+test('highlight section supports MP4 without autoplay',()=>{expect(html).toMatch(/<video[^>]+controls[^>]+playsinline/);expect(html).not.toMatch(/autoplay/);expect(js).toMatch(/data-mp4/)});
+test('Angels-inspired palette is used without club trademarks',()=>{expect(css).toMatch(/--angels-red:#ba0c2f/);expect(css).toMatch(/--angels-navy:#003263/);expect(html).not.toMatch(/Los Angeles Angels|Anaheim Angels logo/i)});
