@@ -110,13 +110,13 @@
         </article>
         <article class="panel upload-panel">
           <p>PRIVATE WORLD MEDIA</p>
-          <h2>Upload Studio</h2>
-          <p class="panel-copy">Images, audio, MP4 videos, and PDFs stay private inside the selected Creator World.</p>
-          <form id="creatorUploadForm">
+          <h2>Create Studio</h2>
+          <p class="panel-copy">Create with images, audio, MP4 videos, and PDFs. Everything stays private inside the selected Creator World.</p>
+          <form id="creatorUploadForm" aria-label="Create inside this Creator World">
             <label>Title<input id="uploadTitle" maxlength="120" required placeholder="Name this upload" /></label>
-            <label>Choose file<input id="uploadFile" type="file" accept="image/jpeg,image/png,image/webp,audio/mpeg,audio/wav,audio/x-wav,audio/mp4,video/mp4,application/pdf" required /></label>
-            <small class="upload-note">Private • Owner access only • Maximum 50 MB</small>
-            <button id="uploadButton" type="submit">Upload to This World</button>
+            <label>Choose your media<input id="uploadFile" type="file" accept="image/jpeg,image/png,image/webp,audio/mpeg,audio/wav,audio/x-wav,audio/mp4,video/mp4,application/pdf" required /></label>
+            <small class="upload-note">Private creation • Owner access only • Maximum 50 MB</small>
+            <button id="uploadButton" type="submit">CREATE</button>
           </form>
           <div id="uploadList" class="stack"><span>No private uploads yet.</span></div>
         </article>
