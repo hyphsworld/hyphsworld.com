@@ -4,7 +4,7 @@ var follow=document.getElementById('followCreator');
 var share=document.getElementById('shareCreator');
 var toast=document.getElementById('worldToast');
 var creatorSlug='nitti-bo';
-var creatorLabel='NITTI BO';
+var creatorLabel='AW ENTERPRISES';
 var rewardBase='hyphsworld.creator.nitti-bo.reward.follow.';
 var client=null,user=null,creator=null,isFollowing=false,followBusy=false,timer;
 function show(message){if(!toast)return;toast.textContent=message;toast.classList.add('show');clearTimeout(timer);timer=setTimeout(function(){toast.classList.remove('show')},2600)}
@@ -19,6 +19,6 @@ async function refreshFollowing(){isFollowing=false;if(!user){render();return}va
 async function init(){render();if(!window.HWAuth)return;try{client=await window.HWAuth.getClient();if(!client)return;await refreshCreator();var session=await client.auth.getSession();user=session.data&&session.data.session?session.data.session.user:null;await refreshFollowing()}catch(error){console.warn('NITTI BO follow state unavailable.',error)}}
 if(follow)follow.addEventListener('click',async function(){if(followBusy)return;if(!client||!creator){show('Creator connection is still loading');return}if(!user){show('Log in to follow creators');return}followBusy=true;render();try{if(isFollowing){var remove=await client.from('creator_follows').delete().eq('creator_id',creator.id).eq('user_id',user.id);if(remove.error)throw remove.error;isFollowing=false;show('Creator unfollowed')}else{var add=await client.from('creator_follows').insert({creator_id:creator.id,user_id:user.id});if(add.error&&add.error.code!=='23505')throw add.error;isFollowing=true;show('You’re following Creator #006');reward()}await refreshCreator()}catch(error){show('Could not update follow yet');console.warn('NITTI BO follow update failed.',error)}finally{followBusy=false;render()}});
 async function copyShareLink(){if(!navigator.clipboard||typeof navigator.clipboard.writeText!=='function')return false;try{await navigator.clipboard.writeText(location.href);return true}catch(error){return false}}
-if(share)share.addEventListener('click',async function(){var data={title:'NITTI BO — Creator #006',text:'Enter NITTI BO’s Bronx-built digital Creator World on HYPHSWORLD.',url:location.href};try{if(navigator.share){await navigator.share(data);return}if(await copyShareLink()){show('Profile link copied');return}show('Copy this link: '+location.href)}catch(error){if(error&&error.name!=='AbortError'){if(await copyShareLink())show('Profile link copied');else show('Copy this link: '+location.href)}}});
+if(share)share.addEventListener('click',async function(){var data={title:'AW ENTERPRISES — Creator #006',text:'Enter AW ENTERPRISES — NITTI BO’s Bronx-built digital Creator World on HYPHSWORLD.',url:location.href};try{if(navigator.share){await navigator.share(data);return}if(await copyShareLink()){show('Profile link copied');return}show('Copy this link: '+location.href)}catch(error){if(error&&error.name!=='AbortError'){if(await copyShareLink())show('Profile link copied');else show('Copy this link: '+location.href)}}});
 var year=document.getElementById('year');if(year)year.textContent=new Date().getFullYear();init();
 })();
