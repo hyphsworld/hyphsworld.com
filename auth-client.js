@@ -354,6 +354,23 @@
     saveLocalUsers(users);
     return getCurrentUser();
   }
+  async function updateUsername(username) {
+    const clean = String(username || '').toLowerCase().trim();
+    if (!/^[a-z0-9_]{3,30}$/.test(clean)) throw new Error('Username must be 3–30 lowercase letters, numbers, or underscores.');
+    const sb = await getClient();
+    if (!sb) throw new Error('Username changes require login.');
+    const user = await getSupabaseUser();
+    if (!user) throw new Error('Login required.');
+    const { data, error } = await sb.rpc('update_my_username', { p_username: clean });
+    if (error) {
+      if (error.code === '23505' || /already|unique|taken/i.test(error.message || '')) throw new Error('That username is already taken.');
+      throw new Error(error.message || 'Username could not be updated.');
+    }
+    try { await sb.auth.updateUser({ data: { username: clean } }); } catch (metadataError) {}
+    clearCurrentUserCache();
+    return data && data.profile ? data.profile : getCurrentUser(true);
+  }
+
   async function getPoints() {
     const user = await getCurrentUser();
     return num(user?.coolPoints);
@@ -429,5 +446,5 @@
     saveLocalSession(session);
     return session;
   }
-  global.HWAuth = { getProviderStatus, getClient, signUpWithEmail, signInWithEmail, signInWithEmailLink, resendConfirmation, signInWithGoogle, signOut, getSession, getCurrentUser, updateProfile, getPoints, setPoints, addPoints, grantVaultAccess, avatarIcon };
+  global.HWAuth = { getProviderStatus, getClient, signUpWithEmail, signInWithEmail, signInWithEmailLink, resendConfirmation, signInWithGoogle, signOut, getSession, getCurrentUser, updateProfile, updateUsername, getPoints, setPoints, addPoints, grantVaultAccess, avatarIcon };
 })(window);

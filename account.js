@@ -11,6 +11,8 @@
   const displayNameInput = document.getElementById('displayName');
   const displayNameStudio = document.getElementById('displayNameStudio');
   const saveDisplayNameBtn = document.getElementById('saveDisplayNameBtn');
+  const usernameStudio = document.getElementById('usernameStudio');
+  const saveUsernameBtn = document.getElementById('saveUsernameBtn');
   const displayPreviewIcon = document.getElementById('displayPreviewIcon');
   const displayPreviewText = document.getElementById('displayPreviewText');
   const duckStatusInput = document.getElementById('duckStatus');
@@ -57,6 +59,12 @@
     const value = String(name || '').replace(/\s+/g, ' ').trim().slice(0, 40);
     return value || 'Guest';
   }
+
+  function cleanUsername(value) {
+    return String(value || '').toLowerCase().replace(/[^a-z0-9_]/g, '').slice(0, 30);
+  }
+
+  function validUsername(value) { return /^[a-z0-9_]{3,30}$/.test(value); }
 
   function avatarIcon(type) { return avatarMap[cleanAvatarType(type)].icon; }
   function avatarLabel(type) { const clean = cleanAvatarType(type); return avatarMap[clean].icon + ' ' + avatarMap[clean].label; }
@@ -264,6 +272,9 @@
     setAvatarChoice(avatarType);
     setText('accountEmail', user.email);
     setText('accountName', displayName);
+    const username = cleanUsername(user.username || '');
+    if (usernameStudio) usernameStudio.value = username;
+    setText('accountUsername', username || 'not-set');
     setText('accountDuck', user.duckStatus);
     setText('accountBuck', user.buckClearance);
 
@@ -303,6 +314,31 @@
       if (!options || !options.quiet) show('Profile updated and synced to your HYPHSWORLD ID.', 'success');
     } catch (error) {
       if (!options || !options.quiet) show('Saved on this device. Account sync will retry next time you save.', 'warn');
+    }
+  }
+
+  async function saveUsernameNow() {
+    const username = cleanUsername(usernameStudio && usernameStudio.value);
+    if (usernameStudio) usernameStudio.value = username;
+    if (!validUsername(username)) {
+      show('Username must be 3–30 lowercase letters, numbers, or underscores.', 'error');
+      return;
+    }
+    if (!window.HWAuth || typeof window.HWAuth.updateUsername !== 'function') {
+      show('Username service is unavailable. Refresh and try again.', 'error');
+      return;
+    }
+    if (saveUsernameBtn) saveUsernameBtn.disabled = true;
+    try {
+      const updated = await window.HWAuth.updateUsername(username);
+      const saved = cleanUsername(updated && updated.username || username);
+      if (usernameStudio) usernameStudio.value = saved;
+      setText('accountUsername', saved);
+      show('Username updated to @' + saved + '.', 'success');
+    } catch (error) {
+      show(error.message || 'Username could not be updated.', 'error');
+    } finally {
+      if (saveUsernameBtn) saveUsernameBtn.disabled = false;
     }
   }
 
@@ -350,6 +386,16 @@
         syncProfileNow({ displayName: displayNameValue(), avatarType: selectedAvatarType(), quiet: false });
       });
     }
+    if (usernameStudio) {
+      usernameStudio.addEventListener('input', () => {
+        const clean = cleanUsername(usernameStudio.value);
+        if (usernameStudio.value !== clean) usernameStudio.value = clean;
+      });
+      usernameStudio.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') { event.preventDefault(); saveUsernameNow(); }
+      });
+    }
+    if (saveUsernameBtn) saveUsernameBtn.addEventListener('click', saveUsernameNow);
   }
 
   function bindAvatarPreview() {

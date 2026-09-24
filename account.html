@@ -88,6 +88,12 @@
             <button id="saveDisplayNameBtn" type="button">Save</button>
           </div>
           <div style="margin-top:12px;font-weight:900"><span id="displayPreviewIcon">🧢</span> <strong id="displayPreviewText">Guest</strong></div>
+          <h3 style="margin:20px 0 6px;text-transform:uppercase">Username</h3>
+          <p class="sub">Your unique @name. Use 3–30 lowercase letters, numbers, or underscores.</p>
+          <div class="display-name-row">
+            <label>Username<input id="usernameStudio" type="text" maxlength="30" placeholder="hyph_life" autocomplete="username" autocapitalize="none" spellcheck="false" /></label>
+            <button id="saveUsernameBtn" type="button">Save Username</button>
+          </div>
         </section>
 
         <section class="avatar-studio" id="avatarStudio">
@@ -110,6 +116,7 @@
           <div class="status-stack">
             <p><strong>Email:</strong> <span id="accountEmail">—</span></p>
             <p><strong>Name:</strong> <span id="accountName">—</span></p>
+            <p><strong>Username:</strong> @<span id="accountUsername">—</span></p>
             <p><strong>Icon:</strong> <span id="accountAvatar">🧢 Man</span></p>
             <p hidden><strong>Duck Note:</strong> <span id="accountDuck">—</span></p>
             <p hidden><strong>Buck:</strong> <span id="accountBuck">—</span></p>
@@ -124,14 +131,14 @@
   </main>
 
   <script src="supabase-config.js"></script>
-  <script src="auth-client.js"></script>
+  <script src="auth-client.js?v=username-editor-1"></script>
   <script src="auth-stability.js"></script>
   <script src="auth-points-bridge.js"></script>
   <script src="cool-points.js"></script>
   <script src="global-points-engine.js"></script>
   <script src="cool-badges.js"></script>
   <script src="user-widget.js"></script>
-  <script src="account.js"></script>
+  <script src="account.js?v=username-editor-1"></script>
   <script src="global-my-id.js?v=my-id-global-1" defer></script>
 </body>
 </html>
