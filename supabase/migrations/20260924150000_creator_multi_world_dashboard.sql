@@ -13,4 +13,7 @@ as $$
 $$;
 revoke all on function public.get_my_creator_metrics(uuid) from public, anon, authenticated;
 grant execute on function public.get_my_creator_metrics(uuid) to authenticated, service_role;
+update public.creators
+set image_url = 'https://hyphsworld.com/creator-nitti-bo-profile.png', updated_at = now()
+where slug = 'nitti-bo';
 commit;
