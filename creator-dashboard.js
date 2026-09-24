@@ -3,8 +3,27 @@
   var user, client, creator, creators = [], uploadBusy = false;
   var uploadBucket = 'creator-world-uploads';
   var maxUploadBytes = 50 * 1024 * 1024;
+  var createKinds = {
+    music: { label: 'Music', accept: 'audio/mpeg,audio/wav,audio/x-wav,audio/mp4' },
+    video: { label: 'Video', accept: 'video/mp4' },
+    artwork: { label: 'Artwork', accept: 'image/jpeg,image/png,image/webp' },
+    merch: { label: 'Merch', accept: 'image/jpeg,image/png,image/webp,application/pdf' },
+    world: { label: 'Creator World Update', accept: 'image/jpeg,image/png,image/webp,audio/mpeg,audio/wav,audio/x-wav,audio/mp4,video/mp4,application/pdf' }
+  };
   function el(id) { return document.getElementById(id); }
   function status(text) { el('dashboardStatus').textContent = text; }
+  function setCreateKind(value) {
+    var key = createKinds[value] ? value : 'world';
+    var kind = createKinds[key];
+    el('createKind').value = key;
+    el('uploadFile').accept = kind.accept;
+    el('createStudioTitle').textContent = 'Create ' + kind.label;
+    el('uploadTitle').placeholder = 'Name this ' + kind.label.toLowerCase() + ' creation';
+  }
+  function initCreateKind() {
+    var requested = new URLSearchParams(location.search).get('create') || 'world';
+    setCreateKind(requested);
+  }
   function cleanList(value) { return value.split(',').map(function (x) { return x.trim().toLowerCase(); }).filter(Boolean).slice(0, 10); }
   function cards(target, rows, describe) { target.replaceChildren(); if (!rows.length) { var empty = document.createElement('span'); empty.textContent = 'Nothing here yet.'; target.appendChild(empty); return; } rows.forEach(function (row) { var card = document.createElement('article'), strong = document.createElement('strong'), small = document.createElement('small'); strong.textContent = row.title; small.textContent = describe(row); card.append(strong, small); target.appendChild(card); }); }
   function renderWorldPicker() {
@@ -35,8 +54,8 @@
   function uploadCards(rows) { var target = el('uploadList'); target.replaceChildren(); if (!rows.length) { var empty = document.createElement('span'); empty.textContent = 'Nothing created here yet.'; target.appendChild(empty); return; } rows.forEach(function (row) { var card = document.createElement('article'), title = document.createElement('strong'), meta = document.createElement('small'), actions = document.createElement('div'), preview = document.createElement('button'), remove = document.createElement('button'); title.textContent = row.title; meta.textContent = row.media_type.toUpperCase() + ' • ' + Math.max(1, Math.round(row.file_size / 1024)) + ' KB • PRIVATE'; actions.className = 'upload-actions'; preview.type = 'button'; preview.textContent = 'Preview Creation'; preview.addEventListener('click', function () { previewUpload(row.storage_path); }); remove.type = 'button'; remove.className = 'danger'; remove.textContent = 'Delete'; remove.addEventListener('click', function () { deleteUpload(row); }); actions.append(preview, remove); card.append(title, meta, actions); target.appendChild(card); }); }
   async function loadUploads() { var result = await client.from('creator_media_uploads').select('id,title,media_type,mime_type,file_size,storage_path,created_at').eq('creator_id', creator.id).order('created_at', { ascending: false }).limit(50); if (result.error) throw result.error; uploadCards(result.data || []); }
   async function previewUpload(path) { var result = await client.storage.from(uploadBucket).createSignedUrl(path, 600); if (result.error) return status('Private preview unavailable: ' + result.error.message); window.open(result.data.signedUrl, '_blank', 'noopener'); }
-  async function deleteUpload(row) { if (!window.confirm('Delete this private upload?')) return; var removed = await client.storage.from(uploadBucket).remove([row.storage_path]); if (removed.error) return status('File delete failed: ' + removed.error.message); var meta = await client.from('creator_media_uploads').delete().eq('id', row.id).eq('creator_id', creator.id); if (meta.error) return status('Upload record delete failed: ' + meta.error.message); status('Private creation deleted'); await loadUploads(); }
+  async function deleteUpload(row) { if (!window.confirm('Delete this private creation?')) return; var removed = await client.storage.from(uploadBucket).remove([row.storage_path]); if (removed.error) return status('File delete failed: ' + removed.error.message); var meta = await client.from('creator_media_uploads').delete().eq('id', row.id).eq('creator_id', creator.id); if (meta.error) return status('Creation record delete failed: ' + meta.error.message); status('Private creation deleted'); await loadUploads(); }
   async function uploadMedia(event) { event.preventDefault(); if (uploadBusy || !creator) return; var file = el('uploadFile').files[0], title = el('uploadTitle').value.trim(); if (!file || !title) return status('Choose your media and give it a title.'); if (file.size > maxUploadBytes) return status('Creation rejected: 50 MB maximum.'); uploadBusy = true; el('uploadButton').disabled = true; el('uploadButton').textContent = 'Creating…'; var path = creator.id + '/' + user.userId + '/' + crypto.randomUUID() + '-' + safeFileName(file.name); try { var stored = await client.storage.from(uploadBucket).upload(path, file, { cacheControl: '3600', upsert: false, contentType: file.type }); if (stored.error) throw stored.error; var metadata = await client.from('creator_media_uploads').insert({ creator_id: creator.id, owner_user_id: user.userId, title: title, media_type: file.type.split('/')[0] === 'application' ? 'document' : file.type.split('/')[0], mime_type: file.type, file_size: file.size, storage_path: path }).select('id').single(); if (metadata.error) { await client.storage.from(uploadBucket).remove([path]); throw metadata.error; } event.target.reset(); status('Created privately inside ' + creator.display_name); await loadUploads(); } catch (error) { status('CREATE failed: ' + (error.message || error)); } finally { uploadBusy = false; el('uploadButton').disabled = false; el('uploadButton').textContent = 'CREATE'; } }
 
-  el('startCreator').addEventListener('click', start); el('creatorForm').addEventListener('submit', save); el('verificationForm').addEventListener('submit', requestVerification); el('creatorUploadForm').addEventListener('submit', uploadMedia); window.addEventListener('load', load);
+  el('startCreator').addEventListener('click', start); el('creatorForm').addEventListener('submit', save); el('verificationForm').addEventListener('submit', requestVerification); el('creatorUploadForm').addEventListener('submit', uploadMedia); el('createKind').addEventListener('change', function (event) { setCreateKind(event.target.value); }); window.addEventListener('load', function () { initCreateKind(); load(); });
 })();
