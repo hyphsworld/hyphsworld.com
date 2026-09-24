@@ -9,7 +9,7 @@
       content="Secure HYPHSWORLD creator dashboard for profiles, verification, tools, and submissions."
     />
     <title>Creator Dashboard | HYPHSWORLD</title>
-    <link rel="stylesheet" href="creator-dashboard.css?v=phase-2" />
+    <link rel="stylesheet" href="creator-dashboard.css?v=private-upload-1" />
   </head>
   <body data-hide-global-points-hud>
     <header>
@@ -108,6 +108,18 @@
             >View requirements →</a
           >
         </article>
+        <article class="panel upload-panel">
+          <p>PRIVATE WORLD MEDIA</p>
+          <h2>Upload Studio</h2>
+          <p class="panel-copy">Images, audio, MP4 videos, and PDFs stay private inside the selected Creator World.</p>
+          <form id="creatorUploadForm">
+            <label>Title<input id="uploadTitle" maxlength="120" required placeholder="Name this upload" /></label>
+            <label>Choose file<input id="uploadFile" type="file" accept="image/jpeg,image/png,image/webp,audio/mpeg,audio/wav,audio/x-wav,audio/mp4,video/mp4,application/pdf" required /></label>
+            <small class="upload-note">Private • Owner access only • Maximum 50 MB</small>
+            <button id="uploadButton" type="submit">Upload to This World</button>
+          </form>
+          <div id="uploadList" class="stack"><span>No private uploads yet.</span></div>
+        </article>
         <article class="panel inbox-panel">
           <p>OPPORTUNITIES</p>
           <h2>Submission Inbox</h2>
@@ -127,7 +139,7 @@
     <script src="supabase-config.js"></script>
     <script src="auth-client.js?v=creator-phase-2"></script>
     <script src="global-points-engine.js?v=creator-phase-2"></script>
-    <script src="creator-dashboard.js?v=phase-2"></script>
+    <script src="creator-dashboard.js?v=private-upload-1"></script>
   <script src="global-my-id.js?v=my-id-global-1" defer></script>
 </body>
 </html>
