@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#07080b" />
     <meta
       name="description"
-      content="Secure HYPHSWORLD creator dashboard for profiles, verification, tools, and submissions."
+      content="Run your HYPHSWORLD Creator World, creations, profile, and opportunities."
     />
     <title>Creator Dashboard | HYPHSWORLD</title>
     <link rel="stylesheet" href="creator-dashboard.css?v=creator-command-tabs-1" />
@@ -24,15 +24,13 @@
     </header>
     <main>
       <section class="dash-hero">
-        <p>PHASE 2 • ACCOUNT PROTECTED</p>
-        <h1>Control your world.</h1>
+        <p>CREATOR COMMAND CENTER</p>
+        <h1>Run your world.</h1>
         <p>
-          Edit creator information, request verification, review protected
-          tools, and manage incoming opportunities from one authenticated
-          dashboard.
+          Edit your profile, CREATE, manage your work, and see new opportunities.
         </p>
         <div class="status" id="dashboardStatus" role="status" aria-live="polite">
-          Checking your HYPHSWORLD ID…
+          Checking your account…
         </div>
       </section>
       <nav class="dashboard-tabs" id="dashboardTabs" aria-label="Creator command center" role="tablist" hidden>
@@ -45,12 +43,12 @@
       </nav>
       <section class="dash-grid" id="dashboard" data-active-view="overview" hidden>
         <article class="panel" data-dashboard-view="overview">
-          <p>CREATOR INSIGHTS</p>
-          <h2>Performance</h2>
+          <p>OVERVIEW</p>
+          <h2>Your numbers</h2>
           <div id="metricList" class="stack"><span>Loading account-backed metrics…</span></div>
         </article>
         <article class="panel profile-panel" data-dashboard-view="profile" hidden>
-          <p>CREATOR PROFILE</p>
+          <p>PROFILE</p>
           <h2 id="profileTitle">Your draft</h2>
           <form id="creatorForm">
             <label
@@ -78,53 +76,53 @@
               >Approved image path<input
                 id="imageUrl"
                 placeholder="creator-photo.jpg" /></label
-            ><button type="submit">Save Draft</button>
+            ><button type="submit">Save Profile</button>
           </form>
         </article>
         <article class="panel" data-dashboard-view="trust" hidden>
-          <p>TRUST STATUS</p>
-          <h2>Verification</h2>
+          <p>VERIFICATION</p>
+          <h2>Your status</h2>
           <div class="badge-state" id="verificationState">Unverified</div>
           <form id="verificationForm">
             <label
-              >Requested level<select id="requestedLevel">
-                <option value="identity">Identity Verified</option>
-                <option value="professional">Professional Verified</option>
-                <option value="partner">World Partner</option>
-                <option value="organization">Official Organization</option>
+              >Badge level<select id="requestedLevel">
+                <option value="identity">Identity Check</option>
+                <option value="professional">Professional</option>
+                <option value="partner">Partner</option>
+                <option value="organization">Organization</option>
               </select></label
             ><label
-              >Evidence summary<textarea
+              >Why should this be approved?<textarea
                 id="evidenceSummary"
                 minlength="20"
                 maxlength="2000"
                 rows="6"
-                placeholder="Describe the identity and professional evidence ready for human review."
+                placeholder="Share proof of your identity and work."
                 required
               ></textarea></label
-            ><button type="submit">Request Human Review</button>
+            ><button type="submit">Request Review</button>
           </form>
           <div id="verificationHistory" class="stack"></div>
         </article>
         <article class="panel" data-dashboard-view="trust" hidden>
-          <p>PROTECTED ACCESS</p>
-          <h2>Creator Tools</h2>
+          <p>TOOLS</p>
+          <h2>Your tools</h2>
           <div id="entitlementList" class="stack">
             <span>No active tools yet.</span>
           </div>
           <a class="panel-link" href="creator-access.html"
-            >View requirements →</a
+            >View access →</a
           >
         </article>
         <article class="panel upload-panel" id="create-studio" data-dashboard-view="create" hidden>
-          <p>MY PRIVATE CREATIONS</p>
-          <h2 id="createStudioTitle">Create Studio</h2>
-          <p class="panel-copy">Create with images, audio, MP4 videos, and PDFs. Everything stays private inside the selected Creator World.</p>
+          <p>PRIVATE CREATOR STUDIO</p>
+          <h2 id="createStudioTitle">CREATE</h2>
+          <p class="panel-copy">Choose a type, add your file, and name it. Your creation stays private until approved and published.</p>
           <form id="creatorUploadForm" aria-label="Create inside this Creator World">
             <label>What are you creating?<select id="createKind"><option value="music">Music</option><option value="video">Video</option><option value="artwork">Artwork</option><option value="merch">Merch</option><option value="world">Creator World update</option></select></label>
             <label>Title<input id="uploadTitle" maxlength="120" required placeholder="Name this creation" /></label>
-            <label>Choose your media<input id="uploadFile" type="file" accept="image/jpeg,image/png,image/webp,audio/mpeg,audio/wav,audio/x-wav,audio/mp4,video/mp4,application/pdf" required /></label>
-            <small class="upload-note">Private creation • Owner access only • Maximum 50 MB</small>
+            <label>Choose a file<input id="uploadFile" type="file" accept="image/jpeg,image/png,image/webp,audio/mpeg,audio/wav,audio/x-wav,audio/mp4,video/mp4,application/pdf" required /></label>
+            <small class="upload-note">Private • Creator access only • 50 MB max</small>
             <button id="uploadButton" type="submit">CREATE</button>
           </form>
         </article>
@@ -132,26 +130,26 @@
           <section class="creation-library" aria-labelledby="creationLibraryTitle">
             <div class="library-head">
               <div>
-                <p>YOUR PRIVATE WORKSPACE</p>
+                <p>PRIVATE</p>
                 <h3 id="creationLibraryTitle">MY CREATIONS</h3>
               </div>
-              <label>Show<select id="creationFilter"><option value="all">All creations</option><option value="music">Music</option><option value="video">Video</option><option value="artwork">Artwork</option><option value="merch">Merch</option><option value="world">World updates</option></select></label>
+              <label>Show<select id="creationFilter"><option value="all">All</option><option value="music">Music</option><option value="video">Video</option><option value="artwork">Artwork</option><option value="merch">Merch</option><option value="world">World</option></select></label>
             </div>
             <div class="library-stats" id="creationStats" aria-live="polite">0 creations</div>
             <div id="uploadList" class="stack"><span>Nothing created here yet.</span></div>
           </section>
         </article>
         <article class="panel inbox-panel" data-dashboard-view="inbox" hidden>
-          <p>OPPORTUNITIES</p>
-          <h2>Submission Inbox</h2>
+          <p>INBOX</p>
+          <h2>Your opportunities</h2>
           <div id="submissionList" class="stack">
             <span>No submissions yet.</span>
           </div>
         </article>
       </section>
       <section class="start-panel" id="startPanel" hidden>
-        <h2 id="startTitle">Creator World access.</h2>
-        <p id="startCopy">Checking your application status…</p>
+        <h2 id="startTitle">Build your World.</h2>
+        <p id="startCopy">Checking your application…</p>
         <a id="creatorApplyLink" class="panel-link" href="creator-apply.html" hidden>Apply to Build Your World →</a>
         <button id="startCreator" type="button" hidden>Build My Creator World</button>
       </section>
