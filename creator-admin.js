@@ -77,21 +77,37 @@
   }
 
   async function loadCreationReviews() {
-    var box = el('creationReviewQueue');
-    var result = await client.from('creator_media_uploads')
-      .select('id,title,creation_kind,media_type,file_size,storage_path,status,created_at,creators(display_name)')
-      .eq('status', 'ready_for_review').order('created_at');
+    var box = el('creationReviewQueue'), publishReady = true;
+    var columns = 'id,creator_id,title,creation_kind,media_type,mime_type,file_size,storage_path,status,public_path,published_at,created_at,creators(display_name)';
+    var result = await client.from('creator_media_uploads').select(columns).in('status', ['ready_for_review', 'approved', 'published']).order('created_at');
+    if (result.error && /public_path|published_at/i.test(result.error.message || '')) {
+      publishReady = false;
+      result = await client.from('creator_media_uploads').select('id,creator_id,title,creation_kind,media_type,mime_type,file_size,storage_path,status,created_at,creators(display_name)').in('status', ['ready_for_review', 'approved']).order('created_at');
+    }
     box.replaceChildren();
-    if (result.error) { box.append(node('span', 'Creation review activates after its migration is applied.')); return; }
+    if (result.error) { box.append(node('span', 'Creation review is temporarily unavailable.')); return; }
     (result.data || []).forEach(function (creation) {
       var card = node('article', '');
       var creatorName = creation.creators && creation.creators.display_name || 'Creator';
       var actions = node('div', ''); actions.className = 'upload-actions';
-      var preview = node('button', 'Preview'); preview.type = 'button'; preview.addEventListener('click', function () { previewCreation(creation.storage_path); });
-      var approve = node('button', 'Approve'); approve.type = 'button'; approve.addEventListener('click', function () { decideCreation(creation.id, 'approved'); });
-      var changes = node('button', 'Request Changes'); changes.type = 'button'; changes.className = 'danger'; changes.addEventListener('click', function () { decideCreation(creation.id, 'changes_requested'); });
-      actions.append(preview, approve, changes);
-      card.append(node('strong', creation.title), node('small', creatorName + ' • ' + String(creation.creation_kind || creation.media_type).replaceAll('_', ' ').toUpperCase() + ' • PRIVATE REVIEW'), actions);
+      if (creation.status !== 'published') {
+        var preview = node('button', 'Preview'); preview.type = 'button'; preview.addEventListener('click', function () { previewCreation(creation.storage_path); }); actions.appendChild(preview);
+      }
+      if (creation.status === 'ready_for_review') {
+        var approve = node('button', 'Approve'); approve.type = 'button'; approve.addEventListener('click', function () { decideCreation(creation.id, 'approved'); });
+        var changes = node('button', 'Request Changes'); changes.type = 'button'; changes.className = 'danger'; changes.addEventListener('click', function () { decideCreation(creation.id, 'changes_requested'); });
+        actions.append(approve, changes);
+      } else if (creation.status === 'approved') {
+        var publish = node('button', publishReady ? 'PUBLISH TO WORLD' : 'PUBLISH SETUP PENDING');
+        publish.type = 'button'; publish.className = 'publish-world'; publish.disabled = !publishReady;
+        if (publishReady) publish.addEventListener('click', function () { publishCreation(creation); });
+        actions.appendChild(publish);
+      } else if (creation.status === 'published' && creation.public_path) {
+        var publicData = client.storage.from('creator-world-public').getPublicUrl(creation.public_path);
+        var live = node('a', 'VIEW LIVE ↗'); live.href = publicData.data.publicUrl; live.target = '_blank'; live.rel = 'noopener'; live.className = 'panel-link'; actions.appendChild(live);
+      }
+      var stateLabel = creation.status === 'published' ? 'LIVE IN WORLD' : creation.status === 'approved' ? 'OWNER APPROVED' : 'PRIVATE REVIEW';
+      card.append(node('strong', creation.title), node('small', creatorName + ' • ' + String(creation.creation_kind || creation.media_type).replaceAll('_', ' ').toUpperCase() + ' • ' + stateLabel), actions);
       box.append(card);
     });
     if (!box.children.length) box.append(node('span', 'Creation review queue clear.'));
@@ -101,6 +117,39 @@
     var result = await client.storage.from('creator-world-uploads').createSignedUrl(path, 600);
     if (result.error) { status(friendlyError(result.error)); return; }
     window.open(result.data.signedUrl, '_blank', 'noopener');
+  }
+
+  function publicFileName(creation) {
+    var source = String(creation.storage_path || '').split('/').pop() || 'creation';
+    return source.replace(/[^a-zA-Z0-9._-]+/g, '-').slice(-140);
+  }
+
+  async function publishCreation(creation) {
+    if (!window.confirm('Publish “' + creation.title + '” live inside this Creator World?')) return;
+    status('Publishing to Creator World…');
+    var signed = await client.storage.from('creator-world-uploads').createSignedUrl(creation.storage_path, 300);
+    if (signed.error) { status('Private source unavailable: ' + signed.error.message); return; }
+    try {
+      var response = await fetch(signed.data.signedUrl);
+      if (!response.ok) throw new Error('Could not prepare the approved creation.');
+      var blob = await response.blob();
+      var publicPath = creation.creator_id + '/' + creation.id + '/' + publicFileName(creation);
+      var published = await client.storage.from('creator-world-public').upload(publicPath, blob, { cacheControl: '3600', upsert: false, contentType: creation.mime_type || blob.type });
+      if (published.error && /already exists|duplicate/i.test(published.error.message || '')) {
+        await client.storage.from('creator-world-public').remove([publicPath]);
+        published = await client.storage.from('creator-world-public').upload(publicPath, blob, { cacheControl: '3600', upsert: false, contentType: creation.mime_type || blob.type });
+      }
+      if (published.error) throw published.error;
+      var finalized = await client.rpc('creator_admin_publish_creation', { p_creation_id: creation.id, p_public_path: publicPath });
+      if (finalized.error) {
+        await client.storage.from('creator-world-public').remove([publicPath]);
+        throw finalized.error;
+      }
+      status('LIVE • Published to ' + ((creation.creators && creation.creators.display_name) || 'Creator World') + '.');
+      await Promise.all([loadCreationReviews(), loadAudit()]);
+    } catch (error) {
+      status('Publish failed safely: ' + (error.message || error));
+    }
   }
 
   async function decideCreation(id, decision) {
