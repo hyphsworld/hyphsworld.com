@@ -102,7 +102,7 @@
       card.hidden = !show;
       if (show) count += 1;
     });
-    result.textContent = count + ' creator' + (count === 1 ? '' : 's') + ' • Alphabetical';
+    result.textContent = count + ' creator' + (count === 1 ? '' : 's') + ' found';
     empty.hidden = count !== 0;
   }
 
@@ -221,8 +221,8 @@
     });
     var count = creationGrid.children.length;
     creationResults.textContent = count
-      ? count + (count === 1 ? ' public creation' : ' public creations') + ' • Owner approved'
-      : 'THE NEXT CREATIONS ARE BEING BUILT • CHECK BACK SOON';
+      ? count + (count === 1 ? ' creation' : ' creations')
+      : 'NO CREATIONS YET';
     creationGrid.hidden = count === 0;
   }
 
@@ -243,7 +243,7 @@
       try {
         await loadPublicCreations(client, creators);
       } catch (creationError) {
-        creationResults.textContent = 'CREATIONS ARE TEMPORARILY UNAVAILABLE';
+        creationResults.textContent = 'CREATIONS UNAVAILABLE';
         creationGrid.hidden = true;
       }
     } catch (error) {
