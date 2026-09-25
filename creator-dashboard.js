@@ -1,6 +1,8 @@
 (function () {
   'use strict';
   var user, client, creator, creators = [], creations = [], uploadBusy = false;
+  var dashboardTabs = Array.from(document.querySelectorAll('[data-dashboard-tab]'));
+  var currentDashboardView = 'overview';
   var uploadBucket = 'creator-world-uploads';
   var maxUploadBytes = 50 * 1024 * 1024;
   var createKinds = {
@@ -24,6 +26,29 @@
     var requested = new URLSearchParams(location.search).get('create') || 'world';
     setCreateKind(requested);
   }
+  function activateDashboardView(view, updateHash) {
+    var allowed = ['overview', 'profile', 'create', 'library', 'trust', 'inbox'];
+    currentDashboardView = allowed.indexOf(view) > -1 ? view : 'overview';
+    Array.from(document.querySelectorAll('[data-dashboard-view]')).forEach(function (panel) {
+      panel.hidden = panel.dataset.dashboardView.split(' ').indexOf(currentDashboardView) === -1;
+    });
+    dashboardTabs.forEach(function (button) {
+      var active = button.dataset.dashboardTab === currentDashboardView;
+      button.classList.toggle('active', active);
+      button.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
+    if (el('dashboard')) el('dashboard').dataset.activeView = currentDashboardView;
+    if (updateHash && history.replaceState) history.replaceState(null, '', '#' + currentDashboardView);
+  }
+  function initDashboardTabs() {
+    var requestedCreate = new URLSearchParams(location.search).has('create');
+    var hashView = location.hash.replace('#', '');
+    currentDashboardView = requestedCreate ? 'create' : (hashView || 'overview');
+    dashboardTabs.forEach(function (button) {
+      button.addEventListener('click', function () { activateDashboardView(button.dataset.dashboardTab, true); });
+    });
+    activateDashboardView(currentDashboardView, false);
+  }
   function cleanList(value) { return value.split(',').map(function (x) { return x.trim().toLowerCase(); }).filter(Boolean).slice(0, 10); }
   async function latestApplication() {
     var result = await client.from('creator_applications').select('status,review_notes,created_at').eq('applicant_id', user.userId).order('created_at', { ascending: false }).limit(1).maybeSingle();
@@ -34,6 +59,7 @@
     var application = await latestApplication();
     var startPanel = el('startPanel'), startButton = el('startCreator'), applyLink = el('creatorApplyLink');
     startPanel.hidden = false; startButton.hidden = true; applyLink.hidden = true;
+    if (el('dashboardTabs')) el('dashboardTabs').hidden = true;
     if (!application) {
       el('startTitle').textContent = 'Apply to build your World.';
       el('startCopy').textContent = 'Creator World isn’t open enrollment. Submit your work for human review first.';
@@ -71,7 +97,7 @@
   function renderWorldPicker() {
     var picker = el('creatorWorldPicker');
     if (!picker) {
-      picker = document.createElement('article'); picker.id = 'creatorWorldPicker'; picker.className = 'panel';
+      picker = document.createElement('article'); picker.id = 'creatorWorldPicker'; picker.className = 'panel world-picker-panel';
       var label = document.createElement('label'); label.textContent = 'MY CREATOR WORLDS';
       var select = document.createElement('select'); select.id = 'creatorWorldSelect'; select.setAttribute('aria-label', 'Choose a Creator World');
       select.addEventListener('change', function (event) { showCreator(event.target.value).catch(function (error) { status('World switch unavailable: ' + error.message); }); });
@@ -83,7 +109,21 @@
   }
   async function load() { try { user = await window.HWAuth.getCurrentUser(); if (!user || !user.userId) { location.href = 'auth.html?next=creator-dashboard.html'; return; } client = await window.HWAuth.getClient(); var result = await client.from('creators').select('*').eq('owner_user_id', user.userId).order('creator_number', { ascending: true, nullsFirst: false }); if (result.error) throw result.error; creators = result.data || []; creator = creators[0]; if (!creator) { await showCreatorAccessState(); return; } renderWorldPicker(); await showCreator(creator.id); } catch (error) { status('Dashboard unavailable: ' + (error.message || error)); } }
   async function showCreator(id) { creator = creators.find(function (row) { return row.id === id; }); if (!creator) return; renderCreator(); renderWorldPicker(); await Promise.all([loadMetrics(), loadVerification(), loadEntitlements(), loadSubmissions(), loadUploads()]); }
-  function renderCreator() { el('dashboard').hidden = false; el('startPanel').hidden = true; status((creator.status || 'draft').toUpperCase() + ' • Account owner confirmed'); el('profileTitle').textContent = creator.display_name; el('displayName').value = creator.display_name || ''; el('headline').value = creator.headline || ''; el('location').value = creator.location || ''; el('categories').value = (creator.categories || []).join(', '); el('bio').value = creator.bio || ''; el('imageUrl').value = creator.image_url || ''; el('verificationState').textContent = (creator.verification_level || 'unverified').replace('_', ' '); }
+  function renderCreator() {
+    el('dashboard').hidden = false;
+    el('dashboardTabs').hidden = false;
+    el('startPanel').hidden = true;
+    activateDashboardView(currentDashboardView, false);
+    status((creator.status || 'draft').toUpperCase() + ' • Account owner confirmed');
+    el('profileTitle').textContent = creator.display_name;
+    el('displayName').value = creator.display_name || '';
+    el('headline').value = creator.headline || '';
+    el('location').value = creator.location || '';
+    el('categories').value = (creator.categories || []).join(', ');
+    el('bio').value = creator.bio || '';
+    el('imageUrl').value = creator.image_url || '';
+    el('verificationState').textContent = (creator.verification_level || 'unverified').replace('_', ' ');
+  }
   async function start() {
     var application;
     try { application = await latestApplication(); } catch (error) { return status('Could not confirm Creator World approval: ' + (error.message || error)); }
@@ -242,10 +282,11 @@
       if (metadata.error) { await client.storage.from(uploadBucket).remove([path]); throw metadata.error; }
       event.target.reset(); setCreateKind(kind); await loadUploads();
       status('CREATED • “' + title + '” is saved privately in MY CREATIONS.');
+      activateDashboardView('library', true);
       el('creationLibraryTitle').scrollIntoView({ behavior: 'smooth', block: 'start' });
     } catch (error) { status('CREATE failed: ' + (error.message || error)); }
     finally { uploadBusy = false; el('uploadButton').disabled = false; el('uploadButton').textContent = 'CREATE'; }
   }
 
-  el('startCreator').addEventListener('click', start); el('creatorForm').addEventListener('submit', save); el('verificationForm').addEventListener('submit', requestVerification); el('creatorUploadForm').addEventListener('submit', uploadMedia); el('createKind').addEventListener('change', function (event) { setCreateKind(event.target.value); }); el('creationFilter').addEventListener('change', function () { uploadCards(creations); }); window.addEventListener('load', function () { initCreateKind(); load(); });
+  el('startCreator').addEventListener('click', start); el('creatorForm').addEventListener('submit', save); el('verificationForm').addEventListener('submit', requestVerification); el('creatorUploadForm').addEventListener('submit', uploadMedia); el('createKind').addEventListener('change', function (event) { setCreateKind(event.target.value); }); el('creationFilter').addEventListener('change', function () { uploadCards(creations); }); window.addEventListener('load', function () { initCreateKind(); initDashboardTabs(); load(); });
 })();
