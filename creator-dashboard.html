@@ -31,7 +31,7 @@
           tools, and manage incoming opportunities from one authenticated
           dashboard.
         </p>
-        <div class="status" id="dashboardStatus">
+        <div class="status" id="dashboardStatus" role="status" aria-live="polite">
           Checking your HYPHSWORLD ID…
         </div>
       </section>
@@ -140,17 +140,16 @@
         </article>
       </section>
       <section class="start-panel" id="startPanel" hidden>
-        <h2>Start a creator draft.</h2>
-        <p>
-          Your draft stays private until HYPHSWORLD reviews and publishes it.
-        </p>
-        <button id="startCreator" type="button">Create My Draft</button>
+        <h2 id="startTitle">Creator World access.</h2>
+        <p id="startCopy">Checking your application status…</p>
+        <a id="creatorApplyLink" class="panel-link" href="creator-apply.html" hidden>Apply to Build Your World →</a>
+        <button id="startCreator" type="button" hidden>Build My Creator World</button>
       </section>
     </main>
     <script src="supabase-config.js"></script>
     <script src="auth-client.js?v=creator-phase-2"></script>
     <script src="global-points-engine.js?v=creator-phase-2"></script>
-    <script src="creator-dashboard.js?v=publish-world-1"></script>
+    <script src="creator-dashboard.js?v=application-gate-1"></script>
   <script src="global-my-id.js?v=create-menu-1" defer></script>
 </body>
 </html>

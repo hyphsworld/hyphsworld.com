@@ -25,6 +25,48 @@
     setCreateKind(requested);
   }
   function cleanList(value) { return value.split(',').map(function (x) { return x.trim().toLowerCase(); }).filter(Boolean).slice(0, 10); }
+  async function latestApplication() {
+    var result = await client.from('creator_applications').select('status,review_notes,created_at').eq('applicant_id', user.userId).order('created_at', { ascending: false }).limit(1).maybeSingle();
+    if (result.error) throw result.error;
+    return result.data || null;
+  }
+  async function showCreatorAccessState() {
+    var application = await latestApplication();
+    var startPanel = el('startPanel'), startButton = el('startCreator'), applyLink = el('creatorApplyLink');
+    startPanel.hidden = false; startButton.hidden = true; applyLink.hidden = true;
+    if (!application) {
+      el('startTitle').textContent = 'Apply to build your World.';
+      el('startCopy').textContent = 'Creator World isn’t open enrollment. Submit your work for human review first.';
+      applyLink.hidden = false;
+      status('SIGNED IN • CREATOR APPLICATION REQUIRED');
+      return;
+    }
+    var state = String(application.status || 'pending');
+    if (state === 'approved') {
+      el('startTitle').textContent = 'You’re approved. Build your World.';
+      el('startCopy').textContent = 'Your Creator World is unlocked. Start the private draft connected to this HYPHSWORLD ID.';
+      startButton.hidden = false;
+      status('APPLICATION APPROVED • CREATOR WORLD UNLOCKED');
+      return;
+    }
+    if (state === 'needs_info') {
+      el('startTitle').textContent = 'Your application needs an update.';
+      el('startCopy').textContent = application.review_notes || 'Open your application, add the requested information, and send it back for review.';
+      applyLink.textContent = 'Update Application →'; applyLink.hidden = false;
+      status('APPLICATION NEEDS INFO');
+      return;
+    }
+    if (state === 'rejected') {
+      el('startTitle').textContent = 'Keep building.';
+      el('startCopy').textContent = application.review_notes || 'Strengthen your public work and apply again when you’re ready.';
+      applyLink.textContent = 'Apply Again →'; applyLink.hidden = false;
+      status('APPLICATION NOT APPROVED');
+      return;
+    }
+    el('startTitle').textContent = state === 'in_review' ? 'Your World is under review.' : 'Application received.';
+    el('startCopy').textContent = application.review_notes || 'HYPHSWORLD is reviewing your application. Creator tools unlock only after approval.';
+    status('APPLICATION ' + state.replace('_', ' ').toUpperCase());
+  }
   function cards(target, rows, describe) { target.replaceChildren(); if (!rows.length) { var empty = document.createElement('span'); empty.textContent = 'Nothing here yet.'; target.appendChild(empty); return; } rows.forEach(function (row) { var card = document.createElement('article'), strong = document.createElement('strong'), small = document.createElement('small'); strong.textContent = row.title; small.textContent = describe(row); card.append(strong, small); target.appendChild(card); }); }
   function renderWorldPicker() {
     var picker = el('creatorWorldPicker');
@@ -39,10 +81,20 @@
     creators.forEach(function (row) { var option = document.createElement('option'); option.value = row.id; option.textContent = (row.creator_number ? String(row.creator_number).padStart(3, '0') + ' • ' : '') + row.display_name; select.appendChild(option); });
     select.value = creator.id; picker.hidden = creators.length < 2;
   }
-  async function load() { try { user = await window.HWAuth.getCurrentUser(); if (!user || !user.userId) { location.href = 'auth.html?next=creator-dashboard.html'; return; } client = await window.HWAuth.getClient(); var result = await client.from('creators').select('*').eq('owner_user_id', user.userId).order('creator_number', { ascending: true, nullsFirst: false }); if (result.error) throw result.error; creators = result.data || []; creator = creators[0]; if (!creator) { status('Signed in • No creator draft yet'); el('startPanel').hidden = false; return; } renderWorldPicker(); await showCreator(creator.id); } catch (error) { status('Dashboard unavailable: ' + (error.message || error)); } }
+  async function load() { try { user = await window.HWAuth.getCurrentUser(); if (!user || !user.userId) { location.href = 'auth.html?next=creator-dashboard.html'; return; } client = await window.HWAuth.getClient(); var result = await client.from('creators').select('*').eq('owner_user_id', user.userId).order('creator_number', { ascending: true, nullsFirst: false }); if (result.error) throw result.error; creators = result.data || []; creator = creators[0]; if (!creator) { await showCreatorAccessState(); return; } renderWorldPicker(); await showCreator(creator.id); } catch (error) { status('Dashboard unavailable: ' + (error.message || error)); } }
   async function showCreator(id) { creator = creators.find(function (row) { return row.id === id; }); if (!creator) return; renderCreator(); renderWorldPicker(); await Promise.all([loadMetrics(), loadVerification(), loadEntitlements(), loadSubmissions(), loadUploads()]); }
   function renderCreator() { el('dashboard').hidden = false; el('startPanel').hidden = true; status((creator.status || 'draft').toUpperCase() + ' • Account owner confirmed'); el('profileTitle').textContent = creator.display_name; el('displayName').value = creator.display_name || ''; el('headline').value = creator.headline || ''; el('location').value = creator.location || ''; el('categories').value = (creator.categories || []).join(', '); el('bio').value = creator.bio || ''; el('imageUrl').value = creator.image_url || ''; el('verificationState').textContent = (creator.verification_level || 'unverified').replace('_', ' '); }
-  async function start() { var name = (user.displayName || user.username || 'New Creator').slice(0, 80); var result = await client.from('creators').insert({ owner_user_id: user.userId, display_name: name, headline: '', bio: '', location: '', categories: [], image_url: '', profile_url: '' }).select().single(); if (result.error) return status('Could not create draft: ' + result.error.message); creators.push(result.data); creator = result.data; renderWorldPicker(); renderCreator(); status('Private creator draft created'); }
+  async function start() {
+    var application;
+    try { application = await latestApplication(); } catch (error) { return status('Could not confirm Creator World approval: ' + (error.message || error)); }
+    if (!application || application.status !== 'approved') { await showCreatorAccessState(); return; }
+    el('startCreator').disabled = true;
+    var name = (user.displayName || user.username || 'New Creator').slice(0, 80);
+    var result = await client.from('creators').insert({ owner_user_id: user.userId, display_name: name, headline: '', bio: '', location: '', categories: [], image_url: '', profile_url: '' }).select().single();
+    el('startCreator').disabled = false;
+    if (result.error) return status('Could not build your Creator World: ' + result.error.message);
+    creators.push(result.data); creator = result.data; renderWorldPicker(); renderCreator(); status('CREATOR WORLD BUILT • Private draft ready');
+  }
   async function save(event) { event.preventDefault(); var update = { display_name: el('displayName').value.trim(), headline: el('headline').value.trim(), location: el('location').value.trim(), categories: cleanList(el('categories').value), bio: el('bio').value.trim(), image_url: el('imageUrl').value.trim(), profile_url: creator.profile_url || '' }; var result = await client.from('creators').update(update).eq('id', creator.id).select().single(); if (result.error) return status('Save rejected: ' + result.error.message); creator = result.data; creators = creators.map(function (row) { return row.id === creator.id ? creator : row; }); renderWorldPicker(); renderCreator(); status('Profile saved securely'); }
   async function requestVerification(event) { event.preventDefault(); var result = await client.from('creator_verification_requests').insert({ creator_id: creator.id, requester_id: user.userId, requested_level: el('requestedLevel').value, evidence_summary: el('evidenceSummary').value.trim() }); if (result.error) return status('Request not submitted: ' + result.error.message); el('evidenceSummary').value = ''; status('Verification request submitted for human review'); await loadVerification(); }
   async function loadVerification() { var r = await client.from('creator_verification_requests').select('requested_level,status,created_at').eq('creator_id', creator.id).order('created_at', { ascending: false }); cards(el('verificationHistory'), (r.data || []).map(function(x){ return Object.assign({title:x.requested_level.replace('_',' ').toUpperCase()},x); }), function(x){ return x.status.toUpperCase()+' • '+new Date(x.created_at).toLocaleDateString(); }); }
@@ -117,7 +169,37 @@
   }
   async function previewUpload(path) { var result = await client.storage.from(uploadBucket).createSignedUrl(path, 600); if (result.error) return status('Private preview unavailable: ' + result.error.message); window.open(result.data.signedUrl, '_blank', 'noopener'); }
   async function deleteUpload(row) { if (!window.confirm('Delete this private creation?')) return; var removed = await client.storage.from(uploadBucket).remove([row.storage_path]); if (removed.error) return status('File delete failed: ' + removed.error.message); var meta = await client.from('creator_media_uploads').delete().eq('id', row.id).eq('creator_id', creator.id); if (meta.error) return status('Creation record delete failed: ' + meta.error.message); status('Private creation deleted'); await loadUploads(); }
-  async function uploadMedia(event) { event.preventDefault(); if (uploadBusy || !creator) return; var file = el('uploadFile').files[0], title = el('uploadTitle').value.trim(); if (!file || !title) return status('Choose your media and give it a title.'); if (file.size > maxUploadBytes) return status('Creation rejected: 50 MB maximum.'); uploadBusy = true; el('uploadButton').disabled = true; el('uploadButton').textContent = 'Creating…'; var path = creator.id + '/' + user.userId + '/' + crypto.randomUUID() + '-' + safeFileName(file.name); try { var stored = await client.storage.from(uploadBucket).upload(path, file, { cacheControl: '3600', upsert: false, contentType: file.type }); if (stored.error) throw stored.error; var kind = el('createKind').value, payload = { creator_id: creator.id, owner_user_id: user.userId, title: title, creation_kind: kind, media_type: file.type.split('/')[0] === 'application' ? 'document' : file.type.split('/')[0], mime_type: file.type, file_size: file.size, storage_path: path }; var metadata = await client.from('creator_media_uploads').insert(payload).select('id').single(); if (metadata.error && /creation_kind/i.test(metadata.error.message || '')) { delete payload.creation_kind; metadata = await client.from('creator_media_uploads').insert(payload).select('id').single(); } if (metadata.error) { await client.storage.from(uploadBucket).remove([path]); throw metadata.error; } event.target.reset(); setCreateKind(kind); status('Created privately inside ' + creator.display_name); await loadUploads(); } catch (error) { status('CREATE failed: ' + (error.message || error)); } finally { uploadBusy = false; el('uploadButton').disabled = false; el('uploadButton').textContent = 'CREATE'; } }
+  function validCreationFile(file, kind) {
+    var allowed = createKinds[kind] || createKinds.world;
+    if (file.type && allowed.accept.split(',').includes(file.type)) return true;
+    var extension = String(file.name || '').split('.').pop().toLowerCase();
+    var extensions = { music: ['mp3','wav','m4a'], video: ['mp4'], artwork: ['jpg','jpeg','png','webp'], merch: ['jpg','jpeg','png','webp','pdf'], world: ['jpg','jpeg','png','webp','mp3','wav','m4a','mp4','pdf'] };
+    return extensions[kind].includes(extension);
+  }
+  async function uploadMedia(event) {
+    event.preventDefault();
+    if (uploadBusy || !creator) return;
+    var file = el('uploadFile').files[0], title = el('uploadTitle').value.trim(), kind = el('createKind').value;
+    if (!file || !title) return status('Choose your media and give it a title.');
+    if (!validCreationFile(file, kind)) return status('That file does not match the selected creation type.');
+    if (file.size > maxUploadBytes) return status('Creation rejected: 50 MB maximum.');
+    uploadBusy = true; el('uploadButton').disabled = true; el('uploadButton').textContent = 'Creating…';
+    var path = creator.id + '/' + user.userId + '/' + crypto.randomUUID() + '-' + safeFileName(file.name);
+    try {
+      var stored = await client.storage.from(uploadBucket).upload(path, file, { cacheControl: '3600', upsert: false, contentType: file.type });
+      if (stored.error) throw stored.error;
+      var mediaType = file.type ? file.type.split('/')[0] : (kind === 'music' ? 'audio' : kind === 'artwork' || kind === 'merch' ? 'image' : kind);
+      if (mediaType === 'application') mediaType = 'document';
+      var payload = { creator_id: creator.id, owner_user_id: user.userId, title: title, creation_kind: kind, media_type: mediaType, mime_type: file.type, file_size: file.size, storage_path: path };
+      var metadata = await client.from('creator_media_uploads').insert(payload).select('id').single();
+      if (metadata.error && /creation_kind/i.test(metadata.error.message || '')) { delete payload.creation_kind; metadata = await client.from('creator_media_uploads').insert(payload).select('id').single(); }
+      if (metadata.error) { await client.storage.from(uploadBucket).remove([path]); throw metadata.error; }
+      event.target.reset(); setCreateKind(kind); await loadUploads();
+      status('CREATED • “' + title + '” is saved privately in your Creation Library.');
+      el('creationLibraryTitle').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch (error) { status('CREATE failed: ' + (error.message || error)); }
+    finally { uploadBusy = false; el('uploadButton').disabled = false; el('uploadButton').textContent = 'CREATE'; }
+  }
 
   el('startCreator').addEventListener('click', start); el('creatorForm').addEventListener('submit', save); el('verificationForm').addEventListener('submit', requestVerification); el('creatorUploadForm').addEventListener('submit', uploadMedia); el('createKind').addEventListener('change', function (event) { setCreateKind(event.target.value); }); el('creationFilter').addEventListener('change', function () { uploadCards(creations); }); window.addEventListener('load', function () { initCreateKind(); load(); });
 })();

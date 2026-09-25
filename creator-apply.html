@@ -14,7 +14,7 @@
   <main>
     <section class="dash-hero"><p>CREATOR WORLD // HUMAN REVIEW</p><h1>Build your world.</h1><p>Artists, producers, designers, developers, DJs, filmmakers, athletes, and culture-builders can apply. Every profile is reviewed—applications never auto-publish or auto-verify.</p><div class="status" id="applicationStatus" role="status" aria-live="polite">Checking your HYPHSWORLD ID…</div></section>
     <section class="start-panel" id="applicationPanel" hidden>
-      <h2>Apply for Creator World</h2>
+      <h2 id="applicationTitle">Apply for Creator World</h2>
       <form id="creatorApplicationForm">
         <label>Creator or brand name<input id="applicationName" maxlength="80" required></label>
         <label>Creative categories<input id="applicationCategories" maxlength="160" placeholder="artist, producer, designer" required></label>
@@ -25,7 +25,12 @@
         <button type="submit" id="applicationSubmit">Submit for Review</button>
       </form>
     </section>
+    <section class="start-panel" id="approvedPanel" hidden>
+      <h2>Application approved.</h2>
+      <p>Your HYPHSWORLD Creator World is ready to build.</p>
+      <a class="panel-link" href="creator-dashboard.html">Build My Creator World →</a>
+    </section>
   </main>
-  <script src="supabase-config.js"></script><script src="auth-client.js?v=creator-rollout-1"></script><script src="creator-apply.js?v=creator-rollout-1"></script><script src="global-my-id.js?v=my-id-global-1" defer></script>
+  <script src="supabase-config.js"></script><script src="auth-client.js?v=creator-rollout-1"></script><script src="creator-apply.js?v=application-resubmit-1"></script><script src="global-my-id.js?v=my-id-global-1" defer></script>
 </body>
 </html>
