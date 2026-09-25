@@ -26,7 +26,7 @@
     />
     <meta name="twitter:card" content="summary_large_image" />
     <title>Creators World Directory | HYPHSWORLD</title>
-    <link rel="stylesheet" href="creators-directory.css?v=public-creations-1" />
+    <link rel="stylesheet" href="creators-directory.css?v=world-tabs-1" />
     <link rel="stylesheet" href="creator-access.css?v=world-seal-jewel-1" />
   </head>
   <body>
@@ -53,7 +53,19 @@
           with identity, context, and direct ways to connect.
         </p>
       </section>
-      <section class="directory" id="directory">
+      <section class="world-pulse" aria-label="Creators World pulse">
+        <div><strong>08</strong><span>NUMBERED WORLDS</span></div>
+        <div><strong>CREATE</strong><span>BUILD • REVIEW • PUBLISH</span></div>
+        <div><strong>CURATED</strong><span>APPLICATION ONLY</span></div>
+        <div><strong>EARNED</strong><span>WORLD SEALS</span></div>
+      </section>
+      <nav class="world-tabs" aria-label="Creators World sections" role="tablist">
+        <button class="active" type="button" role="tab" aria-selected="true" data-world-tab="discover">Discover</button>
+        <button type="button" role="tab" aria-selected="false" data-world-tab="creations">Fresh Creations</button>
+        <button type="button" role="tab" aria-selected="false" data-world-tab="verified">World Seal</button>
+        <button type="button" role="tab" aria-selected="false" data-world-tab="join">Apply</button>
+      </nav>
+      <section class="directory world-panel" id="directory" data-world-panel="discover" role="tabpanel">
         <div class="directory-head">
           <div>
             <small>CREATOR DIRECTORY</small>
@@ -70,7 +82,10 @@
           <button class="active" data-filter="all">All</button
           ><button data-filter="artist">Artists</button
           ><button data-filter="producer">Producers</button
-          ><button data-filter="radio">Radio &amp; DJ</button>
+          ><button data-filter="radio">Radio &amp; DJ</button
+          ><button data-filter="athlete">Athletes</button
+          ><button data-filter="coach">Coaches</button
+          ><button data-filter="verified">Verified</button>
         </div>
         <p id="creatorResults" aria-live="polite">8 creators • Alphabetical</p>
         <div class="creator-grid">
@@ -109,7 +124,7 @@
           <article
             class="creator-card is-verified"
             data-name="hyph life"
-            data-tags="artist producer ceo richmond director"
+            data-tags="artist producer ceo richmond director verified"
           >
             <img loading="lazy" decoding="async"
               src="creator-hyph-life-hero.jpg"
@@ -128,7 +143,7 @@
             <div><small>#007 • FEATURED YOUTH ATHLETE</small><h3>Lil G</h3><p>Youth Athlete • Baseball • All-American</p><a href="creator-lil-g.html">Enter creator world →</a></div>
           </article>
           <article
-            class="creator-card is-verified"
+            class="creator-card"
             data-name="aw enterprises nitti bo dr muy bueno"
             data-tags="gta server developer web designer artist producer bronx new york 01 boys"
           >
@@ -137,8 +152,8 @@
               alt="AW Enterprises logo for NITTI BO, also known as Dr. Muy Bueno"
             />
             <div>
-              <small>#006 • VERIFIED PARTNER</small>
-              <h3 class="creator-name-row">AW ENTERPRISES <span class="world-verification-badge directory-verification-badge" aria-label="HYPHSWORLD Verified Organization"><i class="world-seal directory-world-seal" title="HYPHSWORLD World Seal — Verified Organization" aria-hidden="true"></i><span class="world-verified-label">VERIFIED</span></span></h3>
+              <small>#006 • FEATURED CREATOR</small>
+              <h3>AW ENTERPRISES</h3>
               <p>GTA Server Developer • Web Designer • Artist • Producer</p>
               <a href="creator-nitti-bo.html">Enter creator world →</a>
             </div>
@@ -146,7 +161,7 @@
           <article
             class="creator-card is-verified"
             data-name="rojasonthebeat rojas on the beat"
-            data-tags="producer songwriter dj florida peru"
+            data-tags="producer songwriter dj florida peru verified"
           >
             <img loading="lazy" decoding="async"
               src="creator-rojas-awards.jpeg"
@@ -184,18 +199,32 @@
           <p>Try a different name, role, or location.</p>
         </div>
       </section>
-      <section class="creation-discovery" id="creations" aria-labelledby="creation-discovery-title">
+      <section class="creation-discovery world-panel" id="creations" data-world-panel="creations" role="tabpanel" aria-labelledby="creation-discovery-title" hidden>
         <div class="creation-discovery-head">
           <div>
             <small>FRESH FROM CREATOR WORLDS</small>
             <h2 id="creation-discovery-title">See what they created.</h2>
           </div>
-          <a href="#directory">Explore Creators ↑</a>
+          <button type="button" data-open-world-tab="discover">Explore Creators ↑</button>
         </div>
         <p id="publicCreationResults" aria-live="polite">CHECKING FOR FRESH CREATIONS…</p>
         <div class="discovery-creation-grid" id="publicCreationGrid" aria-live="polite"></div>
       </section>
-      <section class="join">
+      <section class="trust-panel world-panel" id="verified" data-world-panel="verified" role="tabpanel" hidden>
+        <div class="trust-head">
+          <small>TRUST HAS TO MEAN SOMETHING</small>
+          <h2>Featured gets the spotlight.<br /><span>Verified earns the seal.</span></h2>
+          <p>The HYPHSWORLD World Seal is never automatic and never sold. Identity, professional work, partnerships, and organizations are reviewed before the crown appears beside a creator name.</p>
+        </div>
+        <div class="trust-grid">
+          <article><b>FEATURED</b><h3>Editorial spotlight</h3><p>Selected for discovery and promotion. No verified crown.</p></article>
+          <article><b>PROFESSIONAL</b><h3>Work confirmed</h3><p>Identity and professional creative history reviewed.</p></article>
+          <article><b>PARTNER</b><h3>Trusted collaborator</h3><p>Recognized HYPHSWORLD relationship with reviewed ownership.</p></article>
+          <article><b>ORGANIZATION</b><h3>Official entity</h3><p>Business or organization identity confirmed by human review.</p></article>
+        </div>
+        <button class="trust-cta" type="button" data-open-verified-creators>View verified creators →</button>
+      </section>
+      <section class="join world-panel" data-world-panel="join" role="tabpanel" hidden>
         <h2>Build your world.<br />Earn your access.</h2>
         <div>
           <p>
@@ -214,7 +243,7 @@
     <script src="supabase-config.js"></script>
     <script src="auth-client.js?v=creator-phase-2"></script>
     <script src="global-points-engine.js?v=creator-debug-4"></script>
-    <script src="creators-directory.js?v=verified-scarcity-1"></script>
+    <script src="creators-directory.js?v=world-tabs-1"></script>
   <script src="global-my-id.js?v=my-id-global-1" defer></script>
 </body>
 </html>
