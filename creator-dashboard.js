@@ -124,7 +124,7 @@
     target.replaceChildren();
     var visible = rows.filter(function (row) { return filter === 'all' || creationKindFor(row) === filter; });
     renderCreationStats();
-    if (!visible.length) { var empty = document.createElement('span'); empty.textContent = filter === 'all' ? 'Nothing created here yet.' : 'No ' + createKinds[filter].label.toLowerCase() + ' creations yet.'; target.appendChild(empty); return; }
+    if (!visible.length) { var empty = document.createElement('span'); empty.textContent = filter === 'all' ? 'No creations here yet.' : 'No ' + createKinds[filter].label.toLowerCase() + ' creations yet.'; target.appendChild(empty); return; }
     visible.forEach(function (row) {
       var card = document.createElement('article'), title = document.createElement('strong'), meta = document.createElement('small'), actions = document.createElement('div'), preview = document.createElement('button'), rename = document.createElement('button'), review = document.createElement('button'), remove = document.createElement('button'), kind = creationKindFor(row), rowStatus = row.status || 'private';
       card.className = 'creation-card'; card.dataset.status = rowStatus; title.textContent = row.title;
@@ -134,7 +134,7 @@
       if (rowStatus !== 'approved' && rowStatus !== 'published') {
         rename.type = 'button'; rename.className = 'secondary'; rename.textContent = 'Rename'; rename.addEventListener('click', function () { renameCreation(row); }); actions.appendChild(rename);
         review.type = 'button'; review.className = 'review'; review.textContent = rowStatus === 'ready_for_review' ? 'Return to Private' : 'Ready for Owner'; review.addEventListener('click', function () { setCreationReviewState(row, rowStatus === 'ready_for_review' ? 'private' : 'ready_for_review'); }); actions.appendChild(review);
-        remove.type = 'button'; remove.className = 'danger'; remove.textContent = 'Delete'; remove.addEventListener('click', function () { deleteUpload(row); }); actions.appendChild(remove);
+        remove.type = 'button'; remove.className = 'danger'; remove.textContent = 'Delete Creation'; remove.setAttribute('aria-label', 'Delete creation ' + row.title); remove.addEventListener('click', function () { deleteCreation(row, remove, card); }); actions.appendChild(remove);
       }
       card.append(title, meta);
       if (row.review_note) { var note = document.createElement('p'); note.className = 'creation-note'; note.textContent = 'Owner note: ' + row.review_note; card.appendChild(note); }
@@ -168,7 +168,53 @@
     await loadUploads();
   }
   async function previewUpload(path) { var result = await client.storage.from(uploadBucket).createSignedUrl(path, 600); if (result.error) return status('Private preview unavailable: ' + result.error.message); window.open(result.data.signedUrl, '_blank', 'noopener'); }
-  async function deleteUpload(row) { if (!window.confirm('Delete this private creation?')) return; var removed = await client.storage.from(uploadBucket).remove([row.storage_path]); if (removed.error) return status('File delete failed: ' + removed.error.message); var meta = await client.from('creator_media_uploads').delete().eq('id', row.id).eq('creator_id', creator.id); if (meta.error) return status('Creation record delete failed: ' + meta.error.message); status('Private creation deleted'); await loadUploads(); }
+  async function deleteCreation(row, button, card) {
+    if (!button.dataset.confirmDelete) {
+      button.dataset.confirmDelete = 'true';
+      button.textContent = 'Tap Again to Delete';
+      button.classList.add('confirm-delete');
+      status('Tap “Tap Again to Delete” to permanently delete “' + row.title + '”.');
+      window.setTimeout(function () {
+        if (!button.isConnected || button.disabled) return;
+        delete button.dataset.confirmDelete;
+        button.textContent = 'Delete Creation';
+        button.classList.remove('confirm-delete');
+      }, 5000);
+      return;
+    }
+
+    delete button.dataset.confirmDelete;
+    button.disabled = true;
+    button.textContent = 'Deleting Creation…';
+    card.classList.add('is-deleting');
+    Array.from(card.querySelectorAll('button')).forEach(function (action) { action.disabled = true; });
+    status('Deleting creation securely…');
+
+    var removed = await client.storage.from(uploadBucket).remove([row.storage_path]);
+    if (removed.error) {
+      card.classList.remove('is-deleting');
+      Array.from(card.querySelectorAll('button')).forEach(function (action) { action.disabled = false; });
+      button.textContent = 'Delete Creation';
+      button.classList.remove('confirm-delete');
+      return status('Creation could not be deleted: ' + removed.error.message);
+    }
+
+    var metadata = await client.from('creator_media_uploads')
+      .delete()
+      .eq('id', row.id)
+      .eq('creator_id', creator.id)
+      .select('id')
+      .maybeSingle();
+    if (metadata.error || !metadata.data) {
+      card.classList.remove('is-deleting');
+      button.textContent = 'Finish Deleting';
+      button.disabled = false;
+      return status('Creation file was removed, but record cleanup needs another try: ' + ((metadata.error && metadata.error.message) || 'creation record remained'));
+    }
+
+    status('CREATION DELETED • “' + row.title + '” was removed from MY CREATIONS.');
+    await loadUploads();
+  }
   function validCreationFile(file, kind) {
     var allowed = createKinds[kind] || createKinds.world;
     if (file.type && allowed.accept.split(',').includes(file.type)) return true;
