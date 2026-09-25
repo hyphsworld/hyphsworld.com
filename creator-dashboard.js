@@ -62,38 +62,38 @@
     if (el('dashboardTabs')) el('dashboardTabs').hidden = true;
     if (!application) {
       el('startTitle').textContent = 'Apply to build your World.';
-      el('startCopy').textContent = 'Creator World isn’t open enrollment. Submit your work for human review first.';
+      el('startCopy').textContent = 'Creator World isn’t open enrollment. Apply to build your World.';
       applyLink.hidden = false;
       status('SIGNED IN • CREATOR APPLICATION REQUIRED');
       return;
     }
     var state = String(application.status || 'pending');
     if (state === 'approved') {
-      el('startTitle').textContent = 'You’re approved. Build your World.';
-      el('startCopy').textContent = 'Your Creator World is unlocked. Start the private draft connected to this HYPHSWORLD ID.';
+      el('startTitle').textContent = 'You’re approved.';
+      el('startCopy').textContent = 'Start building your private Creator World.';
       startButton.hidden = false;
       status('APPLICATION APPROVED • CREATOR WORLD UNLOCKED');
       return;
     }
     if (state === 'needs_info') {
-      el('startTitle').textContent = 'Your application needs an update.';
-      el('startCopy').textContent = application.review_notes || 'Open your application, add the requested information, and send it back for review.';
+      el('startTitle').textContent = 'Update your application.';
+      el('startCopy').textContent = application.review_notes || 'Add the missing information and send it back.';
       applyLink.textContent = 'Update Application →'; applyLink.hidden = false;
       status('APPLICATION NEEDS INFO');
       return;
     }
     if (state === 'rejected') {
-      el('startTitle').textContent = 'Keep building.';
-      el('startCopy').textContent = application.review_notes || 'Strengthen your public work and apply again when you’re ready.';
+      el('startTitle').textContent = 'Not approved yet.';
+      el('startCopy').textContent = application.review_notes || 'Keep building and apply again later.';
       applyLink.textContent = 'Apply Again →'; applyLink.hidden = false;
       status('APPLICATION NOT APPROVED');
       return;
     }
-    el('startTitle').textContent = state === 'in_review' ? 'Your World is under review.' : 'Application received.';
-    el('startCopy').textContent = application.review_notes || 'HYPHSWORLD is reviewing your application. Creator tools unlock only after approval.';
+    el('startTitle').textContent = state === 'in_review' ? 'We’re reviewing your application.' : 'Application sent.';
+    el('startCopy').textContent = application.review_notes || 'We’ll unlock Creator tools after approval.';
     status('APPLICATION ' + state.replace('_', ' ').toUpperCase());
   }
-  function cards(target, rows, describe) { target.replaceChildren(); if (!rows.length) { var empty = document.createElement('span'); empty.textContent = 'Nothing here yet.'; target.appendChild(empty); return; } rows.forEach(function (row) { var card = document.createElement('article'), strong = document.createElement('strong'), small = document.createElement('small'); strong.textContent = row.title; small.textContent = describe(row); card.append(strong, small); target.appendChild(card); }); }
+  function cards(target, rows, describe) { target.replaceChildren(); if (!rows.length) { var empty = document.createElement('span'); empty.textContent = 'Nothing yet.'; target.appendChild(empty); return; } rows.forEach(function (row) { var card = document.createElement('article'), strong = document.createElement('strong'), small = document.createElement('small'); strong.textContent = row.title; small.textContent = describe(row); card.append(strong, small); target.appendChild(card); }); }
   function renderWorldPicker() {
     var picker = el('creatorWorldPicker');
     if (!picker) {
@@ -114,7 +114,7 @@
     el('dashboardTabs').hidden = false;
     el('startPanel').hidden = true;
     activateDashboardView(currentDashboardView, false);
-    status((creator.status || 'draft').toUpperCase() + ' • Account owner confirmed');
+    status((creator.status || 'draft').toUpperCase() + ' • OWNER CONFIRMED');
     el('profileTitle').textContent = creator.display_name;
     el('displayName').value = creator.display_name || '';
     el('headline').value = creator.headline || '';
@@ -135,8 +135,8 @@
     if (result.error) return status('Could not build your Creator World: ' + result.error.message);
     creators.push(result.data); creator = result.data; renderWorldPicker(); renderCreator(); status('CREATOR WORLD BUILT • Private draft ready');
   }
-  async function save(event) { event.preventDefault(); var update = { display_name: el('displayName').value.trim(), headline: el('headline').value.trim(), location: el('location').value.trim(), categories: cleanList(el('categories').value), bio: el('bio').value.trim(), image_url: el('imageUrl').value.trim(), profile_url: creator.profile_url || '' }; var result = await client.from('creators').update(update).eq('id', creator.id).select().single(); if (result.error) return status('Save rejected: ' + result.error.message); creator = result.data; creators = creators.map(function (row) { return row.id === creator.id ? creator : row; }); renderWorldPicker(); renderCreator(); status('Profile saved securely'); }
-  async function requestVerification(event) { event.preventDefault(); var result = await client.from('creator_verification_requests').insert({ creator_id: creator.id, requester_id: user.userId, requested_level: el('requestedLevel').value, evidence_summary: el('evidenceSummary').value.trim() }); if (result.error) return status('Request not submitted: ' + result.error.message); el('evidenceSummary').value = ''; status('Verification request submitted for human review'); await loadVerification(); }
+  async function save(event) { event.preventDefault(); var update = { display_name: el('displayName').value.trim(), headline: el('headline').value.trim(), location: el('location').value.trim(), categories: cleanList(el('categories').value), bio: el('bio').value.trim(), image_url: el('imageUrl').value.trim(), profile_url: creator.profile_url || '' }; var result = await client.from('creators').update(update).eq('id', creator.id).select().single(); if (result.error) return status('Save rejected: ' + result.error.message); creator = result.data; creators = creators.map(function (row) { return row.id === creator.id ? creator : row; }); renderWorldPicker(); renderCreator(); status('Profile saved'); }
+  async function requestVerification(event) { event.preventDefault(); var result = await client.from('creator_verification_requests').insert({ creator_id: creator.id, requester_id: user.userId, requested_level: el('requestedLevel').value, evidence_summary: el('evidenceSummary').value.trim() }); if (result.error) return status('Request not submitted: ' + result.error.message); el('evidenceSummary').value = ''; status('Review request sent'); await loadVerification(); }
   async function loadVerification() { var r = await client.from('creator_verification_requests').select('requested_level,status,created_at').eq('creator_id', creator.id).order('created_at', { ascending: false }); cards(el('verificationHistory'), (r.data || []).map(function(x){ return Object.assign({title:x.requested_level.replace('_',' ').toUpperCase()},x); }), function(x){ return x.status.toUpperCase()+' • '+new Date(x.created_at).toLocaleDateString(); }); }
   async function loadEntitlements() { var r = await client.from('creator_entitlements').select('entitlement_key,status,source,expires_at').eq('creator_id', creator.id); cards(el('entitlementList'), (r.data || []).map(function(x){ return Object.assign({title:x.entitlement_key.replaceAll('_',' ').toUpperCase()},x); }), function(x){ return x.status.toUpperCase()+' • '+x.source.toUpperCase(); }); }
   async function loadSubmissions() { var r = await client.from('creator_submissions').select('id,title,submission_type,status,created_at').eq('creator_id', creator.id).order('created_at', { ascending: false }).limit(30); cards(el('submissionList'), r.data || [], function(x){ return x.submission_type.toUpperCase()+' • '+x.status.toUpperCase()+' • '+new Date(x.created_at).toLocaleDateString(); }); }
@@ -151,7 +151,7 @@
     return 'world';
   }
   function creationStatusLabel(value) {
-    return ({ private: 'PRIVATE', ready_for_review: 'READY FOR OWNER REVIEW', approved: 'OWNER APPROVED', changes_requested: 'CHANGES REQUESTED', published: 'LIVE IN WORLD' })[value] || 'PRIVATE';
+    return ({ private: 'PRIVATE', ready_for_review: 'READY FOR REVIEW', approved: 'OWNER APPROVED', changes_requested: 'CHANGES NEEDED', published: 'LIVE' })[value] || 'PRIVATE';
   }
   function renderCreationStats() {
     var ready = creations.filter(function (row) { return row.status === 'ready_for_review'; }).length;
@@ -201,10 +201,10 @@
     status('Creation renamed securely.'); await loadUploads();
   }
   async function setCreationReviewState(row, nextStatus) {
-    if (nextStatus === 'ready_for_review' && !window.confirm('Send this creation to the HYPHSWORLD owner review queue? It will stay private.')) return;
+    if (nextStatus === 'ready_for_review' && !window.confirm('Send this creation for review? It will stay private.')) return;
     var result = await client.from('creator_media_uploads').update({ status: nextStatus, creation_kind: creationKindFor(row), updated_at: new Date().toISOString() }).eq('id', row.id).eq('creator_id', creator.id).select('id').single();
     if (result.error) return status('Owner review activates after the MY CREATIONS update is active: ' + result.error.message);
-    status(nextStatus === 'ready_for_review' ? 'Creation is ready for owner review.' : 'Creation returned to your private workspace.');
+    status(nextStatus === 'ready_for_review' ? 'Creation sent for review.' : 'Creation moved back to private.');
     await loadUploads();
   }
   async function previewUpload(path) { var result = await client.storage.from(uploadBucket).createSignedUrl(path, 600); if (result.error) return status('Private preview unavailable: ' + result.error.message); window.open(result.data.signedUrl, '_blank', 'noopener'); }
@@ -281,7 +281,7 @@
       if (metadata.error && /creation_kind/i.test(metadata.error.message || '')) { delete payload.creation_kind; metadata = await client.from('creator_media_uploads').insert(payload).select('id').single(); }
       if (metadata.error) { await client.storage.from(uploadBucket).remove([path]); throw metadata.error; }
       event.target.reset(); setCreateKind(kind); await loadUploads();
-      status('CREATED • “' + title + '” is saved privately in MY CREATIONS.');
+      status('Saved to MY CREATIONS • “' + title + '”');
       activateDashboardView('library', true);
       el('creationLibraryTitle').scrollIntoView({ behavior: 'smooth', block: 'start' });
     } catch (error) { status('CREATE failed: ' + (error.message || error)); }
