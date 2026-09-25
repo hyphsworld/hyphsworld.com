@@ -59,12 +59,13 @@
     return 'world';
   }
   function creationStatusLabel(value) {
-    return ({ private: 'PRIVATE', ready_for_review: 'READY FOR OWNER REVIEW', approved: 'OWNER APPROVED', changes_requested: 'CHANGES REQUESTED' })[value] || 'PRIVATE';
+    return ({ private: 'PRIVATE', ready_for_review: 'READY FOR OWNER REVIEW', approved: 'OWNER APPROVED', changes_requested: 'CHANGES REQUESTED', published: 'LIVE IN WORLD' })[value] || 'PRIVATE';
   }
   function renderCreationStats() {
     var ready = creations.filter(function (row) { return row.status === 'ready_for_review'; }).length;
     var approved = creations.filter(function (row) { return row.status === 'approved'; }).length;
-    el('creationStats').textContent = creations.length + (creations.length === 1 ? ' creation' : ' creations') + ' • ' + ready + ' ready • ' + approved + ' approved';
+    var live = creations.filter(function (row) { return row.status === 'published'; }).length;
+    el('creationStats').textContent = creations.length + (creations.length === 1 ? ' creation' : ' creations') + ' • ' + ready + ' ready • ' + approved + ' approved • ' + live + ' live';
   }
   function uploadCards(rows) {
     var target = el('uploadList'), filter = el('creationFilter').value;
@@ -78,7 +79,7 @@
       meta.className = 'creation-meta'; meta.textContent = createKinds[kind].label.toUpperCase() + ' • ' + row.media_type.toUpperCase() + ' • ' + Math.max(1, Math.round(row.file_size / 1024)) + ' KB • ' + creationStatusLabel(rowStatus);
       actions.className = 'upload-actions';
       preview.type = 'button'; preview.textContent = 'Preview'; preview.addEventListener('click', function () { previewUpload(row.storage_path); }); actions.appendChild(preview);
-      if (rowStatus !== 'approved') {
+      if (rowStatus !== 'approved' && rowStatus !== 'published') {
         rename.type = 'button'; rename.className = 'secondary'; rename.textContent = 'Rename'; rename.addEventListener('click', function () { renameCreation(row); }); actions.appendChild(rename);
         review.type = 'button'; review.className = 'review'; review.textContent = rowStatus === 'ready_for_review' ? 'Return to Private' : 'Ready for Owner'; review.addEventListener('click', function () { setCreationReviewState(row, rowStatus === 'ready_for_review' ? 'private' : 'ready_for_review'); }); actions.appendChild(review);
         remove.type = 'button'; remove.className = 'danger'; remove.textContent = 'Delete'; remove.addEventListener('click', function () { deleteUpload(row); }); actions.appendChild(remove);
@@ -89,7 +90,7 @@
     });
   }
   async function loadUploads() {
-    var columns = 'id,title,creation_kind,media_type,mime_type,file_size,storage_path,status,review_note,created_at,updated_at';
+    var columns = 'id,title,creation_kind,media_type,mime_type,file_size,storage_path,status,review_note,public_path,published_at,created_at,updated_at';
     var result = await client.from('creator_media_uploads').select(columns).eq('creator_id', creator.id).order('created_at', { ascending: false }).limit(50);
     if (result.error && /creation_kind|review_note|updated_at/i.test(result.error.message || '')) {
       result = await client.from('creator_media_uploads').select('id,title,media_type,mime_type,file_size,storage_path,status,created_at').eq('creator_id', creator.id).order('created_at', { ascending: false }).limit(50);
