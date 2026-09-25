@@ -157,13 +157,13 @@
     title = title.trim().slice(0, 120);
     if (!title) return status('A creation name is required.');
     var result = await client.from('creator_media_uploads').update({ title: title, updated_at: new Date().toISOString() }).eq('id', row.id).eq('creator_id', creator.id).select('id').single();
-    if (result.error) return status('Rename unavailable until the Creation Library migration is active: ' + result.error.message);
+    if (result.error) return status('Rename unavailable until the MY CREATIONS update is active: ' + result.error.message);
     status('Creation renamed securely.'); await loadUploads();
   }
   async function setCreationReviewState(row, nextStatus) {
     if (nextStatus === 'ready_for_review' && !window.confirm('Send this creation to the HYPHSWORLD owner review queue? It will stay private.')) return;
     var result = await client.from('creator_media_uploads').update({ status: nextStatus, creation_kind: creationKindFor(row), updated_at: new Date().toISOString() }).eq('id', row.id).eq('creator_id', creator.id).select('id').single();
-    if (result.error) return status('Owner review activates after the Creation Library migration: ' + result.error.message);
+    if (result.error) return status('Owner review activates after the MY CREATIONS update is active: ' + result.error.message);
     status(nextStatus === 'ready_for_review' ? 'Creation is ready for owner review.' : 'Creation returned to your private workspace.');
     await loadUploads();
   }
@@ -241,7 +241,7 @@
       if (metadata.error && /creation_kind/i.test(metadata.error.message || '')) { delete payload.creation_kind; metadata = await client.from('creator_media_uploads').insert(payload).select('id').single(); }
       if (metadata.error) { await client.storage.from(uploadBucket).remove([path]); throw metadata.error; }
       event.target.reset(); setCreateKind(kind); await loadUploads();
-      status('CREATED • “' + title + '” is saved privately in your Creation Library.');
+      status('CREATED • “' + title + '” is saved privately in MY CREATIONS.');
       el('creationLibraryTitle').scrollIntoView({ behavior: 'smooth', block: 'start' });
     } catch (error) { status('CREATE failed: ' + (error.message || error)); }
     finally { uploadBusy = false; el('uploadButton').disabled = false; el('uploadButton').textContent = 'CREATE'; }
