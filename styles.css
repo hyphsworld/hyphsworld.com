@@ -436,6 +436,31 @@ h3 { font-size: clamp(1.5rem, 3.2vw, 2.6rem); margin-bottom: 8px; letter-spacing
   border: 1px solid rgba(255,255,255,0.16);
 }
 .spotlight-badge { position: absolute; left: 14px; top: 14px; }
+.spotlight-memorial-video {
+  width: min(100%, 315px);
+  margin: 18px auto;
+  overflow: hidden;
+  border: 1px solid rgba(255,228,92,0.48);
+  border-radius: 24px;
+  background: #000;
+  box-shadow: 0 0 30px rgba(255,79,216,0.18);
+}
+.spotlight-memorial-video iframe {
+  display: block;
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  border: 0;
+  background: #000;
+}
+.spotlight-memorial-video span {
+  display: block;
+  padding: 11px 14px;
+  color: var(--yellow);
+  font-size: 0.78rem;
+  font-weight: 1000;
+  letter-spacing: 0.12em;
+  text-align: center;
+}
 
 .vault-preview-card { background: linear-gradient(135deg, rgba(69,255,54,0.13), rgba(0,0,0,0.84), rgba(255,36,88,0.14)); }
 .level-one-only { max-width: 680px; }
