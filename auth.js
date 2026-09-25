@@ -79,7 +79,7 @@
       else passwordInput.removeAttribute('minlength');
     }
     if (mode === 'signup') showResend('');
-    show(mode === 'signup' ? 'Create a secret code with at least 10 characters.' : '', '');
+    show(mode === 'signup' ? 'Create a password with at least 10 characters.' : '', '');
   }
 
   async function submitAuth(event) {
@@ -88,7 +88,7 @@
 
     const email = emailInput ? emailInput.value.trim() : '';
     const password = passwordInput ? passwordInput.value : '';
-    if (!email || !password) return show('Enter your email and secret code.', 'error');
+    if (!email || !password) return show('Enter your email and password.', 'error');
 
     submitting = true;
     if (submitBtn) submitBtn.disabled = true;
@@ -120,7 +120,7 @@
         showResend(email);
         show('Confirm your email first. Use Resend Confirmation Email if the link did not arrive.', 'warn');
       } else if (mode === 'signin' && /invalid|credential|not found/i.test(text)) {
-        show('Email or secret code is incorrect.', 'error');
+        show('Email or password is incorrect.', 'error');
       } else if (mode === 'signup' && /already|registered|exists/i.test(text)) {
         setMode('signin');
         show('That email already has an ID. Log in instead.', 'warn');
