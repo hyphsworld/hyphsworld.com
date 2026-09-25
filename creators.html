@@ -26,7 +26,7 @@
     />
     <meta name="twitter:card" content="summary_large_image" />
     <title>Creators World Directory | HYPHSWORLD</title>
-    <link rel="stylesheet" href="creators-directory.css?v=world-seal-1" />
+    <link rel="stylesheet" href="creators-directory.css?v=public-creations-1" />
     <link rel="stylesheet" href="creator-access.css?v=world-seal-jewel-1" />
   </head>
   <body>
@@ -184,6 +184,17 @@
           <p>Try a different name, role, or location.</p>
         </div>
       </section>
+      <section class="creation-discovery" id="creations" aria-labelledby="creation-discovery-title">
+        <div class="creation-discovery-head">
+          <div>
+            <small>FRESH FROM CREATOR WORLDS</small>
+            <h2 id="creation-discovery-title">See what they created.</h2>
+          </div>
+          <a href="#directory">Explore Creators ↑</a>
+        </div>
+        <p id="publicCreationResults" aria-live="polite">CHECKING FOR FRESH CREATIONS…</p>
+        <div class="discovery-creation-grid" id="publicCreationGrid" aria-live="polite"></div>
+      </section>
       <section class="join">
         <h2>Build your world.<br />Earn your access.</h2>
         <div>
@@ -203,7 +214,7 @@
     <script src="supabase-config.js"></script>
     <script src="auth-client.js?v=creator-phase-2"></script>
     <script src="global-points-engine.js?v=creator-debug-4"></script>
-    <script src="creators-directory.js?v=world-seal-1"></script>
+    <script src="creators-directory.js?v=public-creations-1"></script>
   <script src="global-my-id.js?v=my-id-global-1" defer></script>
 </body>
 </html>
