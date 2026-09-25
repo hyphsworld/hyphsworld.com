@@ -9,7 +9,7 @@
       content="Secure HYPHSWORLD creator dashboard for profiles, verification, tools, and submissions."
     />
     <title>Creator Dashboard | HYPHSWORLD</title>
-    <link rel="stylesheet" href="creator-dashboard.css?v=delete-creations-1" />
+    <link rel="stylesheet" href="creator-dashboard.css?v=creator-command-tabs-1" />
   </head>
   <body data-hide-global-points-hud>
     <header>
@@ -35,13 +35,21 @@
           Checking your HYPHSWORLD ID…
         </div>
       </section>
-      <section class="dash-grid" id="dashboard" hidden>
-        <article class="panel">
+      <nav class="dashboard-tabs" id="dashboardTabs" aria-label="Creator command center" role="tablist" hidden>
+        <button class="active" type="button" role="tab" aria-selected="true" data-dashboard-tab="overview">Overview</button>
+        <button type="button" role="tab" aria-selected="false" data-dashboard-tab="profile">Profile</button>
+        <button class="create-tab" type="button" role="tab" aria-selected="false" data-dashboard-tab="create">＋ CREATE</button>
+        <button type="button" role="tab" aria-selected="false" data-dashboard-tab="library">My Creations</button>
+        <button type="button" role="tab" aria-selected="false" data-dashboard-tab="trust">Trust &amp; Tools</button>
+        <button type="button" role="tab" aria-selected="false" data-dashboard-tab="inbox">Inbox</button>
+      </nav>
+      <section class="dash-grid" id="dashboard" data-active-view="overview" hidden>
+        <article class="panel" data-dashboard-view="overview">
           <p>CREATOR INSIGHTS</p>
           <h2>Performance</h2>
           <div id="metricList" class="stack"><span>Loading account-backed metrics…</span></div>
         </article>
-        <article class="panel profile-panel">
+        <article class="panel profile-panel" data-dashboard-view="profile" hidden>
           <p>CREATOR PROFILE</p>
           <h2 id="profileTitle">Your draft</h2>
           <form id="creatorForm">
@@ -73,7 +81,7 @@
             ><button type="submit">Save Draft</button>
           </form>
         </article>
-        <article class="panel">
+        <article class="panel" data-dashboard-view="trust" hidden>
           <p>TRUST STATUS</p>
           <h2>Verification</h2>
           <div class="badge-state" id="verificationState">Unverified</div>
@@ -98,7 +106,7 @@
           </form>
           <div id="verificationHistory" class="stack"></div>
         </article>
-        <article class="panel">
+        <article class="panel" data-dashboard-view="trust" hidden>
           <p>PROTECTED ACCESS</p>
           <h2>Creator Tools</h2>
           <div id="entitlementList" class="stack">
@@ -108,7 +116,7 @@
             >View requirements →</a
           >
         </article>
-        <article class="panel upload-panel" id="create-studio">
+        <article class="panel upload-panel" id="create-studio" data-dashboard-view="create" hidden>
           <p>MY PRIVATE CREATIONS</p>
           <h2 id="createStudioTitle">Create Studio</h2>
           <p class="panel-copy">Create with images, audio, MP4 videos, and PDFs. Everything stays private inside the selected Creator World.</p>
@@ -119,6 +127,8 @@
             <small class="upload-note">Private creation • Owner access only • Maximum 50 MB</small>
             <button id="uploadButton" type="submit">CREATE</button>
           </form>
+        </article>
+        <article class="panel library-panel" data-dashboard-view="library" hidden>
           <section class="creation-library" aria-labelledby="creationLibraryTitle">
             <div class="library-head">
               <div>
@@ -131,7 +141,7 @@
             <div id="uploadList" class="stack"><span>Nothing created here yet.</span></div>
           </section>
         </article>
-        <article class="panel inbox-panel">
+        <article class="panel inbox-panel" data-dashboard-view="inbox" hidden>
           <p>OPPORTUNITIES</p>
           <h2>Submission Inbox</h2>
           <div id="submissionList" class="stack">
@@ -149,7 +159,7 @@
     <script src="supabase-config.js"></script>
     <script src="auth-client.js?v=creator-phase-2"></script>
     <script src="global-points-engine.js?v=creator-phase-2"></script>
-    <script src="creator-dashboard.js?v=delete-creations-1"></script>
+    <script src="creator-dashboard.js?v=creator-command-tabs-1"></script>
   <script src="global-my-id.js?v=create-menu-1" defer></script>
 </body>
 </html>
