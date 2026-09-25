@@ -5,7 +5,19 @@
   var grid = document.querySelector('.creator-grid');
   var result = document.getElementById('creatorResults');
   var empty = document.getElementById('emptyState');
+  var creationGrid = document.getElementById('publicCreationGrid');
+  var creationResults = document.getElementById('publicCreationResults');
   var filter = 'all';
+  var profilePages = {
+    'hyph-life': 'creators-world.html',
+    'rojasonthebeat': 'creator-rojas.html',
+    'francoismusic47': 'creator-francoismusic47.html',
+    'young-tez': 'creator-young-tez.html',
+    'b3llygang-h3rsch': 'creator-b3llygang-h3rsch.html',
+    'nitti-bo': 'creator-nitti-bo.html',
+    'lil-g': 'creator-lil-g.html',
+    'sixx-figgaz': 'creator-sixx-figgaz.html'
+  };
 
   function text(value, fallback) {
     return typeof value === 'string' && value.trim() ? value.trim() : (fallback || '');
@@ -91,7 +103,7 @@
     var displayName = text(row.display_name, 'Creator');
     var categories = Array.isArray(row.categories) ? row.categories : [];
     var verification = text(row.verification_level, 'unverified').replaceAll('_', ' ');
-    var isVerified = ['professional', 'partner', 'organization'].indexOf(verification) > -1;
+    var isVerified = ['featured', 'professional', 'partner', 'organization'].indexOf(verification) > -1;
     card.dataset.name = displayName.toLowerCase();
     card.dataset.tags = categories.join(' ').toLowerCase() + ' ' + text(row.location).toLowerCase();
     card.dataset.creatorSlug = text(row.slug).toLowerCase();
@@ -104,7 +116,7 @@
     followers.className = 'creator-follow-count';
     followers.textContent = followerLabel(row.follower_count);
     followers.setAttribute('aria-label', displayName + ' ' + followers.textContent);
-    link.href = safeUrl(row.profile_url, 'creators.html');
+    link.href = safeUrl(row.profile_url, profilePages[row.slug] || 'creators.html');
     link.textContent = 'Enter creator world →';
     if (isVerified) {
       card.classList.add('is-verified');
@@ -116,6 +128,88 @@
     return card;
   }
 
+  function creationMedia(row, url) {
+    var frame = document.createElement('div');
+    var media;
+    frame.className = 'discovery-creation-media';
+    if (row.media_type === 'image') {
+      media = document.createElement('img');
+      media.src = url;
+      media.alt = row.title;
+      media.loading = 'lazy';
+      media.decoding = 'async';
+    } else if (row.media_type === 'video') {
+      media = document.createElement('video');
+      media.src = url;
+      media.controls = true;
+      media.preload = 'metadata';
+      media.playsInline = true;
+      media.setAttribute('aria-label', row.title);
+    } else if (row.media_type === 'audio') {
+      media = document.createElement('audio');
+      media.src = url;
+      media.controls = true;
+      media.preload = 'metadata';
+      media.setAttribute('aria-label', row.title);
+    } else {
+      media = document.createElement('a');
+      media.href = url;
+      media.target = '_blank';
+      media.rel = 'noopener';
+      media.textContent = 'OPEN CREATION ↗';
+    }
+    frame.appendChild(media);
+    return frame;
+  }
+
+  function creationCard(client, row, creator) {
+    var publicData = client.storage.from('creator-world-public').getPublicUrl(row.public_path);
+    var url = publicData && publicData.data && publicData.data.publicUrl;
+    if (!url) return null;
+    var card = document.createElement('article');
+    var copy = document.createElement('div');
+    var kind = document.createElement('small');
+    var title = document.createElement('h3');
+    var byline = document.createElement('p');
+    var link = document.createElement('a');
+    var displayName = creator ? text(creator.display_name, 'Creator') : text(row.creator_slug, 'Creator').replaceAll('-', ' ');
+    var profileUrl = creator ? safeUrl(creator.profile_url, profilePages[row.creator_slug] || 'creators.html') : (profilePages[row.creator_slug] || 'creators.html');
+    card.className = 'discovery-creation-card';
+    card.dataset.creationKind = row.creation_kind || row.media_type || 'world';
+    card.appendChild(creationMedia(row, url));
+    copy.className = 'discovery-creation-copy';
+    kind.textContent = String(row.creation_kind || row.media_type || 'world').replaceAll('_', ' ').toUpperCase() + ' • LIVE';
+    title.textContent = row.title;
+    byline.textContent = 'Created by ' + displayName;
+    link.href = profileUrl + '#world-releases';
+    link.textContent = 'Enter their World →';
+    copy.append(kind, title, byline, link);
+    card.appendChild(copy);
+    return card;
+  }
+
+  async function loadPublicCreations(client, creators) {
+    if (!creationGrid || !creationResults) return;
+    var creatorMap = {};
+    (creators || []).forEach(function (row) { creatorMap[row.slug] = row; });
+    var response = await client.from('creator_world_publications')
+      .select('id,creator_slug,title,creation_kind,media_type,mime_type,public_path,published_at')
+      .order('published_at', { ascending: false })
+      .limit(12);
+    if (response.error) throw response.error;
+    var rows = response.data || [];
+    creationGrid.replaceChildren();
+    rows.forEach(function (row) {
+      var card = creationCard(client, row, creatorMap[row.creator_slug]);
+      if (card) creationGrid.appendChild(card);
+    });
+    var count = creationGrid.children.length;
+    creationResults.textContent = count
+      ? count + (count === 1 ? ' public creation' : ' public creations') + ' • Owner approved'
+      : 'THE NEXT CREATIONS ARE BEING BUILT • CHECK BACK SOON';
+    creationGrid.hidden = count === 0;
+  }
+
   async function loadDirectory() {
     try {
       if (!window.HWAuth) return;
@@ -124,9 +218,18 @@
       var response = await client.from('creators')
         .select('creator_number,slug,display_name,headline,location,categories,image_url,profile_url,verification_level,follower_count')
         .eq('status', 'published').order('display_name');
-      if (response.error || !response.data || !response.data.length) return;
-      grid.replaceChildren(...response.data.map(creatorCard));
-      renderFilter();
+      if (response.error) throw response.error;
+      var creators = response.data || [];
+      if (creators.length) {
+        grid.replaceChildren(...creators.map(creatorCard));
+        renderFilter();
+      }
+      try {
+        await loadPublicCreations(client, creators);
+      } catch (creationError) {
+        creationResults.textContent = 'CREATIONS ARE TEMPORARILY UNAVAILABLE';
+        creationGrid.hidden = true;
+      }
     } catch (error) {
       console.warn('Using static creator directory fallback.');
     }

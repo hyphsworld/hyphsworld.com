@@ -37,11 +37,13 @@
       media.controls = true;
       media.preload = 'metadata';
       media.playsInline = true;
+      media.setAttribute('aria-label', row.title);
     } else if (row.media_type === 'audio') {
       media = node('audio');
       media.src = url;
       media.controls = true;
       media.preload = 'metadata';
+      media.setAttribute('aria-label', row.title);
     } else {
       media = node('a', 'world-publication-document', 'OPEN CREATION ↗');
       media.href = url;
@@ -52,17 +54,41 @@
     return frame;
   }
 
+  function insertSection(section) {
+    var main = document.querySelector('main');
+    var switcher = main && main.querySelector('.creator-switcher');
+    if (!main) return;
+    if (switcher) main.insertBefore(section, switcher);
+    else main.appendChild(section);
+  }
+
   function render(client, rows) {
-    if (!rows.length) return;
+    var oldSection = document.getElementById('world-releases');
+    if (oldSection) oldSection.remove();
+
     var section = node('section', 'world-section world-publications');
     section.id = 'world-releases';
+    section.setAttribute('aria-labelledby', 'world-releases-title');
+
     var heading = node('div', 'section-heading');
     var titleBox = node('div');
-    titleBox.append(node('p', '', 'LIVE FROM THIS WORLD'), node('h2', '', 'Fresh creations.'));
+    titleBox.append(node('p', '', 'CREATED IN THIS WORLD'), node('h2', '', 'CREATIONS'));
+    titleBox.querySelector('h2').id = 'world-releases-title';
     heading.appendChild(titleBox);
-    var live = node('span', 'world-live-label', 'OWNER APPROVED • LIVE');
-    heading.appendChild(live);
+    heading.appendChild(node('span', 'world-live-label', rows.length ? rows.length + (rows.length === 1 ? ' CREATION LIVE' : ' CREATIONS LIVE') : 'PUBLIC SHOWCASE'));
     section.appendChild(heading);
+
+    if (!rows.length) {
+      var empty = node('article', 'world-publication-empty');
+      empty.append(
+        node('small', '', 'THE NEXT DROP STARTS WITH CREATE'),
+        node('h3', '', 'Nothing live yet.'),
+        node('p', '', 'New work will appear here after HYPHSWORLD owner approval.')
+      );
+      section.appendChild(empty);
+      insertSection(section);
+      return;
+    }
 
     var grid = node('div', 'world-publication-grid');
     rows.forEach(function (row) {
@@ -70,21 +96,28 @@
       var url = publicData && publicData.data && publicData.data.publicUrl;
       if (!url) return;
       var card = node('article', 'world-publication-card');
+      card.dataset.creationKind = row.creation_kind || row.media_type || 'world';
       card.appendChild(mediaElement(row, url));
       var copy = node('div', 'world-publication-copy');
       var kind = String(row.creation_kind || row.media_type || 'world').replaceAll('_', ' ').toUpperCase();
-      copy.append(node('small', '', kind + ' • PUBLISHED'), node('h3', '', row.title));
-      if (row.published_at) copy.appendChild(node('time', '', new Date(row.published_at).toLocaleDateString()));
+      copy.append(node('small', '', kind + ' • CREATED HERE'), node('h3', '', row.title));
+      if (row.published_at) {
+        var published = node('time', '', new Date(row.published_at).toLocaleDateString());
+        published.dateTime = row.published_at;
+        copy.appendChild(published);
+      }
       card.appendChild(copy);
       grid.appendChild(card);
     });
-    if (!grid.children.length) return;
-    section.appendChild(grid);
 
-    var main = document.querySelector('main');
-    var switcher = main && main.querySelector('.creator-switcher');
-    if (switcher) main.insertBefore(section, switcher);
-    else if (main) main.appendChild(section);
+    if (!grid.children.length) {
+      var unavailable = node('article', 'world-publication-empty');
+      unavailable.append(node('h3', '', 'Creations are being prepared.'), node('p', '', 'Check back for the next release from this World.'));
+      section.appendChild(unavailable);
+    } else {
+      section.appendChild(grid);
+    }
+    insertSection(section);
   }
 
   async function load() {
