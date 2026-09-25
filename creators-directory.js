@@ -7,6 +7,8 @@
   var empty = document.getElementById('emptyState');
   var creationGrid = document.getElementById('publicCreationGrid');
   var creationResults = document.getElementById('publicCreationResults');
+  var worldTabs = Array.from(document.querySelectorAll('[data-world-tab]'));
+  var worldPanels = Array.from(document.querySelectorAll('[data-world-panel]'));
   var filter = 'all';
   var profilePages = {
     'hyph-life': 'creators-world.html',
@@ -30,6 +32,20 @@
       if (parsed.protocol === 'http:' || parsed.protocol === 'https:') return parsed.href;
     } catch (error) {}
     return fallback;
+  }
+
+  function activateWorldTab(name, updateHash) {
+    var requested = ['discover', 'creations', 'verified', 'join'].indexOf(name) > -1 ? name : 'discover';
+    worldPanels.forEach(function (panel) { panel.hidden = panel.dataset.worldPanel !== requested; });
+    worldTabs.forEach(function (button) {
+      var active = button.dataset.worldTab === requested;
+      button.classList.toggle('active', active);
+      button.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
+    if (updateHash && history.replaceState) {
+      var hashes = { discover: 'worlds', creations: 'creations', verified: 'verified', join: 'apply' };
+      history.replaceState(null, '', '#' + hashes[requested]);
+    }
   }
 
   function followerLabel(value) {
@@ -103,9 +119,9 @@
     var displayName = text(row.display_name, 'Creator');
     var categories = Array.isArray(row.categories) ? row.categories : [];
     var verification = text(row.verification_level, 'unverified').replaceAll('_', ' ');
-    var isVerified = ['featured', 'professional', 'partner', 'organization'].indexOf(verification) > -1;
+    var isVerified = ['professional', 'partner', 'organization'].indexOf(verification) > -1;
     card.dataset.name = displayName.toLowerCase();
-    card.dataset.tags = categories.join(' ').toLowerCase() + ' ' + text(row.location).toLowerCase();
+    card.dataset.tags = categories.join(' ').toLowerCase() + ' ' + text(row.location).toLowerCase() + (isVerified ? ' verified' : '');
     card.dataset.creatorSlug = text(row.slug).toLowerCase();
     image.src = safeUrl(row.image_url, 'creator-hyph-life-hero.jpg');
     image.alt = displayName + ' creator profile';
@@ -237,6 +253,24 @@
 
   injectInlineBadgeStyles();
   normalizeStaticBadges();
+  var initialHash = location.hash.replace('#', '');
+  var initialTab = ({ creations: 'creations', verified: 'verified', apply: 'join', worlds: 'discover' })[initialHash] || 'discover';
+  activateWorldTab(initialTab, false);
+  worldTabs.forEach(function (button) {
+    button.addEventListener('click', function () { activateWorldTab(button.dataset.worldTab, true); });
+  });
+  Array.from(document.querySelectorAll('[data-open-world-tab]')).forEach(function (button) {
+    button.addEventListener('click', function () { activateWorldTab(button.dataset.openWorldTab, true); });
+  });
+  Array.from(document.querySelectorAll('[data-open-verified-creators]')).forEach(function (button) {
+    button.addEventListener('click', function () {
+      activateWorldTab('discover', true);
+      filter = 'verified';
+      buttons.forEach(function (item) { item.classList.toggle('active', item.dataset.filter === 'verified'); });
+      renderFilter();
+      document.getElementById('directory').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
   input.addEventListener('input', renderFilter);
   buttons.forEach(function (button) {
     button.addEventListener('click', function () {
