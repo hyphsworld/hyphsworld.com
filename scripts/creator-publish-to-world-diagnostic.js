@@ -7,6 +7,8 @@ const migration = read('supabase/migrations/20260925110000_creator_publish_to_wo
 const admin = read('creator-admin.js');
 const dashboard = read('creator-dashboard.js');
 const publicMedia = read('creator-published-media.js');
+const directory = read('creators-directory.js');
+const directoryPage = read('creators.html');
 const pages = [
   'creators-world.html',
   'creator-rojas.html',
@@ -29,6 +31,8 @@ const checks = [
   ['published deletion blocked', migration.includes("status in ('private', 'ready_for_review', 'changes_requested')")],
   ['owner button', admin.includes('PUBLISH TO WORLD') && admin.includes('publishCreation')],
   ['public render supports media', publicMedia.includes("row.media_type === 'image'") && publicMedia.includes("row.media_type === 'video'") && publicMedia.includes("row.media_type === 'audio'")],
+  ['Creator World always shows Creations section', publicMedia.includes("section.id = 'world-releases'") && publicMedia.includes('Nothing live yet.')],
+  ['directory shows published creations', directoryPage.includes('publicCreationGrid') && directory.includes("from('creator_world_publications')") && directory.includes('Created by ')],
   ['dashboard shows live state', dashboard.includes('LIVE IN WORLD')],
   ['all Creator Worlds connected', pages.every(file => read(file).includes('creator-published-media.js'))],
   ['no legacy social language', !/\bPost\b|\bReel\b|>Upload</.test(publicMedia)]
