@@ -41,7 +41,7 @@
       el('adminPanel').hidden = false;
       status('OWNER VERIFIED • SERVER-AUDITED ACTIONS');
       renderQueue(queue.data || []);
-      await Promise.all([loadApplications(), loadCreators(), loadAudit()]);
+      await Promise.all([loadApplications(), loadCreators(), loadAudit(), loadCreationReviews()]);
     } catch (error) {
       status(friendlyError(error));
       setRetry(!/permission|policy|row-level|42501|403/i.test(String(error && error.message || '')));
@@ -74,6 +74,44 @@
       box.append(card);
     });
     if (!box.children.length) box.append(node('span', 'Application queue clear.'));
+  }
+
+  async function loadCreationReviews() {
+    var box = el('creationReviewQueue');
+    var result = await client.from('creator_media_uploads')
+      .select('id,title,creation_kind,media_type,file_size,storage_path,status,created_at,creators(display_name)')
+      .eq('status', 'ready_for_review').order('created_at');
+    box.replaceChildren();
+    if (result.error) { box.append(node('span', 'Creation review activates after its migration is applied.')); return; }
+    (result.data || []).forEach(function (creation) {
+      var card = node('article', '');
+      var creatorName = creation.creators && creation.creators.display_name || 'Creator';
+      var actions = node('div', ''); actions.className = 'upload-actions';
+      var preview = node('button', 'Preview'); preview.type = 'button'; preview.addEventListener('click', function () { previewCreation(creation.storage_path); });
+      var approve = node('button', 'Approve'); approve.type = 'button'; approve.addEventListener('click', function () { decideCreation(creation.id, 'approved'); });
+      var changes = node('button', 'Request Changes'); changes.type = 'button'; changes.className = 'danger'; changes.addEventListener('click', function () { decideCreation(creation.id, 'changes_requested'); });
+      actions.append(preview, approve, changes);
+      card.append(node('strong', creation.title), node('small', creatorName + ' • ' + String(creation.creation_kind || creation.media_type).replaceAll('_', ' ').toUpperCase() + ' • PRIVATE REVIEW'), actions);
+      box.append(card);
+    });
+    if (!box.children.length) box.append(node('span', 'Creation review queue clear.'));
+  }
+
+  async function previewCreation(path) {
+    var result = await client.storage.from('creator-world-uploads').createSignedUrl(path, 600);
+    if (result.error) { status(friendlyError(result.error)); return; }
+    window.open(result.data.signedUrl, '_blank', 'noopener');
+  }
+
+  async function decideCreation(id, decision) {
+    var promptText = decision === 'approved' ? 'Private owner note (optional):' : 'Tell the creator what should change:';
+    var notes = window.prompt(promptText, '');
+    if (notes === null) return;
+    if (decision === 'changes_requested' && !notes.trim()) { status('A change request needs clear owner instructions.'); return; }
+    var result = await client.rpc('creator_admin_decide_creation', { p_creation_id: id, p_decision: decision, p_notes: notes });
+    if (result.error) { status(friendlyError(result.error)); return; }
+    status(decision === 'approved' ? 'Creation owner-approved and audit logged.' : 'Creator changes requested and audit logged.');
+    await Promise.all([loadCreationReviews(), loadAudit()]);
   }
 
   async function decideApplication(id, decision) {
