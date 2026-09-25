@@ -151,34 +151,128 @@
     return 'world';
   }
   function creationStatusLabel(value) {
-    return ({ private: 'PRIVATE', ready_for_review: 'READY FOR REVIEW', approved: 'OWNER APPROVED', changes_requested: 'CHANGES NEEDED', published: 'LIVE' })[value] || 'PRIVATE';
+    return ({ private: 'Private', ready_for_review: 'In review', approved: 'Approved', changes_requested: 'Changes needed', published: 'Live' })[value] || 'Private';
+  }
+  function formatFileSize(bytes) {
+    var size = Math.max(0, Number(bytes) || 0);
+    if (size < 1024) return Math.max(1, Math.round(size)) + ' B';
+    if (size < 1024 * 1024) return Math.max(1, Math.round(size / 1024)) + ' KB';
+    return (size / (1024 * 1024)).toFixed(size >= 10 * 1024 * 1024 ? 0 : 1) + ' MB';
+  }
+  function formatCreationDate(value) {
+    if (!value) return 'Recently added';
+    var date = new Date(value);
+    if (Number.isNaN(date.getTime())) return 'Recently added';
+    return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+  function creationIcon(kind, mediaType) {
+    if (mediaType === 'audio' || kind === 'music') return '♫';
+    if (mediaType === 'video' || kind === 'video') return '▶';
+    if (mediaType === 'image' || kind === 'artwork') return '◫';
+    if (kind === 'merch') return '✦';
+    return 'HW';
   }
   function renderCreationStats() {
-    var ready = creations.filter(function (row) { return row.status === 'ready_for_review'; }).length;
-    var approved = creations.filter(function (row) { return row.status === 'approved'; }).length;
-    var live = creations.filter(function (row) { return row.status === 'published'; }).length;
-    el('creationStats').textContent = creations.length + (creations.length === 1 ? ' creation' : ' creations') + ' • ' + ready + ' ready • ' + approved + ' approved • ' + live + ' live';
+    var stats = [
+      { label: 'Creations', value: creations.length },
+      { label: 'In review', value: creations.filter(function (row) { return row.status === 'ready_for_review'; }).length },
+      { label: 'Approved', value: creations.filter(function (row) { return row.status === 'approved'; }).length },
+      { label: 'Live', value: creations.filter(function (row) { return row.status === 'published'; }).length }
+    ];
+    var target = el('creationStats');
+    target.replaceChildren();
+    stats.forEach(function (stat) {
+      var item = document.createElement('span'), value = document.createElement('strong'), label = document.createElement('small');
+      item.className = 'library-stat'; value.textContent = String(stat.value); label.textContent = stat.label;
+      item.append(value, label); target.appendChild(item);
+    });
+    target.setAttribute('aria-label', stats.map(function (stat) { return stat.value + ' ' + stat.label; }).join(', '));
+  }
+  function renderCreationPreview(row, target) {
+    var kind = creationKindFor(row), mediaType = String(row.media_type || ''), url = row.preview_url || '';
+    target.dataset.mediaType = mediaType || kind;
+    target.setAttribute('aria-label', 'Preview ' + row.title);
+    if (mediaType === 'image' && url) {
+      var image = document.createElement('img');
+      image.src = url; image.alt = ''; image.loading = 'lazy';
+      image.addEventListener('error', function () { target.classList.add('preview-unavailable'); });
+      target.appendChild(image);
+    } else if (mediaType === 'video' && url) {
+      var video = document.createElement('video');
+      video.src = url + '#t=0.1'; video.muted = true; video.playsInline = true; video.preload = 'metadata'; video.tabIndex = -1;
+      video.setAttribute('aria-hidden', 'true');
+      video.addEventListener('error', function () { target.classList.add('preview-unavailable'); });
+      target.appendChild(video);
+    } else if (mediaType === 'audio' || kind === 'music') {
+      var audioVisual = document.createElement('span'), wave = document.createElement('span'), icon = document.createElement('b');
+      audioVisual.className = 'audio-visual'; wave.className = 'audio-wave'; icon.textContent = '♫';
+      for (var barIndex = 0; barIndex < 22; barIndex += 1) {
+        var bar = document.createElement('i');
+        bar.style.height = (24 + ((barIndex * 37) % 68)) + '%';
+        bar.style.animationDelay = '-' + ((barIndex % 8) * 0.09) + 's';
+        wave.appendChild(bar);
+      }
+      audioVisual.append(icon, wave); target.appendChild(audioVisual);
+    } else {
+      var fallback = document.createElement('span');
+      fallback.className = 'preview-fallback'; fallback.textContent = creationIcon(kind, mediaType);
+      target.appendChild(fallback);
+    }
+    var kindBadge = document.createElement('span'), statusBadge = document.createElement('span');
+    kindBadge.className = 'creation-kind-badge'; kindBadge.textContent = createKinds[kind].label;
+    statusBadge.className = 'creation-status-badge status-' + String(row.status || 'private').replace(/[^a-z_]/g, '');
+    statusBadge.textContent = creationStatusLabel(row.status || 'private');
+    target.append(kindBadge, statusBadge);
+  }
+  async function loadCreationPreviewUrls(rows) {
+    var paths = rows.map(function (row) { return row.storage_path; }).filter(Boolean);
+    var urls = {};
+    if (!paths.length) return urls;
+    try {
+      var bucket = client.storage.from(uploadBucket);
+      if (typeof bucket.createSignedUrls === 'function') {
+        var batch = await bucket.createSignedUrls(paths, 3600);
+        if (batch.error) throw batch.error;
+        (batch.data || []).forEach(function (item) { if (item && item.path && item.signedUrl) urls[item.path] = item.signedUrl; });
+      } else {
+        await Promise.all(paths.map(async function (path) {
+          var single = await bucket.createSignedUrl(path, 3600);
+          if (!single.error && single.data && single.data.signedUrl) urls[path] = single.data.signedUrl;
+        }));
+      }
+    } catch (error) {
+      console.warn('Creation previews will use safe fallbacks.', error);
+    }
+    return urls;
   }
   function uploadCards(rows) {
     var target = el('uploadList'), filter = el('creationFilter').value;
     target.replaceChildren();
     var visible = rows.filter(function (row) { return filter === 'all' || creationKindFor(row) === filter; });
     renderCreationStats();
-    if (!visible.length) { var empty = document.createElement('span'); empty.textContent = filter === 'all' ? 'No creations here yet.' : 'No ' + createKinds[filter].label.toLowerCase() + ' creations yet.'; target.appendChild(empty); return; }
+    if (!visible.length) {
+      var empty = document.createElement('span');
+      empty.className = 'creation-empty';
+      empty.textContent = filter === 'all' ? 'No creations here yet.' : 'No ' + createKinds[filter].label.toLowerCase() + ' creations yet.';
+      target.appendChild(empty); return;
+    }
     visible.forEach(function (row) {
-      var card = document.createElement('article'), title = document.createElement('strong'), meta = document.createElement('small'), actions = document.createElement('div'), preview = document.createElement('button'), rename = document.createElement('button'), review = document.createElement('button'), remove = document.createElement('button'), kind = creationKindFor(row), rowStatus = row.status || 'private';
-      card.className = 'creation-card'; card.dataset.status = rowStatus; title.textContent = row.title;
-      meta.className = 'creation-meta'; meta.textContent = createKinds[kind].label.toUpperCase() + ' • ' + row.media_type.toUpperCase() + ' • ' + Math.max(1, Math.round(row.file_size / 1024)) + ' KB • ' + creationStatusLabel(rowStatus);
+      var card = document.createElement('article'), previewShell = document.createElement('button'), body = document.createElement('div'), title = document.createElement('h4'), meta = document.createElement('p'), actions = document.createElement('div'), preview = document.createElement('button'), rename = document.createElement('button'), review = document.createElement('button'), kind = creationKindFor(row), rowStatus = row.status || 'private';
+      card.className = 'creation-card'; card.dataset.status = rowStatus;
+      previewShell.className = 'creation-preview'; previewShell.type = 'button';
+      previewShell.addEventListener('click', function () { previewUpload(row.storage_path, row.preview_url); });
+      renderCreationPreview(row, previewShell);
+      body.className = 'creation-card-body'; title.textContent = row.title;
+      meta.className = 'creation-meta'; meta.textContent = String(row.media_type || createKinds[kind].label) + ' · ' + formatFileSize(row.file_size) + ' · ' + formatCreationDate(row.created_at);
       actions.className = 'upload-actions';
-      preview.type = 'button'; preview.textContent = 'Preview'; preview.addEventListener('click', function () { previewUpload(row.storage_path); }); actions.appendChild(preview);
+      preview.type = 'button'; preview.className = 'preview-action'; preview.textContent = 'Open Preview'; preview.addEventListener('click', function () { previewUpload(row.storage_path, row.preview_url); }); actions.appendChild(preview);
       if (rowStatus !== 'approved' && rowStatus !== 'published') {
         rename.type = 'button'; rename.className = 'secondary'; rename.textContent = 'Rename'; rename.addEventListener('click', function () { renameCreation(row); }); actions.appendChild(rename);
-        review.type = 'button'; review.className = 'review'; review.textContent = rowStatus === 'ready_for_review' ? 'Return to Private' : 'Ready for Owner'; review.addEventListener('click', function () { setCreationReviewState(row, rowStatus === 'ready_for_review' ? 'private' : 'ready_for_review'); }); actions.appendChild(review);
-        remove.type = 'button'; remove.className = 'danger'; remove.textContent = 'Delete Creation'; remove.setAttribute('aria-label', 'Delete creation ' + row.title); remove.addEventListener('click', function () { deleteCreation(row, remove, card); }); actions.appendChild(remove);
+        review.type = 'button'; review.className = 'review'; review.textContent = rowStatus === 'ready_for_review' ? 'Make Private' : 'Send for Review'; review.addEventListener('click', function () { setCreationReviewState(row, rowStatus === 'ready_for_review' ? 'private' : 'ready_for_review'); }); actions.appendChild(review);
       }
-      card.append(title, meta);
-      if (row.review_note) { var note = document.createElement('p'); note.className = 'creation-note'; note.textContent = 'Owner note: ' + row.review_note; card.appendChild(note); }
-      card.appendChild(actions); target.appendChild(card);
+      body.append(title, meta);
+      if (row.review_note) { var note = document.createElement('p'); note.className = 'creation-note'; note.textContent = 'Owner note: ' + row.review_note; body.appendChild(note); }
+      body.appendChild(actions); card.append(previewShell, body); target.appendChild(card);
     });
   }
   async function loadUploads() {
@@ -189,6 +283,8 @@
     }
     if (result.error) throw result.error;
     creations = (result.data || []).map(function (row) { row.creation_kind = creationKindFor(row); row.status = row.status || 'private'; return row; });
+    var previewUrls = await loadCreationPreviewUrls(creations);
+    creations.forEach(function (row) { row.preview_url = previewUrls[row.storage_path] || ''; });
     uploadCards(creations);
   }
   async function renameCreation(row) {
@@ -207,54 +303,7 @@
     status(nextStatus === 'ready_for_review' ? 'Creation sent for review.' : 'Creation moved back to private.');
     await loadUploads();
   }
-  async function previewUpload(path) { var result = await client.storage.from(uploadBucket).createSignedUrl(path, 600); if (result.error) return status('Private preview unavailable: ' + result.error.message); window.open(result.data.signedUrl, '_blank', 'noopener'); }
-  async function deleteCreation(row, button, card) {
-    if (!button.dataset.confirmDelete) {
-      button.dataset.confirmDelete = 'true';
-      button.textContent = 'Tap Again to Delete';
-      button.classList.add('confirm-delete');
-      status('Tap “Tap Again to Delete” to permanently delete “' + row.title + '”.');
-      window.setTimeout(function () {
-        if (!button.isConnected || button.disabled) return;
-        delete button.dataset.confirmDelete;
-        button.textContent = 'Delete Creation';
-        button.classList.remove('confirm-delete');
-      }, 5000);
-      return;
-    }
-
-    delete button.dataset.confirmDelete;
-    button.disabled = true;
-    button.textContent = 'Deleting Creation…';
-    card.classList.add('is-deleting');
-    Array.from(card.querySelectorAll('button')).forEach(function (action) { action.disabled = true; });
-    status('Deleting creation securely…');
-
-    var removed = await client.storage.from(uploadBucket).remove([row.storage_path]);
-    if (removed.error) {
-      card.classList.remove('is-deleting');
-      Array.from(card.querySelectorAll('button')).forEach(function (action) { action.disabled = false; });
-      button.textContent = 'Delete Creation';
-      button.classList.remove('confirm-delete');
-      return status('Creation could not be deleted: ' + removed.error.message);
-    }
-
-    var metadata = await client.from('creator_media_uploads')
-      .delete()
-      .eq('id', row.id)
-      .eq('creator_id', creator.id)
-      .select('id')
-      .maybeSingle();
-    if (metadata.error || !metadata.data) {
-      card.classList.remove('is-deleting');
-      button.textContent = 'Finish Deleting';
-      button.disabled = false;
-      return status('Creation file was removed, but record cleanup needs another try: ' + ((metadata.error && metadata.error.message) || 'creation record remained'));
-    }
-
-    status('CREATION DELETED • “' + row.title + '” was removed from MY CREATIONS.');
-    await loadUploads();
-  }
+  async function previewUpload(path, cachedUrl) { if (cachedUrl) { window.open(cachedUrl, '_blank', 'noopener'); return; } var result = await client.storage.from(uploadBucket).createSignedUrl(path, 600); if (result.error) return status('Private preview unavailable: ' + result.error.message); window.open(result.data.signedUrl, '_blank', 'noopener'); }
   function validCreationFile(file, kind) {
     var allowed = createKinds[kind] || createKinds.world;
     if (file.type && allowed.accept.split(',').includes(file.type)) return true;
