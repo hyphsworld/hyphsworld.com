@@ -9,7 +9,7 @@
       content="Run your HYPHSWORLD Creator World, creations, profile, and opportunities."
     />
     <title>Creator Dashboard | HYPHSWORLD</title>
-    <link rel="stylesheet" href="creator-dashboard.css?v=creator-command-tabs-1" />
+    <link rel="stylesheet" href="creator-dashboard.css?v=creator-media-library-2" />
   </head>
   <body data-hide-global-points-hud>
     <header>
@@ -135,8 +135,9 @@
               </div>
               <label>Show<select id="creationFilter"><option value="all">All</option><option value="music">Music</option><option value="video">Video</option><option value="artwork">Artwork</option><option value="merch">Merch</option><option value="world">World</option></select></label>
             </div>
+            <p class="library-subcopy">Your private media library. Preview your work, update details, and send finished creations for review.</p>
             <div class="library-stats" id="creationStats" aria-live="polite">0 creations</div>
-            <div id="uploadList" class="stack"><span>Nothing created here yet.</span></div>
+            <div id="uploadList" class="creation-grid"><span>Nothing created here yet.</span></div>
           </section>
         </article>
         <article class="panel inbox-panel" data-dashboard-view="inbox" hidden>
@@ -157,7 +158,7 @@
     <script src="supabase-config.js"></script>
     <script src="auth-client.js?v=creator-phase-2"></script>
     <script src="global-points-engine.js?v=creator-phase-2"></script>
-    <script src="creator-dashboard.js?v=creator-command-tabs-1"></script>
+    <script src="creator-dashboard.js?v=creator-media-library-2"></script>
   <script src="global-my-id.js?v=create-menu-1" defer></script>
 </body>
 </html>
