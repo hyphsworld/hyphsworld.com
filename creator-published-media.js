@@ -22,6 +22,10 @@
     return item;
   }
 
+  function worldDropUrl(id) {
+    return 'creator-drop.html?id=' + encodeURIComponent(id);
+  }
+
   function mediaElement(row, url) {
     var frame = node('div', 'world-publication-media');
     var media;
@@ -45,10 +49,8 @@
       media.preload = 'metadata';
       media.setAttribute('aria-label', row.title);
     } else {
-      media = node('a', 'world-publication-document', 'OPEN CREATION ↗');
-      media.href = url;
-      media.target = '_blank';
-      media.rel = 'noopener';
+      media = node('a', 'world-publication-document', 'OPEN WORLD DROP ↗');
+      media.href = worldDropUrl(row.id);
     }
     frame.appendChild(media);
     return frame;
@@ -100,12 +102,19 @@
       card.appendChild(mediaElement(row, url));
       var copy = node('div', 'world-publication-copy');
       var kind = String(row.creation_kind || row.media_type || 'world').replaceAll('_', ' ').toUpperCase();
-      copy.append(node('small', '', kind + ' • CREATED HERE'), node('h3', '', row.title));
+      var titleLink = node('a', 'world-publication-title', row.title);
+      titleLink.href = worldDropUrl(row.id);
+      var title = node('h3');
+      title.appendChild(titleLink);
+      var open = node('a', 'world-publication-open', 'OPEN WORLD DROP →');
+      open.href = worldDropUrl(row.id);
+      copy.append(node('small', '', kind + ' • CREATED HERE'), title);
       if (row.published_at) {
         var published = node('time', '', new Date(row.published_at).toLocaleDateString());
         published.dateTime = row.published_at;
         copy.appendChild(published);
       }
+      copy.appendChild(open);
       card.appendChild(copy);
       grid.appendChild(card);
     });

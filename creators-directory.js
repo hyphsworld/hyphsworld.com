@@ -53,6 +53,10 @@
     return count.toLocaleString() + ' follower' + (count === 1 ? '' : 's');
   }
 
+  function worldDropUrl(id) {
+    return 'creator-drop.html?id=' + encodeURIComponent(id);
+  }
+
   function injectInlineBadgeStyles() {
     if (document.getElementById('creator-inline-badge-style')) return;
     var style = document.createElement('style');
@@ -169,10 +173,8 @@
       media.setAttribute('aria-label', row.title);
     } else {
       media = document.createElement('a');
-      media.href = url;
-      media.target = '_blank';
-      media.rel = 'noopener';
-      media.textContent = 'OPEN CREATION ↗';
+      media.href = worldDropUrl(row.id);
+      media.textContent = 'OPEN WORLD DROP ↗';
     }
     frame.appendChild(media);
     return frame;
@@ -186,19 +188,21 @@
     var copy = document.createElement('div');
     var kind = document.createElement('small');
     var title = document.createElement('h3');
+    var titleLink = document.createElement('a');
     var byline = document.createElement('p');
     var link = document.createElement('a');
     var displayName = creator ? text(creator.display_name, 'Creator') : text(row.creator_slug, 'Creator').replaceAll('-', ' ');
-    var profileUrl = creator ? safeUrl(creator.profile_url, profilePages[row.creator_slug] || 'creators.html') : (profilePages[row.creator_slug] || 'creators.html');
     card.className = 'discovery-creation-card';
     card.dataset.creationKind = row.creation_kind || row.media_type || 'world';
     card.appendChild(creationMedia(row, url));
     copy.className = 'discovery-creation-copy';
     kind.textContent = String(row.creation_kind || row.media_type || 'world').replaceAll('_', ' ').toUpperCase() + ' • LIVE';
-    title.textContent = row.title;
+    titleLink.href = worldDropUrl(row.id);
+    titleLink.textContent = row.title;
+    title.appendChild(titleLink);
     byline.textContent = 'Created by ' + displayName;
-    link.href = profileUrl + '#world-releases';
-    link.textContent = 'Enter their World →';
+    link.href = worldDropUrl(row.id);
+    link.textContent = 'Open World Drop →';
     copy.append(kind, title, byline, link);
     card.appendChild(copy);
     return card;
