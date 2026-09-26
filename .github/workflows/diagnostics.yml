@@ -21,8 +21,17 @@ jobs:
         with:
           node-version: 22
 
-      - name: Install dependencies
-        run: npm install
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Run Jest tests
+        run: npm test -- --runInBand
 
       - name: Run diagnostics
         run: npm run diagnostics
+
+      - name: Run launch-critical diagnostics
+        run: |
+          npm run diagnostics:creator-application-gate
+          npm run diagnostics:command-center
+          npm run diagnostics:reward-supply

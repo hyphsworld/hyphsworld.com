@@ -21,7 +21,7 @@ const checks = [
   ['dashboard checks application before draft', dashboard.includes('latestApplication') && dashboard.includes("application.status !== 'approved'")],
   ['unapproved users are routed to apply', dashboardHtml.includes('href="creator-apply.html"') && dashboard.includes('CREATOR APPLICATION REQUIRED')],
   ['approved applicants receive build CTA', dashboard.includes('CREATOR WORLD UNLOCKED') && dashboardHtml.includes('Build My Creator World')],
-  ['creation save location is clear', dashboardHtml.includes('MY CREATIONS') && dashboard.includes("Saved to MY CREATIONS") && dashboard.includes('creator_media_uploads')],
+  ['creation save location is clear', dashboardHtml.includes('MY CREATIONS') && dashboard.includes('Saved privately inside your World') && dashboard.includes('creator_media_uploads')],
   ['creation media matches selected lane', dashboard.includes('validCreationFile')],
   ['needs-info application can update', apply.includes("existingApplication.status === 'needs_info'") && apply.includes('.update(fields)')],
   ['rejected applicant can apply again', apply.includes("state === 'rejected'") && apply.includes('Submit New Application')],
