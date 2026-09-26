@@ -103,8 +103,8 @@
         if (publishReady) publish.addEventListener('click', function () { publishCreation(creation); });
         actions.appendChild(publish);
       } else if (creation.status === 'published' && creation.public_path) {
-        var publicData = client.storage.from('creator-world-public').getPublicUrl(creation.public_path);
-        var live = node('a', 'VIEW LIVE ↗'); live.href = publicData.data.publicUrl; live.target = '_blank'; live.rel = 'noopener'; live.className = 'panel-link'; actions.appendChild(live);
+        var live = node('a', 'VIEW WORLD DROP ↗'); live.href = worldDropUrl(creation.id); live.target = '_blank'; live.rel = 'noopener'; live.className = 'panel-link'; actions.appendChild(live);
+        checkPublishedFile(creation, actions);
       }
       var stateLabel = creation.status === 'published' ? 'LIVE IN WORLD' : creation.status === 'approved' ? 'OWNER APPROVED' : 'PRIVATE REVIEW';
       card.append(node('strong', creation.title), node('small', creatorName + ' • ' + String(creation.creation_kind || creation.media_type).replaceAll('_', ' ').toUpperCase() + ' • ' + stateLabel), actions);
@@ -124,22 +124,70 @@
     return source.replace(/[^a-zA-Z0-9._-]+/g, '-').slice(-140);
   }
 
+  function worldDropUrl(id) {
+    return 'creator-drop.html?id=' + encodeURIComponent(id);
+  }
+
+  function publicFileUrl(path) {
+    var result = client.storage.from('creator-world-public').getPublicUrl(path);
+    return result && result.data && result.data.publicUrl;
+  }
+
+  async function publicFileExists(path) {
+    var url = publicFileUrl(path);
+    if (!url) return false;
+    try {
+      var response = await fetch(url, { method: 'HEAD', cache: 'no-store' });
+      return response.ok;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  async function copyPrivateSourceToPublic(creation, publicPath) {
+    var signed = await client.storage.from('creator-world-uploads').createSignedUrl(creation.storage_path, 300);
+    if (signed.error) throw new Error('Private source unavailable: ' + signed.error.message);
+    var response = await fetch(signed.data.signedUrl, { cache: 'no-store' });
+    if (!response.ok) throw new Error('Could not prepare the approved creation.');
+    var blob = await response.blob();
+    var published = await client.storage.from('creator-world-public').upload(publicPath, blob, {
+      cacheControl: '3600',
+      upsert: true,
+      contentType: creation.mime_type || blob.type
+    });
+    if (published.error) throw published.error;
+    if (!(await publicFileExists(publicPath))) throw new Error('The live file could not be verified after upload.');
+  }
+
+  async function restorePublishedCreation(creation, button) {
+    if (!window.confirm('Restore the public file for “' + creation.title + '” from its protected original?')) return;
+    button.disabled = true;
+    status('Restoring live World Drop…');
+    try {
+      await copyPrivateSourceToPublic(creation, creation.public_path);
+      button.remove();
+      status('RESTORED • “' + creation.title + '” is live inside HYPHSWORLD.');
+    } catch (error) {
+      button.disabled = false;
+      status('Restore failed safely: ' + (error.message || error));
+    }
+  }
+
+  async function checkPublishedFile(creation, actions) {
+    if (await publicFileExists(creation.public_path)) return;
+    var restore = node('button', 'RESTORE LIVE FILE');
+    restore.type = 'button';
+    restore.className = 'publish-world';
+    restore.addEventListener('click', function () { restorePublishedCreation(creation, restore); });
+    actions.appendChild(restore);
+  }
+
   async function publishCreation(creation) {
     if (!window.confirm('Publish “' + creation.title + '” live inside this Creator World?')) return;
     status('Publishing to Creator World…');
-    var signed = await client.storage.from('creator-world-uploads').createSignedUrl(creation.storage_path, 300);
-    if (signed.error) { status('Private source unavailable: ' + signed.error.message); return; }
     try {
-      var response = await fetch(signed.data.signedUrl);
-      if (!response.ok) throw new Error('Could not prepare the approved creation.');
-      var blob = await response.blob();
       var publicPath = creation.creator_id + '/' + creation.id + '/' + publicFileName(creation);
-      var published = await client.storage.from('creator-world-public').upload(publicPath, blob, { cacheControl: '3600', upsert: false, contentType: creation.mime_type || blob.type });
-      if (published.error && /already exists|duplicate/i.test(published.error.message || '')) {
-        await client.storage.from('creator-world-public').remove([publicPath]);
-        published = await client.storage.from('creator-world-public').upload(publicPath, blob, { cacheControl: '3600', upsert: false, contentType: creation.mime_type || blob.type });
-      }
-      if (published.error) throw published.error;
+      await copyPrivateSourceToPublic(creation, publicPath);
       var finalized = await client.rpc('creator_admin_publish_creation', { p_creation_id: creation.id, p_public_path: publicPath });
       if (finalized.error) {
         await client.storage.from('creator-world-public').remove([publicPath]);
