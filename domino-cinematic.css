@@ -344,12 +344,17 @@
   .domino-cinema-intro strong{font-size:clamp(2.2rem,13vw,3.5rem)}
   .domino-pov-room .pov-board{border-radius:18px!important}
   .domino-pov-room>.pov-action-dock{border-radius:18px!important}
-}
-@media(prefers-reduced-motion:reduce){
-  .domino-cinema-intro{display:none}
-  .domino-atmosphere,
-  .dominos-page .score-card::after,
-  .domino-pov-room .pov-turn-banner::after{display:none}
-  .domino-pov-room.is-my-turn .pov-player-hand .domino-tile.is-playable,
-  .domino-pov-room>.pov-action-dock .primary{animation:none!important}
-}
+
+  /* Keep global navigation helpers off the live hand, win message, and
+     Submit Win controls. The ID remains reachable at the top; CREATE waits
+     until the player leaves the active table. */
+  body.domino-game-active #hw-global-create{display:none!important}
+  body.domino-game-active #hw-global-my-id{
+    top:max(8px,env(safe-area-inset-top))!important;
+    right:max(8px,env(safe-area-inset-right))!important;
+    bottom:auto!important;
+    transform:scale(.82)!important;
+    transform-origin:top right!important;
+  }
+  body.domino-game-active .hw-drag-duck{
+    top:max(72px,calc(env(safe-area-inset-top) + 58px))!important;
