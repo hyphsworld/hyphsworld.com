@@ -68,7 +68,8 @@
         throw new Error('Secure account client unavailable');
       }
 
-      var client = window.HWAuth.getClient();
+      var client = await window.HWAuth.getClient();
+      if (!client) throw new Error('Secure account client unavailable');
       var authResult = await client.auth.getUser();
       var user = authResult && authResult.data ? authResult.data.user : null;
       signedIn = Boolean(user);
