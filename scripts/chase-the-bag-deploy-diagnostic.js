@@ -32,7 +32,14 @@ assert(audioBridge.includes('data-testid="menu-test-sound-btn"'), 'Audio bridge 
 assert(audioBridge.includes('data-testid="menu-play-btn"'), 'Audio bridge must prime from the Play gesture');
 assert(audioBridge.includes("new CustomEvent('hw:cashrun:audio-session'"), 'Audio bridge must publish its runtime state');
 assert(js.includes('TONIO') && js.includes('NIKKI'), 'New build must include both current characters');
-assert(js.includes('hw:cashrun:gameover'), 'Completed runs must emit the trusted Cool Points event');
+const hasTrustedGameOverEvent =
+  js.includes('hw:cashrun:gameover') ||
+  (
+    js.includes('hw:cashrun:${e}') &&
+    /(?:rl|emitCashRunEvent)\(["']gameover["']/.test(js) &&
+    js.includes('source:"native_game_over"')
+  );
+assert(hasTrustedGameOverEvent, 'Completed runs must emit the trusted Cool Points event');
 assert(
   js.includes('location.hash.substring(1)') && js.includes('relative pathnames are not supported in hash history.push'),
   'Game must use hash-history routing so GitHub Pages subdirectory navigation survives reloads'
