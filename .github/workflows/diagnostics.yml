@@ -32,6 +32,7 @@ jobs:
 
       - name: Run launch-critical diagnostics
         run: |
+          npm run diagnostics:chase-the-bag-deploy
           npm run diagnostics:creator-application-gate
           npm run diagnostics:command-center
           npm run diagnostics:reward-supply
