@@ -1,6 +1,10 @@
 (function () {
   'use strict';
 
+  // Super Strike owns the complete lower HUD during a live game. Global
+  // shortcuts return when the player exits to a menu.
+  if (/\/games\/ss-bowling\/game(?:\.html)?\/?$/i.test(window.location.pathname)) return;
+
   if (document.getElementById('hw-global-my-id')) return;
 
   var script = document.currentScript;
