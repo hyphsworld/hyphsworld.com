@@ -305,6 +305,11 @@
 .domino-placement-picker button{min-height:54px;border:1px solid rgba(246,201,85,.72);border-radius:15px;color:#fff;background:linear-gradient(180deg,#14251e,#050806);font:1000 .9rem/1 Arial,sans-serif;letter-spacing:.08em}
 .domino-placement-picker [data-play-side]{box-shadow:inset 0 0 18px rgba(114,255,210,.08)}
 .domino-placement-picker .placement-cancel{min-height:44px;border-color:rgba(255,255,255,.25);color:#bbb}
+.domino-placement-picker button:focus-visible{outline:3px solid var(--domino-gold);outline-offset:3px;box-shadow:0 0 0 6px rgba(246,201,85,.16),0 0 24px rgba(25,223,255,.32)}
+.domino-pov-room .spinner-viewport{isolation:isolate;margin-inline:auto!important}
+.domino-pov-room .spinner-stage .spinner-bone{z-index:5;filter:drop-shadow(0 0 9px rgba(246,201,85,.34)) drop-shadow(0 7px 5px rgba(0,0,0,.5))}
+.domino-pov-room .spinner-stage .spinner-branch{z-index:2}
+.domino-pov-room .spinner-stage .spinner-double{z-index:4}
 @keyframes domino-boot{
   0%{opacity:1;visibility:visible}
   70%{opacity:1;visibility:visible}
