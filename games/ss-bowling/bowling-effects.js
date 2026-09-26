@@ -10,6 +10,7 @@
     const style = document.createElement('style');
     style.id = STYLE_ID;
     style.textContent = `
+      body.hw-ss-live-game #hw-global-create,body.hw-ss-live-game #hw-global-my-id{display:none!important;pointer-events:none!important}
       .hw-strike-pop{position:relative!important;z-index:2;color:transparent!important;background:linear-gradient(90deg,#fff719,#55ff73,#22e1ff,#ff45e6,#ff8a00)!important;background-size:250% 100%!important;-webkit-background-clip:text!important;background-clip:text!important;filter:drop-shadow(0 0 8px #22e1ff);animation:hwStrikePop .6s cubic-bezier(.2,1.6,.3,1),hwStrikeGlow 1.1s linear infinite!important}
       @keyframes hwStrikePop{0%{transform:scale(.35) rotate(-8deg);opacity:0}72%{transform:scale(1.16) rotate(2deg)}100%{transform:scale(1);opacity:1}}
       @keyframes hwStrikeGlow{to{background-position:250% 0;filter:drop-shadow(0 0 18px #ff45e6)}}
@@ -28,6 +29,7 @@
 
   function start() {
     installStyles();
+    document.body.classList.toggle('hw-ss-live-game', /\/games\/ss-bowling\/game(?:\.html)?\/?$/i.test(window.location.pathname));
     markStrikes();
     observer = new MutationObserver(markStrikes);
     observer.observe(document.getElementById('root') || document.body, {
@@ -35,7 +37,7 @@
       subtree: true,
       characterData: true,
     });
-    window.HWBowlingEffects = Object.freeze({ version: 'source-gator-1' });
+    window.HWBowlingEffects = Object.freeze({ version: 'mobile-controls-clear-2' });
   }
 
   if (document.readyState === 'loading') {
