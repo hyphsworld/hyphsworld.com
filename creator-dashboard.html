@@ -47,6 +47,17 @@
           <h2>Your numbers</h2>
           <div id="metricList" class="stack"><span>Loading account-backed metrics…</span></div>
         </article>
+        <article class="panel role-toolkit-panel" data-dashboard-view="overview" aria-labelledby="roleToolkitTitle">
+          <div class="role-toolkit-heading">
+            <div>
+              <p>CREATOR LOADOUT</p>
+              <h2 id="roleToolkitTitle">Tools built for your lane.</h2>
+            </div>
+            <span id="roleToolkitState">Matching your creator roles…</span>
+          </div>
+          <p class="panel-copy">Your categories activate a focused operating kit. Every shortcut stays inside your private Creator World.</p>
+          <div id="roleToolkit" class="role-toolkit"><span>Loading role tools…</span></div>
+        </article>
         <article class="panel profile-panel" data-dashboard-view="profile" hidden>
           <p>PROFILE</p>
           <h2 id="profileTitle">Your draft</h2>
@@ -165,7 +176,8 @@
     <script src="supabase-config.js"></script>
     <script src="auth-client.js?v=creator-phase-2"></script>
     <script src="global-points-engine.js?v=creator-phase-2"></script>
-    <script src="creator-dashboard.js?v=create-ios-mov-1"></script>
+    <script src="creator-role-toolkit.js?v=role-loadouts-1"></script>
+    <script src="creator-dashboard.js?v=role-loadouts-1"></script>
   <script src="global-my-id.js?v=create-menu-1" defer></script>
 </body>
 </html>
