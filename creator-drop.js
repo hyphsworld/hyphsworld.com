@@ -105,7 +105,12 @@
 
   function creatorProfile(creator, slug) {
     var candidate = text(creator && creator.profile_url);
-    if (candidate && !/^https?:\/\//i.test(candidate) && !/^javascript:/i.test(candidate)) return candidate;
+    if (candidate) {
+      try {
+        var parsed = new URL(candidate, location.href);
+        if (parsed.origin === location.origin) return parsed.pathname + parsed.search + parsed.hash;
+      } catch (error) {}
+    }
     return profilePages[slug] || 'creators.html';
   }
 
