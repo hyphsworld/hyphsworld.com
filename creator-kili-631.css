@@ -1,1 +1,232 @@
-.kili-world{--yellow:#fcd116;--blue:#003893;--red:#ce1126;--night:#040914;background:var(--night);color:#fff}.kili-world .world-nav{background:linear-gradient(90deg,#040914f5,#071b44ee,#040914f5);border-bottom:1px solid #fcd11655}.kili-hero{background:#040914}.kili-hero .hero-image{object-position:center 35%;filter:saturate(.92) contrast(1.08)}.kili-hero .hero-shade{background:linear-gradient(90deg,rgba(4,9,20,.12),rgba(4,9,20,.25) 38%,rgba(4,9,20,.9) 70%,#040914),linear-gradient(0deg,#040914,transparent 45%)}.bogota-lights{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 78% 14%,#fcd11644,transparent 24%),linear-gradient(120deg,transparent 44%,#00389322 45% 62%,transparent 63%);mix-blend-mode:screen}.kili-world .creator-badge span,.kili-world .primary-action,.kili-world .play-button{background:linear-gradient(145deg,var(--yellow),#ffea72);color:#07122a;box-shadow:0 0 0 4px var(--blue),0 0 30px #fcd11655}.kili-world .location,.kili-world h1 em{color:var(--yellow);font-style:normal}.identity-line{display:flex;flex-wrap:wrap;gap:8px}.identity-line span{padding:7px 10px;border:1px solid #fcd11666;border-radius:999px;background:#00389344;font:900 10px/1 Arial;letter-spacing:.12em}.kili-world .creator-stats div{border-left-color:var(--yellow)}.kili-world .world-ticker{background:linear-gradient(90deg,var(--yellow),var(--blue),var(--red),var(--blue),var(--yellow));border-color:#fcd116}.kili-world .world-ticker div{color:#fff;text-shadow:0 2px 8px #000}.kili-world .music-layout{grid-template-columns:minmax(0,1.4fr) minmax(280px,.6fr)}.mula-feature{padding:30px;border:1px solid #fcd11644;border-radius:24px;background:linear-gradient(145deg,#08245c,#090d17 58%,#3e0610)}.mula-feature>small{color:var(--yellow);font-weight:1000;letter-spacing:.16em}.mula-feature>h3{margin:42px 0 12px;font-size:clamp(52px,8vw,100px);line-height:.8;color:var(--yellow)}.mula-feature>p{color:#e0e7f4;line-height:1.7}.kili-world .track{width:100%;margin-top:25px}.kili-world .track:hover,.kili-world .track:focus-visible,.kili-world .track.is-active{border-color:var(--yellow);background:linear-gradient(90deg,#173d83,#3b0710)}.kili-world .track span{color:var(--yellow)}.kili-world .progress-shell span{background:linear-gradient(90deg,var(--yellow),var(--blue),var(--red))}.kili-world .record-glow{background:radial-gradient(circle,transparent 20%,#fcd11633 22%,transparent 56%)}.kili-lanes .project{background:linear-gradient(145deg,#071d49,#070b12);box-shadow:inset 0 3px 0 var(--yellow)}.kili-lanes .project:nth-child(3){box-shadow:inset 0 3px 0 var(--red)}.kili-lanes .project span,.kili-lanes .project small{color:var(--yellow)}.kili-story{background:linear-gradient(135deg,#fcd116,#003893 42%,#ce1126);color:#fff}.kili-story p{color:#fff}.kili-world .creator-switcher{max-width:1280px;margin:0 auto 90px;padding:0 18px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.kili-world .creator-switcher>div{border:1px solid #ffffff22;border-radius:20px;padding:22px;background:#071329;display:grid;gap:5px}.kili-world .creator-switcher .active{border-color:var(--yellow);background:linear-gradient(145deg,#163b7f,#25050b)}.kili-world .creator-switcher small,.kili-world .creator-switcher a{color:var(--yellow)}.kili-world .creator-switcher a{text-decoration:none;font-weight:1000}@media(max-width:700px){.kili-hero{display:block;min-height:0;height:auto;padding:370px 0 34px}.kili-hero .hero-image{inset:0 0 auto;height:410px;object-position:center 32%}.kili-hero .hero-shade{inset:0 0 auto;height:420px;background:linear-gradient(0deg,#040914 1%,transparent 48%)}.kili-hero .hero-content{position:relative;margin:0 16px;padding:20px 18px;width:calc(100% - 32px);border:1px solid #fcd11666;border-radius:24px;background:linear-gradient(145deg,#071634f8,#080911f8)}.kili-hero h1{font-size:clamp(52px,16vw,72px);white-space:nowrap}.kili-hero .hero-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.kili-hero .hero-actions>*{display:flex;align-items:center;justify-content:center;min-height:44px;margin:0;padding:0 10px;text-align:center}.kili-world .music-layout,.kili-world .creator-switcher{grid-template-columns:1fr}.identity-line span{font-size:8px}}
+.kili-world {
+  --yellow: #fcd116;
+  --blue: #003893;
+  --red: #ce1126;
+  --night: #040914;
+  background: var(--night);
+  color: #fff;
+}
+
+.creator-language-picker{display:flex;align-items:center;gap:7px;margin-left:12px;color:#fff;font:900 9px/1 Arial;letter-spacing:.12em}.creator-language-picker select{min-height:36px;padding:0 28px 0 10px;border:1px solid #fcd11688;border-radius:999px;background:#071329;color:#fff;font-weight:1000}.kili-video{background:radial-gradient(circle at 80% 12%,#fcd11620,transparent 30%),#050b17}.video-frame{position:relative;width:100%;aspect-ratio:16/9;border:2px solid #fcd11688;border-radius:24px;overflow:hidden;box-shadow:0 30px 80px #0009}.video-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}.video-link{display:inline-block;margin-top:16px;color:var(--yellow);font-weight:1000;text-decoration:none}@media(max-width:700px){.kili-world .world-nav{height:auto;min-height:68px;flex-wrap:wrap;padding:8px 12px}.kili-world .world-nav nav{order:3;width:100%;overflow-x:auto}.creator-language-picker{margin-left:auto}.creator-language-picker span{display:none}.video-frame{border-radius:14px}}
+.kili-world .world-nav {
+  background: linear-gradient(90deg, #040914f5, #071b44ee, #040914f5);
+  border-bottom: 1px solid #fcd11655;
+}
+.kili-hero {
+  background: #040914;
+}
+.kili-hero .hero-image {
+  object-position: center 35%;
+  filter: saturate(0.92) contrast(1.08);
+}
+.kili-hero .hero-shade {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(4, 9, 20, 0.12),
+      rgba(4, 9, 20, 0.25) 38%,
+      rgba(4, 9, 20, 0.9) 70%,
+      #040914
+    ),
+    linear-gradient(0deg, #040914, transparent 45%);
+}
+.bogota-lights {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 78% 14%, #fcd11644, transparent 24%),
+    linear-gradient(120deg, transparent 44%, #00389322 45% 62%, transparent 63%);
+  mix-blend-mode: screen;
+}
+.kili-world .creator-badge span,
+.kili-world .primary-action,
+.kili-world .play-button {
+  background: linear-gradient(145deg, var(--yellow), #ffea72);
+  color: #07122a;
+  box-shadow:
+    0 0 0 4px var(--blue),
+    0 0 30px #fcd11655;
+}
+.kili-world .location,
+.kili-world h1 em {
+  color: var(--yellow);
+  font-style: normal;
+}
+.identity-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.identity-line span {
+  padding: 7px 10px;
+  border: 1px solid #fcd11666;
+  border-radius: 999px;
+  background: #00389344;
+  font: 900 10px/1 Arial;
+  letter-spacing: 0.12em;
+}
+.kili-world .creator-stats div {
+  border-left-color: var(--yellow);
+}
+.kili-world .world-ticker {
+  background: linear-gradient(
+    90deg,
+    var(--yellow),
+    var(--blue),
+    var(--red),
+    var(--blue),
+    var(--yellow)
+  );
+  border-color: #fcd116;
+}
+.kili-world .world-ticker div {
+  color: #fff;
+  text-shadow: 0 2px 8px #000;
+}
+.kili-world .music-layout {
+  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.6fr);
+}
+.mula-feature {
+  padding: 30px;
+  border: 1px solid #fcd11644;
+  border-radius: 24px;
+  background: linear-gradient(145deg, #08245c, #090d17 58%, #3e0610);
+}
+.mula-feature > small {
+  color: var(--yellow);
+  font-weight: 1000;
+  letter-spacing: 0.16em;
+}
+.mula-feature > h3 {
+  margin: 42px 0 12px;
+  font-size: clamp(52px, 8vw, 100px);
+  line-height: 0.8;
+  color: var(--yellow);
+}
+.mula-feature > p {
+  color: #e0e7f4;
+  line-height: 1.7;
+}
+.kili-world .track {
+  width: 100%;
+  margin-top: 25px;
+}
+.kili-world .track:hover,
+.kili-world .track:focus-visible,
+.kili-world .track.is-active {
+  border-color: var(--yellow);
+  background: linear-gradient(90deg, #173d83, #3b0710);
+}
+.kili-world .track span {
+  color: var(--yellow);
+}
+.kili-world .progress-shell span {
+  background: linear-gradient(90deg, var(--yellow), var(--blue), var(--red));
+}
+.kili-world .record-glow {
+  background: radial-gradient(
+    circle,
+    transparent 20%,
+    #fcd11633 22%,
+    transparent 56%
+  );
+}
+.kili-lanes .project {
+  background: linear-gradient(145deg, #071d49, #070b12);
+  box-shadow: inset 0 3px 0 var(--yellow);
+}
+.kili-lanes .project:nth-child(3) {
+  box-shadow: inset 0 3px 0 var(--red);
+}
+.kili-lanes .project span,
+.kili-lanes .project small {
+  color: var(--yellow);
+}
+.kili-story {
+  background: linear-gradient(135deg, #fcd116, #003893 42%, #ce1126);
+  color: #fff;
+}
+.kili-story p {
+  color: #fff;
+}
+.kili-world .creator-switcher {
+  max-width: 1280px;
+  margin: 0 auto 90px;
+  padding: 0 18px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.kili-world .creator-switcher > div {
+  border: 1px solid #ffffff22;
+  border-radius: 20px;
+  padding: 22px;
+  background: #071329;
+  display: grid;
+  gap: 5px;
+}
+.kili-world .creator-switcher .active {
+  border-color: var(--yellow);
+  background: linear-gradient(145deg, #163b7f, #25050b);
+}
+.kili-world .creator-switcher small,
+.kili-world .creator-switcher a {
+  color: var(--yellow);
+}
+.kili-world .creator-switcher a {
+  text-decoration: none;
+  font-weight: 1000;
+}
+@media (max-width: 700px) {
+  .kili-hero {
+    display: block;
+    min-height: 0;
+    height: auto;
+    padding: 370px 0 34px;
+  }
+  .kili-hero .hero-image {
+    inset: 0 0 auto;
+    height: 410px;
+    object-position: center 32%;
+  }
+  .kili-hero .hero-shade {
+    inset: 0 0 auto;
+    height: 420px;
+    background: linear-gradient(0deg, #040914 1%, transparent 48%);
+  }
+  .kili-hero .hero-content {
+    position: relative;
+    margin: 0 16px;
+    padding: 20px 18px;
+    width: calc(100% - 32px);
+    border: 1px solid #fcd11666;
+    border-radius: 24px;
+    background: linear-gradient(145deg, #071634f8, #080911f8);
+  }
+  .kili-hero h1 {
+    font-size: clamp(52px, 16vw, 72px);
+    white-space: nowrap;
+  }
+  .kili-hero .hero-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .kili-hero .hero-actions > * {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    margin: 0;
+    padding: 0 10px;
+    text-align: center;
+  }
+  .kili-world .music-layout,
+  .kili-world .creator-switcher {
+    grid-template-columns: 1fr;
+  }
+  .identity-line span {
+    font-size: 8px;
+  }
+}
