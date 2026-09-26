@@ -3,6 +3,7 @@
 
   const STYLE_ID = 'hw-bowling-effects-style';
   const STRIKE_TEXT = 'STRIKE!';
+  const LIVE_GAME_SELECTOR = '[data-testid="lock-aim-button"],[data-testid="throw-button"]';
   let observer;
 
   function installStyles() {
@@ -27,17 +28,40 @@
     });
   }
 
+  function isLiveGame() {
+    return /\/games\/ss-bowling\/game(?:\.html)?\/?$/i.test(window.location.pathname)
+      || Boolean(document.querySelector(LIVE_GAME_SELECTOR));
+  }
+
+  function syncGlobalControls() {
+    const liveGame = isLiveGame();
+    document.body.classList.toggle('hw-ss-live-game', liveGame);
+    if (!liveGame) return;
+
+    const createMenu = document.getElementById('hw-create-menu');
+    if (createMenu) createMenu.hidden = true;
+    const createButton = document.getElementById('hw-global-create');
+    if (createButton) createButton.setAttribute('aria-expanded', 'false');
+  }
+
+  function refreshEffects() {
+    syncGlobalControls();
+    markStrikes();
+  }
+
   function start() {
     installStyles();
-    document.body.classList.toggle('hw-ss-live-game', /\/games\/ss-bowling\/game(?:\.html)?\/?$/i.test(window.location.pathname));
-    markStrikes();
-    observer = new MutationObserver(markStrikes);
+    refreshEffects();
+    observer = new MutationObserver(refreshEffects);
     observer.observe(document.getElementById('root') || document.body, {
       childList: true,
       subtree: true,
       characterData: true,
     });
-    window.HWBowlingEffects = Object.freeze({ version: 'mobile-controls-clear-2' });
+    window.addEventListener('popstate', refreshEffects);
+    window.addEventListener('hashchange', refreshEffects);
+    window.addEventListener('pageshow', refreshEffects);
+    window.HWBowlingEffects = Object.freeze({ version: 'ss-hud-clear-3' });
   }
 
   if (document.readyState === 'loading') {
