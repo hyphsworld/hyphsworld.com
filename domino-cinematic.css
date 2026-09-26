@@ -297,6 +297,14 @@
   border-color:rgba(246,201,85,.35)!important;
   background:linear-gradient(90deg,rgba(246,201,85,.08),rgba(25,223,255,.05))!important;
 }
+.domino-placement-picker{position:fixed;inset:0;z-index:10050;display:grid;place-items:center;padding:18px;background:rgba(0,0,0,.74);backdrop-filter:blur(8px)}
+.domino-placement-picker section{width:min(430px,100%);display:grid;gap:12px;padding:22px;border:2px solid var(--domino-cyan);border-radius:26px;background:linear-gradient(145deg,#06120d,#020504);box-shadow:0 0 36px rgba(25,223,255,.28),0 24px 60px rgba(0,0,0,.7);text-align:center}
+.domino-placement-picker strong{color:#fff;font-size:1.45rem;letter-spacing:.08em}
+.domino-placement-picker small{color:var(--domino-mint);font-weight:850}
+.domino-placement-picker div{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.domino-placement-picker button{min-height:54px;border:1px solid rgba(246,201,85,.72);border-radius:15px;color:#fff;background:linear-gradient(180deg,#14251e,#050806);font:1000 .9rem/1 Arial,sans-serif;letter-spacing:.08em}
+.domino-placement-picker [data-play-side]{box-shadow:inset 0 0 18px rgba(114,255,210,.08)}
+.domino-placement-picker .placement-cancel{min-height:44px;border-color:rgba(255,255,255,.25);color:#bbb}
 @keyframes domino-boot{
   0%{opacity:1;visibility:visible}
   70%{opacity:1;visibility:visible}
@@ -358,3 +366,19 @@
   }
   body.domino-game-active .hw-drag-duck{
     top:max(72px,calc(env(safe-area-inset-top) + 58px))!important;
+    left:8px!important;
+    right:auto!important;
+    bottom:auto!important;
+  }
+  body.domino-game-active .hw-drag-duck-copy{display:none!important}
+  body.domino-game-active .hw-drag-duck-handle{padding:5px!important}
+  body.domino-game-active .hw-drag-duck-face{width:34px!important;height:34px!important}
+}
+@media(prefers-reduced-motion:reduce){
+  .domino-cinema-intro{display:none}
+  .domino-atmosphere,
+  .dominos-page .score-card::after,
+  .domino-pov-room .pov-turn-banner::after{display:none}
+  .domino-pov-room.is-my-turn .pov-player-hand .domino-tile.is-playable,
+  .domino-pov-room>.pov-action-dock .primary{animation:none!important}
+}
