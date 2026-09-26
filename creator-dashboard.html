@@ -9,7 +9,7 @@
       content="Run your HYPHSWORLD Creator World, creations, profile, and opportunities."
     />
     <title>Creator Dashboard | HYPHSWORLD</title>
-    <link rel="stylesheet" href="creator-dashboard.css?v=creator-media-library-2" />
+    <link rel="stylesheet" href="creator-dashboard.css?v=create-one-page-1" />
   </head>
   <body data-hide-global-points-hud>
     <header>
@@ -125,6 +125,13 @@
             <small class="upload-note">Private • Creator access only • 50 MB max</small>
             <button id="uploadButton" type="submit">CREATE</button>
           </form>
+          <section class="create-flow-success" id="createFlowSuccess" aria-live="polite" hidden>
+            <p>CREATED</p>
+            <h3 id="createSuccessTitle">Saved inside your World.</h3>
+            <p class="panel-copy">Your creation is private. Preview it, rename it, or send it for review right here.</p>
+            <div id="createRecentCard" class="create-recent-card"></div>
+            <button id="createAgain" class="secondary-button" type="button">＋ CREATE ANOTHER</button>
+          </section>
         </article>
         <article class="panel library-panel" data-dashboard-view="library" hidden>
           <section class="creation-library" aria-labelledby="creationLibraryTitle">
@@ -158,7 +165,7 @@
     <script src="supabase-config.js"></script>
     <script src="auth-client.js?v=creator-phase-2"></script>
     <script src="global-points-engine.js?v=creator-phase-2"></script>
-    <script src="creator-dashboard.js?v=creator-media-library-2"></script>
+    <script src="creator-dashboard.js?v=create-one-page-1"></script>
   <script src="global-my-id.js?v=create-menu-1" defer></script>
 </body>
 </html>
