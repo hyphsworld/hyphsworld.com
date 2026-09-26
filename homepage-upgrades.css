@@ -244,3 +244,12 @@ body.home-page {
   .home-page .compact-actions .btn,
   .home-page .player-controls .btn { min-width: 76px; font-size: 0.58rem; }
 }
+
+
+/* Keep memorial label clear of King Hot's face */
+.spotlight-feature-ams .spotlight-art-premiere .spotlight-badge {
+  left: auto !important;
+  right: 14px !important;
+  top: 14px !important;
+  max-width: calc(100% - 28px);
+}
