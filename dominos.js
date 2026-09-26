@@ -25,6 +25,7 @@
   let cpuMode = false;
   let cpuTimer = null;
   let pendingPlacement = null;
+  let placementReturnFocus = null;
 
   function $(id) { return document.getElementById(id); }
   function setText(id, value) { const el = $(id); if (el) el.textContent = value; }
@@ -255,7 +256,7 @@
   }
 
   function keepPlayedEndVisible(board) {
-    const end = board && board.querySelector(".chain-right-end");
+    const end = board && (board.querySelector(".chain-new") || board.querySelector(".spinner-bone") || board.querySelector(".chain-right-end"));
     if (!end || typeof board.scrollTo !== "function") return;
     window.requestAnimationFrame(() => {
       const boardRect = board.getBoundingClientRect();
@@ -463,28 +464,46 @@
     const branches = layout?.branches || {};
     const tileWidth = boardWidth < 430 ? 42 : 52;
     const tileHeight = boardWidth < 430 ? 26 : 32;
-    const centerX = Math.max(150, boardWidth / 2);
-    const centerY = boardWidth < 430 ? 142 : 160;
-    const gapX = tileWidth - 1;
-    const gapY = tileWidth - 1;
+    const branchGap = boardWidth < 430 ? 5 : 7;
+    const stepX = tileWidth + branchGap;
+    const stepY = tileWidth + branchGap;
+    const padding = boardWidth < 430 ? 14 : 18;
+    const targetHeight = boardWidth < 430 ? 300 : 340;
+    const leftCount = (branches.left || []).length;
+    const rightCount = (branches.right || []).length;
+    const topCount = (branches.top || []).length;
+    const bottomCount = (branches.bottom || []).length;
+    const footprintWidth = (padding * 2) + tileWidth + ((leftCount + rightCount) * stepX);
+    const footprintHeight = (padding * 2) + tileWidth + ((topCount + bottomCount) * stepY);
+    const naturalWidth = Math.max(boardWidth, footprintWidth);
+    const naturalHeight = Math.max(targetHeight, footprintHeight);
+    const centerX = ((naturalWidth - footprintWidth) / 2) + padding + (leftCount * stepX) + (tileWidth / 2);
+    const centerY = ((naturalHeight - footprintHeight) / 2) + padding + (topCount * stepY) + (tileWidth / 2);
     const pieces = [tileMarkup(layout.spinnerTile, { className: "chain-bone spinner-bone", style: `--chain-bone-width:${tileWidth}px;--chain-bone-height:${tileHeight}px;left:${centerX - tileWidth / 2}px;top:${centerY - tileHeight / 2}px` })];
     ["left", "right", "top", "bottom"].forEach((side) => {
       (branches[side] || []).forEach((tile, index) => {
         const horizontal = side === "left" || side === "right";
+        const isDouble = Number(tile[0]) === Number(tile[1]);
         const distance = index + 1;
-        const x = horizontal ? centerX + (side === "left" ? -distance * gapX - tileWidth / 2 : (distance - 1) * gapX + tileWidth / 2) : centerX - tileWidth / 2;
-        const y = horizontal ? centerY - tileHeight / 2 : centerY + (side === "top" ? -distance * gapY : distance * gapY) - tileHeight / 2;
-        const rotation = horizontal ? (side === "left" ? 180 : 0) : (side === "top" ? -90 : 90);
+        const x = horizontal
+          ? centerX - (tileWidth / 2) + (side === "left" ? -distance * stepX : distance * stepX)
+          : centerX - (tileWidth / 2);
+        const y = horizontal
+          ? centerY - (tileHeight / 2)
+          : centerY - (tileHeight / 2) + (side === "top" ? -distance * stepY : distance * stepY);
+        // Doubles sit across their branch, while regular bones point away
+        // from the spinner. Every bone owns a full slot, so none overlap.
+        const rotation = isDouble
+          ? (horizontal ? 90 : 0)
+          : (horizontal ? (side === "left" ? 180 : 0) : (side === "top" ? -90 : 90));
         const newest = animateTile && sameTile(tile, animateTile) && index === (branches[side] || []).length - 1;
-        pieces.push(tileMarkup(tile, { className: `chain-bone spinner-branch spinner-${side}${newest ? " chain-new" : ""}`, style: `--chain-bone-width:${tileWidth}px;--chain-bone-height:${tileHeight}px;left:${x}px;top:${y}px;transform:rotate(${rotation}deg)` }));
+        pieces.push(tileMarkup(tile, { className: `chain-bone spinner-branch spinner-${side}${isDouble ? " spinner-double" : ""}${newest ? " chain-new" : ""}`, style: `--chain-bone-width:${tileWidth}px;--chain-bone-height:${tileHeight}px;left:${x}px;top:${y}px;transform:rotate(${rotation}deg)` }));
       });
     });
-    const maxHorizontal = Math.max((branches.left || []).length, (branches.right || []).length, 1);
-    const maxVertical = Math.max((branches.top || []).length, (branches.bottom || []).length, 1);
-    const naturalWidth = Math.max(boardWidth, (maxHorizontal * 2 + 1) * gapX + 30);
-    const naturalHeight = Math.max(300, (maxVertical * 2 + 1) * gapY + 40);
-    const scale = Math.min(1, (boardWidth - 8) / naturalWidth, (boardWidth < 430 ? 300 : 340) / naturalHeight);
-    return `<div class="domino-chain-viewport spinner-viewport" style="width:${Math.ceil(naturalWidth * scale)}px;height:${Math.ceil(naturalHeight * scale)}px"><div class="domino-chain-stage spinner-stage" style="--chain-scale:${scale};width:${naturalWidth}px;height:${naturalHeight}px">${pieces.join("")}</div></div>`;
+    // Keep pips readable on a full table. Oversized late-game crosses can
+    // scroll inside the felt instead of shrinking into unusable dots.
+    const scale = Math.max(0.52, Math.min(1, (boardWidth - 8) / naturalWidth, targetHeight / naturalHeight));
+    return `<div class="domino-chain-viewport spinner-viewport" style="width:${Math.ceil(naturalWidth * scale)}px;height:${Math.ceil(naturalHeight * scale)}px"><div class="domino-chain-stage spinner-stage" style="--chain-width:${naturalWidth}px;--chain-height:${naturalHeight}px;--chain-scale:${scale};width:${naturalWidth}px;height:${naturalHeight}px" role="group" aria-label="Four-way spinner layout with ${pieces.length} played ${pieces.length === 1 ? "bone" : "bones"}">${pieces.join("")}</div></div>`;
   }
 
   function applyLocalPlacement(board, tile, state, requestedSide) {
@@ -697,14 +716,20 @@
     }
   }
 
-  function closePlacementPicker() {
+  function closePlacementPicker(restoreFocus = true) {
+    const returnFocus = placementReturnFocus;
     pendingPlacement = null;
+    placementReturnFocus = null;
     const picker = $("dominoPlacementPicker");
     if (picker) picker.remove();
+    if (restoreFocus && returnFocus && returnFocus.isConnected) {
+      returnFocus.focus({ preventScroll: true });
+    }
   }
 
   function choosePlacement(tileIndex, sides) {
-    closePlacementPicker();
+    closePlacementPicker(false);
+    placementReturnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     pendingPlacement = { tileIndex, sides };
     const picker = document.createElement("div");
     picker.id = "dominoPlacementPicker";
@@ -716,10 +741,32 @@
     document.body.appendChild(picker);
     picker.querySelectorAll("[data-play-side]").forEach((button) => button.addEventListener("click", async () => {
       const side = button.getAttribute("data-play-side");
-      closePlacementPicker();
+      closePlacementPicker(false);
       await performAction("play", tileIndex, side);
     }));
     picker.querySelector(".placement-cancel").addEventListener("click", closePlacementPicker);
+    picker.addEventListener("click", (event) => { if (event.target === picker) closePlacementPicker(); });
+    const focusable = Array.from(picker.querySelectorAll("button"));
+    picker.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closePlacementPicker();
+        return;
+      }
+      if (event.key !== "Tab" || focusable.length < 2) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    });
+    window.requestAnimationFrame(() => {
+      if (picker.isConnected && focusable[0]) focusable[0].focus({ preventScroll: true });
+    });
   }
 
   async function performAction(action, tileIndex, playSide) {
