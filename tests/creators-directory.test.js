@@ -46,7 +46,7 @@ describe('Creators World directory', () => {
 
     const cards = [...document.querySelectorAll('.creator-card')];
     expect(cards.map(card => card.hidden)).toEqual([false, true, true]);
-    expect(document.getElementById('creatorResults').textContent).toBe('1 creator • Alphabetical');
+    expect(document.getElementById('creatorResults').textContent).toBe('1 creator found');
     expect(document.getElementById('emptyState').hidden).toBe(true);
   });
 
@@ -56,7 +56,7 @@ describe('Creators World directory', () => {
     document.querySelector('[data-filter="radio"]').click();
 
     expect([...document.querySelectorAll('.creator-card')].every(card => card.hidden)).toBe(true);
-    expect(document.getElementById('creatorResults').textContent).toBe('0 creators • Alphabetical');
+    expect(document.getElementById('creatorResults').textContent).toBe('0 creators found');
     expect(document.getElementById('emptyState').hidden).toBe(false);
   });
 
