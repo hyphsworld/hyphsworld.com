@@ -1,5 +1,12 @@
 const wallEntries = [
   {
+    title: 'Grind Mode Backpack Prize',
+    tier: 10600,
+    image: 'merch/ams-west-grind-mode-backpack.jpeg',
+    tag: '10,600 CP Reward',
+    description: 'YOU WON THE BACKPACK. Your 10,600 Cool Point prize is unlocked—use Manage ID to verify your account and claim it. While supplies last.'
+  },
+  {
     title: 'Hyph Life x Bone Thugs Legendary Freestyle',
     tier: 7500,
     image: 'https://img.youtube.com/vi/jy3mRy51qa8/hqdefault.jpg',
@@ -104,13 +111,15 @@ function renderWall() {
   if (pointsEl) pointsEl.textContent = points.toLocaleString();
 
   if (statusEl) {
-    statusEl.textContent = points >= 10000
-      ? 'LEGEND WALL UNLOCKED. Full archive clearance approved.'
+    statusEl.textContent = points >= 10600
+      ? 'BACKPACK PRIZE UNLOCKED. Use Manage ID to verify your account and claim your win. While supplies last.'
+      : points >= 10000
+      ? 'LEGEND WALL UNLOCKED. Full archive clearance approved. Keep climbing—10,600 CP wins the Grind Mode backpack, while supplies last.'
       : points >= 7500
-        ? 'LEGENDARY VIDEO UNLOCKED. The Hyph Life x Bone Thugs freestyle is now open.'
+        ? 'LEGENDARY VIDEO UNLOCKED. The Hyph Life x Bone Thugs freestyle is now open. The backpack unlocks at 10,600 CP, while supplies last.'
         : points >= 500
-          ? 'Vault clearance approved. Keep climbing — 7,500 CP unlocks the legendary Bone Thugs freestyle.'
-          : 'Need 500 Cool Points to fully unlock the wall. The legendary video opens at 7,500 CP.';
+          ? 'Vault clearance approved. Keep climbing — 7,500 CP unlocks the legendary Bone Thugs freestyle and 10,600 CP unlocks the backpack, while supplies last.'
+          : 'Need 500 Cool Points to fully unlock the wall. The legendary video opens at 7,500 CP and the backpack at 10,600 CP, while supplies last.';
   }
 
   document.querySelectorAll('.wof-unlock-track article').forEach((card) => {
