@@ -123,6 +123,18 @@
     el('bio').value = creator.bio || '';
     el('imageUrl').value = creator.image_url || '';
     el('verificationState').textContent = (creator.verification_level || 'unverified').replace('_', ' ');
+    try {
+      window.dispatchEvent(new CustomEvent('hw:creator-profile-ready', {
+        detail: {
+          creator: {
+            id: creator.id,
+            display_name: creator.display_name || '',
+            headline: creator.headline || '',
+            categories: creator.categories || []
+          }
+        }
+      }));
+    } catch (error) {}
   }
   async function start() {
     var application;
