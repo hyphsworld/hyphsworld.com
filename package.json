@@ -16,6 +16,7 @@
     "diagnostics:engagement": "node scripts/engagement-points-diagnostic.js",
     "diagnostics:daily-spin": "node scripts/daily-spin-diagnostic.js",
     "diagnostics:domino-pov": "node scripts/domino-pov-diagnostic.js",
+    "diagnostics:domino-spinner": "node scripts/domino-spinner-diagnostic.js",
     "diagnostics:table-games-pov": "node scripts/table-games-pov-diagnostic.js",
     "diagnostics:creator-profiles": "node scripts/creator-profile-diagnostic.js",
     "diagnostics:creator-rollout": "node scripts/creator-world-rollout-diagnostic.js",

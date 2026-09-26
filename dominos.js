@@ -24,6 +24,7 @@
   let resizeTimer = null;
   let cpuMode = false;
   let cpuTimer = null;
+  let pendingPlacement = null;
 
   function $(id) { return document.getElementById(id); }
   function setText(id, value) { const el = $(id); if (el) el.textContent = value; }
@@ -266,6 +267,7 @@
   }
 
   function canPlay(tile, board) {
+    if (activeState && board === activeState.board) return legalSides(tile, activeState).length > 0;
     if (!board || !board.length) return true;
     const left = board[0][0];
     const right = board[board.length - 1][1];
@@ -404,7 +406,7 @@
     })[0] || null;
   }
 
-  function connectedBoard(board, tile) {
+  function connectedBoard(board, tile, requestedSide) {
     const next = (board || []).map((bone) => [bone[0], bone[1]]);
     const played = [Number(tile[0]), Number(tile[1])];
     if (!next.length) return [played];
@@ -412,17 +414,106 @@
     const right = Number(next[next.length - 1][1]);
     const a = played[0];
     const b = played[1];
-    if (b === left) next.unshift(played);
-    else if (a === left) next.unshift([b, a]);
-    else if (a === right) next.push(played);
-    else if (b === right) next.push([b, a]);
+    const canLeft = a === left || b === left;
+    const canRight = a === right || b === right;
+    const side = requestedSide === "right" && canRight ? "right" : requestedSide === "left" && canLeft ? "left" : canLeft ? "left" : "right";
+    if (side === "left" && b === left) next.unshift(played);
+    else if (side === "left" && a === left) next.unshift([b, a]);
+    else if (side === "right" && a === right) next.push(played);
+    else if (side === "right" && b === right) next.push([b, a]);
     return next;
   }
 
-  function cpuPlayableIndexes(hand, board, openingTile) {
+  function layoutFromBoard(board) {
+    const tiles = board || [];
+    if (!tiles.length) return null;
+    const spinnerIndex = tiles.findIndex((tile) => Number(tile[0]) === Number(tile[1]));
+    if (spinnerIndex < 0) return {
+      mode: "chain", chain: tiles.map((tile) => [...tile]),
+      openEnds: { left: Number(tiles[0][0]), right: Number(tiles[tiles.length - 1][1]) }
+    };
+    const spinner = Number(tiles[spinnerIndex][0]);
+    return {
+      mode: "spinner", spinnerTile: [spinner, spinner],
+      branches: {
+        left: tiles.slice(0, spinnerIndex).reverse().map((tile) => [Number(tile[1]), Number(tile[0])]),
+        right: tiles.slice(spinnerIndex + 1).map((tile) => [...tile]), top: [], bottom: []
+      },
+      openEnds: {
+        left: spinnerIndex ? Number(tiles[0][0]) : spinner,
+        right: spinnerIndex < tiles.length - 1 ? Number(tiles[tiles.length - 1][1]) : spinner,
+        top: spinner, bottom: spinner
+      }
+    };
+  }
+
+  function activeLayout(state) {
+    return state?.layout || layoutFromBoard(state?.board || []);
+  }
+
+  function legalSides(tile, state) {
+    const board = state?.board || [];
+    if (!board.length) return !state?.openingTile || sameTile(tile, state.openingTile) ? ["center"] : [];
+    const layout = activeLayout(state);
+    const sides = layout?.mode === "spinner" ? ["left", "right", "top", "bottom"] : ["left", "right"];
+    return sides.filter((side) => tile.includes(Number(layout.openEnds[side])));
+  }
+
+  function spinnerBoardMarkup(layout, boardWidth, animateTile) {
+    const branches = layout?.branches || {};
+    const tileWidth = boardWidth < 430 ? 42 : 52;
+    const tileHeight = boardWidth < 430 ? 26 : 32;
+    const centerX = Math.max(150, boardWidth / 2);
+    const centerY = boardWidth < 430 ? 142 : 160;
+    const gapX = tileWidth - 1;
+    const gapY = tileWidth - 1;
+    const pieces = [tileMarkup(layout.spinnerTile, { className: "chain-bone spinner-bone", style: `--chain-bone-width:${tileWidth}px;--chain-bone-height:${tileHeight}px;left:${centerX - tileWidth / 2}px;top:${centerY - tileHeight / 2}px` })];
+    ["left", "right", "top", "bottom"].forEach((side) => {
+      (branches[side] || []).forEach((tile, index) => {
+        const horizontal = side === "left" || side === "right";
+        const distance = index + 1;
+        const x = horizontal ? centerX + (side === "left" ? -distance * gapX - tileWidth / 2 : (distance - 1) * gapX + tileWidth / 2) : centerX - tileWidth / 2;
+        const y = horizontal ? centerY - tileHeight / 2 : centerY + (side === "top" ? -distance * gapY : distance * gapY) - tileHeight / 2;
+        const rotation = horizontal ? (side === "left" ? 180 : 0) : (side === "top" ? -90 : 90);
+        const newest = animateTile && sameTile(tile, animateTile) && index === (branches[side] || []).length - 1;
+        pieces.push(tileMarkup(tile, { className: `chain-bone spinner-branch spinner-${side}${newest ? " chain-new" : ""}`, style: `--chain-bone-width:${tileWidth}px;--chain-bone-height:${tileHeight}px;left:${x}px;top:${y}px;transform:rotate(${rotation}deg)` }));
+      });
+    });
+    const maxHorizontal = Math.max((branches.left || []).length, (branches.right || []).length, 1);
+    const maxVertical = Math.max((branches.top || []).length, (branches.bottom || []).length, 1);
+    const naturalWidth = Math.max(boardWidth, (maxHorizontal * 2 + 1) * gapX + 30);
+    const naturalHeight = Math.max(300, (maxVertical * 2 + 1) * gapY + 40);
+    const scale = Math.min(1, (boardWidth - 8) / naturalWidth, (boardWidth < 430 ? 300 : 340) / naturalHeight);
+    return `<div class="domino-chain-viewport spinner-viewport" style="width:${Math.ceil(naturalWidth * scale)}px;height:${Math.ceil(naturalHeight * scale)}px"><div class="domino-chain-stage spinner-stage" style="--chain-scale:${scale};width:${naturalWidth}px;height:${naturalHeight}px">${pieces.join("")}</div></div>`;
+  }
+
+  function applyLocalPlacement(board, tile, state, requestedSide) {
+    const sides = legalSides(tile, state);
+    const side = sides.includes(requestedSide) ? requestedSide : sides[0];
+    if (!side) return false;
+    if (!board.length) {
+      board.push([Number(tile[0]), Number(tile[1])]);
+      state.layout = layoutFromBoard(board);
+      return true;
+    }
+    const layout = activeLayout(state);
+    if (layout.mode === "chain") {
+      state.board = connectedBoard(board, tile, side);
+      state.layout = layoutFromBoard(state.board);
+      return true;
+    }
+    const end = Number(layout.openEnds[side]);
+    const oriented = Number(tile[0]) === end ? [Number(tile[0]), Number(tile[1])] : [Number(tile[1]), Number(tile[0])];
+    layout.branches[side] = [...(layout.branches[side] || []), oriented];
+    layout.openEnds[side] = oriented[1];
+    state.layout = layout;
+    board.push([Number(tile[0]), Number(tile[1])]);
+    return true;
+  }
+
+  function cpuPlayableIndexes(hand, state) {
     return (hand || []).reduce((indexes, tile, index) => {
-      const openingMatch = (board || []).length || !openingTile || sameTile(tile, openingTile);
-      if (openingMatch && canPlay(tile, board)) indexes.push(index);
+      if (legalSides(tile, state).length) indexes.push(index);
       return indexes;
     }, []);
   }
@@ -451,18 +542,18 @@
       : "Duck Sauce: CPU took that hand. Run it back.");
   }
 
-  function localDominoAction(action, tileIndex, playerId) {
+  function localDominoAction(action, tileIndex, playerId, playSide) {
     if (!cpuMode || !activeState || activeState.status !== "playing" || activeState.turnUserId !== playerId) return;
     const hand = activeState.hands[playerId] || [];
     const board = activeState.board || [];
     const deck = activeState.deck || [];
-    const playable = cpuPlayableIndexes(hand, board, activeState.openingTile);
+    const playable = cpuPlayableIndexes(hand, activeState);
     const actor = playerId === CPU_ID ? "CPU" : safeText(currentUser.displayName, "You");
 
     if (action === "play") {
       if (!Number.isInteger(tileIndex) || !playable.includes(tileIndex)) return;
       const tile = hand[tileIndex];
-      activeState.board = connectedBoard(board, tile);
+      if (!applyLocalPlacement(board, tile, activeState, playSide)) return;
       hand.splice(tileIndex, 1);
       activeState.consecutivePasses = 0;
       activeState.log.push(`${actor}: played ${tileText(tile)}.`);
@@ -500,10 +591,10 @@
       cpuTimer = null;
       if (!cpuMode || !activeState || activeState.status !== "playing" || activeState.turnUserId !== CPU_ID) return;
       const hand = activeState.hands[CPU_ID] || [];
-      let playable = cpuPlayableIndexes(hand, activeState.board, activeState.openingTile);
+      let playable = cpuPlayableIndexes(hand, activeState);
       while (!playable.length && activeState.deck.length) {
         localDominoAction("draw", null, CPU_ID);
-        playable = cpuPlayableIndexes(hand, activeState.board, activeState.openingTile);
+        playable = cpuPlayableIndexes(hand, activeState);
       }
       if (playable.length) {
         playable.sort((left, right) => {
@@ -513,7 +604,9 @@
           const rightValue = tileScore(rightTile) + (rightTile[0] === rightTile[1] ? 20 : 0);
           return rightValue - leftValue;
         });
-        localDominoAction("play", playable[0], CPU_ID);
+        const cpuTile = hand[playable[0]];
+        const cpuSides = legalSides(cpuTile, activeState);
+        localDominoAction("play", playable[0], CPU_ID, cpuSides[0]);
       } else localDominoAction("pass", null, CPU_ID);
       renderState();
       if (activeState.status === "playing") setStatus("Your move against the CPU.");
@@ -604,10 +697,35 @@
     }
   }
 
-  async function performAction(action, tileIndex) {
+  function closePlacementPicker() {
+    pendingPlacement = null;
+    const picker = $("dominoPlacementPicker");
+    if (picker) picker.remove();
+  }
+
+  function choosePlacement(tileIndex, sides) {
+    closePlacementPicker();
+    pendingPlacement = { tileIndex, sides };
+    const picker = document.createElement("div");
+    picker.id = "dominoPlacementPicker";
+    picker.className = "domino-placement-picker";
+    picker.setAttribute("role", "dialog");
+    picker.setAttribute("aria-modal", "true");
+    picker.setAttribute("aria-label", "Choose where to play this bone");
+    picker.innerHTML = `<section><strong>CHOOSE YOUR PLAY</strong><small>This bone fits more than one open branch.</small><div>${sides.map((side) => `<button type="button" data-play-side="${side}">${side === "top" ? "↑" : side === "bottom" ? "↓" : side === "left" ? "←" : "→"} ${side.toUpperCase()}</button>`).join("")}</div><button type="button" class="placement-cancel">CANCEL</button></section>`;
+    document.body.appendChild(picker);
+    picker.querySelectorAll("[data-play-side]").forEach((button) => button.addEventListener("click", async () => {
+      const side = button.getAttribute("data-play-side");
+      closePlacementPicker();
+      await performAction("play", tileIndex, side);
+    }));
+    picker.querySelector(".placement-cancel").addEventListener("click", closePlacementPicker);
+  }
+
+  async function performAction(action, tileIndex, playSide) {
     if (!activeRoom || !currentUser || !Number.isInteger(activeVersion)) return setStatus("Join a table first.");
     if (cpuMode) {
-      localDominoAction(action, tileIndex, currentUser.userId);
+      localDominoAction(action, tileIndex, currentUser.userId, playSide);
       renderState();
       scheduleCpuTurn();
       return;
@@ -617,6 +735,7 @@
     const sb = await getClient();
     const params = { p_room_id: roomId, p_action: action, p_expected_version: activeVersion };
     if (Number.isInteger(tileIndex)) params.p_tile_index = tileIndex;
+    if (playSide) params.p_play_side = playSide;
     const { data, error } = await sb.rpc("domino_action", params);
     if (requestToken !== roomViewToken || cpuMode || !activeRoom || activeRoom.id !== roomId) return;
     if (error || !data || data.ok === false) {
@@ -696,8 +815,11 @@
 
     const boardTiles = activeState.board || [];
     const animateIndex = addedTileIndex(lastRenderedBoard, boardTiles);
+    const layout = activeLayout(activeState);
     board.innerHTML = boardTiles.length
-      ? boardChainMarkup(boardTiles, Math.max(280, board.clientWidth - 16), animateIndex)
+      ? (layout?.mode === "spinner"
+        ? spinnerBoardMarkup(layout, Math.max(280, board.clientWidth - 16), boardTiles[animateIndex])
+        : boardChainMarkup(boardTiles, Math.max(280, board.clientWidth - 16), animateIndex))
       : `<span class="hw-leaderboard-empty">High double opens. No double? Highest pip bone starts.</span>`;
     lastRenderedBoard = boardTiles.map((tile) => [tile[0], tile[1]]);
     const room = document.querySelector(".domino-pov-room");
@@ -706,18 +828,21 @@
 
     const myHand = (activeState.hands || {})[currentUser.userId] || [];
     hand.innerHTML = myHand.length
-      ? myHand.map((tile, index) => tileMarkup(tile, { clickable: true, index, playable: isMyTurn && canPlay(tile, boardTiles) && (boardTiles.length || !activeState.openingTile || sameTile(tile, activeState.openingTile)) })).join("")
+      ? myHand.map((tile, index) => tileMarkup(tile, { clickable: true, index, playable: isMyTurn && legalSides(tile, activeState).length > 0 })).join("")
       : `<span class="hw-leaderboard-empty">No tiles in your hand. Submit win if the table is finished.</span>`;
 
     hand.querySelectorAll("[data-tile-index]").forEach((button) => {
       button.addEventListener("click", async () => {
-        await performAction("play", Number(button.getAttribute("data-tile-index")));
+        const tileIndex = Number(button.getAttribute("data-tile-index"));
+        const sides = legalSides(myHand[tileIndex], activeState);
+        if (sides.length > 1) choosePlacement(tileIndex, sides);
+        else if (sides.length === 1) await performAction("play", tileIndex, sides[0]);
       });
     });
 
     const drawButton = $("drawTileBtn");
     const passButton = $("passTurnBtn");
-    const playable = myHand.some((tile) => canPlay(tile, boardTiles) && (boardTiles.length || !activeState.openingTile || sameTile(tile, activeState.openingTile)));
+    const playable = myHand.some((tile) => legalSides(tile, activeState).length > 0);
     if (drawButton) drawButton.disabled = !isMyTurn || playable || !(activeState.deck || []).length || activeState.status !== "playing";
     if (passButton) passButton.disabled = !isMyTurn || playable || Boolean((activeState.deck || []).length) || activeState.status !== "playing";
     const submitButton = $("submitWinBtn");
@@ -739,7 +864,7 @@
     } else if (!isMyTurn) {
       setCoach(cpuMode ? "CPU is thinking. Your bones unlock when it finishes." : "Opponent’s turn. Your bones will unlock when it’s time to play.");
     } else if (playable) {
-      setCoach(boardTiles.length ? "Your turn: tap any glowing bone that matches either end of the chain." : "Your turn: tap the glowing opening bone to start the chain.");
+      setCoach(boardTiles.length ? "Your turn: tap a glowing bone, then choose any legal open branch." : "Your turn: tap the glowing opening bone to start the chain.");
     } else if ((activeState.deck || []).length) {
       setCoach("No matching bone. Tap Draw Bone below.");
     } else {
