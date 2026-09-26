@@ -1,6 +1,6 @@
 (function () {
   'use strict';
-  var user, client, creator, creators = [], creations = [], uploadBusy = false;
+  var user, client, creator, creators = [], creations = [], uploadBusy = false, latestCreatedId = '';
   var dashboardTabs = Array.from(document.querySelectorAll('[data-dashboard-tab]'));
   var currentDashboardView = 'overview';
   var uploadBucket = 'creator-world-uploads';
@@ -275,6 +275,36 @@
       body.appendChild(actions); card.append(previewShell, body); target.appendChild(card);
     });
   }
+  function renderCreateReceipt(row) {
+    var section = el('createFlowSuccess'), target = el('createRecentCard');
+    if (!section || !target || !row) return;
+    target.replaceChildren();
+    var head = document.createElement('div'), title = document.createElement('strong'), meta = document.createElement('small'), actions = document.createElement('div');
+    var preview = document.createElement('button'), rename = document.createElement('button'), review = document.createElement('button');
+    var rowStatus = row.status || 'private', kind = creationKindFor(row);
+    head.className = 'create-recent-summary'; title.textContent = row.title;
+    meta.textContent = createKinds[kind].label + ' · ' + formatFileSize(row.file_size) + ' · ' + creationStatusLabel(rowStatus);
+    head.append(title, meta); actions.className = 'create-recent-actions';
+    preview.type = 'button'; preview.textContent = 'Preview'; preview.addEventListener('click', function () { previewUpload(row.storage_path, row.preview_url); });
+    actions.appendChild(preview);
+    if (rowStatus !== 'approved' && rowStatus !== 'published') {
+      rename.type = 'button'; rename.className = 'secondary-button'; rename.textContent = 'Rename';
+      rename.addEventListener('click', function () { renameCreation(row); });
+      review.type = 'button'; review.className = 'review-button';
+      review.textContent = rowStatus === 'ready_for_review' ? 'Make Private' : 'Send for Review';
+      review.addEventListener('click', function () { setCreationReviewState(row, rowStatus === 'ready_for_review' ? 'private' : 'ready_for_review'); });
+      actions.append(rename, review);
+    }
+    target.append(head, actions);
+    el('createSuccessTitle').textContent = '“' + row.title + '” is saved.';
+    section.hidden = false;
+  }
+  function refreshCreateReceipt() {
+    if (!latestCreatedId) return;
+    var row = creations.find(function (item) { return item.id === latestCreatedId; });
+    if (row) renderCreateReceipt(row);
+  }
+
   async function loadUploads() {
     var columns = 'id,title,creation_kind,media_type,mime_type,file_size,storage_path,status,review_note,public_path,published_at,created_at,updated_at';
     var result = await client.from('creator_media_uploads').select(columns).eq('creator_id', creator.id).order('created_at', { ascending: false }).limit(50);
@@ -286,6 +316,7 @@
     var previewUrls = await loadCreationPreviewUrls(creations);
     creations.forEach(function (row) { row.preview_url = previewUrls[row.storage_path] || ''; });
     uploadCards(creations);
+    refreshCreateReceipt();
   }
   async function renameCreation(row) {
     var title = window.prompt('Rename this creation:', row.title);
@@ -329,13 +360,15 @@
       var metadata = await client.from('creator_media_uploads').insert(payload).select('id').single();
       if (metadata.error && /creation_kind/i.test(metadata.error.message || '')) { delete payload.creation_kind; metadata = await client.from('creator_media_uploads').insert(payload).select('id').single(); }
       if (metadata.error) { await client.storage.from(uploadBucket).remove([path]); throw metadata.error; }
+      latestCreatedId = metadata.data.id;
       event.target.reset(); setCreateKind(kind); await loadUploads();
-      status('Saved to MY CREATIONS • “' + title + '”');
-      activateDashboardView('library', true);
-      el('creationLibraryTitle').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      status('CREATED • Saved privately inside your World');
+      activateDashboardView('create', true);
+      renderCreateReceipt(creations.find(function (row) { return row.id === latestCreatedId; }));
+      el('createFlowSuccess').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     } catch (error) { status('CREATE failed: ' + (error.message || error)); }
     finally { uploadBusy = false; el('uploadButton').disabled = false; el('uploadButton').textContent = 'CREATE'; }
   }
 
-  el('startCreator').addEventListener('click', start); el('creatorForm').addEventListener('submit', save); el('verificationForm').addEventListener('submit', requestVerification); el('creatorUploadForm').addEventListener('submit', uploadMedia); el('createKind').addEventListener('change', function (event) { setCreateKind(event.target.value); }); el('creationFilter').addEventListener('change', function () { uploadCards(creations); }); window.addEventListener('load', function () { initCreateKind(); initDashboardTabs(); load(); });
+  el('startCreator').addEventListener('click', start); el('creatorForm').addEventListener('submit', save); el('verificationForm').addEventListener('submit', requestVerification); el('creatorUploadForm').addEventListener('submit', uploadMedia); el('createKind').addEventListener('change', function (event) { setCreateKind(event.target.value); }); el('creationFilter').addEventListener('change', function () { uploadCards(creations); }); el('createAgain').addEventListener('click', function () { el('createFlowSuccess').hidden = true; latestCreatedId = ''; el('uploadTitle').focus(); }); window.addEventListener('load', function () { initCreateKind(); initDashboardTabs(); load(); });
 })();
