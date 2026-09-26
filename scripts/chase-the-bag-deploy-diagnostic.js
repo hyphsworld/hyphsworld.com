@@ -46,7 +46,11 @@ assert(
 );
 assert(!js.includes('/auth/login') && !js.includes('/auth/me'), 'Static build must not expose an unimplemented admin login');
 assert(!js.includes('leaderboard-admin-btn') && !js.includes('path:"/admin"'), 'Static build must not expose unsupported admin controls');
-assert(js.includes('period:e'), 'Leaderboard period tabs must send their selected period');
+assert(
+  js.includes('get_cash_run_leaderboard') && js.includes('p_limit:'),
+  'Game must keep the Supabase leaderboard RPC connected'
+);
+assert(js.includes('/leaderboard?limit='), 'Game must keep the HTTP leaderboard fallback connected');
 assert(backend.includes('period: str = "all"'), 'Leaderboard API must accept the selected period');
 assert(backend.includes('"day": now - timedelta(days=1)') && backend.includes('"week": now - timedelta(days=7)') && backend.includes('"month": now - timedelta(days=30)'), 'Leaderboard API must apply distinct day, week, and month windows');
 assert(!js.includes('Math.floor(.62*e.naturalHeight)'), 'Sprite preparation must not crop character artwork to a fixed height');
