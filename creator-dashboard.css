@@ -70,3 +70,22 @@
 .create-recent-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}.create-recent-actions button,.secondary-button{min-height:42px;padding:10px 15px;border-radius:13px}
 .create-recent-actions .secondary-button,.secondary-button{background:#171b24;color:#fff;border:1px solid #ffffff28}.create-recent-actions .review-button{background:linear-gradient(90deg,#ffd64a,#ff8b36);color:#090603}
 @media(max-width:560px){.create-recent-actions{display:grid;grid-template-columns:1fr 1fr}.create-recent-actions button{width:100%}.create-recent-actions .review-button{grid-column:1/-1}.create-flow-success>.secondary-button{width:100%}}
+
+
+/* Role-based Creator Loadouts */
+.role-toolkit-panel{grid-column:1/-1;background:radial-gradient(circle at 92% 0,#34eaff24,transparent 34%),radial-gradient(circle at 0 100%,#ff3fb41a,transparent 38%),rgba(17,19,26,.98)}
+.role-toolkit-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:18px}
+.role-toolkit-heading>div>p{margin:0;color:var(--green);font-size:10px;font-weight:1000;letter-spacing:.18em}
+.role-toolkit-heading h2{margin:7px 0 0}
+#roleToolkitState{padding:8px 11px;border:1px solid #34eaff50;border-radius:999px;color:var(--cyan);font-size:9px;font-weight:1000;letter-spacing:.09em;text-transform:uppercase;white-space:nowrap}
+.role-toolkit{display:grid;gap:18px;margin-top:22px}
+.role-loadout{padding:18px;border:1px solid #ffffff1f;border-radius:22px;background:#080a0f;box-shadow:0 20px 48px #0006}
+.role-loadout-head{display:flex;align-items:center;gap:13px;margin-bottom:15px}
+.role-loadout-mark{display:grid;width:46px;height:46px;place-items:center;border:1px solid var(--loadout-accent,#46ff67);border-radius:15px;background:color-mix(in srgb,var(--loadout-accent,#46ff67) 13%,#080a0f);color:var(--loadout-accent,#46ff67);font-size:10px;font-weight:1000;letter-spacing:.08em;box-shadow:0 0 22px color-mix(in srgb,var(--loadout-accent,#46ff67) 25%,transparent)}
+.role-loadout-head h3{margin:0;font-size:22px}.role-loadout-head p{margin:4px 0 0;color:#9fa7b2;font-size:12px}
+.role-tool-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.role-tool{min-height:148px;padding:15px;display:flex;flex-direction:column;border:1px solid #ffffff18;border-radius:17px;background:linear-gradient(145deg,#11141b,#090b10);color:#fff;text-decoration:none;transition:.2s ease}
+.role-tool:hover,.role-tool:focus-visible{border-color:var(--loadout-accent,#46ff67);transform:translateY(-2px);box-shadow:0 16px 34px #0008}
+.role-tool small{color:var(--loadout-accent,#46ff67);font-size:9px;font-weight:1000;letter-spacing:.12em}.role-tool strong{margin:9px 0 6px;font-size:15px;line-height:1.1}.role-tool span{color:#9ca4ae;font-size:11px;line-height:1.4}.role-tool b{margin-top:auto;padding-top:12px;color:#fff;font-size:10px;letter-spacing:.06em}
+@media(max-width:900px){.role-tool-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.role-toolkit-heading{display:block}.role-toolkit-heading #roleToolkitState{display:inline-flex;margin-top:12px}.role-loadout{padding:15px}.role-tool-grid{grid-template-columns:1fr}.role-tool{min-height:128px}.role-loadout-head{align-items:flex-start}}
