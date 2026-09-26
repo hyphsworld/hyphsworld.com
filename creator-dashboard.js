@@ -7,7 +7,7 @@
   var maxUploadBytes = 50 * 1024 * 1024;
   var createKinds = {
     music: { label: 'Music', accept: 'audio/mpeg,audio/wav,audio/x-wav,audio/mp4' },
-    video: { label: 'Video', accept: 'video/mp4' },
+    video: { label: 'Video', accept: 'video/mp4,video/quicktime' },
     artwork: { label: 'Artwork', accept: 'image/jpeg,image/png,image/webp' },
     merch: { label: 'Merch', accept: 'image/jpeg,image/png,image/webp,application/pdf' },
     world: { label: 'Creator World Update', accept: 'image/jpeg,image/png,image/webp,audio/mpeg,audio/wav,audio/x-wav,audio/mp4,video/mp4,application/pdf' }
@@ -18,7 +18,7 @@
     var key = createKinds[value] ? value : 'world';
     var kind = createKinds[key];
     el('createKind').value = key;
-    el('uploadFile').accept = kind.accept;
+    el('uploadFile').accept = 'image/jpeg,image/png,image/webp,audio/mpeg,audio/wav,audio/x-wav,audio/mp4,video/mp4,video/quicktime,application/pdf';
     el('createStudioTitle').textContent = 'Create ' + kind.label;
     el('uploadTitle').placeholder = 'Name this ' + kind.label.toLowerCase() + ' creation';
   }
@@ -335,19 +335,33 @@
     await loadUploads();
   }
   async function previewUpload(path, cachedUrl) { if (cachedUrl) { window.open(cachedUrl, '_blank', 'noopener'); return; } var result = await client.storage.from(uploadBucket).createSignedUrl(path, 600); if (result.error) return status('Private preview unavailable: ' + result.error.message); window.open(result.data.signedUrl, '_blank', 'noopener'); }
-  function validCreationFile(file, kind) {
-    var allowed = createKinds[kind] || createKinds.world;
-    if (file.type && allowed.accept.split(',').includes(file.type)) return true;
+  function detectedCreationKind(file) {
+    var mime = String(file.type || '').toLowerCase();
     var extension = String(file.name || '').split('.').pop().toLowerCase();
-    var extensions = { music: ['mp3','wav','m4a'], video: ['mp4'], artwork: ['jpg','jpeg','png','webp'], merch: ['jpg','jpeg','png','webp','pdf'], world: ['jpg','jpeg','png','webp','mp3','wav','m4a','mp4','pdf'] };
-    return extensions[kind].includes(extension);
+    if (mime.indexOf('video/') === 0 || ['mov','mp4','m4v'].includes(extension)) return 'video';
+    if (mime.indexOf('audio/') === 0 || ['mp3','wav','m4a','aac'].includes(extension)) return 'music';
+    if (mime.indexOf('image/') === 0 || ['jpg','jpeg','png','webp','heic','heif'].includes(extension)) return 'artwork';
+    return extension === 'pdf' || mime === 'application/pdf' ? 'merch' : '';
+  }
+  function validCreationFile(file, kind) {
+    var detected = detectedCreationKind(file);
+    if (!detected) return false;
+    if (kind === 'world') return true;
+    if (kind === 'merch') return detected === 'artwork' || detected === 'merch';
+    return detected === kind;
   }
   async function uploadMedia(event) {
     event.preventDefault();
     if (uploadBusy || !creator) return;
     var file = el('uploadFile').files[0], title = el('uploadTitle').value.trim(), kind = el('createKind').value;
     if (!file || !title) return status('Choose your media and give it a title.');
-    if (!validCreationFile(file, kind)) return status('That file does not match the selected creation type.');
+    var detectedKind = detectedCreationKind(file);
+    if (detectedKind && kind !== 'world' && !validCreationFile(file, kind)) {
+      kind = detectedKind;
+      setCreateKind(kind);
+      status('File recognized as ' + createKinds[kind].label + ' • CREATE updated automatically');
+    }
+    if (!validCreationFile(file, kind)) return status('This file format is not supported yet. Try JPG, PNG, WEBP, MP3, WAV, M4A, MP4, MOV, or PDF.');
     if (file.size > maxUploadBytes) return status('Creation rejected: 50 MB maximum.');
     uploadBusy = true; el('uploadButton').disabled = true; el('uploadButton').textContent = 'Creating…';
     var path = creator.id + '/' + user.userId + '/' + crypto.randomUUID() + '-' + safeFileName(file.name);
