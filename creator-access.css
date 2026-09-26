@@ -70,3 +70,20 @@
     letter-spacing:.1em!important;
   }
 }
+
+
+/* Production Protected Tools state */
+.tool-card{position:relative;transition:border-color .2s ease,box-shadow .2s ease,transform .2s ease}
+.tool-card .tool-state{position:absolute;top:20px;right:20px;padding:6px 9px;border:1px solid #ffffff24;border-radius:999px;color:#b9b7c0;font-size:9px;font-weight:1000;letter-spacing:.12em}
+.tool-grid .tool-action{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:999px;background:#fff;color:#050505;padding:11px 14px;font-size:13px;font-weight:1000;text-decoration:none;cursor:pointer}
+.tool-grid .tool-action:hover,.tool-grid .tool-action:focus-visible{background:#46ff67}
+.tool-card.is-active{border-color:#46ff6780;box-shadow:0 0 0 1px #46ff6720,0 18px 50px #0008}
+.tool-card.is-active .tool-state{border-color:#46ff6770;background:#46ff6714;color:#46ff67}
+.tool-card.is-active:hover{transform:translateY(-2px)}
+.tool-card.is-locked{border-color:#ffffff12;opacity:.82}
+.tool-card.is-locked .tool-state{color:#ffd64a;border-color:#ffd64a55}
+.tool-card.is-locked .tool-action,.tool-card.is-unavailable .tool-action{background:#2a2b31;color:#aaa}
+.tool-card.is-checking{opacity:.7}
+.tool-card.is-unavailable{border-color:#ff546c55}
+.tool-card.is-unavailable .tool-state{color:#ff7b8d;border-color:#ff546c55}
+@media(max-width:560px){.tool-card .tool-state{top:18px;right:18px}.tool-grid .tool-action{width:100%}}

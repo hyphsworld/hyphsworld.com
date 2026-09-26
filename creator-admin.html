@@ -62,10 +62,14 @@
           <form id="entitlementForm">
             <label>Creator<select id="adminCreator" required></select></label
             ><label
-              >Tool key<input
-                id="entitlementKey"
-                placeholder="audience_analytics"
-                required /></label
+              >Protected tool<select id="entitlementKey" required>
+                <option value="expanded_media">Creator Page Builder</option>
+                <option value="advanced_analytics">Audience Analytics</option>
+                <option value="priority_submissions">Submission Inbox</option>
+                <option value="promotion_boosts">Promotion Boosts</option>
+                <option value="direct_booking">Direct Booking</option>
+                <option value="verified_discovery">Verified Discovery</option>
+              </select></label
             ><label
               >Status<select id="entitlementStatus">
                 <option value="active">Active</option>
