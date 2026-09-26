@@ -1,6 +1,6 @@
 const fs=require('fs');
 const path=require('path');
-const root=__dirname;
+const root=path.resolve(__dirname,'..');
 const html=fs.readFileSync(path.join(root,'creator-lil-g.html'),'utf8');
 const css=fs.readFileSync(path.join(root,'creator-lil-g.css'),'utf8');
 const js=fs.readFileSync(path.join(root,'creator-lil-g.js'),'utf8');
