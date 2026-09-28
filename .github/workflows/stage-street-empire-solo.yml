@@ -109,20 +109,24 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: street-empire-solo-site
-          path: site/games/street-empire
-      - name: Publish only the new route
+          path: site/street-empire-export
+      - name: Publish verified route update
         working-directory: site
         run: |
-          test -f games/street-empire/index.html
-          if git ls-tree -r --name-only HEAD games/street-empire | grep -q .; then
-            echo "::error::Street Empire route already exists; review a replacement separately."
+          test -s street-empire-export/index.html
+          test -s games/street-empire/index.html
+          previous_source="$(git show HEAD:games/street-empire/.source-sha)"
+          if test "$previous_source" != '2158d3a6d200f946bdf84e403e174517e7b3a6f6'; then
+            echo "::error::Street Empire route changed since the reviewed export; inspect before replacing."
             exit 1
           fi
+          git rm -r --quiet games/street-empire
+          mv street-empire-export games/street-empire
           printf '%s\n' '03e7479c26b1e27523147b71779401cc8c889c73' > games/street-empire/.source-sha
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add games/street-empire
-          git commit -m 'Stage Street Empire solo web export'
+          git add -A games/street-empire
+          git commit -m 'Update Street Empire solo web export'
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             git rebase origin/main
