@@ -1,0 +1,114 @@
+name: Stage Street Empire solo web
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/stage-street-empire-solo.yml'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/stage-street-empire-solo.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: stage-street-empire-solo
+  cancel-in-progress: false
+
+jobs:
+  verify-export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Require private source access
+        env:
+          SOURCE_TOKEN: ${{ secrets.STREET_EMPIRE_READ_TOKEN }}
+        run: |
+          if test -z "$SOURCE_TOKEN"; then
+            echo "::error::Add a fine-grained read-only token for hyphsworld/STREET-EMPIRE as STREET_EMPIRE_READ_TOKEN in this repository."
+            exit 1
+          fi
+      - name: Checkout pinned Street Empire source
+        uses: actions/checkout@v4
+        with:
+          repository: hyphsworld/STREET-EMPIRE
+          ref: 2158d3a6d200f946bdf84e403e174517e7b3a6f6
+          token: ${{ secrets.STREET_EMPIRE_READ_TOKEN }}
+          path: game
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check board data
+        run: python3 game/scripts/export_game_config.py --check
+      - name: Install dependencies and typecheck
+        working-directory: game/frontend
+        run: |
+          corepack enable
+          yarn install --non-interactive
+          yarn tsc --noEmit
+      - name: Export solo build
+        working-directory: game/frontend
+        env:
+          EXPO_PUBLIC_BACKEND_URL: ''
+          CI: '1'
+        run: yarn export:web
+      - name: Add static deep links
+        run: python3 game/scripts/prepare_pages_export.py
+      - name: Verify routes and local assets
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          root = Path('game/frontend/dist')
+          for path in ('index.html', 'setup.html', 'game.html',
+                       'setup/index.html', 'game/index.html'):
+              assert (root / path).is_file(), path
+          html_files = list(root.rglob('*.html'))
+          assert html_files
+          for page in html_files:
+              text = page.read_text(encoding='utf-8')
+              for ref in re.findall(r'(?:src|href)="([^"]+)"', text):
+                  if ref.startswith('/games/street-empire/'):
+                      asset = ref.removeprefix('/games/street-empire/')
+                      assert (root / asset).is_file(), (page, ref)
+          print(f'Checked {len(html_files)} HTML routes and local assets')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: street-empire-solo-site
+          path: game/frontend/dist/
+          if-no-files-found: error
+
+  publish-route:
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    needs: verify-export
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout HYPHSWORLD main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: site
+      - uses: actions/download-artifact@v4
+        with:
+          name: street-empire-solo-site
+          path: site/games/street-empire
+      - name: Publish only the new route
+        working-directory: site
+        run: |
+          test -f games/street-empire/index.html
+          if git ls-tree -r --name-only HEAD games/street-empire | grep -q .; then
+            echo "::error::Street Empire route already exists; review a replacement separately."
+            exit 1
+          fi
+          printf '%s\n' '2158d3a6d200f946bdf84e403e174517e7b3a6f6' > games/street-empire/.source-sha
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add games/street-empire
+          git commit -m 'Stage Street Empire solo web export'
+          git push origin HEAD:main
