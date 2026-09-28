@@ -5,7 +5,7 @@
   if (window.__HYPHSWORLD_REWARD_CODE_WIDGET__) return;
   window.__HYPHSWORLD_REWARD_CODE_WIDGET__ = true;
 
-  const mountSelectors = ['.cash-run-home', '.gate-arcade-card', '.account-card', '.daily-wheel-card'];
+  const mountSelector = '[data-reward-code-mount]';
 
   function injectStyles() {
     if (document.getElementById('hwRewardCodeStyles')) return;
@@ -173,14 +173,9 @@
     injectStyles();
     if (document.querySelector('.hw-reward-code-card')) return;
 
-    const anchor = mountSelectors.map((selector) => document.querySelector(selector)).find(Boolean);
-    if (anchor) {
-      const inline = Boolean(anchor.classList.contains('gate-arcade-card') || anchor.classList.contains('account-card') || anchor.classList.contains('daily-wheel-card'));
-      anchor.insertAdjacentElement('afterend', createWidget(inline));
-      return;
-    }
-
-    document.body.appendChild(createWidget(false));
+    const anchor = document.querySelector(mountSelector);
+    if (!anchor) return;
+    anchor.appendChild(createWidget(true));
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount);
