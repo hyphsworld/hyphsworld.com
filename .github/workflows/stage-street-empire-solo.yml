@@ -30,6 +30,18 @@ jobs:
             echo "::error::Add a fine-grained read-only token for hyphsworld/STREET-EMPIRE as STREET_EMPIRE_READ_TOKEN in this repository."
             exit 1
           fi
+      - name: Verify token can read the private repository
+        env:
+          SOURCE_TOKEN: ${{ secrets.STREET_EMPIRE_READ_TOKEN }}
+        run: |
+          status="$(curl -sS -o /dev/null -w '%{http_code}' \
+            -H "Authorization: Bearer $SOURCE_TOKEN" \
+            -H 'Accept: application/vnd.github+json' \
+            https://api.github.com/repos/hyphsworld/STREET-EMPIRE)"
+          if test "$status" != 200; then
+            echo "::error::STREET_EMPIRE_READ_TOKEN cannot read hyphsworld/STREET-EMPIRE (GitHub API HTTP $status). Check the token's repository selection, Contents: Read permission, and approval/expiration."
+            exit 1
+          fi
       - name: Checkout pinned Street Empire source
         uses: actions/checkout@v4
         with:
