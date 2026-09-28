@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Point Store | HYPHSWORLD</title>
+<title>Rewards | HYPHSWORLD</title>
 <meta name="description" content="Spend HYPHSWORLD Cool Points on Vault access, music rewards, merch perks, and status badges.">
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="cool-points.css">
@@ -104,6 +104,15 @@ gtag('config','G-CT7CWHCHYC');
 .store-message.bad{
   background:linear-gradient(180deg,#ffb3b3,#d83b3b);
 }
+.rewards-hub-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start}
+.rewards-hub-grid>*{min-width:0}
+.support-portal-card{border:2px solid rgba(255,228,92,.46);border-radius:26px;background:radial-gradient(circle at 8% 10%,rgba(57,255,122,.24),transparent 34%),linear-gradient(145deg,rgba(8,12,9,.96),rgba(0,0,0,.84));box-shadow:0 20px 56px rgba(0,0,0,.36);padding:22px;color:#fff}
+.support-portal-card h3{margin:0 0 10px;color:#ffe45c;font-size:clamp(1.7rem,4vw,2.6rem);text-transform:uppercase}
+.support-portal-card p{color:rgba(255,255,255,.78);line-height:1.5}
+.support-paypal-btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 20px;border-radius:999px;background:linear-gradient(90deg,#ffe45c,#39ff7a,#1ffcff);color:#050505!important;font-weight:1000;text-transform:uppercase;text-decoration:none}
+.support-paypal-btn:focus-visible{outline:3px solid #ff4fd8;outline-offset:3px}
+.support-portal-card .support-note{font-size:.85rem}
+@media(max-width:760px){.rewards-hub-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body data-page="point-store">
@@ -114,7 +123,7 @@ gtag('config','G-CT7CWHCHYC');
       <img src="ams-logo.jpg" alt="AMS WEST logo" class="brand-logo" width="56" height="56" onerror="this.style.display='none'">
       <div>
         <div class="brand-top">AMS WEST PRESENTS</div>
-        <div class="brand-main">POINT STORE</div>
+        <div class="brand-main">REWARDS</div>
       </div>
     </a>
     <nav class="nav-links">
@@ -149,6 +158,28 @@ gtag('config','G-CT7CWHCHYC');
     </div>
     <div class="hero-art-card">
       <img src="album-art.jpg" alt="HYPHSWORLD artwork" class="hero-art" width="1200" height="1200">
+    </div>
+  </div>
+</section>
+
+<section class="section" id="rewards-hub" aria-labelledby="rewards-hub-title">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Your Rewards Hub</p>
+        <h2 id="rewards-hub-title">Rewards &amp; Codes</h2>
+      </div>
+      <p class="section-copy">Redeem codes, see your wins, or support new HYPHSWORLD drops in one place.</p>
+    </div>
+    <div class="rewards-hub-grid">
+      <div data-reward-code-mount></div>
+      <section class="support-portal-card" aria-labelledby="support-title">
+        <p class="eyebrow">Power The Portal</p>
+        <h3 id="support-title">Send Cool Points</h3>
+        <p>Support HYPHSWORLD through PayPal. Your contribution helps fund music, games, animation, and new drops.</p>
+        <a class="support-paypal-btn" href="https://paypal.me/1Hyphsworld" target="_blank" rel="noopener noreferrer">Send Cool Points</a>
+        <p class="support-note">This opens PayPal for a contribution. It does not transfer or award in-game Cool Points.</p>
+      </section>
     </div>
   </div>
 </section>
@@ -291,6 +322,7 @@ gtag('config','G-CT7CWHCHYC');
 <script src="auth-client.js"></script>
 <script src="cool-points.js"></script>
 <script src="cool-badges.js"></script>
+<script src="reward-code-widget.js?v=rewards-hub-20260928"></script>
 <script>
 (function(){
   const PURCHASES_KEY = "hyphsworld_purchases_v1";
