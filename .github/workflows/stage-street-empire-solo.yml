@@ -46,7 +46,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: hyphsworld/STREET-EMPIRE
-          ref: d752a47af85c7419056438db63d6f575965fc324
+          ref: f003eac8fdee33b25ef1b11811677228e2d12077
           token: ${{ secrets.STREET_EMPIRE_READ_TOKEN }}
           path: game
           persist-credentials: false
@@ -125,7 +125,7 @@ jobs:
           fi
           git rm -r --quiet games/street-empire
           mv street-empire-export games/street-empire
-          printf '%s\n' 'd752a47af85c7419056438db63d6f575965fc324' > games/street-empire/.source-sha
+          printf '%s\n' 'f003eac8fdee33b25ef1b11811677228e2d12077' > games/street-empire/.source-sha
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A games/street-empire
