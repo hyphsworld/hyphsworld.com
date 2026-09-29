@@ -20,9 +20,26 @@ create table if not exists public.street_empire_members (
   primary key (room_code, user_id)
 );
 create index if not exists street_empire_members_user_idx on public.street_empire_members(user_id);
+create table if not exists public.street_empire_state (
+  room_code text primary key references public.street_empire_rooms(code) on delete cascade,
+  seq bigint not null default 0,
+  payload jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
+);
+create table if not exists public.street_empire_inputs (
+  id bigint generated always as identity primary key,
+  room_code text not null references public.street_empire_rooms(code) on delete cascade,
+  user_id uuid not null references auth.users(id),
+  action jsonb not null,
+  created_at timestamptz not null default now()
+);
+create index if not exists street_empire_inputs_room_id_idx on public.street_empire_inputs(room_code,id);
 alter table public.street_empire_rooms enable row level security;
 alter table public.street_empire_members enable row level security;
+alter table public.street_empire_state enable row level security;
+alter table public.street_empire_inputs enable row level security;
 revoke all on public.street_empire_rooms, public.street_empire_members from anon, authenticated;
+revoke all on public.street_empire_state, public.street_empire_inputs from anon, authenticated;
 
 create or replace function street_empire_private.create_room(p_name text) returns text
 language plpgsql security definer set search_path = '' as $$
@@ -43,6 +60,7 @@ begin
       insert into public.street_empire_rooms(code, host_id) values (v_code, v_uid);
       insert into public.street_empire_members(room_code,user_id,name)
         values (v_code,v_uid,left(coalesce(nullif(trim(p_name),''),'Player'),24));
+      insert into public.street_empire_state(room_code) values (v_code);
       return v_code;
     exception when unique_violation then null;
     end;
@@ -76,6 +94,7 @@ end $$;
 create or replace function street_empire_private.room_status(p_code text) returns jsonb
 language plpgsql security definer set search_path = '' as $$
 declare v_uid uuid := auth.uid(); v_room public.street_empire_rooms%rowtype; v_members jsonb;
+        v_payload jsonb; v_seq bigint;
 begin
   if v_uid is null then raise exception 'SIGN_IN_REQUIRED'; end if;
   select * into v_room from public.street_empire_rooms
@@ -96,8 +115,10 @@ begin
   select coalesce(jsonb_agg(jsonb_build_object('userId',user_id,'name',name)
                              order by joined_at),'[]'::jsonb) into v_members
     from public.street_empire_members where room_code=v_room.code;
+  select payload,seq into v_payload,v_seq from public.street_empire_state where room_code=v_room.code;
   return jsonb_build_object('code',v_room.code,'host',v_room.host_id,
-                            'phase',v_room.phase,'members',v_members);
+                            'phase',v_room.phase,'members',v_members,
+                            'payload',v_payload,'seq',v_seq);
 end $$;
 
 create or replace function street_empire_private.start_room(p_code text) returns void
@@ -118,6 +139,7 @@ begin
   update public.street_empire_rooms set phase='lobby',updated_at=now()
     where code=upper(trim(p_code)) and host_id=auth.uid();
   if not found then raise exception 'HOST_REQUIRED'; end if;
+  delete from public.street_empire_inputs where room_code=upper(trim(p_code));
 end $$;
 
 create or replace function street_empire_private.leave_room(p_code text) returns void
@@ -132,31 +154,65 @@ begin
   end if;
 end $$;
 
--- A private authorization helper is used by Realtime's channel policy checks.
-create or replace function street_empire_private.channel_role(p_topic text) returns text
-language plpgsql stable security definer set search_path = '' as $$
-declare v_kind text := split_part(p_topic,':',2);
-        v_code text := split_part(p_topic,':',3);
-        v_sender text := split_part(p_topic,':',4);
-        v_uid uuid := auth.uid(); v_host uuid;
+-- Private helpers allow RLS to check membership without exposing room tables.
+create or replace function street_empire_private.is_member(p_code text) returns boolean
+language sql stable security definer set search_path = '' as $$
+  select auth.uid() is not null and exists (
+    select 1 from public.street_empire_members
+    where room_code=p_code and user_id=auth.uid()
+  )
+$$;
+create or replace function street_empire_private.is_host(p_code text) returns boolean
+language sql stable security definer set search_path = '' as $$
+  select auth.uid() is not null and exists (
+    select 1 from public.street_empire_rooms
+    where code=p_code and host_id=auth.uid()
+  )
+$$;
+
+create or replace function street_empire_private.push_state(p_code text,p_payload jsonb) returns bigint
+language plpgsql security definer set search_path = '' as $$
+declare v_seq bigint;
 begin
-  if v_uid is null or split_part(p_topic,':',1) <> 'street-empire'
-     or v_code !~ '^[A-F0-9]{6}$' then return null; end if;
-  if v_kind='state' and v_sender <> '' then return null; end if;
-  if v_kind='input' and v_sender <> v_uid::text and not exists
-      (select 1 from public.street_empire_rooms where code=v_code and host_id=v_uid)
-      then return null; end if;
-  if v_kind not in ('state','input') then return null; end if;
-  select r.host_id into v_host from public.street_empire_rooms r
-    join public.street_empire_members m on m.room_code=r.code
-    where r.code=v_code and m.user_id=v_uid;
-  if v_host is null then return null; end if;
-  if v_host=v_uid then return 'host'; end if;
-  if v_kind='input' and v_sender <> v_uid::text then return null; end if;
-  return 'member';
+  if auth.uid() is null or not street_empire_private.is_host(upper(trim(p_code)))
+    then raise exception 'HOST_REQUIRED'; end if;
+  if jsonb_typeof(p_payload) <> 'object' or octet_length(p_payload::text) > 150000
+    then raise exception 'INVALID_STATE'; end if;
+  update public.street_empire_state set seq=seq+1,payload=p_payload,updated_at=now()
+    where room_code=upper(trim(p_code)) returning seq into v_seq;
+  return v_seq;
 end $$;
 
--- Keep privileged functions outside exposed schemas; public RPCs are invokers.
+create or replace function street_empire_private.send_input(p_code text,p_action jsonb) returns bigint
+language plpgsql security definer set search_path = '' as $$
+declare v_id bigint; v_code text := upper(trim(p_code));
+begin
+  if auth.uid() is null or not street_empire_private.is_member(v_code)
+    then raise exception 'NOT_A_ROOM_MEMBER'; end if;
+  if not exists (select 1 from public.street_empire_rooms where code=v_code and phase='playing')
+    then raise exception 'GAME_NOT_STARTED'; end if;
+  if jsonb_typeof(p_action) <> 'object' or octet_length(p_action::text) > 8000
+    then raise exception 'INVALID_INPUT'; end if;
+  insert into public.street_empire_inputs(room_code,user_id,action)
+    values (v_code,auth.uid(),p_action) returning id into v_id;
+  return v_id;
+end $$;
+
+create or replace function street_empire_private.get_inputs(p_code text,p_after bigint) returns jsonb
+language plpgsql stable security definer set search_path = '' as $$
+declare v_rows jsonb;
+begin
+  if auth.uid() is null or not street_empire_private.is_host(upper(trim(p_code)))
+    then raise exception 'HOST_REQUIRED'; end if;
+  select coalesce(jsonb_agg(jsonb_build_object('id',q.id,'from',q.user_id,'action',q.action)
+                            order by q.id),'[]'::jsonb) into v_rows
+    from (select id,user_id,action from public.street_empire_inputs
+          where room_code=upper(trim(p_code)) and id > greatest(coalesce(p_after,0),0)
+          order by id limit 100) q;
+  return v_rows;
+end $$;
+
+-- Privileged code stays outside exposed schemas; public RPCs are invokers.
 create or replace function public.create_street_empire_room(p_name text) returns text
 language sql security invoker set search_path = '' as $$ select street_empire_private.create_room(p_name) $$;
 create or replace function public.join_street_empire_room(p_code text,p_name text) returns text
@@ -169,28 +225,40 @@ create or replace function public.finish_street_empire_room(p_code text) returns
 language sql security invoker set search_path = '' as $$ select street_empire_private.finish_room(p_code) $$;
 create or replace function public.leave_street_empire_room(p_code text) returns void
 language sql security invoker set search_path = '' as $$ select street_empire_private.leave_room(p_code) $$;
+create or replace function public.push_street_empire_state(p_code text,p_payload jsonb) returns bigint
+language sql security invoker set search_path = '' as $$ select street_empire_private.push_state(p_code,p_payload) $$;
+create or replace function public.send_street_empire_input(p_code text,p_action jsonb) returns bigint
+language sql security invoker set search_path = '' as $$ select street_empire_private.send_input(p_code,p_action) $$;
+create or replace function public.get_street_empire_inputs(p_code text,p_after bigint) returns jsonb
+language sql security invoker set search_path = '' as $$ select street_empire_private.get_inputs(p_code,p_after) $$;
 
 revoke all on function street_empire_private.create_room(text),street_empire_private.join_room(text,text),
   street_empire_private.room_status(text),street_empire_private.start_room(text),
   street_empire_private.finish_room(text),street_empire_private.leave_room(text),
-  street_empire_private.channel_role(text) from public,anon;
+  street_empire_private.is_member(text),street_empire_private.is_host(text),
+  street_empire_private.push_state(text,jsonb),street_empire_private.send_input(text,jsonb),
+  street_empire_private.get_inputs(text,bigint) from public,anon;
 grant execute on function street_empire_private.create_room(text),street_empire_private.join_room(text,text),
   street_empire_private.room_status(text),street_empire_private.start_room(text),
   street_empire_private.finish_room(text),street_empire_private.leave_room(text),
-  street_empire_private.channel_role(text) to authenticated;
+  street_empire_private.is_member(text),street_empire_private.is_host(text),
+  street_empire_private.push_state(text,jsonb),street_empire_private.send_input(text,jsonb),
+  street_empire_private.get_inputs(text,bigint) to authenticated;
 revoke all on function public.create_street_empire_room(text),public.join_street_empire_room(text,text),
   public.get_street_empire_room(text),public.start_street_empire_room(text),
-  public.finish_street_empire_room(text),public.leave_street_empire_room(text) from public,anon;
+  public.finish_street_empire_room(text),public.leave_street_empire_room(text),
+  public.push_street_empire_state(text,jsonb),public.send_street_empire_input(text,jsonb),
+  public.get_street_empire_inputs(text,bigint) from public,anon;
 grant execute on function public.create_street_empire_room(text),public.join_street_empire_room(text,text),
   public.get_street_empire_room(text),public.start_street_empire_room(text),
-  public.finish_street_empire_room(text),public.leave_street_empire_room(text) to authenticated;
+  public.finish_street_empire_room(text),public.leave_street_empire_room(text),
+  public.push_street_empire_state(text,jsonb),public.send_street_empire_input(text,jsonb),
+  public.get_street_empire_inputs(text,bigint) to authenticated;
 
-create policy street_empire_receive on realtime.messages for select to authenticated
-using (extension='broadcast' and private and
-       street_empire_private.channel_role(realtime.topic()) is not null);
-create policy street_empire_send on realtime.messages for insert to authenticated
-with check (extension='broadcast' and private and (
-  (split_part(realtime.topic(),':',2)='state' and street_empire_private.channel_role(realtime.topic())='host')
-  or (split_part(realtime.topic(),':',2)='input' and split_part(realtime.topic(),':',4)=auth.uid()::text
-      and street_empire_private.channel_role(realtime.topic()) is not null)
-));
+grant select on public.street_empire_state,public.street_empire_inputs to authenticated;
+create policy street_empire_state_member_read on public.street_empire_state
+  for select to authenticated using (street_empire_private.is_member(room_code));
+create policy street_empire_inputs_host_read on public.street_empire_inputs
+  for select to authenticated using (street_empire_private.is_host(room_code));
+
+alter publication supabase_realtime add table public.street_empire_state,public.street_empire_inputs;
