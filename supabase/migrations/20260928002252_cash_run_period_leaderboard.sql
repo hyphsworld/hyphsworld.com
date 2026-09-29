@@ -9,8 +9,8 @@ returns table(
   name text,
   score integer,
   level integer,
-  character text,
-  timestamp timestamptz
+  "character" text,
+  "timestamp" timestamptz
 )
 language plpgsql
 stable
@@ -29,8 +29,8 @@ begin
         coalesce(nullif(gs.metadata->>'name', ''), 'HUSTLER') as name,
         gs.score,
         greatest(1, least(99, coalesce((gs.metadata->>'level')::integer, 1))) as level,
-        case when gs.metadata->>'character' = 'girl' then 'girl' else 'boy' end as character,
-        gs.created_at as timestamp,
+        case when gs.metadata->>'character' = 'girl' then 'girl' else 'boy' end as "character",
+        gs.created_at as played_at,
         row_number() over (
           partition by gs.user_id
           order by gs.score desc, gs.created_at asc, gs.id
@@ -42,10 +42,10 @@ begin
           else interval '7 days'
         end
     )
-    select pb.id, pb.name, pb.score, pb.level, pb.character, pb.timestamp
+    select pb.id, pb.name, pb.score, pb.level, pb."character", pb.played_at
     from personal_bests pb
     where pb.best_rank = 1
-    order by pb.score desc, pb.timestamp asc, pb.id
+    order by pb.score desc, pb.played_at asc, pb.id
     limit least(greatest(coalesce(p_limit, 50), 1), 100);
 end;
 $function$;
