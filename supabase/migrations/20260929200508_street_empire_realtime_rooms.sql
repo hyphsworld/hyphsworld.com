@@ -6,14 +6,14 @@ grant usage on schema street_empire_private to authenticated;
 
 create table if not exists public.street_empire_rooms (
   code text primary key check (code ~ '^[A-F0-9]{6}$'),
-  host_id uuid not null references auth.users(id),
+  host_id uuid not null references auth.users(id) on delete cascade,
   phase text not null default 'lobby' check (phase in ('lobby','playing')),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
 create table if not exists public.street_empire_members (
   room_code text not null references public.street_empire_rooms(code) on delete cascade,
-  user_id uuid not null references auth.users(id),
+  user_id uuid not null references auth.users(id) on delete cascade,
   name text not null check (char_length(name) between 1 and 24),
   joined_at timestamptz not null default now(),
   last_seen_at timestamptz not null default now(),
@@ -29,7 +29,7 @@ create table if not exists public.street_empire_state (
 create table if not exists public.street_empire_inputs (
   id bigint generated always as identity primary key,
   room_code text not null references public.street_empire_rooms(code) on delete cascade,
-  user_id uuid not null references auth.users(id),
+  user_id uuid not null references auth.users(id) on delete cascade,
   action jsonb not null,
   created_at timestamptz not null default now()
 );
@@ -46,6 +46,7 @@ language plpgsql security definer set search_path = '' as $$
 declare v_uid uuid := auth.uid(); v_code text; v_try integer;
 begin
   if v_uid is null then raise exception 'SIGN_IN_REQUIRED'; end if;
+  perform pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended(v_uid::text, 54163));
   delete from public.street_empire_rooms r
     where r.updated_at < now() - interval '20 minutes'
       and not exists (select 1 from public.street_empire_members m
@@ -121,15 +122,19 @@ begin
                             'payload',v_payload,'seq',v_seq);
 end $$;
 
-create or replace function street_empire_private.start_room(p_code text) returns void
+create or replace function street_empire_private.start_room(p_code text) returns jsonb
 language plpgsql security definer set search_path = '' as $$
-declare v_room public.street_empire_rooms%rowtype;
+declare v_room public.street_empire_rooms%rowtype; v_members jsonb;
 begin
   if auth.uid() is null then raise exception 'SIGN_IN_REQUIRED'; end if;
   select * into v_room from public.street_empire_rooms where code=upper(trim(p_code)) for update;
   if not found or v_room.host_id <> auth.uid() then raise exception 'HOST_REQUIRED'; end if;
   if v_room.phase <> 'lobby' then raise exception 'GAME_ALREADY_STARTED'; end if;
+  select coalesce(jsonb_agg(jsonb_build_object('userId',user_id,'name',name)
+                            order by joined_at,user_id),'[]'::jsonb) into v_members
+    from public.street_empire_members where room_code=v_room.code;
   update public.street_empire_rooms set phase='playing',updated_at=now() where code=v_room.code;
+  return v_members;
 end $$;
 
 create or replace function street_empire_private.finish_room(p_code text) returns void
@@ -219,7 +224,7 @@ create or replace function public.join_street_empire_room(p_code text,p_name tex
 language sql security invoker set search_path = '' as $$ select street_empire_private.join_room(p_code,p_name) $$;
 create or replace function public.get_street_empire_room(p_code text) returns jsonb
 language sql security invoker set search_path = '' as $$ select street_empire_private.room_status(p_code) $$;
-create or replace function public.start_street_empire_room(p_code text) returns void
+create or replace function public.start_street_empire_room(p_code text) returns jsonb
 language sql security invoker set search_path = '' as $$ select street_empire_private.start_room(p_code) $$;
 create or replace function public.finish_street_empire_room(p_code text) returns void
 language sql security invoker set search_path = '' as $$ select street_empire_private.finish_room(p_code) $$;
