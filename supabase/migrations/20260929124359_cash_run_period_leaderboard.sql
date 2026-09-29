@@ -1,0 +1,4 @@
+-- Production applied the corrected rolling Chase the Bag leaderboard as
+-- 20260929124359_cash_run_period_leaderboard. The original
+-- 20260928002252 migration contains the same corrected DDL for fresh installs.
+-- Keep this version in source so migration history matches production.
