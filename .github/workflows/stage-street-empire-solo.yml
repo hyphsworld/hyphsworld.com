@@ -1,4 +1,4 @@
-name: Stage Street Empire solo web
+name: Stage Street Empire online web
 
 on:
   pull_request:
@@ -46,7 +46,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: hyphsworld/STREET-EMPIRE
-          ref: cfc33d479ea2d9676cc1c24d2eeb53317294499a
+          ref: de24576f3cdd8ca1c6eac5fc956d8e6338939706
           token: ${{ secrets.STREET_EMPIRE_READ_TOKEN }}
           path: game
           persist-credentials: false
@@ -63,7 +63,7 @@ jobs:
           yarn tsc --noEmit
           node scripts/check-solo-upgrade.js
           node scripts/check-solo-persistence.js
-      - name: Export solo build
+      - name: Export web build
         working-directory: game/frontend
         env:
           EXPO_PUBLIC_BACKEND_URL: ''
@@ -77,8 +77,9 @@ jobs:
           from pathlib import Path
           import re
           root = Path('game/frontend/dist')
-          for path in ('index.html', 'setup.html', 'game.html',
-                       'setup/index.html', 'game/index.html'):
+          for path in ('index.html', 'setup.html', 'game.html', 'online.html', 'login.html',
+                       'online-game.html', 'setup/index.html', 'game/index.html',
+                       'online/index.html', 'login/index.html', 'online-game/index.html'):
               assert (root / path).is_file(), path
           html_files = list(root.rglob('*.html'))
           assert html_files
@@ -92,7 +93,7 @@ jobs:
           PY
       - uses: actions/upload-artifact@v4
         with:
-          name: street-empire-solo-site
+          name: street-empire-online-site
           path: game/frontend/dist/
           if-no-files-found: error
 
@@ -110,7 +111,7 @@ jobs:
           path: site
       - uses: actions/download-artifact@v4
         with:
-          name: street-empire-solo-site
+          name: street-empire-online-site
           path: site/street-empire-export
       - name: Publish verified route update
         working-directory: site
@@ -118,17 +119,17 @@ jobs:
           test -s street-empire-export/index.html
           test -s games/street-empire/index.html
           previous_source="$(git show HEAD:games/street-empire/.source-sha)"
-          if test "$previous_source" != 'bf0bb841ea727e2e21a6b2befbd41b699e71e279'; then
+          if test "$previous_source" != 'cfc33d479ea2d9676cc1c24d2eeb53317294499a'; then
             echo "::error::Street Empire route changed since the reviewed export; inspect before replacing."
             exit 1
           fi
           git rm -r --quiet games/street-empire
           mv street-empire-export games/street-empire
-          printf '%s\n' 'cfc33d479ea2d9676cc1c24d2eeb53317294499a' > games/street-empire/.source-sha
+          printf '%s\n' 'de24576f3cdd8ca1c6eac5fc956d8e6338939706' > games/street-empire/.source-sha
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A games/street-empire
-          git commit -m 'Update Street Empire solo web export'
+          git commit -m 'Update Street Empire online web export'
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             git rebase origin/main
