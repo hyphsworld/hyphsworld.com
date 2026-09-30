@@ -46,7 +46,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: hyphsworld/STREET-EMPIRE
-          ref: 587d29ac88296ff84baf363823c56c555af967e6
+          ref: 125ecaad1bbe6770e2f536d018fbef0a19ad6535
           token: ${{ secrets.STREET_EMPIRE_READ_TOKEN }}
           path: game
           persist-credentials: false
@@ -65,6 +65,7 @@ jobs:
           node scripts/check-solo-persistence.js
           node scripts/check-audio-races.js
           node scripts/check-web-audio.js
+          node scripts/check-roll-cues.js
       - name: Export web build
         working-directory: game/frontend
         env:
@@ -127,7 +128,7 @@ jobs:
           fi
           git rm -r --quiet games/street-empire
           mv street-empire-export games/street-empire
-          printf '%s\n' '587d29ac88296ff84baf363823c56c555af967e6' > games/street-empire/.source-sha
+          printf '%s\n' '125ecaad1bbe6770e2f536d018fbef0a19ad6535' > games/street-empire/.source-sha
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A games/street-empire
