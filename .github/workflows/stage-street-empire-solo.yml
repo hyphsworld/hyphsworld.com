@@ -46,7 +46,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: hyphsworld/STREET-EMPIRE
-          ref: 9e6d0743fe421ec1138c3eb19bdd071bf146f495
+          ref: d88426b9ac62d16f37c11a9e1825979c3447f271
           token: ${{ secrets.STREET_EMPIRE_READ_TOKEN }}
           path: game
           persist-credentials: false
@@ -122,17 +122,17 @@ jobs:
           test -s street-empire-export/index.html
           test -s games/street-empire/index.html
           previous_source="$(git show HEAD:games/street-empire/.source-sha)"
-          if test "$previous_source" != 'd8cdfa46cea0c7cc9d5645f1fbfb822506ce819e'; then
+          if test "$previous_source" != '9e6d0743fe421ec1138c3eb19bdd071bf146f495'; then
             echo "::error::Street Empire route changed since the reviewed export; inspect before replacing."
             exit 1
           fi
           git rm -r --quiet games/street-empire
           mv street-empire-export games/street-empire
-          printf '%s\n' '9e6d0743fe421ec1138c3eb19bdd071bf146f495' > games/street-empire/.source-sha
+          printf '%s\n' 'd88426b9ac62d16f37c11a9e1825979c3447f271' > games/street-empire/.source-sha
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A games/street-empire
-          git commit -m 'Fit enlarged Street Empire board within its frame'
+          git commit -m 'Publish full-width Street Empire board and shaded cahs'
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             git rebase origin/main
