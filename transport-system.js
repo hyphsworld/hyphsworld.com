@@ -51,12 +51,11 @@
     if(title) title.textContent=data.title;
     if(destination) destination.textContent=`Destination: ${url.pathname.split('/').pop()||'home'}`;
     if(line) line.textContent=data.line;
+    overlay.style.pointerEvents='none';
     overlay.classList.add('is-live');
     overlay.setAttribute('aria-hidden','false');
-    const startHref=location.href;
-    setTimeout(()=>{location.href=url.href},650);
+    // Native link navigation stays in control; the portal is visual feedback only.
     setTimeout(()=>{
-      if(location.href!==startHref)return;
       overlay.classList.remove('is-live');
       overlay.setAttribute('aria-hidden','true');
       document.body.style.removeProperty('pointer-events');
@@ -67,7 +66,7 @@
     if(!anchor||!url)return false;
     if(anchor.dataset.noTransport==='true')return false;
     if(anchor.hasAttribute('download'))return false;
-    if(anchor.target==='_blank')return false;
+    if(anchor.target&&anchor.target!=='_self')return false;
     if(url.origin!==location.origin)return false;
     if(url.href===location.href)return false;
     if(url.protocol.indexOf('mailto')===0||url.protocol.indexOf('tel')===0)return false;
@@ -90,11 +89,12 @@
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)resetTransport()});
 
   document.addEventListener('click',(event)=>{
-    const anchor=event.target.closest('a[href]');
+    if(event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
+    const anchor=event.target.closest?.('a[href]');
     if(!anchor)return;
     const url=normalizeHref(anchor.getAttribute('href'));
     if(!shouldIntercept(anchor,url))return;
-    event.preventDefault();
-    activateTransport(url);
-  },true);
+    // An animation error must never stop a real link from opening.
+    try{activateTransport(url)}catch(error){resetTransport()}
+  });
 })();
