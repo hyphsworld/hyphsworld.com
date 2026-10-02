@@ -46,7 +46,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: hyphsworld/STREET-EMPIRE
-          ref: 949fd4784fb5727bee3db93213c66a671cfcf24e
+          ref: d25662d4b47efece8fc697f5f454169370e1df14
           token: ${{ secrets.STREET_EMPIRE_READ_TOKEN }}
           path: game
           persist-credentials: false
@@ -68,6 +68,8 @@ jobs:
           node scripts/check-roll-cues.js
           node scripts/check-game-cues.js
           node scripts/check-garage-setbacks.js
+          node scripts/check-player-customization.js
+          node scripts/check-social-session.js
           python3 scripts/check-cue-levels.py
       - name: Export web build
         working-directory: game/frontend
@@ -125,17 +127,17 @@ jobs:
           test -s street-empire-export/index.html
           test -s games/street-empire/index.html
           previous_source="$(git show HEAD:games/street-empire/.source-sha)"
-          if test "$previous_source" != 'acb843b8c88151dc2284c98474f38e30f84c9d64'; then
+          if test "$previous_source" != '949fd4784fb5727bee3db93213c66a671cfcf24e'; then
             echo "::error::Street Empire route changed since the reviewed export; inspect before replacing."
             exit 1
           fi
           git rm -r --quiet games/street-empire
           mv street-empire-export games/street-empire
-          printf '%s\n' '949fd4784fb5727bee3db93213c66a671cfcf24e' > games/street-empire/.source-sha
+          printf '%s\n' 'd25662d4b47efece8fc697f5f454169370e1df14' > games/street-empire/.source-sha
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A games/street-empire
-          git commit -m 'Publish Street Empire friends and private messaging'
+          git commit -m 'Publish Street Empire game-night passes and economy'
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             git rebase origin/main
