@@ -27,6 +27,9 @@ jobs:
       - name: Run Jest tests
         run: npm test -- --runInBand
 
+      - name: Check page loading and native navigation
+        run: node --test scripts/check-page-loading.js
+
       - name: Run diagnostics
         run: npm run diagnostics
 
