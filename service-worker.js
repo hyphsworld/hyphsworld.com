@@ -27,22 +27,21 @@ function remember(request, response, event) {
   }).catch(function () {})); // Full or unavailable storage must not break loading.
 }
 
-function fallback(request) {
+function fallback(request, unavailable) {
   return caches.match(request).then(function (cached) {
     if (cached) return cached;
     var path = new URL(request.url).pathname;
     if (request.mode === 'navigate' && (path === '/' || path === '/index.html')) {
-      return caches.match('./index.html').then(function (home) { return home || Response.error(); });
+      return caches.match('./index.html').then(function (home) { return home || unavailable || Response.error(); });
     }
-    return Response.error(); // Never substitute the homepage for another page or a script.
-  }).catch(function () { return Response.error(); });
+    return unavailable || Response.error(); // Never substitute the homepage for another page or a script.
+  }).catch(function () { return unavailable || Response.error(); });
 }
 
 function networkFirst(request, event) {
   return fetch(request).then(function (response) {
     if (response.status >= 500) {
-      return caches.match(request).then(function (cached) { return cached || response; })
-        .catch(function () { return response; });
+      return fallback(request, response);
     }
     remember(request, response, event);
     return response;

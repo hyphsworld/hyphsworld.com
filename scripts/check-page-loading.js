@@ -10,7 +10,7 @@ function worker(fetch) {
   const scope = {
     URL, Response, fetch,
     caches: {
-      match: async req => saved.get(typeof req === 'string' ? req : req.url),
+      match: async req => saved.get(typeof req === 'string' ? req : req.url)?.clone(),
       open: async () => ({ addAll: async () => {}, put: async (req, res) => { writes.push(req.url); saved.set(req.url, res); } }),
       keys: async () => ['hyphsworld-shell-v2', 'hyphsworld-runtime-v2', 'another-app-cache', 'hyphsworld-shell-v3'],
       delete: async key => { deleted.push(key); },
@@ -103,4 +103,12 @@ test('social referral pages keep native links and modified clicks intact', () =>
   assert.equal(other.timers.length, 0);
   assert.equal(other.click({ defaultPrevented: true }), false);
   assert.equal(other.timers.length, 0);
+});
+
+test('queried social homepage recovers the shell on 5xx while other failed routes keep their status', async () => {
+  const w = worker(async () => new Response('gateway', { status: 502 }));
+  w.saved.set('./index.html', new Response('home'));
+  assert.equal(await (await w.request('https://hyphsworld.com/?fbclid=example')).text(), 'home');
+  assert.equal(await (await w.request('https://hyphsworld.com/index.html?utm_source=instagram')).text(), 'home');
+  assert.equal((await w.request('https://hyphsworld.com/creator-drop.html')).status, 502);
 });
