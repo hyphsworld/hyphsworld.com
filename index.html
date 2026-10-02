@@ -54,8 +54,15 @@
     .street-empire-home h2{max-width:780px;margin:8px 0 12px;font-size:clamp(2rem,6vw,4.6rem);line-height:1.05;text-transform:uppercase}
     .street-empire-home h2 span{display:block;color:#ffe45c}
     .street-empire-home p:not(.eyebrow){max-width:620px;line-height:1.55}
-    .street-empire-home a{display:inline-flex;align-items:center;justify-content:center;min-height:48px;margin-top:8px;padding:10px 22px;border-radius:999px;background:#ffe45c;color:#111!important;font-weight:900;text-decoration:none}
-    .street-empire-home a:hover,.street-empire-home a:focus-visible{background:#fff;outline:3px solid #ffe45c;outline-offset:3px}
+    .street-empire-home .street-empire-play{display:inline-flex;align-items:center;justify-content:center;gap:14px;min-height:56px;max-width:100%;box-sizing:border-box;margin-top:8px;padding:12px 16px 12px 24px;border:1px solid #ffed94;border-radius:999px;background:linear-gradient(135deg,#fff09a,#ffe45c 55%,#ffd43b);color:#111!important;font-weight:900;text-decoration:none;box-shadow:0 6px 24px rgba(255,212,59,.18),inset 0 1px 0 rgba(255,255,255,.65);transition:transform .18s ease,box-shadow .18s ease}
+    .street-empire-play .street-empire-play-arrow{display:grid;place-items:center;flex:0 0 32px;width:32px;height:32px;border-radius:50%;background:#111;color:#ffe45c;transition:transform .18s ease}
+    .street-empire-play svg{width:18px;height:18px}
+    .street-empire-home .street-empire-play:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(255,212,59,.28),inset 0 1px 0 rgba(255,255,255,.65)}
+    .street-empire-play:hover .street-empire-play-arrow{transform:translateX(2px)}
+    .street-empire-home .street-empire-play:focus-visible{outline:3px solid #fff;outline-offset:5px}
+    .street-empire-home .street-empire-play:active{transform:translateY(0);box-shadow:0 3px 12px rgba(255,212,59,.18)}
+    @media(max-width:480px){.street-empire-home .street-empire-play{width:100%;justify-content:space-between}}
+    @media(prefers-reduced-motion:reduce){.street-empire-home .street-empire-play,.street-empire-home .street-empire-play:hover,.street-empire-home .street-empire-play:active,.street-empire-play .street-empire-play-arrow,.street-empire-play:hover .street-empire-play-arrow{transition:none;transform:none}}
     html { overflow-y: auto !important; }
     body.home-page {
       overflow-y: auto !important;
@@ -184,7 +191,7 @@
       <p class="eyebrow">NEW GAME // SOLO PLAY IS LIVE</p>
       <h2 id="street-empire-title">Street Empire <span>Around the Block</span></h2>
       <p>Roll through the Bay in solo play against the computer. Online play is coming soon.</p>
-      <a href="games/street-empire/">Play Street Empire →</a>
+      <a class="street-empire-play" href="games/street-empire/">Play Street Empire <span class="street-empire-play-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></a>
     </section>
 
     <section id="music" class="section-pad">
