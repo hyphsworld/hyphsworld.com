@@ -1,4 +1,5 @@
 name: Stage Street Empire online web
+# publish-trigger: phase-1h-retry
 # publish-trigger: phase-1g-retry
 # publish-trigger: phase-1f-retry
 
