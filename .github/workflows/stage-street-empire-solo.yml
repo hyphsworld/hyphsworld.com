@@ -46,7 +46,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: hyphsworld/STREET-EMPIRE
-          ref: ab1c93843625c76040324a7dad8cbea4a82e21db
+          ref: 30787398ebf4cb81f071060cd52f6c07e5980df4
           token: ${{ secrets.STREET_EMPIRE_READ_TOKEN }}
           path: game
           persist-credentials: false
@@ -129,17 +129,17 @@ jobs:
           test -s street-empire-export/index.html
           test -s games/street-empire/index.html
           previous_source="$(git show HEAD:games/street-empire/.source-sha)"
-          if test "$previous_source" != '4f75dbe7570fa712b93b9e41e35072ba552c1fb8'; then
+          if test "$previous_source" != 'ab1c93843625c76040324a7dad8cbea4a82e21db'; then
             echo "::error::Street Empire route changed since the reviewed export; inspect before replacing."
             exit 1
           fi
           git rm -r --quiet games/street-empire
           mv street-empire-export games/street-empire
-          printf '%s\n' 'ab1c93843625c76040324a7dad8cbea4a82e21db' > games/street-empire/.source-sha
+          printf '%s\n' '30787398ebf4cb81f071060cd52f6c07e5980df4' > games/street-empire/.source-sha
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A games/street-empire
-          git commit -m 'Publish Street Empire friend discovery and username sharing'
+          git commit -m 'Publish Street Empire 2.0 through Phase 1E'
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             git rebase origin/main
