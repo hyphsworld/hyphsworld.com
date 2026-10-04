@@ -1,0 +1,105 @@
+{
+  "measured_date": "2026-10-04",
+  "source_revision": "64f3df08f0bf45ea5360bdca4e063fb86072b5b9",
+  "tracks": [
+    {
+      "file": "2017shit80bpm.mp3",
+      "duration_seconds": 170.762464,
+      "bit_rate": 224003,
+      "sample_rate": 44100,
+      "channels": 2,
+      "integrated_lufs": -13.05,
+      "true_peak_dbtp": 1.99,
+      "loudness_range_lu": 3.7,
+      "sha256": "1bd843de241c652e2dd019cc43b60033a95254bdcad7d265d0d46b095e30e861"
+    },
+    {
+      "file": "bell-ring.mp3",
+      "duration_seconds": 99.2653,
+      "bit_rate": 160005,
+      "sample_rate": 44100,
+      "channels": 2,
+      "integrated_lufs": -16.92,
+      "true_peak_dbtp": 1.68,
+      "loudness_range_lu": 8.5,
+      "sha256": "bfc7dd5c068fb307d9237887f0dc12b956a73ad8cc37fea22d3fdae4bc2d0ca1"
+    },
+    {
+      "file": "brick-wall.mp3",
+      "duration_seconds": 52.453893,
+      "bit_rate": 225594,
+      "sample_rate": 44100,
+      "channels": 2,
+      "integrated_lufs": -10.84,
+      "true_peak_dbtp": 1.59,
+      "loudness_range_lu": 3.3,
+      "sha256": "7a1039fd188804aacae85217e99eda8b6715fb31adf6364cbf064690f805effd"
+    },
+    {
+      "file": "came-to-dance-81-7bpm-master.mp3",
+      "duration_seconds": 167.627755,
+      "bit_rate": 192052,
+      "sample_rate": 44100,
+      "channels": 2,
+      "integrated_lufs": -16.59,
+      "true_peak_dbtp": -0.47,
+      "loudness_range_lu": 16.9,
+      "sha256": "ab7c9d24944a034c602d35fe319987ff9029b345ae7483262f8a41a3ebdb8430"
+    },
+    {
+      "file": "i-g-o.mp3",
+      "duration_seconds": 212.32325,
+      "bit_rate": 320002,
+      "sample_rate": 44100,
+      "channels": 2,
+      "integrated_lufs": -13.54,
+      "true_peak_dbtp": -1.26,
+      "loudness_range_lu": 6.8,
+      "sha256": "37d46ca78cd8ca8d3bb66bd09178029a3bd10811ef840a044dde312f75d1b227"
+    },
+    {
+      "file": "sample-83bpm.mp3",
+      "duration_seconds": 254.511036,
+      "bit_rate": 224328,
+      "sample_rate": 44100,
+      "channels": 2,
+      "integrated_lufs": -6.59,
+      "true_peak_dbtp": 3.35,
+      "loudness_range_lu": 4.8,
+      "sha256": "c772ab2da0ceb3deceaba3efe013c81475566ea399f21d396ef869099d02217a"
+    },
+    {
+      "file": "smooth.mp3",
+      "duration_seconds": 173.8449,
+      "bit_rate": 160003,
+      "sample_rate": 44100,
+      "channels": 2,
+      "integrated_lufs": -17.28,
+      "true_peak_dbtp": -0.52,
+      "loudness_range_lu": 5.0,
+      "sha256": "2e621a4b3249c380f9fb23b39c466dddd7bda06452807995c47a822d80b2df6a"
+    },
+    {
+      "file": "speed-trap.mp3",
+      "duration_seconds": 92.65635,
+      "bit_rate": 160005,
+      "sample_rate": 44100,
+      "channels": 2,
+      "integrated_lufs": -12.65,
+      "true_peak_dbtp": 1.69,
+      "loudness_range_lu": 11.4,
+      "sha256": "b27358e722bc32a1bec27a1f6efb53fb1b9bb0690e44418602639d197993685a"
+    },
+    {
+      "file": "street-empire.mp3",
+      "duration_seconds": 206.83755,
+      "bit_rate": 320404,
+      "sample_rate": 44100,
+      "channels": 2,
+      "integrated_lufs": -27.56,
+      "true_peak_dbtp": -5.18,
+      "loudness_range_lu": 3.1,
+      "sha256": "4b1e6fd06df979bdd4bfc6c88c182f3519376d199b4795cab655c48adeef6b4a"
+    }
+  ]
+}

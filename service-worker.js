@@ -1,5 +1,5 @@
-var CACHE_NAME = 'hyphsworld-shell-v3';
-var RUNTIME_CACHE = 'hyphsworld-runtime-v3';
+var CACHE_NAME = 'hyphsworld-shell-v4';
+var RUNTIME_CACHE = 'hyphsworld-runtime-v4';
 var APP_SHELL = [
   './', './index.html', './styles.css', './homepage-upgrades.css',
   './mobile-app.css', './mobile-app.js', './site-experience.css', './site-experience.js',
@@ -39,13 +39,24 @@ function fallback(request, unavailable) {
 }
 
 function networkFirst(request, event) {
-  return fetch(request).then(function (response) {
+  // A sleeping radio or stalled upstream can leave fetch pending indefinitely.
+  // Bound loading so an available cached route can recover without a frozen spinner.
+  var controller = new AbortController();
+  var timer;
+  var timeout = new Promise(function (_, reject) {
+    timer = setTimeout(function () {
+      controller.abort();
+      reject(new Error('Page request timed out'));
+    }, request.mode === 'navigate' ? 10000 : 30000);
+  });
+  var network = Promise.resolve().then(function () { return fetch(request, { signal: controller.signal }); });
+  return Promise.race([network, timeout]).then(function (response) {
     if (response.status >= 500) {
       return fallback(request, response);
     }
     remember(request, response, event);
     return response;
-  }).catch(function () { return fallback(request); });
+  }).catch(function () { return fallback(request); }).finally(function () { clearTimeout(timer); });
 }
 
 function staleWhileRevalidate(request, event) {

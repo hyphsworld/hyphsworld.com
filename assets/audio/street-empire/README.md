@@ -17,3 +17,5 @@ Street Empire source PR #60 streams these files from:
 https://hyphsworld.com/assets/audio/street-empire/
 
 Keep this folder outside the generated /games/street-empire route so future game publishes do not remove the soundtrack.
+
+The nine tracks are matched to -16 LUFS (±0.3 LU), with decoded MP3 true peaks at or below -1.5 dBTP. The files retain their names, song lengths, stereo channels, and sample rates. `normalization.json` records measured output levels and checksums; `normalization-source.json` records the original inputs. Verify with `python3 scripts/normalize-street-empire-audio.py --check`. Earlier masters remain available in Git history.
