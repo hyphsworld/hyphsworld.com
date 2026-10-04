@@ -175,7 +175,7 @@
   function open() { if (!dialog.open) dialog.showModal(); notice(''); if (!client || !user) void boot(); else void refresh(); }
   function mount() {
     if (document.getElementById('hw-global-social')) return;
-    const host=document.createElement('div'); host.id='hw-global-social'; document.body.append(host); root=host.attachShadow({mode:'open'});
+    const host=document.createElement('div'); host.id='hw-global-social'; if(location.pathname.startsWith('/games/'))host.setAttribute('data-game',''); document.body.append(host); root=host.attachShadow({mode:'open'});
     const css=document.createElement('link'); css.rel='stylesheet'; css.href=new URL('global-social.css?v=1',assetRoot).href; root.append(css);
     launcher=button('',open,'launcher'); launcher.innerHTML='<span class="dot" aria-hidden="true"></span><span>Friends</span><span class="badge" hidden></span>'; badge=launcher.querySelector('.badge');root.append(launcher);
     dialog=document.createElement('dialog');dialog.setAttribute('aria-labelledby','social-title');

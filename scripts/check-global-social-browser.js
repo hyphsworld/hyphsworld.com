@@ -32,7 +32,7 @@ const server=http.createServer((req,res)=>{
       assert.ok(await host.locator('dialog').evaluate(n=>n.scrollWidth<=n.clientWidth+1),'No horizontal dialog overflow');
       await host.getByRole('textbox',{name:'Your message',exact:true}).fill('Browser test');await host.getByRole('button',{name:'Send',exact:true}).click();
       await page.waitForFunction(()=>window.__socialCalls.some(c=>c.args.p_action==='send'&&c.args.p_account==='test-user'&&c.args.p_text==='Browser test'));
-      await page.screenshot({path:'/tmp/global-social-'+viewport.width+'.png'});await page.keyboard.press('Escape');await host.locator('dialog:not([open])').waitFor();
+      await page.screenshot({path:'/tmp/global-social-'+viewport.width+'.png'});await page.keyboard.press('Escape');await page.waitForFunction(()=>!document.querySelector('#hw-global-social').shadowRoot.querySelector('dialog').open);
       assert.deepEqual(errors,[]);await page.close();console.log('PASS global friends browser '+viewport.width+'px: native modal, layout, shared controls, messaging and Escape');
     }
   }finally{await browser.close();await new Promise(resolve=>server.close(resolve));}
