@@ -36,7 +36,7 @@ test('editing a search discards its delayed results',async()=>{
 });
 test('account switch clears private state and rejects an old inbox response',async()=>{
   await open();const late=deferred();rpc.mockImplementation((name,args)=>args.p_action==='messages'?late.promise:Promise.resolve({data:args.p_action==='list'?{username:'bob',contacts:[],blocked:[]}:{ok:true}}));
-  click('Message (2)');root.querySelector('textarea').value='private draft';auth('SIGNED_IN',{user:bob});await new Promise(resolve=>setTimeout(resolve,5));await flush();
+  click('Message (2)');root.querySelector('textarea').value='private draft';auth('SIGNED_IN',{user:bob});expect(root.querySelector('textarea').value).toBe('');expect(root.querySelector('#chat').hidden).toBe(true);await new Promise(resolve=>setTimeout(resolve,5));await flush();
   late.resolve({data:[{id:1,sender:'friend',body:'Alice secret',created_at:'2026-10-04T00:00:00Z'}]});await flush();
   expect(root.textContent).not.toContain('Alice secret');expect(root.querySelector('textarea').value).toBe('');expect(root.querySelector('#chat').hidden).toBe(true);
   expect(rpc).toHaveBeenCalledWith('street_empire_social',{p_action:'list',p_account:'bob'});
@@ -68,4 +68,20 @@ test('friend acceptance and blocking use existing guarded mutations',async()=>{
   rpc.mockImplementation(async(name,args)=>({data:args.p_action==='list'?{username:'alice',contacts:[{...friend,relation:'received'}],blocked:[]}:{ok:true}}));await open();click('Accept');await flush();
   expect(rpc).toHaveBeenCalledWith('street_empire_social',{p_action:'accept',p_account:'alice',p_peer:'friend'});
   rpc.mockImplementation(async(name,args)=>({data:args.p_action==='list'?{username:'alice',contacts:[friend],blocked:[]}:{ok:true}}));await open();click('Block');await flush();expect(rpc).toHaveBeenCalledWith('street_empire_social',{p_action:'block',p_account:'alice',p_peer:'friend'});
+});
+test('received messages remain reportable without a friendship and pending requests can be blocked',async()=>{
+  rpc.mockImplementation(async(name,args)=>({data:args.p_action==='list'?{username:'alice',contacts:[{...friend,relation:'received'}],blocked:[]}:args.p_action==='report-inbox'?[{id:4,sender:'former-friend',display_name:'Former friend',body:'Received before blocking'}]:{ok:true}}));
+  await open();click('Block');await flush();expect(rpc).toHaveBeenCalledWith('street_empire_social',{p_action:'block',p_account:'alice',p_peer:'friend'});
+  click('Review received messages');await flush();expect(root.querySelector('#received-messages').textContent).toContain('Received before blocking');
+  w.prompt=()=> 'Abuse';root.querySelector('#received-messages button').click();await flush();
+  expect(rpc).toHaveBeenCalledWith('street_empire_social',{p_action:'report',p_account:'alice',p_peer:'former-friend',p_before:4,p_text:'Abuse'});
+  const late=deferred();click('Close received-message review');rpc.mockImplementation((name,args)=>args.p_action==='report-inbox'?late.promise:Promise.resolve({data:{contacts:[],blocked:[]}}));
+  click('Review received messages');await flush();auth('SIGNED_OUT',null);expect(root.querySelector('#received-review').hidden).toBe(true);
+  late.resolve({data:[{id:4,sender:'former-friend',body:'Private received history'}]});await flush();expect(root.textContent).not.toContain('Private received history');
+});
+test('secure random-byte UUID fallback supports older browsers',async()=>{
+  auth('SIGNED_OUT',null);await flush();w.crypto.randomUUID=undefined;rpc.mockClear();auth('SIGNED_IN',{user:bob});await new Promise(resolve=>setTimeout(resolve,5));await flush();
+  const touch=rpc.mock.calls.find(c=>c[0]==='touch_street_empire_presence');expect(touch).toBeDefined();expect(touch[1].p_session).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
+  await open();click('Message (2)');await flush();root.querySelector('textarea').value='Fallback message';submit('#send');await flush();
+  expect(rpc.mock.calls.find(c=>c[1].p_action==='send')[1].p_nonce).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
 });

@@ -5,10 +5,16 @@
   const assetRoot = new URL('.', document.currentScript && document.currentScript.src || location.origin + '/global-social.js');
   let client, user = null, generation = 0, authEpoch = 0, stopped = false;
   let contacts = [], blocked = [], results = [], username = '', peer = null, messages = [];
-  let searchEpoch = 0, chatEpoch = 0, refreshing = false, sending = false, retry = null, leaseEpoch = 0;
+  let searchEpoch = 0, chatEpoch = 0, reviewEpoch = 0, reviewOpen = false, reviewMessages = [], refreshing = false, sending = false, retry = null, leaseEpoch = 0;
   let presenceQueue = Promise.resolve(), timer, heartbeatAt = 0, sessionId;
-  let contactsSignature = null, chatSignature = null, root, dialog, launcher, status, contactList, searchList, chatList, input, draft, sendButton, badge, identity, chatTitle;
-  const uuid = () => crypto.randomUUID();
+  let contactsSignature = null, chatSignature = null, reviewSignature = null, root, dialog, launcher, status, contactList, searchList, chatList, input, draft, sendButton, badge, identity, chatTitle;
+  const uuid = () => {
+    if (typeof crypto.randomUUID === 'function') return crypto.randomUUID();
+    if (typeof crypto.getRandomValues !== 'function') throw new Error('Secure messaging is unavailable in this browser. Use an updated browser.');
+    const bytes = crypto.getRandomValues(new Uint8Array(16)); bytes[6]=(bytes[6]&15)|64; bytes[8]=(bytes[8]&63)|128;
+    const hex=Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');
+    return [hex.slice(0,8),hex.slice(8,12),hex.slice(12,16),hex.slice(16,20),hex.slice(20)].join('-');
+  };
   const visible = () => !stopped && document.visibilityState !== 'hidden' && navigator.onLine !== false;
   const account = () => user && user.id;
   const valid = (g, id) => g === generation && id === account() && visible();
@@ -60,10 +66,12 @@
     const next = session && session.user && !session.user.is_anonymous ? session.user : null;
     if (next && user && next.id === user.id) { user = next; return; }
     if (!next && !user) return;
-    lease(false); ++generation; ++searchEpoch; ++chatEpoch; user = next; sessionId = next ? uuid() : null;
+    const nextSession = next ? uuid() : null;
+    lease(false); ++generation; ++searchEpoch; ++chatEpoch; ++reviewEpoch; user = next; sessionId = nextSession;
+    reviewOpen=false; reviewMessages=[];
     contacts = []; blocked = []; results = []; username = ''; peer = null; messages = []; retry = null;
     input.value = ''; draft.value = ''; notice(''); render();
-    if (user && visible()) { lease(true); void refresh(); }
+    if (user && visible()) { const g=generation,id=account(); setTimeout(()=>{if(valid(g,id)){lease(true);void refresh();}},0); }
   }
   function presenceLabel(contact) { return contact.activity === 'playing' ? 'Playing' : contact.activity === 'available' ? 'Online' : 'Offline'; }
   async function mutate(action, id, control) {
@@ -82,10 +90,10 @@
       const state = text('div', presenceLabel(contact), 'muted'); state.prepend(text('span', '', 'dot' + (contact.activity ? ' online' : '')), ' '); info.append(state);
       actions.append(button('Message' + (contact.unread ? ' (' + contact.unread + ')' : ''), () => openChat(contact), 'primary'));
       if (!search) { actions.append(actionButton('Remove', 'remove', contact.user_id)); actions.append(actionButton('Block', 'block', contact.user_id, 'danger')); }
-    } else if (relation === 'received') actions.append(actionButton('Accept', 'accept', contact.user_id, 'primary'), actionButton('Decline','decline',contact.user_id));
-    else if (relation === 'sent') actions.append(text('span','Request sent','muted'),actionButton('Cancel','remove',contact.user_id));
+    } else if (relation === 'received') actions.append(actionButton('Accept', 'accept', contact.user_id, 'primary'), actionButton('Decline','decline',contact.user_id), actionButton('Block','block',contact.user_id,'danger'));
+    else if (relation === 'sent') actions.append(text('span','Request sent','muted'),actionButton('Cancel','remove',contact.user_id),actionButton('Block','block',contact.user_id,'danger'));
     else if (relation === 'unavailable') actions.append(actionButton('Remove','remove',contact.user_id));
-    else actions.append(actionButton('Add friend','request',contact.user_id,'primary'));
+    else actions.append(actionButton('Add friend','request',contact.user_id,'primary'),actionButton('Block','block',contact.user_id,'danger'));
     line.append(info,actions); return line;
   }
   function renderResults() { empty(searchList); results.forEach(r => searchList.append(row(Object.assign({},r,contacts.find(c=>c.user_id===r.user_id)),true))); }
@@ -124,7 +132,25 @@
     if (wasAtBottom) chatList.scrollTop = chatList.scrollHeight;
     sendButton.disabled = sending || !user;
   }
-  function render() { renderIdentity(); renderContacts(); renderResults(); renderChat(); root.querySelector('#search-submit').disabled = !user; }
+  function renderReview() {
+    const signature=JSON.stringify([reviewOpen,reviewMessages,Boolean(user)]);if(signature===reviewSignature)return;reviewSignature=signature;
+    const section=root.querySelector('#received-review'), list=root.querySelector('#received-messages');
+    section.hidden=!reviewOpen; empty(list); root.querySelector('#review-received').disabled=!user;
+    root.querySelector('#review-received').textContent=reviewOpen?'Close received-message review':'Review received messages';
+    for(const message of reviewMessages){
+      const bubble=text('div',message.body,'message'); bubble.prepend(text('strong',message.display_name||'Player'));
+      bubble.append(button('Report',()=>void report(message),'danger')); list.append(bubble);
+    }
+    if(reviewOpen&&!reviewMessages.length)list.append(text('p','No received messages in this review.','empty'));
+  }
+  async function reviewReceived() {
+    reviewOpen=!reviewOpen;reviewMessages=[];const epoch=++reviewEpoch,g=generation,id=account();renderReview();
+    if(!reviewOpen)return;notice('Loading received messages…');
+    try{const data=await rpc('report-inbox',{},g,id);if(!data||epoch!==reviewEpoch||!reviewOpen||!dialog.open)return;
+      reviewMessages=Array.isArray(data)?data:[];renderReview();notice('You can report received messages even after a block or removal.');
+    }catch(e){if(epoch===reviewEpoch)fail(e,g,id);}
+  }
+  function render() { renderIdentity(); renderContacts(); renderResults(); renderChat(); renderReview(); root.querySelector('#search-submit').disabled = !user; }
   async function loadMessages(older) {
     if (!peer || !dialog.open) return;
     const g=generation, me=account(), id=peer.user_id, epoch=chatEpoch;
@@ -179,10 +205,10 @@
     const css=document.createElement('link'); css.rel='stylesheet'; css.href=new URL('global-social.css?v=1',assetRoot).href; root.append(css);
     launcher=button('',open,'launcher'); launcher.innerHTML='<span class="dot" aria-hidden="true"></span><span>Friends</span><span class="badge" hidden></span>'; badge=launcher.querySelector('.badge');root.append(launcher);
     dialog=document.createElement('dialog');dialog.setAttribute('aria-labelledby','social-title');
-    dialog.innerHTML='<header><div><h2 id="social-title">Your people</h2><p class="muted">Friends & messages across HYPHSWORLD</p></div><button id="close" type="button" aria-label="Close friends">×</button></header><div class="body"><div class="identity"></div><p class="status" role="status" aria-live="polite"></p><section id="chat" hidden><div class="actions"><button id="back" type="button">Back to friends</button></div><h3 id="chat-title"></h3><button id="older" type="button">Older messages</button><div class="messages" aria-label="Messages"></div><form id="send"><textarea aria-label="Your message" maxlength="1000" placeholder="Write a message"></textarea><button class="primary" type="submit">Send</button></form></section><h3>Friends & requests</h3><div id="contacts"></div><h3>Find your people</h3><form id="search"><input aria-label="Username or display name" placeholder="Username or display name" maxlength="64" autocomplete="off"><button id="search-submit" type="submit">Search</button></form><div id="search-results"></div><details id="blocked" hidden><summary>Blocked players</summary><div id="blocked-list"></div></details><p class="muted">Messages are private between accepted friends. Online status may take up to 75 seconds to expire after disconnecting.</p></div>';
+    dialog.innerHTML='<header><div><h2 id="social-title">Your people</h2><p class="muted">Friends & messages across HYPHSWORLD</p></div><button id="close" type="button" aria-label="Close friends">×</button></header><div class="body"><div class="identity"></div><p class="status" role="status" aria-live="polite"></p><section id="chat" hidden><div class="actions"><button id="back" type="button">Back to friends</button></div><h3 id="chat-title"></h3><button id="older" type="button">Older messages</button><div class="messages" aria-label="Messages"></div><form id="send"><textarea aria-label="Your message" maxlength="1000" placeholder="Write a message"></textarea><button class="primary" type="submit">Send</button></form></section><h3>Friends & requests</h3><div id="contacts"></div><h3>Find your people</h3><form id="search"><input aria-label="Username or display name" placeholder="Username or display name" maxlength="64" autocomplete="off"><button id="search-submit" type="submit">Search</button></form><div id="search-results"></div><details id="blocked" hidden><summary>Blocked players</summary><div id="blocked-list"></div></details><button id="review-received" type="button">Review received messages</button><section id="received-review" hidden><h3>Received-message review</h3><p class="muted">Your latest 50 received messages stay reportable after a block or friend removal.</p><div id="received-messages"></div></section><p class="muted">Messages are private between accepted friends. Online status may take up to 75 seconds to expire after disconnecting.</p></div>';
     root.append(dialog); status=root.querySelector('.status');identity=root.querySelector('.identity');contactList=root.querySelector('#contacts');searchList=root.querySelector('#search-results');chatList=root.querySelector('.messages');input=root.querySelector('input');draft=root.querySelector('textarea');sendButton=root.querySelector('#send button');chatTitle=root.querySelector('#chat-title');
-    root.querySelector('#close').onclick=()=>dialog.close(); dialog.addEventListener('close',()=>{++searchEpoch;++chatEpoch;peer=null;messages=[];retry=null;draft.value='';renderChat();launcher.focus();});
-    root.querySelector('#back').onclick=()=>{++chatEpoch;peer=null;messages=[];retry=null;draft.value='';renderChat();};root.querySelector('#older').onclick=()=>void loadMessages(true);
+    root.querySelector('#close').onclick=()=>dialog.close(); dialog.addEventListener('close',()=>{++searchEpoch;++chatEpoch;++reviewEpoch;reviewOpen=false;reviewMessages=[];renderReview();peer=null;messages=[];retry=null;draft.value='';renderChat();launcher.focus();});
+    root.querySelector('#back').onclick=()=>{++chatEpoch;peer=null;messages=[];retry=null;draft.value='';renderChat();};root.querySelector('#older').onclick=()=>void loadMessages(true);root.querySelector('#review-received').onclick=()=>void reviewReceived();
     root.querySelector('#search').addEventListener('submit',search);input.addEventListener('input',()=>{++searchEpoch;results=[];renderResults();notice('');});root.querySelector('#send').addEventListener('submit',send);
     render();void boot();timer=setInterval(()=>{if(!visible()||!user)return;if(Date.now()-heartbeatAt>=25000)lease(true);void refresh();},5000);
     document.addEventListener('visibilitychange',lifecycle);window.addEventListener('offline',lifecycle);window.addEventListener('online',lifecycle);
@@ -201,7 +227,7 @@
       });
       if (!window.HWAuth) throw new Error('Sign-in service unavailable. Reload this page to retry.');
       client=await window.HWAuth.getClient();if(!client)throw new Error('Sign-in service unavailable.');
-      if(!subscribed){client.auth.onAuthStateChange((_event,session)=>{const epoch=++authEpoch;setTimeout(()=>{if(epoch===authEpoch)reset(session);},0);});subscribed=true;}
+      if(!subscribed){client.auth.onAuthStateChange((_event,session)=>{++authEpoch;try{reset(session);}catch(error){notice(error.message);}});subscribed=true;}
       const epoch=authEpoch;const result=await client.auth.getSession();if(result.error)throw result.error;if(epoch===authEpoch)reset(result.data.session);
     } catch(e) { notice(e.message||'Could not connect. Reopen Friends to retry.'); } finally { booting=false; }
   }
