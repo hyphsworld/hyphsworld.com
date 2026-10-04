@@ -31,7 +31,14 @@ jobs:
           sudo apt-get install -y ffmpeg
       - name: Prepare and verify matching soundtrack assets
         run: |
-          python3 scripts/normalize-street-empire-audio.py --output /tmp/street-empire-normalized
+          if [ -f assets/audio/street-empire/normalization.json ]; then
+            python3 scripts/normalize-street-empire-audio.py --check
+          fi
+          SOURCE_REVISION=$(python3 -c 'import json; print(json.load(open("assets/audio/street-empire/normalization-source.json"))["source_revision"])')
+          git fetch --depth=1 origin "$SOURCE_REVISION"
+          mkdir -p /tmp/street-empire-originals
+          git archive "$SOURCE_REVISION" assets/audio/street-empire | tar -x -C /tmp/street-empire-originals
+          python3 scripts/normalize-street-empire-audio.py --source /tmp/street-empire-originals/assets/audio/street-empire --output /tmp/street-empire-normalized
           cp /tmp/street-empire-normalized/*.mp3 assets/audio/street-empire/
           cp /tmp/street-empire-normalized/normalization.json assets/audio/street-empire/
           python3 scripts/normalize-street-empire-audio.py --check

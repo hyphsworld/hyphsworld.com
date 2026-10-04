@@ -39,9 +39,9 @@ def measure(file):
     return stats
 
 
-def normalize(entry, output):
+def normalize(entry, output, source_directory=SOURCE):
     name = entry["file"]
-    source = SOURCE / name
+    source = source_directory / name
     if sha256(source) != entry["sha256"]:
         raise ValueError(f"{name} changed since the source measurements; refusing to overwrite user edits")
     original = probe(source)
@@ -92,17 +92,19 @@ def verify():
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--source", type=Path, default=SOURCE,
+                        help="Directory containing the checksum-pinned original masters")
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
     if args.check:
         verify()
         return
-    if not args.output or args.output.resolve() == SOURCE.resolve():
+    if not args.output or args.output.resolve() in {SOURCE.resolve(), args.source.resolve()}:
         parser.error("Use a separate --output directory to preserve the source files")
     args.output.mkdir(parents=True, exist_ok=True)
     entries = json.loads((SOURCE / "normalization-source.json").read_text())["tracks"]
     with concurrent.futures.ThreadPoolExecutor(max_workers=3) as pool:
-        results = list(pool.map(lambda entry: normalize(entry, args.output), entries))
+        results = list(pool.map(lambda entry: normalize(entry, args.output, args.source), entries))
     report = {"target_lufs": TARGET_LUFS, "maximum_true_peak_dbtp": MAX_TRUE_PEAK,
               "tolerance_lu": 0.3, "tracks": results}
     (args.output / "normalization.json").write_text(json.dumps(report, indent=2) + "\n")
