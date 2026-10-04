@@ -6,19 +6,22 @@ const path = require('node:path');
 const read = name => fs.readFileSync(path.join(__dirname, '..', name), 'utf8');
 
 function worker(fetch) {
-  const handlers = {}, saved = new Map(), writes = [], deleted = [];
+  const handlers = {}, saved = new Map(), writes = [], deleted = [], timers = new Map();
+  let nextTimer = 0;
   const scope = {
-    URL, Response, fetch,
+    URL, Response, fetch, AbortController,
+    setTimeout: (fn, ms) => { const id = ++nextTimer; timers.set(id, { fn, ms }); return id; },
+    clearTimeout: id => timers.delete(id),
     caches: {
       match: async req => saved.get(typeof req === 'string' ? req : req.url)?.clone(),
       open: async () => ({ addAll: async () => {}, put: async (req, res) => { writes.push(req.url); saved.set(req.url, res); } }),
-      keys: async () => ['hyphsworld-shell-v2', 'hyphsworld-runtime-v2', 'another-app-cache', 'hyphsworld-shell-v3'],
+      keys: async () => ['hyphsworld-shell-v2', 'hyphsworld-runtime-v2', 'another-app-cache', 'hyphsworld-shell-v3', 'hyphsworld-shell-v4', 'hyphsworld-runtime-v4'],
       delete: async key => { deleted.push(key); },
     },
     self: { location: { origin: 'https://hyphsworld.com' }, addEventListener: (name, fn) => { handlers[name] = fn; }, skipWaiting() {}, clients: { claim: async () => {} } },
   };
   vm.runInNewContext(read('service-worker.js'), scope);
-  return { saved, writes, deleted, handlers, async request(url, mode = 'navigate', headers = {}) {
+  return { saved, writes, deleted, handlers, timers, async request(url, mode = 'navigate', headers = {}) {
     const pending = []; let response;
     handlers.fetch({ request: { url, mode, method: 'GET', headers: new Headers(headers) }, waitUntil: p => pending.push(p), respondWith: p => { response = p; } });
     const result = await response;
@@ -41,6 +44,34 @@ test('offline and 502 pages recover their own cached page', async () => {
   }
 });
 
+test('stalled navigation aborts and recovers its own cached page', async () => {
+  let signal;
+  const w = worker((_req, options) => { signal = options.signal; return new Promise(() => {}); });
+  w.saved.set('https://hyphsworld.com/games.html', new Response('games'));
+  const pending = w.request('https://hyphsworld.com/games.html');
+  await Promise.resolve();
+  assert.equal([...w.timers.values()][0].ms, 10000);
+  [...w.timers.values()][0].fn();
+  assert.equal(await (await pending).text(), 'games');
+  assert.equal(signal.aborted, true);
+  assert.equal(w.timers.size, 0);
+});
+
+test('stalled uncached routes fail promptly without displaying the wrong page', async () => {
+  const w = worker(() => new Promise(() => {}));
+  w.saved.set('./index.html', new Response('home'));
+  const pending = w.request('https://hyphsworld.com/creator-drop.html');
+  [...w.timers.values()][0].fn();
+  assert.equal((await pending).type, 'error');
+  assert.equal(w.timers.size, 0);
+});
+
+test('successful network requests cancel their recovery timer', async () => {
+  const w = worker(async () => new Response('live'));
+  assert.equal(await (await w.request('https://hyphsworld.com/')).text(), 'live');
+  assert.equal(w.timers.size, 0);
+});
+
 test('missing offline routes never masquerade as the homepage; real 404 stays visible', async () => {
   const w = worker(async () => { throw Error('offline'); });
   w.saved.set('./index.html', new Response('home'));
@@ -60,7 +91,7 @@ test('cache cleanup preserves caches belonging to other apps', async () => {
   const w = worker(async () => new Response('ok')); let pending;
   w.handlers.activate({ waitUntil: p => { pending = p; } });
   await pending;
-  assert.deepEqual(w.deleted, ['hyphsworld-shell-v2', 'hyphsworld-runtime-v2']);
+  assert.deepEqual(w.deleted, ['hyphsworld-shell-v2', 'hyphsworld-runtime-v2', 'hyphsworld-shell-v3']);
 });
 
 test('cache write failure cannot turn a successful page into a load error', async () => {
@@ -68,7 +99,7 @@ test('cache write failure cannot turn a successful page into a load error', asyn
   // Force the same cache path used by remember() to fail.
   const handlers = {}; const pending = [];
   vm.runInNewContext(read('service-worker.js'), {
-    URL, Response, fetch: async () => new Response('loaded'),
+    URL, Response, AbortController, setTimeout, clearTimeout, fetch: async () => new Response('loaded'),
     caches: { open: async () => { throw Error('quota'); }, match: async () => undefined },
     self: { location: { origin: 'https://hyphsworld.com' }, addEventListener: (n,f) => { handlers[n]=f; } },
   });

@@ -1,0 +1,57 @@
+name: Prepare verified Street Empire soundtrack levels
+
+on:
+  push:
+    branches: [fix/street-empire-stability-and-audio-levels]
+    paths:
+      - '.github/workflows/prepare-street-empire-audio.yml'
+      - 'scripts/normalize-street-empire-audio.py'
+      - 'assets/audio/street-empire/normalization-source.json'
+  pull_request:
+    paths:
+      - 'assets/audio/street-empire/**'
+      - 'scripts/normalize-street-empire-audio.py'
+      - '.github/workflows/prepare-street-empire-audio.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  prepare-review-assets:
+    if: github.event_name == 'push' && github.repository == 'hyphsworld/hyphsworld.com' && github.ref == 'refs/heads/fix/street-empire-stability-and-audio-levels'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install audio measurement tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+      - name: Prepare and verify matching soundtrack assets
+        run: |
+          python3 scripts/normalize-street-empire-audio.py --output /tmp/street-empire-normalized
+          cp /tmp/street-empire-normalized/*.mp3 assets/audio/street-empire/
+          cp /tmp/street-empire-normalized/normalization.json assets/audio/street-empire/
+          python3 scripts/normalize-street-empire-audio.py --check
+      - name: Commit prepared assets to the review branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/audio/street-empire/*.mp3 assets/audio/street-empire/normalization.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Match nine Street Empire soundtrack tracks at -16 LUFS'
+          git push origin HEAD:fix/street-empire-stability-and-audio-levels
+  verify-review-assets:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install audio measurement tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+      - name: Verify encoded MP3 loudness, peaks and checksums
+        run: python3 scripts/normalize-street-empire-audio.py --check
