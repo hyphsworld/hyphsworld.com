@@ -1,3 +1,14 @@
+// Shared friends load once, including pages without account controls.
+(function () {
+  if (document.getElementById('hw-global-social-script')) return;
+  var social = document.createElement('script');
+  social.id = 'hw-global-social-script';
+  social.src = '/global-social.js?v=1';
+  social.async = true;
+  social.onerror = function () { social.remove(); };
+  document.head.appendChild(social);
+})();
+
 (function () {
   'use strict';
 
@@ -144,3 +155,4 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install, { once: true });
   else install();
 })();
+

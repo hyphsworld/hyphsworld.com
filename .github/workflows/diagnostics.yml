@@ -27,6 +27,19 @@ jobs:
       - name: Run Jest tests
         run: npm test -- --runInBand
 
+      - name: Check global friends phone and desktop layouts
+        run: |
+          npm install --prefix /tmp/hw-social-browser --no-save playwright@1.62.1
+          /tmp/hw-social-browser/node_modules/.bin/playwright install --with-deps chromium --only-shell
+          NODE_PATH=/tmp/hw-social-browser/node_modules node scripts/check-global-social-browser.js
+
+      - name: Upload global friends layout previews
+        uses: actions/upload-artifact@v4
+        with:
+          name: global-friends-layouts
+          path: /tmp/global-social-*.png
+          if-no-files-found: error
+
       - name: Check page loading and native navigation
         run: node --test scripts/check-page-loading.js
 

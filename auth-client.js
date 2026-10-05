@@ -1,3 +1,14 @@
+// Shared friends load once, including pages without account controls.
+(function () {
+  if (document.getElementById('hw-global-social-script')) return;
+  var social = document.createElement('script');
+  social.id = 'hw-global-social-script';
+  social.src = '/global-social.js?v=1';
+  social.async = true;
+  social.onerror = function () { social.remove(); };
+  document.head.appendChild(social);
+})();
+
 (function (global) {
   'use strict';
   const CONFIG_FILE = 'supabase-config.js';
@@ -448,3 +459,4 @@
   }
   global.HWAuth = { getProviderStatus, getClient, signUpWithEmail, signInWithEmail, signInWithEmailLink, resendConfirmation, signInWithGoogle, signOut, getSession, getCurrentUser, updateProfile, updateUsername, getPoints, setPoints, addPoints, grantVaultAccess, avatarIcon };
 })(window);
+
