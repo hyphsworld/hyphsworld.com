@@ -10,7 +10,9 @@
     'creator-b3llygang-h3rsch.html': 'b3llygang-h3rsch',
     'creator-nitti-bo.html': 'nitti-bo',
     'creator-lil-g.html': 'lil-g',
-    'creator-sixx-figgaz.html': 'sixx-figgaz'
+    'creator-sixx-figgaz.html': 'sixx-figgaz',
+    'creator-ykomusic.html': 'ykomusic',
+    'creator-kili-631.html': 'kili-631'
   };
   var slug = slugs[file];
   if (!slug) return;
