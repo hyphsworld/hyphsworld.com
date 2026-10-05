@@ -9,7 +9,7 @@ const admin = read('creator-admin.js');
 const migration = read('supabase/migrations/20260921074638_creator_world_rollout_readiness.sql');
 const ticker = read('homepage-command-center.js');
 assert(directory.includes('creator-apply.html'), 'Directory must expose Creator World applications');
-assert(access.includes('apply now'), 'Creator Access must replace the dead request button with a real application');
+assert(access.includes('href="creator-apply.html"'), 'Creator Access must replace the dead request button with a real application');
 assert(applyHtml.includes('human review'), 'Application must disclose human review');
 assert(applyJs.includes("from('creator_applications')"), 'Application form must persist to Supabase');
 assert(admin.includes('creator_admin_decide_application'), 'Owner Control must review applications through the protected RPC');

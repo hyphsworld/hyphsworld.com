@@ -31,7 +31,7 @@ pad.addEventListener("click", () => {
 
   if (scanSound) {
     scanSound.currentTime = 0;
-    scanSound.play();
+    scanSound.play().catch(() => {});
   }
 
   setTimeout(() => {
@@ -47,7 +47,7 @@ pad.addEventListener("click", () => {
 
     if (grantedSound) {
       grantedSound.currentTime = 0;
-      grantedSound.play();
+      grantedSound.play().catch(() => {});
     }
 
     pad.style.transform = "scale(1.06) rotate(1deg)";
@@ -59,7 +59,7 @@ pad.addEventListener("click", () => {
 
     if (transportSound) {
       transportSound.currentTime = 0;
-      transportSound.play();
+      transportSound.play().catch(() => {});
     }
 
     document.body.style.transition = "transform 1.2s ease, filter 1.2s ease";

@@ -2,6 +2,8 @@
 const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
+const { JSDOM } = require('jsdom');
+const { files } = require('./diagnostic-files');
 
 const ROOT = process.cwd();
 const KEY_PAGES = ['index.html', 'vault.html', 'games.html', 'games/cash-run/index.html'];
@@ -21,6 +23,20 @@ function jsFiles(dir, out=[]) {
 }
 
 const failures = [];
+let references = 0;
+for (const file of files(ROOT).filter(file => file.endsWith('.html'))) {
+  const dom = new JSDOM(fs.readFileSync(file, 'utf8'));
+  for (const element of dom.window.document.querySelectorAll('[src],[href]')) {
+    const ref = element.getAttribute('src') || element.getAttribute('href');
+    if (!ref || /^(?:[a-z]+:|\/\/|#|\?)/i.test(ref)) continue;
+    const local = ref.split(/[?#]/)[0];
+    const target = path.resolve(ref.startsWith('/') ? ROOT : path.dirname(file), local.replace(/^\//, ''));
+    references++;
+    if (!fs.existsSync(target)) failures.push(`missing local reference: ${path.relative(ROOT, file)} -> ${ref}`);
+  }
+  dom.window.close();
+}
+
 
 for (const page of KEY_PAGES) {
   if (!exists(page)) failures.push(`missing page: ${page}`);
@@ -61,4 +77,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('Consumer diagnostic passed: key pages/assets/hooks are present and JS syntax checks passed.');
+console.log(`Consumer diagnostic passed: key pages/assets/hooks, ${references} local HTML references, and JS syntax checks passed.`);
