@@ -133,3 +133,5 @@ body.skate-hub[data-hw-experience="site"] { background: var(--skate-paper); colo
 body.skate-hub[data-hw-experience="site"] main { padding-left: 0; padding-right: 0; }
 .skate-hub .duckBox { display: none !important; }
 .creator-profile .creator-hero .verification-line .verified { background: #152220 !important; color: #fff !important; border-color: #0b756c !important; box-shadow: none !important; }
+
+.creator-profile .creator-hero .alias { color: #42534e; line-height: 1.5; }

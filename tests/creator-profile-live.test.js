@@ -50,3 +50,20 @@ test.each(['creator-ykomusic.html', 'creator-kili-631.html'])('new Latin worlds 
   expect(filters[0]).toEqual(['slug', file.replace('creator-', '').replace('.html', '')]);
   dom.window.close();
 });
+
+
+test('every public creator page loads the client before its live profile and published creations', () => {
+  const root = path.join(__dirname, '..');
+  const files = fs.readdirSync(root).filter(file => file.endsWith('.html') && /<body class="[^"]*creator-profile/.test(fs.readFileSync(path.join(root, file), 'utf8')));
+  expect(files).toHaveLength(10);
+  for (const file of files) {
+    const html = fs.readFileSync(path.join(root, file), 'utf8');
+    const dom = new JSDOM(html);
+    const scripts = Array.from(dom.window.document.querySelectorAll('script[src]'), node => node.getAttribute('src').split('?')[0]);
+    expect({ file, config: scripts.includes('supabase-config.js'), auth: scripts.includes('auth-client.js'), publications: scripts.includes('creator-published-media.js') }).toEqual({ file, config: true, auth: true, publications: true });
+    expect(scripts.indexOf('supabase-config.js')).toBeLessThan(scripts.indexOf('auth-client.js'));
+    expect(scripts.indexOf('auth-client.js')).toBeLessThan(scripts.indexOf('creator-profile-live.js'));
+    expect(scripts.indexOf('auth-client.js')).toBeLessThan(scripts.indexOf('creator-published-media.js'));
+    dom.window.close();
+  }
+});
