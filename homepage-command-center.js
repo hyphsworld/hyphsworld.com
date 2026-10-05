@@ -93,13 +93,13 @@
     var loggedIn = Boolean(state.user || state.accountBacked);
     var profile = state.profile || state.user || {};
     var points = loggedIn ? cleanPoints(state.points) : 0;
-    var name = state.displayName || profile.display_name || profile.displayName || profile.username || (profile.email ? String(profile.email).split('@')[0] : '') || 'HYPHSWORLD Guest';
+    var name = state.displayName || profile.display_name || profile.displayName || profile.username || (profile.email ? String(profile.email).split('@')[0] : '') || 'Create your HYPHSWORLD ID';
     var avatar = state.avatarIcon || profile.avatar_icon || profile.avatarIcon || '🧢';
     var rank = loggedIn ? (state.rankTitle || profile.rank_title || 'Lobby Rookie') : 'Login Required';
     var next = nextLevel(points);
     var recent = storageGet(RECENT_KEY) || 'Homepage';
     text('[data-home-id-avatar]', avatar);
-    text('[data-home-id-state]', loggedIn ? 'HYPHSWORLD ID // LIVE' : 'GUEST MODE');
+    text('[data-home-id-state]', loggedIn ? 'HYPHSWORLD ID // LIVE' : 'JOIN HYPHSWORLD');
     text('[data-home-id-name]', name);
     text('[data-home-id-points]', points.toLocaleString());
     text('[data-home-id-rank]', rank);

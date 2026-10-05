@@ -181,16 +181,10 @@
   }
 
   function ensureHud() {
-    ensureHudStyle();
     if (!document.body) return null;
-    let hud = document.getElementById('hwGlobalPointsHud');
-    if (hud) return hud;
-
-    hud = document.createElement('aside');
-    hud.id = 'hwGlobalPointsHud';
-    hud.innerHTML = '<div class="hwgp-icon" data-hw-avatar>🧢</div><div><strong data-hw-points>0</strong><span>Cool Points</span></div><small data-hw-rank>Login Required</small>';
-    document.body.appendChild(hud);
-    return hud;
+    const old = document.getElementById('hwGlobalPointsHud');
+    if (old) old.remove();
+    return null; // Wallet remains account-backed; balances render inline and in HW Menu.
   }
 
   function render(reason) {

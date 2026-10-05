@@ -3,7 +3,7 @@
   if (document.getElementById('hw-global-social-script')) return;
   var social = document.createElement('script');
   social.id = 'hw-global-social-script';
-  social.src = '/global-social.js?v=1';
+  social.src = '/global-social.js?v=2';
   social.async = true;
   social.onerror = function () { social.remove(); };
   document.head.appendChild(social);
