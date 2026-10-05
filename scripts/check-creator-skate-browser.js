@@ -27,7 +27,11 @@ const server = http.createServer((req, res) => {
       await page.route('**/*', route => {
         const url = new URL(route.request().url());
         if (url.origin !== origin) return route.abort();
-        if (url.pathname === '/auth-client.js') return route.fulfill({ contentType: 'text/javascript', body: 'window.HWAuth={getClient:async()=>null};' });
+        if (url.pathname === '/auth-client.js') {
+          const yko = route.request().frame().url().includes('/creator-ykomusic.html');
+          const body = yko ? `window.HWAuth={getClient:async()=>({from:table=>({select(){return this},eq(){return this},order(){return this},maybeSingle:async()=>({data:{display_name:'YKOMUSIC',headline:'Creator-owned Latin Pop',bio:'My saved creator story'}}),limit:async()=>({data:table==='creator_world_publications'?[{id:'test-drop',title:'Creator browser fixture',media_type:'image',public_path:'fixture',published_at:'2026-10-05T00:00:00Z'}]:[]})}),storage:{from:()=>({getPublicUrl:()=>({data:{publicUrl:'/creator-ykomusic.svg'}})})}})};` : 'window.HWAuth={getClient:async()=>null};';
+          return route.fulfill({ contentType: 'text/javascript', body });
+        }
         if (['/global-points-engine.js', '/creator-analytics.js'].includes(url.pathname)) return route.fulfill({ contentType: 'text/javascript', body: '' });
         // Avoid downloading music/video fixtures during a layout check.
         if (/\.(mp3|mp4|m4a)$/.test(url.pathname)) return route.fulfill({ status: 204, body: '' });
@@ -53,12 +57,19 @@ const server = http.createServer((req, res) => {
           assert.equal(await page.locator('[data-world-tab="creations"]').getAttribute('aria-selected'), 'true', 'Keyboard tabs work');
           await page.locator('[data-world-tab="discover"]').click();
         } else {
+          assert.equal(await page.locator('script[src^="auth-client.js"]').count(), 1, `${file}: profile data client loaded`);
+          assert.equal(await page.locator('script[src^="creator-published-media.js"]').count(), 1, `${file}: approved creations loader present`);
           assert(await page.locator('.creator-hero h1').isVisible(), `${file} @${width}: Creator identity visible`);
           assert.equal(await page.locator('.profile-section-nav a[href="creator-dashboard.html#profile"]').count(), 1, 'Creator management retained');
           assert(await page.locator('.hero-actions .primary-action').isVisible(), `${file}: Primary profile action retained`);
           if (await page.locator('.track').count()) {
             await page.locator('.track').first().click();
             assert(await page.locator('.track').first().evaluate(el => el.classList.contains('is-active')), 'Track action retained');
+          }
+          if (file === 'creator-ykomusic.html') {
+            await page.locator('#world-releases').waitFor();
+            assert.equal(await page.locator('.creator-roles').textContent(), 'Creator-owned Latin Pop', 'YKOMUSIC saved headline renders through its real page bootstrap');
+            assert.equal(await page.locator('#world-releases .world-publication-title').textContent(), 'Creator browser fixture', 'YKOMUSIC approved drop renders');
           }
           if (await page.locator('#creatorLanguage').count()) {
             await page.locator('#creatorLanguage').selectOption('en');
