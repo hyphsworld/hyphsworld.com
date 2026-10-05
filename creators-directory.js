@@ -18,7 +18,9 @@
     'b3llygang-h3rsch': 'creator-b3llygang-h3rsch.html',
     'nitti-bo': 'creator-nitti-bo.html',
     'lil-g': 'creator-lil-g.html',
-    'sixx-figgaz': 'creator-sixx-figgaz.html'
+    'sixx-figgaz': 'creator-sixx-figgaz.html',
+    'ykomusic': 'creator-ykomusic.html',
+    'kili-631': 'creator-kili-631.html'
   };
 
   function text(value, fallback) {
@@ -41,6 +43,7 @@
       var active = button.dataset.worldTab === requested;
       button.classList.toggle('active', active);
       button.setAttribute('aria-selected', active ? 'true' : 'false');
+      button.tabIndex = active ? 0 : -1;
     });
     if (updateHash && history.replaceState) {
       var hashes = { discover: 'worlds', creations: 'creations', verified: 'verified', join: 'apply' };
@@ -257,6 +260,26 @@
 
   injectInlineBadgeStyles();
   normalizeStaticBadges();
+  worldTabs.forEach(function (button, index) {
+    var panel = worldPanels.find(function (item) { return item.dataset.worldPanel === button.dataset.worldTab; });
+    button.id = 'world-tab-' + button.dataset.worldTab;
+    if (panel) {
+      if (!panel.id) panel.id = 'world-panel-' + button.dataset.worldTab;
+      panel.setAttribute('aria-labelledby', button.id);
+      button.setAttribute('aria-controls', panel.id);
+    }
+    button.addEventListener('keydown', function (event) {
+      var next;
+      if (event.key === 'ArrowRight') next = (index + 1) % worldTabs.length;
+      if (event.key === 'ArrowLeft') next = (index + worldTabs.length - 1) % worldTabs.length;
+      if (event.key === 'Home') next = 0;
+      if (event.key === 'End') next = worldTabs.length - 1;
+      if (next === undefined) return;
+      event.preventDefault();
+      activateWorldTab(worldTabs[next].dataset.worldTab, true);
+      worldTabs[next].focus();
+    });
+  });
   var initialHash = location.hash.replace('#', '');
   var initialTab = ({ creations: 'creations', verified: 'verified', apply: 'join', worlds: 'discover' })[initialHash] || 'discover';
   activateWorldTab(initialTab, false);
@@ -275,6 +298,8 @@
       document.getElementById('directory').scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   });
+  var houseDiscover = document.querySelector('[data-house-discover]');
+  if (houseDiscover) houseDiscover.addEventListener('click', function () { activateWorldTab('discover', false); });
   input.addEventListener('input', renderFilter);
   buttons.forEach(function (button) {
     button.addEventListener('click', function () {

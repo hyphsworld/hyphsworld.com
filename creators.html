@@ -14,22 +14,23 @@
     <link rel="canonical" href="https://hyphsworld.com/creators.html" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="HYPHSWORLD" />
-    <meta property="og:title" content="Creators World Directory | HYPHSWORLD" />
+    <meta property="og:title" content="Creators World — The House | HYPHSWORLD" />
     <meta
       property="og:description"
-      content="Discover independent creators building music, radio, culture, and entertainment."
+      content="Step inside the Creator World skate house. Meet independent creators, explore fresh drops, and build your own World."
     />
     <meta property="og:url" content="https://hyphsworld.com/creators.html" />
     <meta
       property="og:image"
-      content="https://hyphsworld.com/creator-hyph-life-hero.jpg"
+      content="https://hyphsworld.com/assets/creator-world/skate-house.webp"
     />
     <meta name="twitter:card" content="summary_large_image" />
-    <title>Creators World Directory | HYPHSWORLD</title>
+    <title>Creators World — The House | HYPHSWORLD</title>
     <link rel="stylesheet" href="creators-directory.css?v=world-tabs-1" />
     <link rel="stylesheet" href="creator-access.css?v=world-seal-jewel-1" />
+      <link rel="stylesheet" href="creator-skate.css?v=skate-house-1">
   </head>
-  <body>
+  <body class="skate-hub">
     <a class="skip-link" href="#directory">Skip to creators</a>
     <header>
       <a class="brand" href="index.html"
@@ -45,12 +46,17 @@
       </nav>
     </header>
     <main>
-      <section class="directory-hero">
-        <p>CREATORS WORLD</p>
-        <h1>Creators. Creations.<br /><span>One world.</span></h1>
-        <p>
-          Find artists, producers, DJs, athletes, coaches, and more.
-        </p>
+      <section class="skate-house" aria-labelledby="house-title">
+        <div class="house-copy">
+          <p class="house-kicker">CREATORS WORLD / THE HOUSE</p>
+          <h1 id="house-title">Your people.<br>Your craft.<br><span>Your world.</span></h1>
+          <p>Music in the living room. New ideas in the garage. A session out back. Find your people and see what they’re building.</p>
+          <div class="house-actions"><a href="#directory" data-house-discover>Meet the creators ↓</a><a href="creator-login.html">Run my world ↗</a></div>
+        </div>
+        <figure class="house-art">
+          <img src="assets/creator-world/skate-house.webp" width="1672" height="940" fetchpriority="high" decoding="async" alt="Cartoon skate house with a cozy living room, recording studio, skateboard wall and backyard ramp">
+          <figcaption>A PLACE TO MAKE YOUR OWN.</figcaption>
+        </figure>
       </section>
       <section class="world-pulse" aria-label="Creators World pulse">
         <div><strong>10</strong><span>CREATOR WORLDS</span></div>
@@ -59,16 +65,16 @@
         <div><strong>EARNED</strong><span>BADGES</span></div>
       </section>
       <nav class="world-tabs" aria-label="Creators World sections" role="tablist">
-        <button class="active" type="button" role="tab" aria-selected="true" data-world-tab="discover">Discover</button>
-        <button type="button" role="tab" aria-selected="false" data-world-tab="creations">Creations</button>
-        <button type="button" role="tab" aria-selected="false" data-world-tab="verified">Verified</button>
-        <button type="button" role="tab" aria-selected="false" data-world-tab="join">Apply</button>
+        <button class="active" type="button" role="tab" aria-selected="true" data-world-tab="discover">Living room</button>
+        <button type="button" role="tab" aria-selected="false" data-world-tab="creations">Fresh drops</button>
+        <button type="button" role="tab" aria-selected="false" data-world-tab="verified">World seals</button>
+        <button type="button" role="tab" aria-selected="false" data-world-tab="join">Join the house</button>
       </nav>
       <section class="directory world-panel" id="directory" data-world-panel="discover" role="tabpanel">
         <div class="directory-head">
           <div>
             <small>FIND CREATORS</small>
-            <h2>Find your next favorite.</h2>
+            <h2>Meet the house.</h2>
           </div>
           <input
             id="creatorSearch"
@@ -84,7 +90,7 @@
           ><button data-filter="radio">Radio &amp; DJ</button
           ><button data-filter="athlete">Athletes</button
           ><button data-filter="coach">Coaches</button
-          ><button data-filter="verified">Verified</button>
+          ><button data-filter="verified">World seals</button>
         </div>
         <p id="creatorResults" aria-live="polite">10 creators • Alphabetical</p>
         <div class="creator-grid">
@@ -249,7 +255,7 @@
     <script src="supabase-config.js"></script>
     <script src="auth-client.js?v=20261005-member-menu"></script>
     <script src="global-points-engine.js?v=20261005-member-menu"></script>
-    <script src="creators-directory.js?v=world-tabs-1"></script>
+    <script src="creators-directory.js?v=skate-house-1"></script>
   <script src="global-my-id.js?v=20261005-member-menu" defer></script>
 </body>
 </html>
