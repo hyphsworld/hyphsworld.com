@@ -49,7 +49,10 @@
     .podcast-video-shell iframe{display:block;width:100%;aspect-ratio:16/9;border:0}
     .podcast-strip{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:13px 14px;background:rgba(0,0,0,.72);color:#fff;font-weight:900}
     .podcast-strip small{color:#83ff70;letter-spacing:.08em;text-transform:uppercase}
-    .street-empire-home{width:min(1180px,calc(100% - 24px));margin:20px auto 36px;padding:clamp(22px,5vw,48px);border:2px solid rgba(255,225,92,.55);border-radius:28px;background:radial-gradient(circle at 85% 12%,rgba(255,225,92,.24),transparent 32%),linear-gradient(130deg,#15100b,#090b12 60%,#17101b);box-shadow:0 22px 58px rgba(0,0,0,.4);overflow:hidden}
+    .street-empire-home{width:min(1180px,calc(100% - 24px));margin:20px auto 36px;padding:clamp(22px,5vw,48px);min-height:560px;box-sizing:border-box;border:2px solid rgba(255,225,92,.55);border-radius:28px;background-color:#090b12;background-image:linear-gradient(90deg,#090b12 0%,rgba(9,11,18,.96) 36%,rgba(9,11,18,.2) 57%,transparent 68%),url('assets/images/street-empire-home.webp');background-size:100% 100%,auto 100%;background-position:center,right center;background-repeat:no-repeat;box-shadow:0 22px 58px rgba(0,0,0,.4);overflow:hidden;display:flex;align-items:center}
+    .street-empire-home-copy{width:48%;max-width:510px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.8)}
+    .street-empire-home-copy .street-empire-play{text-shadow:none}
+    @media(max-width:900px){.street-empire-home{display:block;min-height:0;padding:0;background-image:url('assets/images/street-empire-home.webp');background-size:100% auto;background-position:center top}.street-empire-home-copy{width:auto;max-width:none;margin-top:100%;padding:24px;background:#090b12;text-shadow:none}}
     .street-empire-home .eyebrow{color:#ffe45c}
     .street-empire-home h2{max-width:780px;margin:8px 0 12px;font-size:clamp(2rem,6vw,4.6rem);line-height:1.05;text-transform:uppercase}
     .street-empire-home h2 span{display:block;color:#ffe45c}
@@ -188,10 +191,12 @@
     </section>
 
     <section class="street-empire-home" aria-labelledby="street-empire-title">
-      <p class="eyebrow">NEW GAME // SOLO PLAY IS LIVE</p>
+      <div class="street-empire-home-copy">
+      <p class="eyebrow">STREET EMPIRE // SOLO + ONLINE PLAY</p>
       <h2 id="street-empire-title">Street Empire <span>Around the Block</span></h2>
-      <p>Roll through the Bay in solo play against the computer. Online play is coming soon.</p>
+      <p>Roll through the Bay against the computer or link up with friends for online play.</p>
       <a class="street-empire-play" href="games/street-empire/">Play Street Empire <span class="street-empire-play-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></a>
+      </div>
     </section>
 
     <section id="music" class="section-pad">
