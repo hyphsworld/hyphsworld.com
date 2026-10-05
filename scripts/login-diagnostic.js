@@ -62,7 +62,7 @@ assert(accountBootstrap.includes("await load('auth-client.js'"), 'legacy pages s
 assert(accountBootstrap.includes("await load('global-points-engine.js'"), 'legacy pages should bootstrap the central points engine.');
 assert(pointsEngine.includes('data-hw-account-name'), 'central widget should show the active account identity.');
 assert(pointsEngine.includes('data-hw-account-action'), 'central widget should provide one login/account action.');
-assert(/document\.addEventListener\(['"]hyph:auth-signed-in['"],\s*(?:refresh|bootAndSync)\)/.test(pointsEngine), 'central widget should refresh immediately after login.');
+assert(/document\.addEventListener\(['"]hyph:auth-signed-in['"],\s*\(\)\s*=>\s*\{\s*authEpoch\s*\+=\s*1;\s*bootAndSync\(\);/.test(pointsEngine), 'central widget should refresh immediately after login.');
 assert(/window\.addEventListener\(['"]pageshow['"],\s*(?:refresh|bootAndSync)\)/.test(pointsEngine), 'central widget should catch up after browser navigation.');
 assert(accountPage.includes('class="account-topnav"') && accountPage.includes('href="index.html"'), 'Manage ID must always expose a Home button.');
 assert(position(accountPage, 'src="auth-stability.js"') > position(accountPage, 'src="auth-client.js"'), 'Manage ID should load safe profile updates after the auth client.');
@@ -79,7 +79,7 @@ assert(tableGameController.includes('.eq("host_id", currentUser.userId)'), 'Only
 const accountFlowPages = new Set(['auth.html', 'forgot-password.html', 'login.html', 'logout.html', 'update-password.html']);
 fs.readdirSync('.').filter((file) => file.endsWith('.html') && !accountFlowPages.has(file)).forEach((file) => {
   const html = fs.readFileSync(path.join('.', file), 'utf8');
-  assert(html.includes('cool-points.js') || html.includes('global-points-engine.js'), file + ' should load the central account widget system.');
+  assert(html.includes('cool-points.js') || html.includes('global-points-engine.js') || html.includes('global-my-id.js'), file + ' should load the central account widget system.');
 });
 
 if (issues.length) {

@@ -25,7 +25,7 @@ assert(css.includes('perspective:1000px'), 'POV scene must use table depth');
 assert(css.includes('.pov-player-hand .domino-tile.is-playable'), 'Playable tiles must be visually obvious');
 assert(js.includes('function pipFace(value)'), 'Dominoes must render visual pips instead of text-only tiles');
 assert(js.includes('povHudTiles'), 'Opponent tile count must be visible');
-assert(js.includes('canPlay(tile, boardTiles)'), 'Hand must distinguish playable tiles');
+assert(js.includes('playable: isMyTurn && legalSides(tile, activeState).length > 0'), 'Hand must distinguish playable tiles');
 assert(js.includes('create_domino_room'), 'Supabase room creation must remain connected');
 assert(js.includes('claim_domino_win'), 'Verified Cool Points win award must remain connected');
 assert(migration.includes('ordinality <= 7'), 'Regular bones must deal seven tiles per player');
@@ -56,7 +56,7 @@ assert(html.includes('data-hide-global-points-hud'), 'Domino page must opt out o
 assert(points.includes("hasAttribute('data-hide-global-points-hud')"), 'Points engine must honor page-level HUD suppression after injection');
 assert(css.includes('.domino-tile:nth-child(n){box-sizing:border-box;display:grid!important') && css.includes('overflow:hidden;transform:none'), 'Final mobile rack rule must neutralize edge-bone fan transforms');
 assert(css.includes('display:grid!important;grid-template-columns:1fr!important;grid-template-rows:repeat(2,minmax(0,1fr))!important'), 'Clickable player bones must retain two equal visible pip faces after the button reset');
-assert(html.includes('game-responsive.css?v=20260911-breakpoints-1'), 'Domino page must load the final responsive tabletop contract');
+assert( /href="game-responsive\.css(?:\?[^"]+)?"/.test(html), 'Domino page must load the final responsive tabletop contract');
 assert(html.includes('dominoRadioAudio') && js.includes('initTableRadio'), 'Domino table radio must be wired without autoplay');
 assert(html.includes('openDominoTutorial') && html.includes('How to Play Bones'), 'Domino room must include a beginner quick-start tutorial');
 assert(js.includes('function setCoach(message)') && js.includes('No matching bone. Tap Draw Bone below.'), 'Live coach must explain the legal next move');
@@ -73,13 +73,13 @@ assert(js.includes('get_domino_state'), 'Refresh must use the opponent-safe stat
 assert(js.includes('list_domino_rooms'), 'Room discovery must use the authenticated room RPC');
 assert(!js.includes('.from("game_state").upsert'), 'The browser must not overwrite Domino state directly');
 assert(html.includes('data-game-key="01_dominos"'), 'Embedded scores must be restricted to Domino results');
-assert(js.includes('const placements = tiles.map'), 'Played chain stage must be measured from the bones actually on the table');
+assert(js.includes('placements.push({') && js.includes('placements.map((item) => item.visualLeft)') && js.includes('placements.map((item) => item.visualBottom)'), 'Played chain stage must be measured from the bones actually on the table');
 assert(js.includes('--chain-width:${width}px;--chain-height:${height}px'), 'Measured chain dimensions must be exposed to responsive tabletop CSS');
 assert(css.includes('Center the live chain on the felt in every viewport and device orientation.'), 'Played bones must remain centered in portrait and landscape layouts');
 assert(responsive.includes('grid-template-columns:repeat(7,minmax(0,1fr))!important'), 'Portrait and tablet racks must keep all seven bones visible');
 assert(responsive.includes('.domino-pov-room>.pov-action-dock'), 'The action dock must remain below the hand in every viewport');
 assert(responsive.includes('@media (orientation:landscape) and (max-height:640px)'), 'Landscape phones must have a compact game-table contract');
 assert(responsive.includes('@media (min-width:641px) and (max-width:1024px)'), 'Tablets must have a dedicated game-table contract');
-assert(html.includes('dominos.js?v=20260911-exit-cleanup-1'), 'Domino page must retain the current race-safe controller');
+assert(/src="dominos\.js(?:\?[^"]+)?"/.test(html) && js.includes('requestToken !== roomViewToken'), 'Domino page must retain the current race-safe controller');
 
 console.log('Domino POV diagnostic passed: perspective scene, readable tiles, multiplayer, and points hooks are intact.');

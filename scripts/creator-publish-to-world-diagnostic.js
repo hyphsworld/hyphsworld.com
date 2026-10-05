@@ -33,7 +33,7 @@ const checks = [
   ['public render supports media', publicMedia.includes("row.media_type === 'image'") && publicMedia.includes("row.media_type === 'video'") && publicMedia.includes("row.media_type === 'audio'")],
   ['Creator World always shows Creations section', publicMedia.includes("section.id = 'world-releases'") && publicMedia.includes('Nothing live yet.')],
   ['directory shows published creations', directoryPage.includes('publicCreationGrid') && directory.includes("from('creator_world_publications')") && directory.includes('Created by ')],
-  ['dashboard shows live state', dashboard.includes('LIVE IN WORLD')],
+  ['dashboard shows live state', dashboard.includes("published: 'Live'") && dashboard.includes("statusBadge.textContent = creationStatusLabel(row.status || 'private')")],
   ['all Creator Worlds connected', pages.every(file => read(file).includes('creator-published-media.js'))],
   ['no legacy social language', !/\bPost\b|\bReel\b|>Upload</.test(publicMedia)]
 ];

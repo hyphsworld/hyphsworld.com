@@ -44,7 +44,7 @@ jobs:
         run: node --test scripts/check-page-loading.js
 
       - name: Run diagnostics
-        run: npm run diagnostics
+        run: npm run diagnostics:full
 
       - name: Run launch-critical diagnostics
         run: |

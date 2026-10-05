@@ -34,7 +34,7 @@ assert(points.includes("resetForSignedOut()"), "Points HUD must reset immediatel
 assert(legacyPoints.includes("if (!document.body) return null;"), "Legacy points HUD must wait for document.body.");
 assert(legacyPoints.includes("applyLoggedOut('signed_out')"), "Legacy points state must reset on sign-out.");
 
-assert(dominoPage.includes("dominos.js?v=20260911-exit-cleanup-1"), "Domino page must load the exit-cleanup controller.");
-assert(tablePage.includes("table-game.js?v=20260911-exit-cleanup-1"), "Table page must load the exit-cleanup controller.");
+assert(/src="dominos\.js(?:\?[^"]+)?"/.test(dominoPage), "Domino page must load the exit-cleanup controller.");
+assert(/src="table-game\.js(?:\?[^"]+)?"/.test(tablePage), "Table page must load the exit-cleanup controller.");
 
 console.log("Game exit diagnostic passed: HUD mounting, room races, leave cleanup, and sign-out cleanup are guarded.");

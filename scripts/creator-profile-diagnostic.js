@@ -35,6 +35,6 @@ assert(directoryHtml.includes('creator-apply.html'), 'Directory must provide a r
 assert(accessHtml.includes('href="creator-apply.html"'), 'Creator Access must route recruitment to the real application');
 assert((directoryHtml.match(/data-world-tab=/g) || []).length === 4, 'Public Creator World must expose four focused discovery tabs');
 assert((dashboardHtml.match(/data-dashboard-tab=/g) || []).length === 6, 'Creator Dashboard must expose six focused command tabs');
-assert(dashboardJs.includes("activateDashboardView('library', true)"), 'Successful CREATE must open MY CREATIONS');
+assert(dashboardJs.includes("activateDashboardView('create', true)") && dashboardJs.includes("renderCreateReceipt(creations.find") && dashboardHtml.includes('id="createFlowSuccess"'), 'Successful CREATE must display its saved creation receipt');
 
 console.log('Creator profile diagnostic passed: shared premium layout and server-driven World Seals are intact.');

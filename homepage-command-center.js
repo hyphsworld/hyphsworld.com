@@ -70,14 +70,14 @@
     var items = [
       { kind: 'creators', value: 'CREATORS WORLD LIVE • #001 HYPH LIFE • #002 ROJASONTHEBEAT • #003 FRANCOISMUSIC47 • #004 YOUNG TEZ • #005 B3LLYGANG H3RSCH • #006 NITTI BO' },
       { kind: 'creators', value: 'FOLLOW CREATORS • VERIFIED CREATOR WORLDS • CREATOR APPLICATIONS OPEN NOW' },
-      { kind: 'football', value: 'NFL WEEK 2 SCOREBOARD • UPDATED SUN 9/20 • THU FINAL: BILLS 41, LIONS 31' },
-      { kind: 'football', value: 'SUN FINALS • VIKINGS 9, BEARS 3 • BROWNS 23, BUCCANEERS 19 • BENGALS 20, TEXANS 6 • PATRIOTS 20, STEELERS 3' },
-      { kind: 'football', value: 'SUN FINALS • SAINTS 24, RAVENS 17 • PANTHERS 34, FALCONS 3 • JETS 17, PACKERS 14 • TITANS 20, EAGLES 17' },
-      { kind: 'football', value: 'SUN LATE • JAGUARS @ BRONCOS • RAIDERS @ CHARGERS • COMMANDERS @ COWBOYS • DOLPHINS @ 49ERS • SEAHAWKS @ CARDINALS' },
-      { kind: 'football', value: 'SUN NIGHT • COLTS @ CHIEFS • MON NIGHT 9/21 • GIANTS @ RAMS' }
+      { kind: 'football', expires: '2026-09-22T07:00:00Z', value: 'NFL WEEK 2 SCOREBOARD • UPDATED SUN 9/20 • THU FINAL: BILLS 41, LIONS 31' },
+      { kind: 'football', expires: '2026-09-22T07:00:00Z', value: 'SUN FINALS • VIKINGS 9, BEARS 3 • BROWNS 23, BUCCANEERS 19 • BENGALS 20, TEXANS 6 • PATRIOTS 20, STEELERS 3' },
+      { kind: 'football', expires: '2026-09-22T07:00:00Z', value: 'SUN FINALS • SAINTS 24, RAVENS 17 • PANTHERS 34, FALCONS 3 • JETS 17, PACKERS 14 • TITANS 20, EAGLES 17' },
+      { kind: 'football', expires: '2026-09-22T07:00:00Z', value: 'SUN LATE • JAGUARS @ BRONCOS • RAIDERS @ CHARGERS • COMMANDERS @ COWBOYS • DOLPHINS @ 49ERS • SEAHAWKS @ CARDINALS' },
+      { kind: 'football', expires: '2026-09-22T07:00:00Z', value: 'SUN NIGHT • COLTS @ CHIEFS • MON NIGHT 9/21 • GIANTS @ RAMS' }
     ];
 
-    items.forEach(function (item) {
+    items.filter(function (item) { return !item.expires || Date.now() < Date.parse(item.expires); }).forEach(function (item) {
       var divider = document.createElement('b');
       divider.textContent = '✦';
       var span = document.createElement('span');
