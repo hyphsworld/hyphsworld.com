@@ -24,10 +24,10 @@ function position(source, value) {
   return source.indexOf(value);
 }
 
-const clientPosition = position(authPage, 'src="auth-client.js"');
+const clientPosition = position(authPage, 'src="auth-client.js');
 const stabilityPosition = position(authPage, 'src="auth-stability.js"');
 const bridgePosition = position(authPage, 'src="auth-points-bridge.js"');
-const pointsPosition = position(authPage, 'src="global-points-engine.js"');
+const pointsPosition = position(authPage, 'src="global-points-engine.js');
 const controllerPosition = position(authPage, 'src="auth.js"');
 
 assert(clientPosition >= 0, 'auth page should load the shared auth client.');
@@ -61,7 +61,7 @@ assert(authStability.includes("window.HWAuth.getCurrentUser(true).catch"), 'prof
 assert(accountBootstrap.includes("await load('auth-client.js'"), 'legacy pages should bootstrap the shared auth client.');
 assert(accountBootstrap.includes("await load('global-points-engine.js'"), 'legacy pages should bootstrap the central points engine.');
 assert(pointsEngine.includes('data-hw-account-name'), 'central widget should show the active account identity.');
-assert(pointsEngine.includes('data-hw-account-action'), 'central widget should provide one login/account action.');
+assert(pointsEngine.includes('if (old) old.remove();'), 'The floating points/login HUD must be removed while retaining wallet updates.');
 assert(/document\.addEventListener\(['"]hyph:auth-signed-in['"],\s*\(\)\s*=>\s*\{\s*authEpoch\s*\+=\s*1;\s*bootAndSync\(\);/.test(pointsEngine), 'central widget should refresh immediately after login.');
 assert(/window\.addEventListener\(['"]pageshow['"],\s*(?:refresh|bootAndSync)\)/.test(pointsEngine), 'central widget should catch up after browser navigation.');
 assert(accountPage.includes('class="account-topnav"') && accountPage.includes('href="index.html"'), 'Manage ID must always expose a Home button.');

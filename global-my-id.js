@@ -3,7 +3,7 @@
   if (document.getElementById('hw-global-social-script')) return;
   var social = document.createElement('script');
   social.id = 'hw-global-social-script';
-  social.src = '/global-social.js?v=1';
+  social.src = '/global-social.js?v=2';
   social.async = true;
   social.onerror = function () { social.remove(); };
   document.head.appendChild(social);
@@ -14,7 +14,7 @@
 
   // Super Strike owns the complete lower HUD during a live game. Global
   // shortcuts return when the player exits to a menu.
-  if (/\/games\/ss-bowling\/game(?:\.html)?\/?$/i.test(window.location.pathname)) return;
+  // The compact menu stays above game controls rather than occupying the lower HUD.
 
   if (document.getElementById('hw-global-my-id')) return;
 
@@ -63,14 +63,15 @@
   function closeCreateMenu() {
     var menu = document.getElementById('hw-create-menu');
     var trigger = document.getElementById('hw-global-create');
-    if (menu) menu.hidden = true;
+    if (menu) { menu.hidden = true; if (menu.open) menu.close(); }
+    var hubTrigger = document.getElementById('hw-menu-trigger'); if (hubTrigger) hubTrigger.focus();
     if (trigger) trigger.setAttribute('aria-expanded', 'false');
   }
 
   function openCreateMenu(trigger) {
     var menu = document.getElementById('hw-create-menu');
     if (!menu) return;
-    menu.hidden = false;
+    menu.hidden = false; menu.showModal();
     trigger.setAttribute('aria-expanded', 'true');
     var first = menu.querySelector('.hw-create-choice');
     if (first) first.focus();
@@ -96,8 +97,34 @@
       '@media(max-width:760px){#hw-global-create{top:auto;right:max(105px,calc(env(safe-area-inset-right) + 93px));bottom:max(76px,calc(env(safe-area-inset-bottom) + 68px));min-height:40px;padding:7px 15px;font-size:10px}#hw-global-my-id{top:auto;right:max(12px,env(safe-area-inset-right));bottom:max(76px,calc(env(safe-area-inset-bottom) + 68px));min-height:40px;padding:6px 11px 6px 7px;font-size:10px}#hw-global-my-id .hw-global-my-id-mark{width:27px;height:27px}.hw-create-grid{grid-template-columns:1fr}.hw-create-choice:last-child{grid-column:auto}.hw-create-shell{padding:18px;border-radius:22px}}',
       '@media(prefers-reduced-motion:reduce){#hw-global-create,#hw-global-my-id{transition:none}}'
     ].join('');
+    style.textContent += '#hw-create-menu{width:100vw;height:100dvh;max-width:none;max-height:none;border:0;margin:0}#hwGlobalPointsHud{display:none!important}#hw-menu-trigger{position:fixed;right:max(14px,env(safe-area-inset-right));bottom:max(14px,env(safe-area-inset-bottom));z-index:9997;min-height:48px;display:flex;align-items:center;gap:8px;padding:10px 14px;border:1px solid #61eacb;border-radius:18px;background:#0e1926;color:#fff;font:900 12px Arial,sans-serif;box-shadow:0 5px 18px #0008;cursor:pointer}#hw-menu-trigger>span:first-child{color:#63f2c0}#hw-menu-trigger[data-game]{top:max(12px,env(safe-area-inset-top));bottom:auto}#hw-menu-unread{padding:3px 6px;border-radius:10px;background:#ffe45c;color:#111}#hw-menu-unread[hidden]{display:none}#hw-menu-panel{width:min(380px,calc(100vw - 24px));max-height:calc(100dvh - 24px);padding:18px;border:1px solid #527086;border-radius:22px;background:#0c1421;color:#fff;font:15px/1.5 Arial,sans-serif;overflow:auto}#hw-menu-panel::backdrop{background:#000b}#hw-menu-panel header{display:flex;align-items:center;justify-content:space-between;gap:12px}#hw-menu-panel h2{margin:4px 0 14px;font-size:22px}#hw-menu-panel small{color:#63f2c0;font-weight:800;letter-spacing:.1em}#hw-menu-panel button,#hw-menu-panel a{min-height:48px}#hw-menu-panel header button{width:48px;border-radius:12px;border:1px solid #51667b;background:#182438;color:#fff;font-size:24px}#hw-menu-panel #hw-menu-friends,#hw-menu-panel #hw-global-create,#hw-menu-panel #hw-global-my-id{position:static!important;display:flex!important;width:100%;margin-top:10px;min-height:52px;padding:12px 16px!important;justify-content:flex-start;top:auto;right:auto;bottom:auto;border:1px solid #445c72;border-radius:14px;background:#182438;box-shadow:none;transform:none;font:800 14px Arial,sans-serif;letter-spacing:.04em;color:#fff!important;text-decoration:none}#hw-menu-panel .hw-menu-wallet{padding:12px;border:1px solid #33495d;border-radius:12px;font-size:12px;color:#bdd4df}#hw-menu-panel .hw-menu-wallet span{color:#63f2c0;font-size:22px;font-weight:900}#hw-menu-panel .hw-menu-wallet a{display:block;color:#6feaff}#hw-menu-trigger:focus-visible,#hw-menu-panel button:focus-visible,#hw-menu-panel a:focus-visible{outline:3px solid #6feaff;outline-offset:3px}';
     document.head.appendChild(style);
 
+    var trigger = document.createElement('button');
+    trigger.id = 'hw-menu-trigger'; trigger.type = 'button';
+    trigger.setAttribute('aria-label', 'Open HYPHSWORLD menu');
+    trigger.setAttribute('aria-haspopup', 'dialog'); trigger.setAttribute('aria-expanded', 'false');
+    trigger.innerHTML = '<span aria-hidden="true">HW</span><span>MENU</span><span id="hw-menu-unread" hidden></span>';
+    if (location.pathname.startsWith('/games/')) trigger.setAttribute('data-game', '');
+    var hub = document.createElement('dialog'); hub.id = 'hw-menu-panel';
+    hub.setAttribute('aria-labelledby', 'hw-menu-title');
+    hub.innerHTML = '<header><div><small>YOUR HYPHSWORLD</small><h2 id="hw-menu-title">Play. Create. Connect.</h2></div><button type="button" aria-label="Close HYPHSWORLD menu">×</button></header><p class="hw-menu-wallet"><span data-hw-points>—</span> COOL POINTS <a href="/account.html">View My ID</a></p>';
+    var friends = document.createElement('button'); friends.type = 'button'; friends.id = 'hw-menu-friends';
+    friends.textContent = 'Friends & messages';
+    var closeHub = function () { hub.close(); trigger.setAttribute('aria-expanded', 'false'); };
+    friends.onclick = function () { closeHub(); document.dispatchEvent(new CustomEvent('hw:open-friends')); };
+    hub.appendChild(friends); document.body.appendChild(trigger); document.body.appendChild(hub);
+    trigger.onclick = function () { if (window.HWPoints && window.HWPoints.render) window.HWPoints.render(); if (window.HWGlobalSocial && window.HWGlobalSocial.getUnread) document.dispatchEvent(new CustomEvent('hw:social-summary', {detail:{unread:window.HWGlobalSocial.getUnread()}})); hub.showModal(); trigger.setAttribute('aria-expanded', 'true'); };
+    hub.querySelector('header button').onclick = closeHub;
+    hub.addEventListener('close', function () { trigger.setAttribute('aria-expanded', 'false'); trigger.focus(); });
+    hub.addEventListener('click', function (event) { if (event.target === hub) { var box = hub.getBoundingClientRect(); if (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) closeHub(); } });
+    document.addEventListener('hw:social-summary', function (event) {
+      var count = Math.max(0, Number(event.detail && event.detail.unread) || 0), badge = document.getElementById('hw-menu-unread');
+      badge.hidden = count === 0; badge.textContent = count > 99 ? '99+' : String(count);
+      friends.textContent = 'Friends & messages' + (count ? ' · ' + count + ' unread' : '');
+      trigger.setAttribute('aria-label', 'Open HYPHSWORLD menu' + (count ? ', ' + count + ' unread messages or requests' : ''));
+    });
+    window.HWGlobalMenu = { open: function () { trigger.click(); } };
     var createLink = document.createElement('a');
     createLink.id = 'hw-global-create';
     createLink.textContent = 'CREATE';
@@ -105,11 +132,11 @@
     createLink.addEventListener('click', function (event) {
       if (!createLoggedIn) return;
       event.preventDefault();
-      openCreateMenu(createLink);
+      closeHub(); openCreateMenu(createLink);
     });
-    document.body.appendChild(createLink);
+    hub.appendChild(createLink);
 
-    var menu = document.createElement('div');
+    var menu = document.createElement('dialog');
     menu.id = 'hw-create-menu';
     menu.hidden = true;
     menu.setAttribute('role', 'dialog');
@@ -129,6 +156,7 @@
     });
     shell.appendChild(grid); menu.appendChild(shell); document.body.appendChild(menu);
     shell.querySelector('.hw-create-close').addEventListener('click', closeCreateMenu);
+    menu.addEventListener('cancel', function (event) { event.preventDefault(); closeCreateMenu(); });
     menu.addEventListener('click', function (event) { if (event.target === menu) closeCreateMenu(); });
     document.addEventListener('keydown', function (event) { if (event.key === 'Escape') closeCreateMenu(); });
 
@@ -136,7 +164,7 @@
     link.id = 'hw-global-my-id';
     link.innerHTML = '<span class="hw-global-my-id-mark" aria-hidden="true">HW</span><span class="hw-global-my-id-label">MY ID</span>';
     setState(link, rememberedSession());
-    document.body.appendChild(link);
+    hub.appendChild(link);
 
     if (window.HWAuth && typeof window.HWAuth.getSession === 'function') {
       window.HWAuth.getSession().then(function (session) {

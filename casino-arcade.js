@@ -199,8 +199,8 @@
         authLink.href = 'account.html';
       }
     } else {
-      text('casinoPlayerName', 'Guest Player');
-      text('casinoPlayerMode', 'Guest mode. Create ID to keep Cool Points across devices.');
+      text('casinoPlayerName', 'Sign in to play');
+      text('casinoPlayerMode', 'Create a HYPHSWORLD ID to play and save your progress.');
       text('casinoPoints', format(localPoints()));
     }
   }

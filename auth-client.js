@@ -1,9 +1,15 @@
+// One compact menu on every page using the shared account client.
+(function () {
+  if (document.getElementById('hw-global-menu-script') || Array.from(document.scripts).some(function (s) { return /\/global-my-id\.js(?:[?]|$)/.test(s.src); })) return;
+  var menu = document.createElement('script'); menu.id = 'hw-global-menu-script';
+  menu.src = '/global-my-id.js?v=20261005-menu'; menu.async = true; document.head.appendChild(menu);
+})();
 // Shared friends load once, including pages without account controls.
 (function () {
   if (document.getElementById('hw-global-social-script')) return;
   var social = document.createElement('script');
   social.id = 'hw-global-social-script';
-  social.src = '/global-social.js?v=1';
+  social.src = '/global-social.js?v=2';
   social.async = true;
   social.onerror = function () { social.remove(); };
   document.head.appendChild(social);

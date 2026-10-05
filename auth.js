@@ -134,6 +134,7 @@
   }
 
   async function boot() {
+    setMode(new URLSearchParams(location.search).get("mode") === "signup" ? "signup" : "signin");
     if (form) form.addEventListener('submit', submitAuth);
     if (createIdBtn) createIdBtn.addEventListener('click', () => setMode(mode === 'signup' ? 'signin' : 'signup'));
     if (resendConfirmationBtn) {

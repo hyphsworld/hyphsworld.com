@@ -53,7 +53,7 @@ assert(js.includes('avatar_type,avatar_icon'), 'Opponent display must use safe p
 assert(js.includes('has-female-opponent'), 'Female opponent profiles must switch the table artwork');
 assert(js.includes('opponentProfileRequest += 1'), 'Leaving a table must invalidate stale opponent profile requests');
 assert(html.includes('data-hide-global-points-hud'), 'Domino page must opt out of the floating account widget');
-assert(points.includes("hasAttribute('data-hide-global-points-hud')"), 'Points engine must honor page-level HUD suppression after injection');
+assert(points.includes("if (old) old.remove();"), 'Floating points HUD must be removed globally so it cannot cover Domino controls');
 assert(css.includes('.domino-tile:nth-child(n){box-sizing:border-box;display:grid!important') && css.includes('overflow:hidden;transform:none'), 'Final mobile rack rule must neutralize edge-bone fan transforms');
 assert(css.includes('display:grid!important;grid-template-columns:1fr!important;grid-template-rows:repeat(2,minmax(0,1fr))!important'), 'Clickable player bones must retain two equal visible pip faces after the button reset');
 assert( /href="game-responsive\.css(?:\?[^"]+)?"/.test(html), 'Domino page must load the final responsive tabletop contract');

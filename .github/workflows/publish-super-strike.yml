@@ -125,9 +125,13 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           script = '<script src="/games/ss-bowling/bowling-effects.js?v=ss-hud-clear-3" defer></script>'
+          member_guard = '<script src="/member-access.js?v=20261005-members"></script>'
           for page in Path('site/games/ss-bowling').glob('*.html'):
               html = page.read_text(encoding='utf-8')
+              if member_guard not in html:
+                  html = html.replace('<head>', '<head>' + member_guard, 1)
               if script in html:
+                  page.write_text(html, encoding='utf-8')
                   continue
               entry = '<script src="/games/ss-bowling/_expo/'
               marker = html.find(entry)

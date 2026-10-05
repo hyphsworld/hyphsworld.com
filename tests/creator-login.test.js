@@ -8,7 +8,7 @@ const migration = fs.readFileSync(path.join(root, 'supabase/migrations/202609192
 
 describe('Creator Login', () => {
   test('uses the existing HYPHSWORLD identity and protects creator access by owner ID', () => {
-    expect(html).toContain('auth-client.js?v=creator-login-1');
+    expect(html).toContain('auth-client.js?v=20261005-member-menu');
     expect(js).toContain(".eq('owner_user_id', userId)");
     expect(js).toContain('client.auth.getUser()');
     expect(js).toContain("shouldCreateUser: false");

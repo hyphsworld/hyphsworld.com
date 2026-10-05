@@ -89,6 +89,19 @@ jobs:
         run: yarn export:web
       - name: Add static deep links
         run: python3 game/scripts/prepare_pages_export.py
+      - name: Require HYPHSWORLD ID on exported game routes
+        run: |
+          python3 - <<'PYCODE'
+          from pathlib import Path
+          import re
+          guard = '<script src="/member-access.js?v=20261005-members"></script>'
+          for page in Path('game/frontend/dist').rglob('*.html'):
+              html = page.read_text()
+              html = re.sub(r'((?:auth-client|global-my-id|global-points-engine|points-core)\.js)(?:\?[^"<>\s]*)?(?=")', r'\1?v=20261005-member-menu', html)
+              if 'src="/member-access.js' not in html:
+                  html = html.replace('<head>', '<head>' + guard, 1)
+              page.write_text(html)
+          PYCODE
       - name: Verify routes and local assets
         run: |
           python3 - <<'PY'
@@ -137,7 +150,7 @@ jobs:
           test -s street-empire-export/index.html
           test -s games/street-empire/index.html
           previous_source="$(git show HEAD:games/street-empire/.source-sha)"
-          if test "$previous_source" != '15aee13e0307c6db807ddca91be27fe0974f7497'; then
+          if test "$previous_source" != '7a9846ccbdc67da4f2f36454e20894459ba92ab5'; then
             echo "::error::Street Empire route changed since the reviewed export; inspect before replacing."
             exit 1
           fi

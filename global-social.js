@@ -106,6 +106,7 @@
     if (!contacts.length) contactList.append(text('p', user ? 'Find your people below. Existing Street Empire friends appear here too.' : 'Sign in to see your friends and messages.', 'empty'));
     const count = contacts.reduce((n,c)=>n+(Number(c.unread)||0)+(c.relation==='received'?1:0),0);
     badge.textContent = count > 99 ? '99+' : String(count); badge.hidden = !count;
+    document.dispatchEvent(new CustomEvent('hw:social-summary', {detail:{unread:count}}));
     launcher.setAttribute('aria-label','Friends and messages' + (count ? ', '+count+' unread messages or requests' : ''));
     root.querySelector('.launcher .dot').classList.toggle('online', Boolean(user && visible() && heartbeatAt));
     const b = root.querySelector('#blocked-list'); empty(b);
@@ -202,12 +203,12 @@
   function mount() {
     if (document.getElementById('hw-global-social')) return;
     const host=document.createElement('div'); host.id='hw-global-social'; if(location.pathname.startsWith('/games/'))host.setAttribute('data-game',''); document.body.append(host); root=host.attachShadow({mode:'open'});
-    const css=document.createElement('link'); css.rel='stylesheet'; css.href=new URL('global-social.css?v=1',assetRoot).href; root.append(css);
-    launcher=button('',open,'launcher'); launcher.innerHTML='<span class="dot" aria-hidden="true"></span><span>Friends</span><span class="badge" hidden></span>'; badge=launcher.querySelector('.badge');root.append(launcher);
+    const css=document.createElement('link'); css.rel='stylesheet'; css.href=new URL('global-social.css?v=2',assetRoot).href; root.append(css);
+    launcher=button('',open,'launcher'); launcher.innerHTML='<span class="dot" aria-hidden="true"></span><span>Friends</span><span class="badge" hidden></span>'; badge=launcher.querySelector('.badge'); launcher.hidden=true; root.append(launcher);
     dialog=document.createElement('dialog');dialog.setAttribute('aria-labelledby','social-title');
     dialog.innerHTML='<header><div><h2 id="social-title">Your people</h2><p class="muted">Friends & messages across HYPHSWORLD</p></div><button id="close" type="button" aria-label="Close friends">×</button></header><div class="body"><div class="identity"></div><p class="status" role="status" aria-live="polite"></p><section id="chat" hidden><div class="actions"><button id="back" type="button">Back to friends</button></div><h3 id="chat-title"></h3><button id="older" type="button">Older messages</button><div class="messages" aria-label="Messages"></div><form id="send"><textarea aria-label="Your message" maxlength="1000" placeholder="Write a message"></textarea><button class="primary" type="submit">Send</button></form></section><h3>Friends & requests</h3><div id="contacts"></div><h3>Find your people</h3><form id="search"><input aria-label="Username or display name" placeholder="Username or display name" maxlength="64" autocomplete="off"><button id="search-submit" type="submit">Search</button></form><div id="search-results"></div><details id="blocked" hidden><summary>Blocked players</summary><div id="blocked-list"></div></details><button id="review-received" type="button">Review received messages</button><section id="received-review" hidden><h3>Received-message review</h3><p class="muted">Your latest 50 received messages stay reportable after a block or friend removal.</p><div id="received-messages"></div></section><p class="muted">Messages are private between accepted friends. Online status may take up to 75 seconds to expire after disconnecting.</p></div>';
     root.append(dialog); status=root.querySelector('.status');identity=root.querySelector('.identity');contactList=root.querySelector('#contacts');searchList=root.querySelector('#search-results');chatList=root.querySelector('.messages');input=root.querySelector('input');draft=root.querySelector('textarea');sendButton=root.querySelector('#send button');chatTitle=root.querySelector('#chat-title');
-    root.querySelector('#close').onclick=()=>dialog.close(); dialog.addEventListener('close',()=>{++searchEpoch;++chatEpoch;++reviewEpoch;reviewOpen=false;reviewMessages=[];renderReview();peer=null;messages=[];retry=null;draft.value='';renderChat();launcher.focus();});
+    root.querySelector('#close').onclick=()=>dialog.close(); dialog.addEventListener('close',()=>{++searchEpoch;++chatEpoch;++reviewEpoch;reviewOpen=false;reviewMessages=[];renderReview();peer=null;messages=[];retry=null;draft.value='';renderChat();document.getElementById('hw-menu-trigger')?.focus();});
     root.querySelector('#back').onclick=()=>{++chatEpoch;peer=null;messages=[];retry=null;draft.value='';renderChat();};root.querySelector('#older').onclick=()=>void loadMessages(true);root.querySelector('#review-received').onclick=()=>void reviewReceived();
     root.querySelector('#search').addEventListener('submit',search);input.addEventListener('input',()=>{++searchEpoch;results=[];renderResults();notice('');});root.querySelector('#send').addEventListener('submit',send);
     render();void boot();timer=setInterval(()=>{if(!visible()||!user)return;if(Date.now()-heartbeatAt>=25000)lease(true);void refresh();},5000);
@@ -231,6 +232,7 @@
       const epoch=authEpoch;const result=await client.auth.getSession();if(result.error)throw result.error;if(epoch===authEpoch)reset(result.data.session);
     } catch(e) { notice(e.message||'Could not connect. Reopen Friends to retry.'); } finally { booting=false; }
   }
-  window.HWGlobalSocial={open};
+  document.addEventListener("hw:open-friends", open);
+  window.HWGlobalSocial={open, getUnread:()=>contacts.reduce((n,c)=>n+(Number(c.unread)||0)+(c.relation==='received'?1:0),0)};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
 })();
