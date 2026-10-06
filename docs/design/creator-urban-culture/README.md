@@ -31,3 +31,7 @@ Artwork generated with the built-in image generation tool, then compressed to We
 - Supabase read-only check confirmed ten published creators; no auth, RLS or storage configuration change.
 
 Run browser checks using `NODE_PATH=<playwright-install>/node_modules node scripts/check-creator-skate-browser.js`. The existing script filename is retained for CI compatibility.
+
+## Full-page skater background
+
+The existing cartoon artwork now fills the viewport behind page content and continues while scrolling. Open areas reveal the mural instead of flat black. Headers and text/form panels use dark surfaces for contrast. A smaller image loads on phones; the decorative layer does not receive pointer events. This styling applies to the 13 included pages; the five blocked HTML uploads remain pending.

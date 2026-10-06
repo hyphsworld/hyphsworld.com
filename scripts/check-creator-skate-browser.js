@@ -79,6 +79,15 @@ const server = http.createServer((req, res) => {
             await page.locator('#creatorLanguage').selectOption('es');
           }
         }
+        if (await page.locator('body.creator-universe').count()) {
+          const mural = await page.locator('body').evaluate(el => {
+            const style = getComputedStyle(el, '::before');
+            return { image: style.backgroundImage, position: style.position, pointerEvents: style.pointerEvents };
+          });
+          assert(mural.image.includes('urban-culture'), `${file}: Full-page skater mural is present`);
+          assert.equal(mural.position, 'fixed', 'Mural covers the viewport while scrolling');
+          assert.equal(mural.pointerEvents, 'none', 'Mural cannot block controls');
+        }
         // Tools retain their real IDs and scripts; anonymous pages must remain usable.
         if (await page.locator('body.urban-tools').count()) {
           assert(await page.locator('header > a').isVisible(), `${file}: Creator navigation remains visible`);
