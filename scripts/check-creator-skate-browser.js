@@ -6,8 +6,8 @@ const http = require('node:http');
 const assert = require('node:assert/strict');
 const { chromium } = require('playwright');
 const root = path.resolve(__dirname, '..');
-const files = ['creators.html', ...fs.readdirSync(root).filter(file => file.endsWith('.html') && /<body class="[^"]*creator-profile/.test(fs.readFileSync(path.join(root, file), 'utf8')))];
-const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.webp': 'image/webp', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.svg': 'image/svg+xml' };
+const files = ['creators.html', ...fs.readdirSync(root).filter(file => file !== 'creators.html' && /^creator.*\.html$/.test(file))];
+const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.webp': 'image/webp', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.svg': 'image/svg+xml', '.ttf': 'font/ttf' };
 const server = http.createServer((req, res) => {
   const target = path.resolve(root, '.' + decodeURIComponent(new URL(req.url, 'http://local').pathname));
   if (!target.startsWith(root + path.sep) || !fs.existsSync(target) || !fs.statSync(target).isFile()) { res.writeHead(404); res.end(); return; }
@@ -30,7 +30,9 @@ const server = http.createServer((req, res) => {
         if (url.pathname === '/auth-client.js') {
           const yko = route.request().frame().url().includes('/creator-ykomusic.html');
           const body = yko ? `window.HWAuth={getClient:async()=>({from:table=>({select(){return this},eq(){return this},order(){return this},maybeSingle:async()=>({data:{display_name:'YKOMUSIC',headline:'Creator-owned Latin Pop',bio:'My saved creator story'}}),limit:async()=>({data:table==='creator_world_publications'?[{id:'test-drop',title:'Creator browser fixture',media_type:'image',public_path:'fixture',published_at:'2026-10-05T00:00:00Z'}]:[]})}),storage:{from:()=>({getPublicUrl:()=>({data:{publicUrl:'/creator-ykomusic.svg'}})})}})};` : 'window.HWAuth={getClient:async()=>null};';
-          return route.fulfill({ contentType: 'text/javascript', body });
+          const tool = /creator-(access|admin|apply|dashboard|drop|login|submit)\.html/.test(route.request().frame().url());
+          const toolBody = `const fixtureUser={id:'browser-fixture'};const empty={select(){return this},eq(){return this},in(){return this},order(){return this},limit(){return this},maybeSingle:async()=>({data:null,error:null}),then(resolve){return Promise.resolve({data:[],error:null}).then(resolve)}};window.HWAuth={getCurrentUser:async()=>({userId:fixtureUser.id}),getClient:async()=>({auth:{getUser:async()=>({data:{user:${route.request().frame().url().includes('creator-login.html') ? 'null' : 'fixtureUser'}}}),getSession:async()=>({data:{session:null}})},from:()=>({...empty}),rpc:async()=>({data:false,error:null})})};`;
+          return route.fulfill({ contentType: 'text/javascript', body: tool ? toolBody : body });
         }
         if (['/global-points-engine.js', '/creator-analytics.js'].includes(url.pathname)) return route.fulfill({ contentType: 'text/javascript', body: '' });
         // Avoid downloading music/video fixtures during a layout check.
@@ -39,11 +41,12 @@ const server = http.createServer((req, res) => {
       });
       for (const file of files) {
         errors.length = 0;
+        console.log(`Checking ${file} @${width}`);
         await page.goto(`${origin}/${file}`, { waitUntil: 'load' });
         const overflow = await page.evaluate(() => ({ document: document.documentElement.scrollWidth, viewport: innerWidth, overflowing: Array.from(document.querySelectorAll('main *')).filter(el => { const r = el.getBoundingClientRect(); return r.width && r.right > innerWidth + 2 && getComputedStyle(el).position !== 'absolute'; }).slice(0,6).map(el => el.className) }));
         assert(overflow.document <= width + 2, `${file} @${width} overflows: ${JSON.stringify(overflow)}`);
         if (file === 'creators.html') {
-          assert.equal(await page.locator('body').evaluate(el => getComputedStyle(el).backgroundColor), 'rgb(244, 239, 223)', 'Shared site skin must retain the house palette');
+          if (await page.locator('body.creator-universe').count()) assert.equal(await page.locator('body').evaluate(el => getComputedStyle(el).backgroundColor), 'rgb(8, 10, 12)', 'Shared site skin must retain the urban palette');
           assert(await page.locator('.house-art img').evaluate(img => img.complete && img.naturalWidth > 0), 'House artwork loaded');
           await page.locator('[data-world-tab="creations"]').click();
           assert(await page.locator('#creations').isVisible(), 'Fresh drops panel opens');
@@ -56,7 +59,7 @@ const server = http.createServer((req, res) => {
           await page.keyboard.press('ArrowRight');
           assert.equal(await page.locator('[data-world-tab="creations"]').getAttribute('aria-selected'), 'true', 'Keyboard tabs work');
           await page.locator('[data-world-tab="discover"]').click();
-        } else {
+        } else if (await page.locator('body.creator-profile').count()) {
           assert.equal(await page.locator('script[src^="auth-client.js"]').count(), 1, `${file}: profile data client loaded`);
           assert.equal(await page.locator('script[src^="creator-published-media.js"]').count(), 1, `${file}: approved creations loader present`);
           assert(await page.locator('.creator-hero h1').isVisible(), `${file} @${width}: Creator identity visible`);
@@ -76,16 +79,30 @@ const server = http.createServer((req, res) => {
             await page.locator('#creatorLanguage').selectOption('es');
           }
         }
+        // Tools retain their real IDs and scripts; anonymous pages must remain usable.
+        if (await page.locator('body.urban-tools').count()) {
+          assert(await page.locator('header > a').isVisible(), `${file}: Creator navigation remains visible`);
+          assert(await page.locator('.urban-world-banner').isVisible(), `${file}: Urban cover is present`);
+          assert(await page.locator('main').isVisible(), `${file}: Tool content is present`);
+          if (file === 'creator-login.html') assert(await page.locator('input[type=email]').isVisible(), 'Login remains usable');
+          // Layout fixture exposes existing owner forms without signing in or writing data.
+          if (['creator-dashboard.html','creator-apply.html','creator-submit.html','creator-admin.html'].includes(file)) {
+            await page.evaluate(() => document.querySelectorAll('main .panel,main .start-panel').forEach(el => el.removeAttribute('hidden')));
+            const formWidth = await page.evaluate(() => document.documentElement.scrollWidth);
+            assert(formWidth <= width + 2, `${file}: Owner form fixture fits @${width}`);
+          }
+        }
+        if (!['creator-lil-g.html','creator-sixx-figgaz.html','creator-ykomusic.html','creator-kili-631.html','creators.html'].includes(file)) assert(await page.locator('link[href^="creator-urban.css"]').count(), `${file}: Shared visual shell loaded`);
         assert.deepEqual(errors, [], `${file} should not throw script errors`);
-        if (['creators.html', 'creators-world.html'].includes(file) && width !== 320) {
-          await page.evaluate(() => { document.activeElement.blur(); document.documentElement.style.setProperty('scroll-behavior', 'auto', 'important'); scrollTo({ top: 0, behavior: 'instant' }); });
-          await page.waitForFunction(() => scrollY === 0);
-          await page.evaluate(() => document.querySelectorAll('.world-toast').forEach(el => el.classList.remove('show')));
+        if (['creators.html', 'creators-world.html', 'creator-dashboard.html', 'creator-login.html'].includes(file) && width !== 320) {
+          await page.goto(`${origin}/${file}`, { waitUntil: 'load' });
+          await page.evaluate(() => document.fonts.ready);
+          if (file === 'creator-dashboard.html') await page.evaluate(() => document.querySelectorAll('main .panel,main .start-panel').forEach(el => el.removeAttribute('hidden')));
           await page.screenshot({ path: `/tmp/creator-skate-${file.replace('.html','')}-${width}.png`, animations: 'disabled' });
         }
       }
       await page.close();
     }
-    console.log(`Creator skate-house browser checks passed: ${files.length} pages at 320, 390 and 1280px; discovery, keyboard tabs, profile actions and management links.`);
+    console.log(`Creator urban culture browser checks passed: ${files.length} pages at 320, 390 and 1280px; discovery, keyboard tabs, profile actions and management links.`);
   } finally { if (browser) await browser.close(); server.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });
