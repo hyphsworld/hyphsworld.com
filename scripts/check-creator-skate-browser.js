@@ -101,7 +101,7 @@ const server = http.createServer((req, res) => {
             assert(formWidth <= width + 2, `${file}: Owner form fixture fits @${width}`);
           }
         }
-        if (!['creator-lil-g.html','creator-sixx-figgaz.html','creator-ykomusic.html','creator-kili-631.html','creators.html'].includes(file)) assert(await page.locator('link[href^="creator-urban.css"]').count(), `${file}: Shared visual shell loaded`);
+        assert(await page.locator('link[href^="creator-urban.css"]').count(), `${file}: Shared visual shell loaded`);
         assert.deepEqual(errors, [], `${file} should not throw script errors`);
         if (['creators.html', 'creators-world.html', 'creator-dashboard.html', 'creator-login.html'].includes(file) && width !== 320) {
           await page.goto(`${origin}/${file}`, { waitUntil: 'load' });
