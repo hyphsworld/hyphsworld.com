@@ -1,10 +1,10 @@
 # Creator World urban culture design
 
-Original cartoon culture artwork, dark poster panels, bold display type, lime and pink accents, and framed creator portraits. The complete proposed design covers all 18 pages, but this draft publishes only 13 pages (six profiles and seven tools). Automatic approval review blocked uploading existing minor-related profile content in `creator-lil-g.html`, `creator-sixx-figgaz.html`, `creator-ykomusic.html`, `creator-kili-631.html`, and `creators.html`; those five files remain unchanged in this PR pending explicit upload authorization. No profile content was newly introduced by the design. The full proposed code remains in the local implementation commit `078ad8e`. The mobile homepage places the scene first. Existing creator data, saved customization, ownership checks, forms, publication workflows and audio scripts remain intact. No database migration or production data write.
+Original cartoon culture artwork, dark poster panels, bold display type, lime and pink accents, and framed creator portraits across the directory, all ten profiles and seven creator tools. All 18 pages now share the full-page skater mural. Existing identifying profile information is preserved, with explicit user authorization for its upload. The mobile homepage places the scene first. Existing creator data, saved customization, ownership checks, forms, publication workflows and audio scripts remain intact. No database migration or production data write.
 
 ## Proposed design previews
 
-The homepage images show the completed local proposal; its HTML upload is blocked and is not included in this draft. Profile and dashboard previews show included pages.
+Homepage previews show the initial poster layout. The profile preview includes the full-page skater mural. All pages now use the mural; the optional refreshed homepage screenshots were excluded after automatic approval review blocked an artifact upload.
 
 ![Desktop homepage](homepage-desktop.webp)
 ![Phone homepage](homepage-phone.webp)
@@ -34,4 +34,4 @@ Run browser checks using `NODE_PATH=<playwright-install>/node_modules node scrip
 
 ## Full-page skater background
 
-The existing cartoon artwork now fills the viewport behind page content and continues while scrolling. Open areas reveal the mural instead of flat black. Headers and text/form panels use dark surfaces for contrast. A smaller image loads on phones; the decorative layer does not receive pointer events. This styling applies to the 13 included pages; the five blocked HTML uploads remain pending.
+The existing cartoon artwork now fills the viewport behind page content and continues while scrolling. Open areas reveal the mural instead of flat black. Headers and text/form panels use dark surfaces for contrast. A smaller image loads on phones; the decorative layer does not receive pointer events. This styling applies to all 18 Creator World pages.
