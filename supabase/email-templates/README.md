@@ -2,7 +2,9 @@
 
 These HTML files are for the hosted Supabase project's Authentication → Email Templates. Resend delivers the messages through the existing SMTP integration.
 
-**Merging this PR does not activate these templates.** Hosted Auth templates are separate from repository files. There is no new Auth hook, migration, SMTP credential, or frontend auth-flow change.
+**Activated in production on October 6, 2026 UTC with explicit owner authorization.** All three hosted subjects and complete HTML bodies were re-opened and matched to these files. The existing redirect allow list covers account.html and update-password.html. Original templates were retained for rollback. Live mailbox and end-to-end login/recovery tests are still pending.
+
+Merging repository files does not activate hosted templates; activation was performed separately in the dashboard. Hosted Auth templates are separate from repository files. There is no new Auth hook, migration, SMTP credential, or frontend auth-flow change.
 
 | Supabase template | File | Subject |
 | --- | --- | --- |
