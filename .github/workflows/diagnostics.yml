@@ -40,13 +40,13 @@ jobs:
           path: /tmp/global-social-*.png
           if-no-files-found: error
 
-      - name: Check Creator World skate-house layouts
+      - name: Check Creator World urban culture layouts
         run: NODE_PATH=/tmp/hw-social-browser/node_modules node scripts/check-creator-skate-browser.js
 
       - name: Upload Creator World layout previews
         uses: actions/upload-artifact@v4
         with:
-          name: creator-skate-house-layouts
+          name: creator-urban-culture-layouts
           path: /tmp/creator-skate-*.png
           if-no-files-found: error
 
