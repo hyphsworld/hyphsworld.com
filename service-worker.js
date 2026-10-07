@@ -1,5 +1,5 @@
-var CACHE_NAME = 'hyphsworld-shell-v4';
-var RUNTIME_CACHE = 'hyphsworld-runtime-v4';
+var CACHE_NAME = 'hyphsworld-shell-v5-restored-317';
+var RUNTIME_CACHE = 'hyphsworld-runtime-v5-restored-317';
 var APP_SHELL = [
   './', './index.html', './styles.css', './homepage-upgrades.css',
   './mobile-app.css', './mobile-app.js', './site-experience.css', './site-experience.js',
@@ -49,7 +49,7 @@ function networkFirst(request, event) {
       reject(new Error('Page request timed out'));
     }, request.mode === 'navigate' ? 10000 : 30000);
   });
-  var network = Promise.resolve().then(function () { return fetch(request, { signal: controller.signal }); });
+  var network = Promise.resolve().then(function () { return fetch(request, { signal: controller.signal, cache: 'reload' }); });
   return Promise.race([network, timeout]).then(function (response) {
     if (response.status >= 500) {
       return fallback(request, response);
