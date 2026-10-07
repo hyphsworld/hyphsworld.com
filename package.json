@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest --runInBand",
     "test:creators": "jest tests/creators-directory.test.js tests/creators-world.test.js --runInBand",
-    "diagnostics": "npm run lint:html && npm run lint:css && npm run lint:js",
+    "diagnostics": "npm run lint:html && npm run lint:css && npm run lint:js && npm run diagnostics:routes",
     "lint:html": "node scripts/lint-html.js",
     "lint:css": "node scripts/lint-css.js",
     "lint:js": "node scripts/lint-js.js",
@@ -34,7 +34,8 @@
     "diagnostics:chase-the-bag-deploy": "node scripts/chase-the-bag-deploy-diagnostic.js",
     "diagnostics:security": "node scripts/security-diagnostic.js",
     "diagnostics:protected-tools": "node scripts/creator-protected-tools-diagnostic.js",
-    "diagnostics:creator-role-loadouts": "node scripts/creator-role-toolkits-diagnostic.js"
+    "diagnostics:creator-role-loadouts": "node scripts/creator-role-toolkits-diagnostic.js",
+    "diagnostics:routes": "node scripts/button-route-diagnostic.js"
   },
   "devDependencies": {
     "jest": "30.5.2",
