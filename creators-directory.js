@@ -196,6 +196,7 @@
     var link = document.createElement('a');
     var displayName = creator ? text(creator.display_name, 'Creator') : text(row.creator_slug, 'Creator').replaceAll('-', ' ');
     card.className = 'discovery-creation-card';
+    card.dataset.creatorSlug = text(row.creator_slug);
     card.dataset.creationKind = row.creation_kind || row.media_type || 'world';
     card.appendChild(creationMedia(row, url));
     copy.className = 'discovery-creation-copy';
