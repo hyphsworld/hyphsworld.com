@@ -15,7 +15,7 @@ function worker(fetch) {
     caches: {
       match: async req => saved.get(typeof req === 'string' ? req : req.url)?.clone(),
       open: async () => ({ addAll: async () => {}, put: async (req, res) => { writes.push(req.url); saved.set(req.url, res); } }),
-      keys: async () => ['hyphsworld-shell-v2', 'hyphsworld-runtime-v2', 'another-app-cache', 'hyphsworld-shell-v3', 'hyphsworld-shell-v4', 'hyphsworld-runtime-v4'],
+      keys: async () => ['hyphsworld-shell-v2', 'hyphsworld-runtime-v2', 'another-app-cache', 'hyphsworld-shell-v3', 'hyphsworld-shell-v4', 'hyphsworld-runtime-v4', 'hyphsworld-shell-v5-restored-317', 'hyphsworld-runtime-v5-restored-317'],
       delete: async key => { deleted.push(key); },
     },
     self: { location: { origin: 'https://hyphsworld.com' }, addEventListener: (name, fn) => { handlers[name] = fn; }, skipWaiting() {}, clients: { claim: async () => {} } },
@@ -31,7 +31,7 @@ function worker(fetch) {
 }
 
 test('updated scripts win over an old cached deployment', async () => {
-  const w = worker(async () => new Response('new-script'));
+  const w = worker(async (_request, options) => new Response(options.cache === 'reload' ? 'new-script' : 'old-http-cached-script'));
   w.saved.set('https://hyphsworld.com/site.js', new Response('old-script'));
   assert.equal(await (await w.request('https://hyphsworld.com/site.js', 'no-cors')).text(), 'new-script');
 });
@@ -91,7 +91,7 @@ test('cache cleanup preserves caches belonging to other apps', async () => {
   const w = worker(async () => new Response('ok')); let pending;
   w.handlers.activate({ waitUntil: p => { pending = p; } });
   await pending;
-  assert.deepEqual(w.deleted, ['hyphsworld-shell-v2', 'hyphsworld-runtime-v2', 'hyphsworld-shell-v3']);
+  assert.deepEqual(w.deleted, ['hyphsworld-shell-v2', 'hyphsworld-runtime-v2', 'hyphsworld-shell-v3', 'hyphsworld-shell-v4', 'hyphsworld-runtime-v4']);
 });
 
 test('cache write failure cannot turn a successful page into a load error', async () => {
