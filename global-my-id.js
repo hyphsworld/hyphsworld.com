@@ -20,6 +20,13 @@
 
   var script = document.currentScript;
   var scriptUrl = script && script.src ? script.src : new URL('global-my-id.js', location.href).href;
+  // Resolve the shared skin from this script, including nested game routes.
+  if (!document.querySelector('link[href*="button-system.css"]')) {
+    var controlsStyle = document.createElement('link');
+    controlsStyle.rel = 'stylesheet';
+    controlsStyle.href = new URL('button-system.css?v=20261007-1', scriptUrl).href;
+    document.head.appendChild(controlsStyle);
+  }
   var accountUrl = new URL('account.html', scriptUrl).href;
   var authUrl = new URL('auth.html', scriptUrl).href;
   var createUrl = new URL('creator-dashboard.html', scriptUrl).href;

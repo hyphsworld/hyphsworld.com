@@ -1,22 +1,4 @@
-/* HYPHSWORLD global futuristic button lettering upgrade */
-:root{
-  --hw-letter-rainbow:linear-gradient(90deg,#39ff14 0%,#ffe600 18%,#ff2bd6 39%,#00e5ff 62%,#ff8a00 82%,#39ff14 100%);
-}
-.main-nav{gap:clamp(8px,1.7vw,16px)!important;}
-.main-nav a,.main-nav button,.btn,.games-btn,.hw-board-btn,.gate-game-btn,.gate-track-btn,.scan-button,.clear-button,.manual-enter,.nav-pill,.page-merch .pill,.chip,.game-tab,.game-controls button,.duckBtns button,.duckReturn{
-  font-size:clamp(1rem,1.45vw,1.45rem)!important;font-weight:1000!important;letter-spacing:.07em!important;text-transform:uppercase!important;line-height:1.05!important;
-}
-.main-nav a,.main-nav button,.btn,.games-btn,.hw-board-btn,.gate-game-btn,.gate-track-btn,.scan-button,.clear-button,.manual-enter,.nav-pill{
-  position:relative;isolation:isolate;text-shadow:0 0 10px rgba(255,255,255,.18),0 0 18px rgba(57,255,20,.14);
-}
-.main-nav a,.main-nav button{
-  padding:clamp(10px,1.35vw,15px) clamp(12px,1.7vw,19px)!important;min-height:54px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;white-space:nowrap!important;border-radius:999px!important;border:1px solid rgba(0,229,255,.34)!important;color:#fff!important;background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,.055)),radial-gradient(circle at 20% 20%,rgba(57,255,20,.18),transparent 34%),rgba(0,0,0,.46)!important;cursor:pointer!important;
-}
-.main-nav .nav-cta,.main-nav .mobile-menu-toggle,.btn-primary,.btn-neon,.games-btn.primary,.gate-game-btn,.scan-button,.game-controls .primary,.cash-run-button{
-  color:#050505!important;background:var(--hw-letter-rainbow)!important;background-size:260% 100%!important;animation:hwButtonColorRun 3.4s linear infinite!important;text-shadow:0 1px 0 rgba(255,255,255,.32)!important;box-shadow:0 0 22px rgba(57,255,20,.22),0 0 34px rgba(0,229,255,.12),0 14px 30px rgba(0,0,0,.32)!important;
-}
-.main-nav a:hover,.main-nav button:hover,.btn:hover,.games-btn:hover,.hw-board-btn:hover,.gate-game-btn:hover,.gate-track-btn:hover,.nav-pill:hover{transform:translateY(-3px) scale(1.02)!important;filter:saturate(1.24) contrast(1.05)!important;}
-.main-nav a::after,.main-nav button::after,.btn::after,.games-btn::after,.hw-board-btn::after,.gate-game-btn::after,.gate-track-btn::after,.nav-pill::after{height:3px!important;background:var(--hw-letter-rainbow)!important;background-size:240% 100%!important;animation:hwButtonColorRun 2.8s linear infinite!important;opacity:.9!important;}
+/* Button appearance is centralized in button-system.css. Existing page layouts follow. */
 .cash-run-home{width:min(1180px,calc(100% - 28px));margin:26px auto 0;padding:clamp(22px,4vw,42px);border-radius:32px;border:2px solid rgba(57,255,20,.34);text-align:center;background:radial-gradient(circle at 20% 15%,rgba(57,255,20,.18),transparent 34%),radial-gradient(circle at 85% 25%,rgba(255,43,214,.18),transparent 34%),rgba(0,0,0,.58);box-shadow:0 0 34px rgba(57,255,20,.15),0 22px 70px rgba(0,0,0,.36);}
 .cash-run-home h2{margin:0 0 10px;color:#39ff14;font-size:clamp(2rem,6vw,5rem);font-weight:1000;letter-spacing:.08em;text-transform:uppercase;}
 .cash-run-home p{color:#fff;font-weight:900;font-size:clamp(1rem,2vw,1.35rem);}
