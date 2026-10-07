@@ -98,19 +98,23 @@
     toggle.type = 'button';
     toggle.style.pointerEvents = 'auto';
     toggle.style.touchAction = 'manipulation';
-    panel.setAttribute('role', 'navigation');
-    panel.setAttribute('aria-label', 'More HYPHSWORLD destinations');
+    panel.setAttribute('role', 'menu');
     setOpen(false);
 
     if (!toggle.__hwHardTapBound) {
       toggle.__hwHardTapBound = true;
+      var lastTapAt = 0;
       var handler = function (event) {
         if (event) {
           event.preventDefault();
           event.stopPropagation();
         }
+        var now = Date.now();
+        if (now - lastTapAt < 320) return;
+        lastTapAt = now;
         setOpen(!panel.classList.contains('is-open'));
       };
+      toggle.addEventListener('pointerdown', handler, { passive: false });
       toggle.addEventListener('click', handler, { passive: false });
     }
 
@@ -132,14 +136,7 @@
         setOpen(false);
       }, { passive: true });
       document.addEventListener('keydown', function (event) {
-        if (event.key === 'Escape') {
-          var panel = byId('mobile-menu-panel');
-          if (panel && panel.classList.contains('is-open')) {
-            setOpen(false);
-            var toggle = document.querySelector('.mobile-menu-toggle');
-            if (toggle) toggle.focus();
-          }
-        }
+        if (event.key === 'Escape') setOpen(false);
       });
     }
   }
