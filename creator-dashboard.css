@@ -89,3 +89,24 @@
 .role-tool small{color:var(--loadout-accent,#46ff67);font-size:9px;font-weight:1000;letter-spacing:.12em}.role-tool strong{margin:9px 0 6px;font-size:15px;line-height:1.1}.role-tool span{color:#9ca4ae;font-size:11px;line-height:1.4}.role-tool b{margin-top:auto;padding-top:12px;color:#fff;font-size:10px;letter-spacing:.06em}
 @media(max-width:900px){.role-tool-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.role-toolkit-heading{display:block}.role-toolkit-heading #roleToolkitState{display:inline-flex;margin-top:12px}.role-loadout{padding:15px}.role-tool-grid{grid-template-columns:1fr}.role-tool{min-height:128px}.role-loadout-head{align-items:flex-start}}
+
+/* Dashboard-only walkthrough; preserve the shared skater shell and working tools. */
+.creator-guide{max-width:1260px;margin:24px auto;padding:24px;background:#161a20;color:#cdd2d6;border:2px solid #697580;box-shadow:5px 5px 0 #252d36;font-size:16px;line-height:1.65;overflow-wrap:anywhere}
+.creator-guide .creator-guide-kicker{color:#c4ff39;font-size:11px;font-weight:900;letter-spacing:.12em;margin:0 0 8px}
+.creator-guide h2{font-family:'HW Urban',Impact,'Arial Black',sans-serif;color:#fff;font-size:clamp(26px,4vw,34px);line-height:1.2;margin:0 0 12px}
+.creator-guide h3{font:700 18px/1.4 Arial,sans-serif;color:#fff;margin:0 0 8px}
+.creator-guide p{margin:0 0 14px}
+.creator-guide summary{cursor:pointer;min-height:48px;padding:12px;color:#c4ff39;background:#080a0c;border:1px solid #697580;font-weight:700;line-height:1.5}
+.creator-guide summary:focus-visible{outline:3px solid #67dcff;outline-offset:4px}
+.creator-guide a{color:#67dcff;text-decoration:underline;text-underline-offset:3px}
+.creator-guide strong{color:#fff}
+.creator-guide-steps{margin:24px 0 0;padding-left:28px}
+.creator-guide-steps>li{padding-left:6px;margin-bottom:24px}
+.creator-guide-steps>li::marker{color:#c4ff39;font-weight:900}
+.creator-guide-steps>li:last-child{margin-bottom:0}
+.creator-guide-states{display:grid;gap:12px;margin:16px 0}
+.creator-guide-states>div{border-left:3px solid #c4ff39;padding:8px 12px;background:#080a0c}
+.creator-guide-states dt{color:#fff;font-weight:700}
+.creator-guide-states dd{margin:0}
+@media(max-width:1400px){.creator-guide{margin-inline:clamp(18px,5vw,70px)}}
+@media(max-width:560px){.creator-guide{padding:18px}.creator-guide-steps{padding-left:22px}.creator-guide-steps>li{padding-left:2px}}
