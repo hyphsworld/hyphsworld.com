@@ -7,15 +7,16 @@
   var unlocked = false;
   var muted = false;
   var timers = [];
+  var managed = false;
   try { muted = localStorage.getItem(STORAGE_KEY) === 'off'; } catch (error) {}
 
   function getAudioContext() {
-    if (audioContext) return audioContext;
+    if (audioContext && audioContext.state !== 'closed') return audioContext;
     var AudioContextClass = window.AudioContext || window.webkitAudioContext;
     if (!AudioContextClass) return null;
-    audioContext = new AudioContextClass();
+    try { audioContext = new AudioContextClass(); } catch (error) { return null; }
     masterGain = audioContext.createGain();
-    masterGain.gain.value = 0.72;
+    masterGain.gain.value = muted ? 0 : 0.72;
     masterGain.connect(audioContext.destination);
     return audioContext;
   }
@@ -23,7 +24,19 @@
   function unlockAudio() {
     var ctx = getAudioContext();
     if (!ctx) return;
-    if (ctx.state === 'suspended') ctx.resume().catch(function () {});
+    if (ctx.state !== 'running' && typeof ctx.resume === 'function') {
+      try {
+        var resumed = ctx.resume();
+        if (resumed && typeof resumed.catch === 'function') resumed.catch(function () {});
+      } catch (error) { return; }
+    }
+    // Prime the output during a real gesture, including iOS audio interruptions.
+    if (!unlocked) {
+      var source = ctx.createBufferSource();
+      source.buffer = ctx.createBuffer(1, 1, ctx.sampleRate);
+      source.connect(masterGain);
+      source.start(0);
+    }
     unlocked = true;
   }
 
@@ -102,13 +115,14 @@
   function setMuted(nextMuted) {
     muted = Boolean(nextMuted);
     if (muted) clearSequence();
+    if (masterGain && audioContext) masterGain.gain.setValueAtTime(muted ? 0 : 0.72, audioContext.currentTime);
     try { localStorage.setItem(STORAGE_KEY, muted ? 'off' : 'on'); } catch (error) {}
     updateToggle();
     if (!muted) { unlockAudio(); playSwitch(); }
   }
   function classifyMessage(text) {
     var value = (text || '').toLowerCase();
-    if (!value || value.includes('spinning') || value.includes('hand live') || value.includes('you hit')) return;
+    if (managed || !value || value.includes('spinning') || value.includes('hand live') || value.includes('you hit')) return;
     if (value.includes('major') || value.includes('+100') || value.includes('slots hit')) playJackpot();
     else if (value.includes('you beat') || value.includes('reward') || value.includes('bonus') || value.includes('clue hit')) playWin();
     else if (value.includes('push')) playPush();
@@ -126,8 +140,9 @@
     document.addEventListener('click', function (event) {
       var closest = event.target.closest && event.target.closest.bind(event.target);
       if (!closest) return;
-      if (closest('#casinoSoundToggle')) setMuted(!muted);
-      else if (closest('#spinSlotsBtn')) playSlotSpin();
+      if (closest('#casinoSoundToggle')) { setMuted(!muted); return; }
+      if (managed) return;
+      if (closest('#spinSlotsBtn')) playSlotSpin();
       else if (closest('#spinWheelBtn')) playWheel();
       else if (closest('#dealBtn, #hwDeal')) playCard(4);
       else if (closest('#hitBtn, #hwHit')) playCard(1);
@@ -138,6 +153,6 @@
     ['message', 'slotsMessage', 'wheelMessage', 'hwResult'].forEach(watchMessage);
   }
 
-  window.HWCasinoSound = { unlock: unlockAudio, setMuted: setMuted, isMuted: function () { return muted; }, spin: playSlotSpin, wheel: playWheel, card: playCard, win: playWin, jackpot: playJackpot, push: playPush, miss: playMiss, click: playChip };
+  window.HWCasinoSound = { setManaged: function (next) { managed = Boolean(next); }, unlock: unlockAudio, setMuted: setMuted, isMuted: function () { return muted; }, spin: playSlotSpin, wheel: playWheel, card: playCard, win: playWin, jackpot: playJackpot, push: playPush, miss: playMiss, click: playChip };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind); else bind();
 })();
