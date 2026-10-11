@@ -18,6 +18,7 @@
   let scoreSubmissionId = null;
   let roomViewToken = 0;
   let roomListTimer = null;
+  let pageHidden = false;
 
   function $(id) { return document.getElementById(id); }
   function setText(id, value) { const el = $(id); if (el) el.textContent = value; }
@@ -415,12 +416,33 @@
     });
 
     window.addEventListener("pagehide", () => {
+      pageHidden = true;
       stopRoomRefresh();
       if (roomListTimer) clearInterval(roomListTimer);
       roomListTimer = null;
     });
+    window.addEventListener("pageshow", async (event) => {
+      pageHidden = false;
+      if (!event.persisted) return;
+      const requestToken = roomViewToken;
+      const previousUserId = currentUser?.userId;
+      let user = null;
+      try { user = await window.HWAuth?.getCurrentUser(); } catch (_) {}
+      if (pageHidden || requestToken !== roomViewToken) return;
+      if (!user?.userId || (previousUserId && previousUserId !== user.userId)) {
+        currentUser = user?.userId ? user : null;
+        leaveView({ signedOut: !currentUser });
+      } else {
+        currentUser = user;
+        setGuestControls(true);
+        if (activeRoom) { startRefresh(); await refreshActiveRoom(); }
+      }
+      if (pageHidden) return;
+      if (!roomListTimer) roomListTimer = setInterval(listRooms, 30000);
+      await listRooms();
+    });
     await listRooms();
-    roomListTimer = setInterval(listRooms, 30000);
+    if (!pageHidden && !roomListTimer) roomListTimer = setInterval(listRooms, 30000);
   }
   document.addEventListener("DOMContentLoaded",boot);
 })();
