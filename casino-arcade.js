@@ -208,29 +208,32 @@
   async function addPoints(points, reason) {
     const safePoints = Math.max(0, Math.round(Number(points) || 0));
     if (!safePoints) return;
-
-    try {
-      if (window.HWAuth && typeof window.HWAuth.addPoints === 'function') {
-        const nextTotal = await window.HWAuth.addPoints(safePoints, reason);
-        text('casinoPoints', format(nextTotal));
-        await refreshUser();
-        return;
-      }
-    } catch (error) {
-      console.warn('Hidden Arcade points fallback:', error && error.message ? error.message : error);
+    if (!window.HWAuth || typeof window.HWAuth.getClient !== 'function') {
+      throw new Error('Cool Points service unavailable.');
     }
-
-    setLocalPoints(localPoints() + safePoints);
+    const client = await window.HWAuth.getClient();
+    if (!client || typeof client.rpc !== 'function') throw new Error('Cool Points service unavailable.');
+    const { data, error } = await client.rpc('earn_cool_points', {
+      p_amount: safePoints, p_source: reason, p_reason: reason,
+      p_metadata: { source: 'hidden_arcade' },
+    });
+    if (error) throw error;
+    const nextTotal = data && data.balance;
+    if (!data || data.ok === false || typeof nextTotal !== 'number' || !Number.isFinite(nextTotal) || nextTotal <= Number(user?.coolPoints || 0)) {
+      throw new Error('Reward was not confirmed.');
+    }
+    text('casinoPoints', format(nextTotal));
+    await refreshUser();
   }
 
   async function saveScore(challenge, points, result) {
-    if (!user || !user.userId || user.provider === 'mock') return;
+    if (!user || !user.userId || user.provider === 'mock') return false;
 
     try {
       const client = await getSupabase();
-      if (!client) return;
+      if (!client) return false;
 
-      await client.from('game_scores').insert({
+      const { error } = await client.from('game_scores').insert({
         user_id: user.userId,
         game_key: 'hidden_arcade_' + challenge.id,
         score: Math.max(1, points || 1),
@@ -242,8 +245,11 @@
           no_cash_payout: true,
         },
       });
+      if (error) throw error;
+      return true;
     } catch (error) {
       console.warn('Hidden Arcade score skipped:', error && error.message ? error.message : error);
+      return false;
     }
   }
 
@@ -315,30 +321,33 @@
   }
 
   async function choose(index) {
-    if (!activeChallenge) {
-      startHiddenChallenge();
-      return;
-    }
-
+    if (!activeChallenge || activeAnswer === null) return;
+    const challenge = activeChallenge;
     const correct = index === activeAnswer;
+    activeAnswer = null;
     const points = correct ? CHALLENGE_POINTS + Math.min(25, runCount * 2) : 0;
-    const result = correct ? 'cleared' : 'missed';
-
+    document.querySelectorAll('[data-action]').forEach((node) => { node.disabled = true; });
+    let awarded = 0;
+    let message = challenge.miss;
     if (correct) {
-      await addPoints(points, 'hidden_arcade_clear');
-      await saveScore(activeChallenge, points, result);
-      saveRecent({ title: activeChallenge.title, points, result: 'cleared' });
-      status(activeChallenge.success);
-    } else {
-      await saveScore(activeChallenge, 0, result);
-      saveRecent({ title: activeChallenge.title, points: 0, result: 'missed' });
-      status(activeChallenge.miss);
+      try {
+        await addPoints(points, 'hidden_arcade_clear');
+        awarded = points;
+        message = challenge.success;
+      } catch (_) {
+        message = 'Challenge cleared, but the reward was not confirmed. Check your account balance.';
+      }
     }
-
-    renderResult(correct, points);
+    const saved = awarded > 0 || !correct
+      ? await saveScore(challenge, awarded, correct ? 'cleared' : 'missed')
+      : false;
+    if (!saved && (awarded > 0 || !correct)) message += ' Score could not be saved.';
+    saveRecent({ title: challenge.title, points: awarded, result: correct ? (awarded ? 'cleared' : 'reward unconfirmed') : 'missed' });
+    status(message);
+    renderResult(correct, awarded, message);
   }
 
-  function renderResult(correct, points) {
+  function renderResult(correct, points, message) {
     const stage = $('casinoStage');
     const controls = $('casinoControls');
     if (!stage || !controls || !activeChallenge) return;
@@ -347,7 +356,7 @@
       '<div class="hidden-challenge-card ' + (correct ? 'is-clear' : 'is-miss') + '">' +
         '<div class="arcade-result-number">' + (correct ? '+' + format(points) : '0') + '</div>' +
         '<h3>' + (correct ? 'Challenge Cleared' : 'Run Missed') + '</h3>' +
-        '<p>' + (correct ? activeChallenge.success : activeChallenge.miss) + '</p>' +
+        '<p>' + message + '</p>' +
       '</div>';
 
     controls.innerHTML =
