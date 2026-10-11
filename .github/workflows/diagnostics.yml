@@ -40,6 +40,16 @@ jobs:
           path: /tmp/global-social-*.png
           if-no-files-found: error
 
+      - name: Check approved Street Empire entry on phones and desktop
+        run: NODE_PATH=/tmp/hw-social-browser/node_modules node scripts/check-street-entry-browser.js
+
+      - name: Upload Street Empire entry previews
+        uses: actions/upload-artifact@v4
+        with:
+          name: street-empire-entry-layouts
+          path: /tmp/street-entry-*.png
+          if-no-files-found: error
+
       - name: Check Creator World urban culture layouts
         run: NODE_PATH=/tmp/hw-social-browser/node_modules node scripts/check-creator-skate-browser.js
 
