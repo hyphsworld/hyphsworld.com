@@ -657,9 +657,16 @@
     });
   });
   var active, picker, observer, scheduled = false;
+  var originalPageLanguage = document.documentElement.lang;
   var textState = new WeakMap();
   var attributeState = new WeakMap();
-  var excluded = 'script,style,textarea,[contenteditable],.creator-card h3,.creation-card h4,.create-recent-summary strong,.discovery-creation-copy h3,.world-publication-copy h3,[data-no-translate]';
+  var pendingRoots = new Set();
+  // Translate only explicit editorial copy and known interface surfaces. Database-backed
+  // names, biographies, titles, notes, and inbox/audit records never enter this lookup.
+  var interfaceSelector = 'header nav, .hw-creator-language, button, label, .dashboard-tabs, .world-tabs, .filters, .creator-guide, .upload-note, .library-stats, .library-subcopy, .upload-panel > .panel-copy, .house-actions, .join, #emptyState, #verificationState, .creation-status-badge, .creation-kind-badge, .creator-card a, .world-publication-open, .world-publication-document, .discovery-creation-copy > a, .state-actions, .drop-actions, #dropMedia .document-drop a';
+  var excluded = 'script,style,textarea,[contenteditable],[data-no-translate],#creatorLanguage option,.creator-card h3,.creation-card h4,.create-recent-summary strong,.discovery-creation-copy h3,.world-publication-copy h3,#profileTitle,#connectedCreatorName,#submissionList,#startCopy,.creation-note,#dropTitle,#nextDropTitle,#creatorName,#creatorHeadline,audio,video,iframe';
+  var optionSelects = ['createKind', 'creationFilter', 'requestedLevel', 'submissionType', 'entitlementKey', 'entitlementStatus', 'entitlementSource'];
+  var attributeSelector = 'input[placeholder],textarea[placeholder],button[aria-label],#creatorLanguage,#creatorSearch';
 
   function read(storageKey) {
     try { return localStorage.getItem(storageKey) || ''; } catch (error) { return ''; }
@@ -668,82 +675,120 @@
     var saved = read(key);
     if (labels[saved]) return saved;
     var legacy = read(legacyKey);
-    if (labels[legacy]) return legacy;
-    // Preserve the Spanish default of the existing Latin creator pages.
-    var pageLanguage = document.documentElement.lang;
-    if (pageLanguage === 'es') return 'es';
+    if (labels[legacy]) {
+      try { localStorage.setItem(key, legacy); } catch (error) {}
+      return legacy;
+    }
+    if (originalPageLanguage === 'es') return 'es';
     var browser = String(navigator.language || 'en').toLowerCase();
     var code = browser.indexOf('fil') === 0 ? 'tl' : browser.split('-')[0];
     return labels[code] ? code : 'en';
   }
   function translated(source) {
-    return (dictionaries[active] || {})[source] || source;
+    var dictionary = dictionaries[active] || {};
+    if (dictionary[source]) return dictionary[source];
+    // Badge/status values arrive from the service in lowercase.
+    var titleCase = source.charAt(0).toUpperCase() + source.slice(1);
+    return dictionary[titleCase] || dictionary[source.toUpperCase()] || source;
   }
   function original(state, current) {
     return state && current === state.rendered ? state.source : current;
   }
-  function observe() {
-    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+  function matchesIn(root, selector) {
+    var nodes = Array.from(root.querySelectorAll(selector));
+    if (root.matches && root.matches(selector)) nodes.unshift(root);
+    return nodes;
   }
-  function render() {
-    if (observer) observer.disconnect();
-    document.documentElement.lang = active;
-    picker.value = active;
-    document.querySelectorAll('[data-en][data-es]').forEach(function (node) {
+  function isInterface(node) {
+    if (!node || node.closest(excluded)) return false;
+    var option = node.closest('option');
+    if (option) return optionSelects.indexOf(option.parentElement.id) !== -1;
+    return !!node.closest(interfaceSelector + ',[data-en][data-es]');
+  }
+  function translateRoot(root) {
+    if (!root || !root.isConnected || root.closest(excluded)) return;
+    matchesIn(root, '[data-en][data-es]').forEach(function (node) {
       if (node.children.length || node.closest(excluded)) return;
       var source = node.getAttribute('data-en');
-      node.textContent = active === 'es' ? node.getAttribute('data-es') : translated(source);
-      // Explicit bilingual copy must always restore from its English/Spanish attributes.
-      textState.set(node.firstChild, { source: source, rendered: node.textContent });
+      var rendered = active === 'es' ? node.getAttribute('data-es') : translated(source);
+      if (node.textContent !== rendered) node.textContent = rendered;
     });
-    document.querySelectorAll('[data-en-label][data-es-label]').forEach(function (node) {
+    matchesIn(root, '[data-en-label][data-es-label]').forEach(function (node) {
+      if (node.closest(excluded)) return;
       var source = node.getAttribute('data-en-label');
-      node.setAttribute('aria-label', active === 'es' ? node.getAttribute('data-es-label') : translated(source));
+      var rendered = active === 'es' ? node.getAttribute('data-es-label') : translated(source);
+      if (node.getAttribute('aria-label') !== rendered) node.setAttribute('aria-label', rendered);
     });
-    var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
     var text;
     while ((text = walker.nextNode())) {
       var parent = text.parentElement;
-      if (!parent || parent.closest(excluded) || parent.closest('[data-en][data-es]') || parent.closest('#creatorLanguage')) continue;
+      if (!isInterface(parent) || parent.closest('[data-en][data-es]')) continue;
       var source = original(textState.get(text), text.nodeValue);
       var trimmed = source.trim().replace(/\s+/g, ' ');
       if (!trimmed) continue;
       var rendered = translated(trimmed);
-      // Do not reformat unmatched copy or names.
       if (rendered === trimmed) rendered = source;
-      else rendered = source.replace(/\S[\s\S]*\S|\S/, rendered);
-      text.nodeValue = rendered;
+      else rendered = source.replace(/\S[\s\S]*\S|\S/, function () { return rendered; });
+      if (text.nodeValue !== rendered) text.nodeValue = rendered;
       textState.set(text, { source: source, rendered: rendered });
     }
-    document.querySelectorAll('[placeholder],[aria-label]').forEach(function (node) {
-      if (node.closest(excluded)) return;
+    matchesIn(root, attributeSelector).forEach(function (node) {
+      if (node.closest('[data-no-translate]')) return;
       var states = attributeState.get(node) || {};
       ['placeholder', 'aria-label'].forEach(function (attr) {
         if (!node.hasAttribute(attr) || (attr === 'aria-label' && node.hasAttribute('data-en-label'))) return;
         var current = node.getAttribute(attr);
         var source = original(states[attr], current);
         var rendered = translated(source);
-        node.setAttribute(attr, rendered);
+        if (current !== rendered) node.setAttribute(attr, rendered);
         states[attr] = { source: source, rendered: rendered };
       });
       attributeState.set(node, states);
     });
-    observe();
+  }
+  function observe() {
+    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
   }
   function setLanguage(language, save) {
     active = labels[language] ? language : 'en';
     if (save) {
       try { localStorage.setItem(key, active); localStorage.setItem(legacyKey, active); } catch (error) {}
     }
-    render();
+    observer.disconnect();
+    pendingRoots.clear();
+    document.documentElement.lang = active;
+    picker.value = active;
+    translateRoot(document.body);
+    observe();
+  }
+  function queueRoot(node) {
+    var root = node.nodeType === 1 ? node : node.parentElement;
+    if (!root || root.closest(excluded)) return;
+    // Ignore player timers and authored copy; only changed interface subtrees are visited.
+    if (!isInterface(root) && !root.querySelector(interfaceSelector + ',[data-en][data-es],' + attributeSelector)) return;
+    pendingRoots.add(root);
   }
   function boot() {
     picker = document.getElementById('creatorLanguage');
     if (!picker) return;
-    observer = new MutationObserver(function () {
-      if (scheduled) return;
+    observer = new MutationObserver(function (records) {
+      records.forEach(function (record) {
+        if (record.type === 'characterData') queueRoot(record.target);
+        else record.addedNodes.forEach(queueRoot);
+      });
+      if (scheduled || !pendingRoots.size) return;
       scheduled = true;
-      Promise.resolve().then(function () { scheduled = false; render(); });
+      Promise.resolve().then(function () {
+        scheduled = false;
+        observer.disconnect();
+        var roots = Array.from(pendingRoots);
+        pendingRoots.clear();
+        roots.filter(function (root) {
+          return !roots.some(function (other) { return root !== other && other.contains(root); });
+        }).forEach(translateRoot);
+        observe();
+      });
     });
     picker.addEventListener('change', function () { setLanguage(picker.value, true); });
     window.addEventListener('storage', function (event) {
