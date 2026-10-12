@@ -77,7 +77,8 @@ async function arcade({ reject = false, scoreError = false } = {}) {
   let points = 100;
   w.localStorage.setItem('hyphsworld.coolPoints.total', '100');
   w.Math.random = () => 0;
-  const rpc = jest.fn(async (_name, args) => {
+  const rpc = jest.fn(async (name, args) => {
+    if (name === 'submit_game_run') return { data: scoreError ? null : { ok: true, points_delta: 0, balance: points }, error: scoreError ? new Error('score rejected') : null };
     if (reject) return { error: new Error('verified endpoint required') };
     points += args.p_amount; return { data: { ok: true, balance: points }, error: null };
   });
@@ -88,14 +89,14 @@ async function arcade({ reject = false, scoreError = false } = {}) {
   };
   const insert = jest.fn(async () => ({ error: scoreError ? new Error('score rejected') : null }));
   w.HW_SUPABASE_CONFIG = { url: 'https://example.supabase.co', anonKey: 'public-test-key' };
-  w.supabase = { createClient: () => ({ from: () => ({ insert }) }) };
+  w.supabase = { createClient: () => ({ rpc, from: () => ({ insert }) }) };
   w.eval(read('casino-arcade.js').replace(/  if \(document.readyState === 'loading'\) \{[\s\S]*?\n  \}\n\}\)\(\);$/, '  boot();\n})();'));
   await flush();
   w.document.querySelector('[data-action="start-hidden"]').click();
   return { w, insert, rpc };
 }
-test('arcade rejection cannot fabricate a wallet balance, recent reward, or saved winning score', async () => {
-  const { w, insert } = await arcade({ reject: true });
+test('arcade rejection cannot fabricate a wallet balance or reward, but still saves an unverified practice result', async () => {
+  const { w, insert, rpc } = await arcade({ reject: true });
   w.document.querySelector('[data-action="choice-0"]').click(); await flush();
   expect(w.localStorage.getItem('hyphsworld.coolPoints.total')).toBe('100');
   expect(w.document.getElementById('casinoPoints').textContent).toBe('100');
@@ -103,16 +104,19 @@ test('arcade rejection cannot fabricate a wallet balance, recent reward, or save
   expect(w.document.getElementById('casinoStage').textContent).not.toContain('+27');
   expect(JSON.parse(w.localStorage.getItem('hyphsworld.hiddenArcade.recent'))[0].points).toBe(0);
   expect(insert).not.toHaveBeenCalled();
+  expect(rpc.mock.calls.filter(c => c[0] === 'submit_game_run')).toHaveLength(1);
+  expect(rpc.mock.calls.find(c => c[0] === 'submit_game_run')[1].p_points_delta).toBe(0);
   expect(w.document.querySelector('[data-action="start-hidden"]').disabled).toBe(false);
 });
 test('arcade confirms a legitimate reward once and reports score-save errors separately', async () => {
   const { w, insert, rpc } = await arcade({ scoreError: true });
   const choice = w.document.querySelector('[data-action="choice-0"]');
   choice.dispatchEvent(new w.Event('click')); choice.dispatchEvent(new w.Event('click')); await flush();
-  expect(rpc).toHaveBeenCalledTimes(1);
+  expect(rpc.mock.calls.filter(c => c[0] === 'earn_cool_points')).toHaveLength(1);
+  expect(rpc.mock.calls.filter(c => c[0] === 'submit_game_run')).toHaveLength(1);
   expect(w.HWAuth.addPoints).not.toHaveBeenCalled();
   expect(w.document.getElementById('casinoPoints').textContent).toBe('127');
-  expect(insert).toHaveBeenCalledTimes(1);
+  expect(insert).not.toHaveBeenCalled();
   expect(w.document.getElementById('casinoStage').textContent).toContain('+27');
   expect(w.document.getElementById('casinoStage').textContent).toContain('Score could not be saved');
 });
