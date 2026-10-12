@@ -172,25 +172,21 @@
     const wallet = await walletFor(user);
     const cleanAvatar = avatarType(updates.avatarType || updates.avatar_type || current?.avatar_type || textGet('hyphsworld.avatarType') || 'boy');
     const displayName = String(updates.displayName || updates.display_name || current?.display_name || user.user_metadata?.displayName || displayFromEmail(user.email)).trim().slice(0, 40);
+    // Identity/cosmetics only. Wallet and access fields are owned by server RPCs.
     const row = {
       id: user.id,
       email: user.email || current?.email || null,
       username: String(updates.username || current?.username || user.user_metadata?.username || usernameFromEmail(user.email)).slice(0, 30),
       display_name: displayName,
-      duck_status: String(updates.duckStatus || updates.duck_status || current?.duck_status || user.user_metadata?.duckStatus || 'Duck Sauce is watching this account.').slice(0, 90),
-      buck_clearance: String(updates.buckClearance || updates.buck_clearance || current?.buck_clearance || user.user_metadata?.buckClearance || 'Lobby clearance only').slice(0, 90),
       avatar_type: cleanAvatar,
       avatar_icon: avatarIcon(cleanAvatar),
-      points: wallet.balance,
-      cool_points: wallet.balance,
-      lifetime_points: Math.max(wallet.lifetime_points, wallet.balance),
       updated_at: new Date().toISOString()
     };
     const { data, error } = await sb.from(c.table).upsert(row, { onConflict: 'id' }).select().maybeSingle();
     if (error) throw new Error(error.message || 'Profile save failed.');
     saveLocalProfileName(row.display_name);
     saveLocalAvatar(row.avatar_type);
-    broadcastPoints(row.cool_points, 'profile_sync');
+    broadcastPoints(wallet.balance, 'profile_sync');
     return data || row;
   }
   async function signInWithGoogle(options = {}) {
