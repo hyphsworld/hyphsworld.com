@@ -304,7 +304,7 @@
       const awarded = Math.max(0, Number(data?.points_delta || 0));
       setStatus(data?.duplicate
         ? `Score already saved. No duplicate Cool Points added.`
-        : `Score saved: ${score}. +${awarded} Cool Points.`);
+        : data?.points_delta ? `Score saved: ${score}. +${awarded} Cool Points.` : `Practice score saved: ${score}. Player-reported results earn no Cool Points.`);
       window.dispatchEvent(new CustomEvent("hyph:points:changed", { detail: { balance: Number(data?.balance || 0) } }));
     } catch (error) {
       setStatus(`Score save failed: ${safeText(error?.message, "Please retry.")}`);
