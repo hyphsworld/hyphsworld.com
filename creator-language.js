@@ -702,7 +702,7 @@
   function isInterface(node) {
     if (!node || node.closest(excluded)) return false;
     var option = node.closest('option');
-    if (option) return optionSelects.indexOf(option.parentElement.id) !== -1;
+    if (option) return !!option.parentElement && optionSelects.indexOf(option.parentElement.id) !== -1;
     return !!node.closest(interfaceSelector + ',[data-en][data-es]');
   }
   function translateRoot(root) {
@@ -764,7 +764,7 @@
   }
   function queueRoot(node) {
     var root = node.nodeType === 1 ? node : node.parentElement;
-    if (!root || root.closest(excluded)) return;
+    if (!root || !root.isConnected || root.closest(excluded)) return;
     // Ignore player timers and authored copy; only changed interface subtrees are visited.
     if (!isInterface(root) && !root.querySelector(interfaceSelector + ',[data-en][data-es],' + attributeSelector)) return;
     pendingRoots.add(root);

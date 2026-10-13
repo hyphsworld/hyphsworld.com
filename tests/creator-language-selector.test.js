@@ -136,3 +136,18 @@ describe('Shared Creator World language selector', () => {
     }
   });
 });
+
+
+test('discarded World-picker options do not break the language observer', async () => {
+  const w = await open('creator-dashboard.html', { shared: 'es' });
+  const d = w.document;
+  const errors = [];
+  w.addEventListener('error', event => errors.push(event.message));
+  const label = d.createElement('label');
+  const picker = d.createElement('select'); picker.id = 'creatorWorldSelect'; label.appendChild(picker); d.body.appendChild(label);
+  picker.appendChild(new w.Option('Music', 'first'));
+  picker.replaceChildren(new w.Option('Story', 'second'));
+  await settle();
+  expect(errors).toEqual([]);
+  expect(picker.options[0].textContent).toBe('Story');
+});

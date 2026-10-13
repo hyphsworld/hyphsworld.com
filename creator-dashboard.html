@@ -9,7 +9,7 @@
       content="Run your HYPHSWORLD Creator World, creations, profile, and opportunities."
     />
     <title>Creator Dashboard | HYPHSWORLD</title>
-    <link rel="stylesheet" href="creator-dashboard.css?v=creator-guide-1" />
+    <link rel="stylesheet" href="creator-dashboard.css?v=profile-picture-tools-1" />
     <link rel="stylesheet" href="creator-urban.css?v=urban-culture-1">
   <link rel="stylesheet" href="creator-world-language.css?v=world-language-1">
 </head>
@@ -55,7 +55,7 @@
             </li>
             <li>
               <h3>Set up your World.</h3>
-              <p>Use <strong>Profile</strong> to edit your creator details, then Save Profile. Your categories help match the Creator Loadout on Overview. Check <strong>Trust &amp; Tools</strong> for your available tools and verification status. Badge review is separate from application and creation review. If you own more than one World, choose the right one in MY CREATOR WORLDS before creating.</p>
+              <p>Use <strong>Profile</strong> to edit your creator details and choose a new profile picture from your device. Check the preview, then select Save Profile and wait for confirmation. Your categories help match the Creator Loadout on Overview. Check <strong>Trust &amp; Tools</strong> for your available tools and verification status. Badge review is separate from application and creation review. If you own more than one World, choose the right one in MY CREATOR WORLDS before creating.</p>
             </li>
             <li>
               <h3>CREATE your first piece.</h3>
@@ -94,6 +94,7 @@
         <article class="panel" data-dashboard-view="overview">
           <p>OVERVIEW</p>
           <h2>Your numbers</h2>
+          <button id="profileEditShortcut" type="button" data-en="Edit profile &amp; picture" data-es="Editar perfil y foto">Edit profile &amp; picture</button>
           <div id="metricList" class="stack"><span>Loading account-backed metrics…</span></div>
         </article>
         <article class="panel role-toolkit-panel" data-dashboard-view="overview" aria-labelledby="roleToolkitTitle">
@@ -110,7 +111,28 @@
         <article class="panel profile-panel" data-dashboard-view="profile" hidden>
           <p>PROFILE</p>
           <h2 id="profileTitle">Your draft</h2>
+          <div class="profile-edit-guide">
+            <h3 data-en="Make your World look like you." data-es="Haz que tu mundo te represente.">Make your World look like you.</h3>
+            <ol>
+              <li data-en="Choose the correct World above if you manage more than one." data-es="Si administras varios mundos, elige el correcto arriba.">Choose the correct World above if you manage more than one.</li>
+              <li data-en="Edit your name, headline, city, categories, and bio below." data-es="Edita tu nombre, presentación, ciudad, categorías y biografía abajo.">Edit your name, headline, city, categories, and bio below.</li>
+              <li data-en="Choose a picture from your phone or computer and check the preview." data-es="Elige una foto de tu teléfono o computadora y revisa la vista previa.">Choose a picture from your phone or computer and check the preview.</li>
+              <li data-en="Select Save Profile, wait for confirmation, then open your public World." data-es="Selecciona Guardar perfil, espera la confirmación y abre tu mundo público.">Select Save Profile, wait for confirmation, then open your public World.</li>
+            </ol>
+            <p data-en="Saved details appear on a published World and its directory card when those pages reload. A draft stays unpublished. Profile edits do not change your badge or publish private creations." data-es="Los datos guardados aparecen en tu mundo publicado y su tarjeta al recargar esas páginas. Un borrador sigue sin publicarse. Editar el perfil no cambia tu insignia ni publica creaciones privadas.">Saved details appear on a published World and its directory card when those pages reload. A draft stays unpublished. Profile edits do not change your badge or publish private creations.</p>
+            <a id="profileWorldLink" class="panel-link" href="creators.html" target="_blank" rel="noopener" hidden data-en="View my public World →" data-es="Ver mi mundo público →">View my public World →</a>
+          </div>
           <form id="creatorForm">
+            <section class="profile-picture-tools" aria-labelledby="profilePictureTitle">
+              <img id="profilePicturePreview" src="assets/creator-world/urban-culture.webp" alt="Profile picture preview" width="160" height="160" data-no-translate>
+              <div>
+                <h3 id="profilePictureTitle" data-en="Your profile picture" data-es="Tu foto de perfil">Your profile picture</h3>
+                <label for="profilePictureFile" data-en-label="Choose profile picture" data-es-label="Elegir foto de perfil"><span data-en="Choose profile picture" data-es="Elegir foto de perfil">Choose profile picture</span><input id="profilePictureFile" type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="profilePictureHelp profilePictureStatus"></label>
+                <p id="profilePictureHelp" data-en="JPG, PNG, or WEBP • 5 MB maximum. Keep your face or logo near the center. Profile pictures are public images. Choosing a file does not save it yet." data-es="JPG, PNG o WEBP • Máximo 5 MB. Mantén tu rostro o logotipo cerca del centro. Las fotos de perfil son imágenes públicas. Elegir un archivo todavía no lo guarda.">JPG, PNG, or WEBP • 5 MB maximum. Keep your face or logo near the center. Profile pictures are public images. Choosing a file does not save it yet.</p>
+                <button id="profilePictureCancel" type="button" class="secondary-button" hidden data-en="Keep current picture" data-es="Mantener foto actual">Keep current picture</button>
+                <p id="profilePictureStatus" role="status" aria-live="polite">Choose a picture to preview it. Save Profile applies your changes.</p>
+              </div>
+            </section>
             <label
               >Display name<input
                 id="displayName"
@@ -132,11 +154,14 @@
                 maxlength="3000"
                 rows="7"
               ></textarea></label
-            ><label
-              >Approved image path<input
-                id="imageUrl"
-                placeholder="creator-photo.jpg" /></label
-            ><button type="submit">Save Profile</button>
+            >
+            <details class="profile-picture-advanced">
+              <summary data-en="Use an existing picture link (optional)" data-es="Usar un enlace de imagen existente (opcional)">Use an existing picture link (optional)</summary>
+              <p data-en="Keep the current link unless you want to use an existing HTTPS image or HYPHSWORLD image path. A newly selected picture takes priority when you save." data-es="Mantén el enlace actual, salvo que quieras usar una imagen HTTPS o una ruta de HYPHSWORLD. Una foto nueva seleccionada tiene prioridad al guardar.">Keep the current link unless you want to use an existing HTTPS image or HYPHSWORLD image path. A newly selected picture takes priority when you save.</p>
+              <label>Approved image path<input id="imageUrl" placeholder="creator-photo.jpg" /></label>
+            </details>
+            <button id="profileSaveButton" type="submit">Save Profile</button>
+            <p id="profileSaveStatus" role="status" aria-live="polite"></p>
           </form>
         </article>
         <article class="panel" data-dashboard-view="trust" hidden>
@@ -226,8 +251,9 @@
     <script src="auth-client.js?v=20261005-member-menu"></script>
     <script src="global-points-engine.js?v=20261005-member-menu"></script>
     <script src="creator-role-toolkit.js?v=role-loadouts-1"></script>
-    <script src="creator-dashboard.js?v=role-loadouts-1"></script>
+    <script src="creator-profile-pictures.js?v=profile-picture-tools-1"></script>
+    <script src="creator-dashboard.js?v=profile-picture-tools-1"></script>
   <script src="global-my-id.js?v=restore-317-20261007" defer></script>
-  <script src="creator-language.js?v=world-language-2" defer></script>
+  <script src="creator-language.js?v=profile-picture-tools-1" defer></script>
 </body>
 </html>
