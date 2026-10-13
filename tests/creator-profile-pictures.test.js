@@ -43,6 +43,8 @@ async function dashboard({ saveError = null, uploadError = null, delaySave = fal
   w.URL.createObjectURL = jest.fn(() => 'blob:https://hyphsworld.com/selected-picture');
   w.URL.revokeObjectURL = jest.fn();
   w.Image = class { constructor() { this.naturalWidth = 400; this.naturalHeight = 400; } set src(value) { Promise.resolve().then(() => { if (this.onload) this.onload(); }); } };
+  w.HTMLCanvasElement.prototype.getContext = jest.fn(() => ({ drawImage: jest.fn() }));
+  w.HTMLCanvasElement.prototype.toBlob = jest.fn(function (callback, type) { callback(new w.Blob(['freshly encoded pixels'], { type })); });
   w.eval(read('creator-profile-pictures.js')); w.eval(read('creator-dashboard.js'));
   await settle(); await settle();
   return { w, rows, updates, upload, remove, publicUrl, buckets, finishSave() { resolveSave(); } };
@@ -171,4 +173,23 @@ test('the overview shortcut opens the profile controls and focuses the name fiel
   w.document.getElementById('profileEditShortcut').click();
   expect(w.document.getElementById('dashboard').dataset.activeView).toBe('profile');
   expect(w.document.activeElement.id).toBe('displayName');
+});
+
+
+test('uploads a newly encoded pixel blob rather than the original image bytes', async () => {
+  const { w, upload } = await dashboard();
+  const original = file(w); await choose(w, original); await save(w);
+  const encoded = upload.mock.calls[0][1];
+  expect(encoded).not.toBe(original);
+  expect(encoded.size).toBe('freshly encoded pixels'.length);
+  expect(w.HTMLCanvasElement.prototype.toBlob).toHaveBeenCalled();
+});
+
+test('failed pixel encoding never falls back to uploading the original phone file', async () => {
+  const { w, upload } = await dashboard();
+  w.HTMLCanvasElement.prototype.toBlob = function (callback) { callback(null); };
+  await choose(w, file(w));
+  expect(w.HWCreatorProfilePictures.hasSelection()).toBe(false);
+  expect(w.document.getElementById('profilePictureStatus').textContent).toContain('could not be prepared');
+  expect(upload).not.toHaveBeenCalled();
 });
