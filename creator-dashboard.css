@@ -110,3 +110,14 @@
 .creator-guide-states dd{margin:0}
 @media(max-width:1400px){.creator-guide{margin-inline:clamp(18px,5vw,70px)}}
 @media(max-width:560px){.creator-guide{padding:18px}.creator-guide-steps{padding-left:22px}.creator-guide-steps>li{padding-left:2px}}
+
+/* Profile tools remain inside the existing Profile tab. */
+.profile-edit-guide{padding:18px;border:1px solid rgba(31,252,255,.4);background:rgba(0,0,0,.55);margin-bottom:20px;line-height:1.55}
+.profile-edit-guide h3{margin-top:0;color:#caff35}.profile-edit-guide ol{padding-left:22px}.profile-edit-guide li{margin:8px 0}
+.profile-picture-tools{display:grid;grid-template-columns:160px minmax(0,1fr);gap:18px;align-items:start;padding:16px;border:1px solid rgba(255,255,255,.25);background:#11151a;border-radius:12px}
+#profilePicturePreview{display:block;width:160px;height:160px;max-width:100%;object-fit:cover;border:2px solid #caff35;border-radius:12px}
+.profile-picture-tools h3{margin-top:0;color:#fff}.profile-picture-tools p,.profile-picture-advanced p{font-size:.9rem;line-height:1.5;color:#e4e8ec}
+#profilePictureFile{max-width:100%;min-width:0;padding:10px;font-size:.85rem}
+.profile-picture-advanced{padding:12px;border:1px solid rgba(255,255,255,.2);border-radius:8px}.profile-picture-advanced summary{cursor:pointer;color:#1ffcff;font-weight:800}
+#profileSaveStatus:empty{display:none}#profileSaveStatus{margin:0;color:#e4e8ec;line-height:1.5}
+@media(max-width:600px){.profile-picture-tools{grid-template-columns:minmax(0,1fr)}#profilePicturePreview{width:140px;height:140px}.profile-edit-guide{padding:14px}}

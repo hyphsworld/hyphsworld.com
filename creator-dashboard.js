@@ -1,6 +1,6 @@
 (function () {
   'use strict';
-  var user, client, creator, creators = [], creations = [], uploadBusy = false, latestCreatedId = '';
+  var user, client, creator, creators = [], creations = [], uploadBusy = false, latestCreatedId = '', profileBusy = false;
   var dashboardTabs = Array.from(document.querySelectorAll('[data-dashboard-tab]'));
   var currentDashboardView = 'overview';
   var uploadBucket = 'creator-world-uploads';
@@ -122,6 +122,18 @@
     el('categories').value = (creator.categories || []).join(', ');
     el('bio').value = creator.bio || '';
     el('imageUrl').value = creator.image_url || '';
+    if (window.HWCreatorProfilePictures) window.HWCreatorProfilePictures.reset(creator);
+    if (el('profileSaveStatus')) el('profileSaveStatus').textContent = '';
+    var worldLink = el('profileWorldLink');
+    if (worldLink) {
+      worldLink.hidden = true;
+      if (creator.status === 'published' && creator.profile_url) {
+        try {
+          var publicWorld = new URL(creator.profile_url, location.href);
+          if (publicWorld.origin === location.origin) { worldLink.href = publicWorld.href; worldLink.hidden = false; }
+        } catch (error) {}
+      }
+    }
     el('verificationState').textContent = (creator.verification_level || 'unverified').replace('_', ' ');
     try {
       window.dispatchEvent(new CustomEvent('hw:creator-profile-ready', {
@@ -147,7 +159,44 @@
     if (result.error) return status('Could not build your Creator World: ' + result.error.message);
     creators.push(result.data); creator = result.data; renderWorldPicker(); renderCreator(); status('CREATOR WORLD BUILT • Private draft ready');
   }
-  async function save(event) { event.preventDefault(); var update = { display_name: el('displayName').value.trim(), headline: el('headline').value.trim(), location: el('location').value.trim(), categories: cleanList(el('categories').value), bio: el('bio').value.trim(), image_url: el('imageUrl').value.trim(), profile_url: creator.profile_url || '' }; var result = await client.from('creators').update(update).eq('id', creator.id).select().single(); if (result.error) return status('Save rejected: ' + result.error.message); creator = result.data; creators = creators.map(function (row) { return row.id === creator.id ? creator : row; }); renderWorldPicker(); renderCreator(); status('Profile saved'); }
+  async function save(event) {
+    event.preventDefault();
+    if (profileBusy || !creator || !user) return;
+    var pictures = window.HWCreatorProfilePictures;
+    var saveCreator = creator, ownerId = user.userId;
+    var update = { display_name: el('displayName').value.trim(), headline: el('headline').value.trim(), location: el('location').value.trim(), categories: cleanList(el('categories').value), bio: el('bio').value.trim(), image_url: el('imageUrl').value.trim(), profile_url: saveCreator.profile_url || '' };
+    if (!update.display_name) { status('A display name is required.'); return; }
+    try {
+      if (pictures && pictures.isChecking()) throw new Error('Wait for the picture preview before saving.');
+      if (pictures && !pictures.hasSelection()) pictures.pictureUrl(update.image_url);
+    } catch (error) { el('profileSaveStatus').textContent = error.message; return; }
+    profileBusy = true;
+    var controls = Array.from(el('creatorForm').elements);
+    var worldPicker = el('creatorWorldSelect');
+    if (worldPicker) controls.push(worldPicker);
+    var disabledStates = controls.map(function (control) { return control.disabled; });
+    controls.forEach(function (control) { control.disabled = true; });
+    el('profileSaveStatus').textContent = 'Saving your profile…';
+    var uploaded = null, saveAttempted = false;
+    try {
+      if (pictures) uploaded = await pictures.upload(client, saveCreator.id, ownerId);
+      if (uploaded) update.image_url = uploaded.url;
+      saveAttempted = true;
+      var result = await client.from('creators').update(update).eq('id', saveCreator.id).eq('owner_user_id', ownerId).select().single();
+      if (result.error || !result.data || result.data.id !== saveCreator.id) throw new Error(result.error ? result.error.message : 'The selected World could not be saved.');
+      creators = creators.map(function (row) { return row.id === saveCreator.id ? result.data : row; });
+      if (creator.id === saveCreator.id) { creator = result.data; renderWorldPicker(); renderCreator(); }
+      status('Profile saved');
+      el('profileSaveStatus').textContent = saveCreator.status === 'published' ? 'Profile saved. Reload your published World to see your changes.' : 'Profile saved in your private draft. HYPHSWORLD publication is still required.';
+    } catch (error) {
+      if (pictures && uploaded) await pictures.discard(client, uploaded);
+      status('Save rejected: ' + (error.message || error));
+      el('profileSaveStatus').textContent = (saveAttempted ? 'Save could not be confirmed. Reload this dashboard to check your profile before trying again. ' : 'Profile not saved. Your current profile is unchanged. ') + (error.message || error);
+    } finally {
+      controls.forEach(function (control, index) { control.disabled = disabledStates[index]; });
+      profileBusy = false;
+    }
+  }
   async function requestVerification(event) { event.preventDefault(); var result = await client.from('creator_verification_requests').insert({ creator_id: creator.id, requester_id: user.userId, requested_level: el('requestedLevel').value, evidence_summary: el('evidenceSummary').value.trim() }); if (result.error) return status('Request not submitted: ' + result.error.message); el('evidenceSummary').value = ''; status('Review request sent'); await loadVerification(); }
   async function loadVerification() { var r = await client.from('creator_verification_requests').select('requested_level,status,created_at').eq('creator_id', creator.id).order('created_at', { ascending: false }); cards(el('verificationHistory'), (r.data || []).map(function(x){ return Object.assign({title:x.requested_level.replace('_',' ').toUpperCase()},x); }), function(x){ return x.status.toUpperCase()+' • '+new Date(x.created_at).toLocaleDateString(); }); }
   async function loadEntitlements() { var r = await client.from('creator_entitlements').select('entitlement_key,status,source,expires_at').eq('creator_id', creator.id); cards(el('entitlementList'), (r.data || []).map(function(x){ return Object.assign({title:x.entitlement_key.replaceAll('_',' ').toUpperCase()},x); }), function(x){ return x.status.toUpperCase()+' • '+x.source.toUpperCase(); }); }
@@ -396,5 +445,6 @@
     finally { uploadBusy = false; el('uploadButton').disabled = false; el('uploadButton').textContent = 'CREATE'; }
   }
 
+  if (el('profileEditShortcut')) el('profileEditShortcut').addEventListener('click', function () { activateDashboardView('profile', true); el('displayName').focus(); });
   el('startCreator').addEventListener('click', start); el('creatorForm').addEventListener('submit', save); el('verificationForm').addEventListener('submit', requestVerification); el('creatorUploadForm').addEventListener('submit', uploadMedia); el('createKind').addEventListener('change', function (event) { setCreateKind(event.target.value); }); el('creationFilter').addEventListener('change', function () { uploadCards(creations); }); el('createAgain').addEventListener('click', function () { el('createFlowSuccess').hidden = true; latestCreatedId = ''; el('uploadTitle').focus(); }); window.addEventListener('load', function () { initCreateKind(); initDashboardTabs(); load(); });
 })();
