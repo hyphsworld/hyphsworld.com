@@ -49,10 +49,35 @@
     var url = URL.createObjectURL(file), image = new Image();
     image.onload = function () {
       if (token !== generation) { URL.revokeObjectURL(url); return; }
-      checking = false;
-      if (!image.naturalWidth || !image.naturalHeight) { URL.revokeObjectURL(url); input.value = ''; announce('That picture could not be opened. Choose another image.'); return; }
-      selected = file; previewUrl = url; showPicture(url, currentName); cancel.hidden = false;
-      announce('New picture selected. Save Profile to apply it.');
+      function rejectPicture() {
+        URL.revokeObjectURL(url);
+        if (token !== generation) return;
+        checking = false; input.value = '';
+        announce('That picture could not be prepared. Choose another image.');
+      }
+      if (!image.naturalWidth || !image.naturalHeight) { rejectPicture(); return; }
+      try {
+        // Upload freshly encoded pixels, never the original phone file or its EXIF metadata.
+        var canvas = document.createElement('canvas');
+        var ratio = Math.min(1, 1600 / Math.max(image.naturalWidth, image.naturalHeight));
+        canvas.width = Math.max(1, Math.round(image.naturalWidth * ratio));
+        canvas.height = Math.max(1, Math.round(image.naturalHeight * ratio));
+        var context = canvas.getContext('2d');
+        if (!context || typeof canvas.toBlob !== 'function') { rejectPicture(); return; }
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob(function (cleanPicture) {
+          URL.revokeObjectURL(url);
+          if (token !== generation) return;
+          checking = false;
+          if (!cleanPicture || !extensions[cleanPicture.type] || !cleanPicture.size || cleanPicture.size > maxBytes) {
+            input.value = ''; announce('That picture could not be prepared. Choose another image.'); return;
+          }
+          selected = cleanPicture;
+          previewUrl = URL.createObjectURL(cleanPicture);
+          showPicture(previewUrl, currentName); cancel.hidden = false;
+          announce('New picture selected. Save Profile to apply it.');
+        }, file.type, 0.9);
+      } catch (error) { rejectPicture(); }
     };
     image.onerror = function () {
       URL.revokeObjectURL(url);
