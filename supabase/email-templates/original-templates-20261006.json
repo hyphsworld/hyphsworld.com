@@ -1,0 +1,17 @@
+[
+  {
+    "template": "confirmation",
+    "subject": "Confirm Your Signup",
+    "html": "<h2>Confirm your signup</h2>\n\n<p>Follow this link to confirm your user:</p>\n<p><a href=\"{{ .ConfirmationURL }}\">Confirm your mail</a></p>"
+  },
+  {
+    "template": "magic-link",
+    "subject": "Your Magic Link",
+    "html": "<h2>Magic Link</h2>\n\n<p>Follow this link to login:</p>\n<p><a href=\"{{ .ConfirmationURL }}\">Log In</a></p>"
+  },
+  {
+    "template": "recovery",
+    "subject": "Reset Your Password",
+    "html": "<h2>Reset Password</h2>\n\n<p>Follow this link to reset the password for your user:</p>\n<p><a href=\"{{ .ConfirmationURL }}\">Reset Password</a></p>"
+  }
+]
