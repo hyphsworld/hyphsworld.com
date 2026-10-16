@@ -1,0 +1,147 @@
+/* Reference-led lounge presentation. Live game state and connected-chain geometry stay authoritative. */
+body.neon-table-lounge{
+  --lounge-cyan:#27e9ff;--lounge-mint:#63ffac;--lounge-gold:#f0c66c;--lounge-ink:#030909;
+  --lounge-scene:url('assets/games/neon-table-lounge-v2.webp');
+  background:radial-gradient(ellipse at 12% 10%,#132d2e,transparent 38%),radial-gradient(ellipse at 92% 25%,#27122a,transparent 35%),#030909!important;
+  color:#f6fff9;
+}
+.neon-table-lounge .site-header{position:relative;top:auto}
+.neon-table-lounge .dominos-hero,.neon-table-lounge .dominos-panel,.neon-table-lounge .table-room-hero{
+  border:1px solid #335349;background:linear-gradient(135deg,#111c1ce8,#030909ed);box-shadow:0 18px 45px #0006;
+}
+.neon-table-lounge .dominos-hero h1,.neon-table-lounge .table-room-hero h1{color:#f6fff9;text-shadow:0 0 26px #27e9ff30;letter-spacing:-.04em}
+.neon-table-lounge .eyebrow,.neon-table-lounge .table-kicker{color:var(--lounge-gold)}
+.neon-table-lounge .dominos-table{min-width:0;border:1px solid #466358;border-radius:24px;background:#050b0c;box-shadow:0 25px 70px #0008}
+.neon-table-lounge .dominos-scoreboard .score-card{background:#071111!important;border-color:#33584c!important}
+.neon-table-lounge .score-card strong{color:var(--lounge-gold)!important}
+.neon-table-lounge .games-btn,.neon-table-lounge .table-btn{min-height:44px;border:1px solid #527266;border-radius:14px;background:#091515;color:#f6fff9;box-shadow:inset 0 1px 0 #ffffff16,0 5px 12px #0005}
+.neon-table-lounge .games-btn.primary,.neon-table-lounge .table-btn:not(.secondary){background:linear-gradient(150deg,#a7ffcc,#43e799);border-color:#7effb9;color:#042519}
+.neon-table-lounge button:focus-visible,.neon-table-lounge a:focus-visible{outline:3px solid var(--lounge-gold);outline-offset:3px}
+.neon-table-lounge .domino-pov-room,.neon-table-lounge.table-game-page .card-pov-room{
+  position:relative;display:flex!important;flex-direction:column;isolation:isolate;box-sizing:border-box;
+  width:100%!important;max-width:760px;min-height:0!important;max-height:none!important;height:auto!important;aspect-ratio:auto!important;
+  padding:clamp(165px,49vw,365px) 16px 14px!important;margin-inline:auto;overflow:hidden!important;perspective:none;
+  border:1px solid #427165!important;border-radius:22px!important;
+  background:linear-gradient(180deg,#00000006 0%,transparent 46%,#00170c4a 100%),var(--lounge-scene) center top/100% auto no-repeat,#043c2c!important;
+  box-shadow:inset 0 0 0 2px #0007,0 24px 55px #0009!important;
+}
+.neon-table-lounge .domino-pov-room.has-female-opponent{--lounge-scene:url('assets/games/01-domino-room-pov-female-v1.webp')}
+.neon-table-lounge .domino-pov-room::before,.neon-table-lounge .domino-pov-room::after,.neon-table-lounge .card-pov-room::before{pointer-events:none;background:none!important}
+.neon-table-lounge .domino-pov-room .pov-felt,.neon-table-lounge.table-game-page .card-felt{
+  position:relative;z-index:2;display:flex!important;flex:1 0 auto;flex-direction:column;justify-content:flex-start;
+  width:100%;min-height:0!important;max-height:none!important;height:auto!important;margin:0!important;padding:0!important;
+  border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;backdrop-filter:none;transform:none!important;
+}
+.neon-table-lounge .pov-felt::before{display:none!important}
+.neon-table-lounge .pov-felt-mark,.neon-table-lounge .card-felt-mark{z-index:-1;left:50%;top:42%;color:#d4e3b930!important;opacity:1;transform:translate(-50%,-50%) rotate(-6deg);font-size:clamp(1.8rem,7vw,3.6rem);letter-spacing:-.05em;pointer-events:none}
+.neon-table-lounge .pov-felt-mark::after,.neon-table-lounge .card-felt-mark::after{content:'PLAY · CONNECT · BELONG';display:block;margin-top:8px;font:800 .26em/1.5 system-ui,sans-serif;letter-spacing:.16em;text-align:center}
+.neon-table-lounge .pov-player-hud{
+  top:10px!important;left:10px!important;right:108px;width:auto!important;min-width:0;min-height:62px;padding:8px 10px!important;gap:8px;
+  grid-template-columns:auto minmax(0,1fr) auto;transform:none!important;border:1px solid var(--lounge-cyan)!important;border-radius:23px;background:#030b10eb!important;
+  box-shadow:0 0 16px #27e9ff20,inset 0 0 0 2px #d9ffff0d!important;
+}
+.neon-table-lounge .pov-player-hud strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:clamp(.7rem,2.3vw,1.05rem);letter-spacing:0}
+.neon-table-lounge .pov-player-hud-avatar{width:38px;height:38px;background:#133632;border-color:var(--lounge-cyan)}
+.neon-table-lounge .pov-player-hud b{display:grid!important;width:auto;min-width:36px;min-height:36px;height:auto;padding:4px;border:1px solid #4fffaa;color:#7dffb6;font-size:.56rem}
+.neon-table-lounge .pov-points-hud,.neon-table-lounge .card-pov-points{top:10px!important;right:10px!important;max-width:96px;min-height:62px;align-content:center;padding:9px!important;background:#030b10ed;border-color:#27e9ff8c;border-radius:16px}
+.neon-table-lounge .pov-points-hud strong,.neon-table-lounge .card-pov-points strong{color:#ffe18b;font-size:1.4rem;text-shadow:none}
+.neon-table-lounge .pov-points-hud small,.neon-table-lounge .card-pov-points small{color:#7aedff;font-size:.53rem;letter-spacing:.08em}
+.neon-table-lounge .pov-neon-sign{top:85px!important;left:10px!important;max-width:25%;padding:6px 8px;background:#061714de!important;border:1px solid #b4934f!important;border-radius:10px;box-shadow:0 0 14px #e9c25f20!important}
+.neon-table-lounge .pov-neon-sign span{font-size:.58rem!important;text-shadow:none!important}
+.neon-table-lounge .pov-neon-sign small{display:block!important;font-size:.46rem}
+.neon-table-lounge .pov-board-label{order:0;display:flex;flex-wrap:wrap;gap:5px;justify-content:space-between;margin:0 0 7px;color:#edffe5!important;font-size:.67rem;text-shadow:0 2px 4px #000}
+.neon-table-lounge .domino-pov-room .pov-board{
+  order:1;flex:0 1 auto!important;min-height:240px!important;max-height:340px!important;width:100%!important;
+  padding:10px!important;transform:none!important;overflow:auto!important;overscroll-behavior:contain;
+  border:1px solid #b2f7d21f!important;border-radius:18px!important;background:#003c2624!important;box-shadow:inset 0 0 30px #001b0d24!important;
+}
+/* Never override the renderer's --chain-bone-* sizes, offsets, or spinner geometry. */
+.neon-table-lounge .domino-pov-room .domino-tile .pip-face i{background:var(--pip,#068c71)!important;box-shadow:inset 0 1px 2px #0008,0 1px 0 #fff!important}
+.neon-table-lounge .domino-pov-room .pov-turn-banner{
+  order:2;width:fit-content;max-width:100%;margin:14px auto 7px!important;padding:12px 22px!important;
+  border:2px solid #58ff9b!important;border-radius:20px;background:#01150eeb!important;color:#a8ffbb!important;
+  font:1000 clamp(.9rem,4vw,1.45rem)/1.1 system-ui,sans-serif;letter-spacing:.03em;text-align:center;
+  box-shadow:0 0 9px #59ff9566,0 0 28px #59ff9529!important;
+}
+.neon-table-lounge .pov-coach{order:3;margin:0 0 10px;padding:8px 10px;background:#032218e8!important;color:#e7fff0;border-color:#719e87!important;line-height:1.4;font-size:.75rem}
+.neon-table-lounge .pov-hand-label{order:4;margin:7px 0 2px;color:#e8ffe4!important;font-size:.7rem}
+.neon-table-lounge .pov-pip-count{order:5;color:#fff2c9;font-size:.68rem}
+.neon-table-lounge .pov-self-seat{order:6;margin:4px auto;color:#fff}
+.neon-table-lounge .domino-pov-room .pov-player-hand{
+  order:7;display:flex!important;flex-wrap:nowrap!important;justify-content:safe center!important;align-items:center!important;gap:6px!important;
+  width:100%!important;min-height:120px!important;max-height:none!important;padding:14px 5px 16px!important;overflow-x:auto!important;overflow-y:hidden!important;
+  border:0;border-radius:14px;background:linear-gradient(0deg,#020c0ce6,transparent)!important;box-shadow:none;
+  scrollbar-width:thin;scrollbar-color:#e3bd6b #042216;
+}
+.neon-table-lounge .domino-pov-room .pov-player-hand .domino-tile,.neon-table-lounge .domino-pov-room .pov-player-hand .domino-tile:nth-child(n){
+  flex:0 0 60px!important;width:60px!important;min-width:60px!important;max-width:60px!important;height:96px!important;min-height:96px!important;
+  grid-template-columns:1fr!important;grid-template-rows:1fr 1fr!important;margin:0!important;transform:none!important;border-radius:12px!important;
+  border-color:#e8dfc4!important;background:linear-gradient(140deg,#fffef7,#f3eee4 65%,#c8c4b9)!important;box-shadow:0 5px 0 #a39c8c,0 11px 15px #0008,inset 1px 1px 1px #fff!important;
+}
+.neon-table-lounge .pov-player-hand .domino-tile .pip-face:first-child{border:0!important;border-bottom:2px solid #161a17!important}
+.neon-table-lounge .pov-player-hand .domino-tile .pip-face i{width:7px!important;height:7px!important}
+.neon-table-lounge .domino-pov-room .pov-player-hand .domino-tile.is-playable:focus-visible,.neon-table-lounge .domino-pov-room .pov-player-hand .domino-tile.is-playable:hover{transform:translateY(-6px)!important;outline:2px solid #a9ffc2;outline-offset:2px}
+.neon-table-lounge .domino-pov-room>.pov-action-dock{
+  position:relative!important;inset:auto!important;z-index:4;display:grid;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  width:100%!important;margin:8px 0 0!important;padding:9px!important;border:1px solid #57967b!important;border-radius:18px;background:#040e10f5!important;
+}
+.neon-table-lounge .domino-pov-room>.pov-action-dock .games-btn{min-height:48px;grid-column:auto!important;padding:10px 7px;font-size:.75rem;border-radius:14px!important;background:#0b1d1c!important;color:#f0fff4!important;animation:none!important}
+.neon-table-lounge .domino-pov-room>.pov-action-dock .primary{background:#88ffb9!important;color:#052a17!important;border-color:#5dff9e!important}
+/* Cards: the same room and material palette, with game-specific live hands. */
+.neon-table-lounge.table-game-page .card-pov-neon{top:10px;left:10px;max-width:25%;padding:7px;background:#031110ed;border-color:#c59b50}
+.neon-table-lounge.table-game-page .card-pov-neon span{font-size:.63rem;line-height:1.3;text-shadow:none}
+.neon-table-lounge.table-game-page .card-seat-top{top:10px;left:50%;max-width:40%;min-width:100px;min-height:60px;transform:translateX(-50%);border:1px solid #27e9ff;border-radius:18px;background:#030b10ed}
+.neon-table-lounge.table-game-page .card-seat-left,.neon-table-lounge.table-game-page .card-seat-right{top:clamp(126px,37vw,275px);min-width:78px;padding:7px;border-color:#d8b46b;box-shadow:0 4px 20px #0005}
+.neon-table-lounge.table-game-page .card-seat-left{left:10px}.neon-table-lounge.table-game-page .card-seat-right{right:10px}
+.neon-table-lounge.table-game-page .card-felt{order:2}
+.neon-table-lounge.table-game-page .card-seat-self{order:3;position:relative!important;inset:auto!important;transform:none!important;align-self:center;width:fit-content;margin:8px auto 0;min-height:44px;border-color:#77ffc2}
+.neon-table-lounge.table-game-page .card-table-toolbar{order:0;position:relative;inset:auto;display:flex;flex-wrap:wrap;gap:8px;margin:0 0 8px;color:#ebfff0}
+.neon-table-lounge.table-game-page .table-turn-banner{order:1;padding:10px 18px;font-size:.75rem;color:#b2ffc7;border:1px solid #61ff9f;background:#021b13e8;box-shadow:0 0 15px #6aff9c30}
+.neon-table-lounge.table-game-page .game-table-stage{order:2;display:grid;min-height:300px!important;height:auto;width:100%;padding:5px;overflow:visible!important}
+.neon-table-lounge.table-game-page .card-zone{height:auto;min-height:300px;gap:16px;padding:6px;border:0;background:none;box-shadow:none}
+.neon-table-lounge.table-game-page .table-center-zone{min-height:145px;gap:12px;border:1px solid #b8e4cf30;border-radius:28px;background:#003d2428}
+.neon-table-lounge.table-game-page .player-rail-zone{padding:14px 4px 4px;background:linear-gradient(0deg,#010c0ae6,transparent);border-radius:14px}
+.neon-table-lounge.table-game-page .hw-card{border:1px solid #fdf6e3;border-radius:9px;background:linear-gradient(140deg,#fffef8,#eeebe1);color:#10211b;box-shadow:0 4px 0 #a5a18f,0 9px 15px #0007;transform:none!important}
+.neon-table-lounge.table-game-page .hw-card.is-red{color:#cc1f45}
+.neon-table-lounge.table-game-page .hw-card-row{padding:8px 3px 12px;gap:7px}
+.neon-table-lounge.table-game-page .player-rail-zone .hw-card-row{justify-content:safe center;overflow-x:auto}
+.neon-table-lounge.table-game-page .spades-zone .player-rail-zone .hw-card{flex:0 0 44px;margin-right:0}
+.neon-table-lounge.table-game-page .card-control-dock{order:3;position:relative!important;inset:auto!important;display:flex;flex-wrap:wrap;gap:8px;width:100%;padding:9px;margin-top:12px;background:#04110ff5;border:1px solid #6c9a82;border-radius:16px}
+.neon-table-lounge.table-game-page .card-control-dock #tableControls{display:flex;flex:1 1 220px;flex-wrap:wrap;gap:7px;overflow:visible}
+.neon-table-lounge.table-game-page .card-control-dock .games-btn{min-height:46px;font-size:.73rem;white-space:normal}
+.neon-table-lounge .craps-table{border-color:#e8c46e;border-radius:16px;background-color:#075337;box-shadow:inset 0 0 25px #001b146b,0 15px 20px #0005}
+/* Existing Hold'em room entry shares the lounge; its preview rules and controls are unchanged. */
+.neon-table-lounge.table-room-page .felt-stage{width:min(100%,760px);padding:clamp(180px,49vw,365px) 10px 12px;border:1px solid #508773;border-radius:24px;background:var(--lounge-scene) center top/100% auto no-repeat,#05392b;box-shadow:0 24px 55px #0009}
+.neon-table-lounge.table-room-page .poker-table-shell,.neon-table-lounge.table-room-page .domino-table-shell{min-height:510px;border:2px solid #bc9958;background:linear-gradient(180deg,#00392220,#011c14aa);box-shadow:inset 0 0 30px #00150b33;border-radius:22px}
+.neon-table-lounge.table-room-page .play-card,.neon-table-lounge.table-room-page .seat-mini-card{background:linear-gradient(135deg,#fffef4,#ddd9cd);box-shadow:0 5px 0 #9b998d,0 9px 14px #0006}
+.neon-table-lounge.table-room-page .table-actions{width:min(100%,760px);margin:12px auto;gap:8px}
+@media(max-width:640px){
+  .neon-table-lounge .domino-pov-room,.neon-table-lounge.table-game-page .card-pov-room{padding:clamp(156px,49vw,312px) 10px 10px!important}
+  .neon-table-lounge .pov-player-hud{right:91px;min-height:52px;top:8px!important;left:8px!important;gap:6px;padding:6px!important}
+  .neon-table-lounge .pov-player-hud-avatar{width:30px;height:30px;font-size:1rem}
+  .neon-table-lounge .pov-player-hud b{min-width:30px;min-height:30px;font-size:.46rem}
+  .neon-table-lounge .pov-points-hud,.neon-table-lounge .card-pov-points{top:8px!important;right:8px!important;max-width:78px;min-height:52px;padding:7px!important}
+  .neon-table-lounge .pov-points-hud strong,.neon-table-lounge .card-pov-points strong{font-size:1.1rem}
+  .neon-table-lounge .pov-points-hud small,.neon-table-lounge .card-pov-points small{font-size:.45rem}
+  .neon-table-lounge .pov-neon-sign{top:72px!important;left:8px!important;padding:5px;max-width:25%}
+  .neon-table-lounge .pov-neon-sign span{font-size:.48rem!important}
+  .neon-table-lounge .domino-pov-room .pov-board{min-height:230px!important;max-height:310px!important;padding:6px!important}
+  .neon-table-lounge .domino-pov-room .pov-player-hand{min-height:104px!important;gap:5px!important;padding:12px 4px 14px!important;justify-content:flex-start!important}
+  .neon-table-lounge .domino-pov-room .pov-player-hand .domino-tile,.neon-table-lounge .domino-pov-room .pov-player-hand .domino-tile:nth-child(n){flex-basis:46px!important;width:46px!important;min-width:46px!important;max-width:46px!important;height:78px!important;min-height:78px!important}
+  .neon-table-lounge .pov-player-hand .domino-tile .pip-face i{width:6px!important;height:6px!important}
+  .neon-table-lounge .domino-pov-room>.pov-action-dock{padding:7px!important;gap:6px}
+  .neon-table-lounge .domino-pov-room>.pov-action-dock .games-btn{font-size:.62rem;padding:8px 3px}
+  .neon-table-lounge.table-game-page .card-seat-top{min-width:82px;min-height:52px;padding:6px;max-width:42%}
+  .neon-table-lounge.table-game-page .card-pov-neon{max-width:24%;top:8px;left:8px;padding:5px}
+  .neon-table-lounge.table-game-page .card-pov-neon span{font-size:.48rem}
+  .neon-table-lounge.table-game-page .card-seat-left,.neon-table-lounge.table-game-page .card-seat-right{min-width:62px;min-height:38px;padding:5px}
+  .neon-table-lounge.table-game-page .table-center-zone{min-height:140px;padding:8px}
+  .neon-table-lounge.table-game-page .hw-card{width:44px;height:66px;flex:0 0 44px}
+  .neon-table-lounge.table-game-page .card-control-dock #tableControls{flex-basis:100%}
+  .neon-table-lounge.table-room-page .poker-table-shell{min-height:440px}
+  .neon-table-lounge.table-room-page .table-actions .table-btn{min-height:46px}
+}
+@media(orientation:landscape) and (max-height:640px){
+  .neon-table-lounge .domino-pov-room,.neon-table-lounge.table-game-page .card-pov-room{max-width:680px!important;padding-top:280px!important}
+}
+@media(prefers-reduced-motion:reduce){.neon-table-lounge .score-card::after,.neon-table-lounge .pov-turn-banner::after,.neon-table-lounge .domino-atmosphere i{animation:none!important}}

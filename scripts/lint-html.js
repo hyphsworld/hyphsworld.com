@@ -16,7 +16,7 @@ const files = walk(process.cwd());
 const issues = [];
 for (const file of files) {
   const src = fs.readFileSync(file, 'utf8');
-  if (!src.includes('<!DOCTYPE html>')) issues.push(`${file}: missing <!DOCTYPE html>`);
+  if (!/^\s*<!doctype\s+html\s*>/i.test(src)) issues.push(`${file}: missing <!DOCTYPE html>`);
 
   // Match only a real HTML id attribute. The old pattern also matched the
   // "id=" substring inside data-testid, which falsely reported duplicate
