@@ -1,4 +1,5 @@
 const fs = require('fs');
+const { JSDOM } = require('jsdom');
 
 function read(file) { return fs.readFileSync(file, 'utf8'); }
 function assert(ok, message) { if (!ok) throw new Error(message); }
@@ -26,8 +27,23 @@ featuredProfiles.forEach((file) => {
 assert(accessCss.includes('Shared premium Creator World hero'), 'All creator profiles must use the shared artwork-and-card layout');
 assert(accessCss.includes('hyphsworld-world-seal-gold-diamond-v1.svg'), 'World Seal must use the branded gold and diamond HW asset');
 assert(accessCss.includes('@media(max-width:700px)'), 'Shared profile layout must include a focused mobile composition');
-assert((directoryHtml.match(/directory-world-seal/g) || []).length === 3, 'Static directory fallback must mark exactly three verified creators');
-assert((directoryHtml.match(/world-verified-label">VERIFIED/g) || []).length === 3, 'Static directory fallback must explain all three verified seals');
+// Keep the approved fallback roster explicit, including Rayy Dubb Jr. Check each
+// card's badge so a missing creator cannot be hidden by a duplicate elsewhere.
+const verifiedDirectoryProfiles = [...verifiedProfiles, 'creator-rayy-dubb-jr.html'];
+const directoryDom = new JSDOM(directoryHtml);
+const directory = directoryDom.window.document;
+const verifiedCards = [...directory.querySelectorAll('.creator-card.is-verified')];
+assert(verifiedCards.length === verifiedDirectoryProfiles.length, 'Static directory must contain the approved verified creator roster');
+verifiedDirectoryProfiles.forEach((profile) => {
+  const card = verifiedCards.find((entry) => entry.querySelector(`a[href="${profile}"]`));
+  assert(card, `${profile} must have a verified directory card`);
+  assert(card.querySelectorAll('.directory-world-seal').length === 1, `${profile} must display exactly one directory World Seal`);
+  const labels = card.querySelectorAll('.world-verified-label');
+  assert(labels.length === 1 && labels[0].textContent.trim() === 'VERIFIED', `${profile} must explain its directory seal with one VERIFIED label`);
+});
+assert(directory.querySelectorAll('.directory-world-seal').length === verifiedDirectoryProfiles.length, 'Only approved verified directory cards may display World Seals');
+assert(directory.querySelectorAll('.world-verified-label').length === verifiedDirectoryProfiles.length, 'Only approved verified directory cards may display verification labels');
+directoryDom.window.close();
 assert(directoryJs.includes("['professional', 'partner', 'organization']"), 'Dynamic directory seals must match the persisted verified hierarchy');
 assert(directoryJs.includes('verificationBadge.append(seal, verifiedLabel)'), 'Dynamic verified creators must receive a labeled World Seal');
 assert(accessHtml.includes('class="world-seal access-world-seal"'), 'Creator Access must preview the official World Seal instead of a generic check');
