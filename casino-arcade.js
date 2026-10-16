@@ -17,6 +17,7 @@
   let activeChallenge = null;
   let activeAnswer = null;
   let runCount = 0;
+  let submissionId = null;
 
   const hiddenChallenges = [
     {
@@ -233,20 +234,15 @@
       const client = await getSupabase();
       if (!client) return false;
 
-      const { error } = await client.from('game_scores').insert({
-        user_id: user.userId,
-        game_key: 'hidden_arcade_' + challenge.id,
-        score: Math.max(1, points || 1),
-        points_delta: Math.max(0, points || 0),
-        metadata: {
-          source: 'hidden_arcade',
-          challenge: challenge.id,
-          result,
-          no_cash_payout: true,
-        },
+      const { data, error } = await client.rpc('submit_game_run', {
+        p_game_key: 'hidden_arcade_' + challenge.id,
+        p_score: Math.max(1, Math.min(50, points || 1)),
+        p_points_delta: 0,
+        p_metadata: { source: 'hidden_arcade', challenge: challenge.id, result,
+          mode: 'solo', submission_id: submissionId, no_cash_payout: true },
       });
       if (error) throw error;
-      return true;
+      return !!data && data.ok === true;
     } catch (error) {
       console.warn('Hidden Arcade score skipped:', error && error.message ? error.message : error);
       return false;
@@ -314,6 +310,7 @@
 
   function startHiddenChallenge() {
     runCount += 1;
+    submissionId = crypto.randomUUID();
     activeChallenge = hiddenChallenges[rand(hiddenChallenges.length)];
     activeAnswer = rand(activeChallenge.choices.length);
     status('Challenge opened. Pick one and see if the arcade lets you through.');
@@ -338,10 +335,8 @@
         message = 'Challenge cleared, but the reward was not confirmed. Check your account balance.';
       }
     }
-    const saved = awarded > 0 || !correct
-      ? await saveScore(challenge, awarded, correct ? 'cleared' : 'missed')
-      : false;
-    if (!saved && (awarded > 0 || !correct)) message += ' Score could not be saved.';
+    const saved = await saveScore(challenge, correct ? points : 1, correct ? 'cleared' : 'missed');
+    if (!saved) message += ' Score could not be saved.';
     saveRecent({ title: challenge.title, points: awarded, result: correct ? (awarded ? 'cleared' : 'reward unconfirmed') : 'missed' });
     status(message);
     renderResult(correct, awarded, message);

@@ -17,6 +17,21 @@ begin
 end $$;
 revoke all on function public.guard_profile_protected_fields() from public,anon,authenticated;
 
+-- Explicit prerequisites: do not depend on out-of-band production DDL.
+create schema if not exists private;
+do $$begin
+ if not exists(select 1 from pg_trigger where tgrelid='public.profiles'::regclass and tgname='guard_profile_protected_fields' and not tgisinternal) then
+  create trigger guard_profile_protected_fields before update on public.profiles for each row execute function public.guard_profile_protected_fields();
+ end if;
+end $$;
+create table if not exists private.se_blocks (
+ owner_id uuid not null references public.profiles(id) on delete cascade,
+ peer_id uuid not null references public.profiles(id) on delete cascade,
+ primary key(owner_id,peer_id),check(owner_id<>peer_id)
+);
+alter table private.se_blocks enable row level security;
+revoke all on private.se_blocks from public,anon,authenticated;
+
 create or replace function public.guard_profile_initial_fields() returns trigger
 language plpgsql security definer set search_path='' as $$
 declare n jsonb:=to_jsonb(new); key text; existing uuid;
@@ -285,6 +300,11 @@ begin
       when '01_poker_beta' then 'Poker table score'
       when '01_spades_beta' then 'Spades table score'
     end;
+  elsif v_game_key in ('hidden_arcade_code-path','hidden_arcade_beat-drop','hidden_arcade_skate-line','hidden_arcade_vault-glow','hidden_arcade_bridge-run') then
+    if v_submission_id is null or v_mode <> 'solo' or v_score < 1 or v_score > 50 then raise exception 'Invalid Hidden Arcade practice score.'; end if;
+    if coalesce((auth.jwt()->>'is_anonymous')::boolean,false) or not exists(select 1 from public.profiles where id=v_user_id and deleted_at is null and account_status='active') then raise exception 'Active HYPHSWORLD ID required.'; end if;
+    v_source := 'hidden_arcade_practice';
+    v_reason := 'Player-reported Hidden Arcade practice';
   else
     raise exception 'Unsupported game submission.';
   end if;
@@ -379,6 +399,9 @@ begin
   );
 end;
 $function$;
+
+revoke all on function public.submit_game_run(text,integer,integer,jsonb) from public,anon;
+grant execute on function public.submit_game_run(text,integer,integer,jsonb) to authenticated;
 
 -- Preserve this authenticated owner's legitimate server mutation under the strengthened guard.
 CREATE OR REPLACE FUNCTION public.soft_delete_account()

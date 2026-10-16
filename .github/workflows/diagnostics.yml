@@ -66,6 +66,9 @@ jobs:
       - name: Run diagnostics
         run: npm run diagnostics:full
 
+      - name: Verify Hidden Arcade score saving without client wallet grants
+        run: node --test scripts/check-hidden-arcade-scores.js
+
       - name: Run launch-critical diagnostics
         run: |
           npm run diagnostics:ss-bowling-strike
