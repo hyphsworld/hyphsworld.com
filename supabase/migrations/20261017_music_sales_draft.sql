@@ -51,9 +51,8 @@ create policy "Public can browse published releases" on public.music_releases fo
 create policy "Creators can read their own releases" on public.music_releases for select to authenticated using (exists(select 1 from public.creators c where c.id=creator_id and c.owner_user_id=(select auth.uid())));
 create policy "Creators can create draft releases" on public.music_releases for insert to authenticated with check (status='draft' and exists(select 1 from public.creators c where c.id=creator_id and c.owner_user_id=(select auth.uid()) and c.status='published'));
 create policy "Creators can edit drafts" on public.music_releases for update to authenticated using (status='draft' and exists(select 1 from public.creators c where c.id=creator_id and c.owner_user_id=(select auth.uid()))) with check(status='draft' and exists(select 1 from public.creators c where c.id=creator_id and c.owner_user_id=(select auth.uid())));
-create policy "Published track metadata" on public.music_tracks for select using (exists(select 1 from public.music_releases r where r.id=release_id and r.status='published'));
+-- No public track SELECT: private_storage_path must not be disclosed.
 create policy "Creator track metadata" on public.music_tracks for select to authenticated using (exists(select 1 from public.music_releases r join public.creators c on c.id=r.creator_id where r.id=release_id and c.owner_user_id=(select auth.uid())));
 create policy "Buyers read their orders" on public.music_orders for select to authenticated using (buyer_id=(select auth.uid()));
 create policy "Buyers read their licenses" on public.music_licenses for select to authenticated using (buyer_id=(select auth.uid()));
--- Never expose paid master storage paths through public metadata reads in production.
--- Before applying migration: move master paths to a separate service-only table or use a secure RPC view.
+-- Private paths are visible only to the owning creator via the policy above.\n-- Buyers receive only short-lived URLs from a server-side entitlement-checked function.
