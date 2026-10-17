@@ -4,7 +4,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.0";
 const reply=(status:number,body:unknown)=>new Response(JSON.stringify(body),{status,headers:{"content-type":"application/json"}});
 Deno.serve(async(req)=>{
  if(req.method!=="POST")return reply(405,{error:"method_not_allowed"});
- const secret=Deno.env.get("STRIPE_MUSIC_WEBHOOK_SECRET"),key=Deno.env.get("STRIPE_SECRET_KEY"),url=Deno.env.get("SUPABASE_URL"),service=Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+ const secret=Deno.env.get("STRIPE_MUSIC_WEBHOOK_SECRET"),key=Deno.env.get("STRIPE_MUSIC_SECRET_KEY"),url=Deno.env.get("SUPABASE_URL"),service=Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
  if(!secret||!key||!url||!service)return reply(503,{error:"not_configured"});
  const signature=req.headers.get("stripe-signature");
  if(!signature)return reply(400,{error:"missing_signature"});
