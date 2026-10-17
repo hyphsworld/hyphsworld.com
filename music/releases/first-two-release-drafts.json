@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "visibility": "draft_only",
+  "note": "Assets supplied in chat; not uploaded to repository. Never commit paid master WAVs to public GitHub Pages.",
+  "releases": [
+    {
+      "title": "Money Counter",
+      "primary_creator_id": "2ef701f6-37e0-474d-b17a-1ff973b29f3a",
+      "artist": "Hyph Life",
+      "producer_credit": "K.M.T.",
+      "suggested_price_cents": 199,
+      "currency": "usd",
+      "audio": {
+        "source_filename": "MONEY COUNTER.wav",
+        "duration_seconds": 233,
+        "sample_rate_hz": 44100,
+        "channels": 2,
+        "complete_master": "needs_artist_confirmation"
+      },
+      "artwork": {
+        "source_filename": "6EB574F1-BADD-438D-9346-5E5B98673243.jpeg",
+        "width": 1254,
+        "height": 1254
+      },
+      "status": "draft"
+    },
+    {
+      "title": "MULA",
+      "primary_creator_id": "2ef701f6-37e0-474d-b17a-1ff973b29f3a",
+      "featured_creator_id": "ebd0caad-3c3b-4d42-bb3e-bf1aa7caaf98",
+      "artist": "Hyph Life",
+      "featured_artist": "KILI 631",
+      "producer_credit": "Cuz Zaid of The Ozakis",
+      "suggested_price_cents": 199,
+      "currency": "usd",
+      "audio": {
+        "source_filename": "MULA FT KILI.wav",
+        "duration_seconds": 30.07,
+        "sample_rate_hz": 48000,
+        "channels": 2,
+        "complete_master": false,
+        "usage": "preview_candidate_only"
+      },
+      "artwork": {
+        "source_filename": "96B26CFC-3F31-4966-9D1D-6A62786DA392.png",
+        "width": 1254,
+        "height": 1254
+      },
+      "status": "draft"
+    }
+  ],
+  "launch_requirements": [
+    "Confirm ownership and sales rights including featured artist/producer clearances",
+    "Confirm complete MULA master",
+    "Store master tracks privately; publicly expose only preview",
+    "Complete verified Stripe webhook and license delivery",
+    "Confirm seller payout terms"
+  ]
+}
