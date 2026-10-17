@@ -34,12 +34,16 @@
       "suggested_price_cents": 199,
       "currency": "usd",
       "audio": {
-        "source_filename": "MULA FT KILI.wav",
-        "duration_seconds": 30.07,
+        "source_filename": "MULA ft KILI631 2.wav",
+        "duration_seconds": 219.196,
         "sample_rate_hz": 48000,
         "channels": 2,
-        "complete_master": false,
-        "usage": "preview_candidate_only"
+        "format": "WAV PCM 16-bit",
+        "file_size_bytes": 42086410,
+        "complete_master": true,
+        "storage_status": "not_uploaded_private_storage",
+        "preview_source_filename": "MULA FT KILI.wav",
+        "preview_duration_seconds": 30.07
       },
       "artwork": {
         "source_filename": "96B26CFC-3F31-4966-9D1D-6A62786DA392.png",
@@ -51,7 +55,6 @@
   ],
   "launch_requirements": [
     "Confirm ownership and sales rights including featured artist/producer clearances",
-    "Confirm complete MULA master",
     "Store master tracks privately; publicly expose only preview",
     "Complete verified Stripe webhook and license delivery",
     "Confirm seller payout terms"
