@@ -7,7 +7,7 @@ Deno.serve(async(req)=>{
  try {
   const auth=req.headers.get("authorization");
   if(!auth?.startsWith("Bearer "))return json(401,{error:"login_required"});
-  const url=Deno.env.get("SUPABASE_URL")!,anon=Deno.env.get("SUPABASE_ANON_KEY")!,service=Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,stripe=Deno.env.get("STRIPE_SECRET_KEY");
+  const url=Deno.env.get("SUPABASE_URL")!,anon=Deno.env.get("SUPABASE_ANON_KEY")!,service=Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,stripe=Deno.env.get("STRIPE_MUSIC_SECRET_KEY");
   if(!stripe||!service)return json(503,{error:"checkout_not_configured"});
   const userClient=createClient(url,anon,{global:{headers:{Authorization:auth}}});
   const {data:{user},error:authError}=await userClient.auth.getUser();
