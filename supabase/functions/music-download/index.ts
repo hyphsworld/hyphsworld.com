@@ -20,7 +20,7 @@ Deno.serve(async(req)=>{
   if(!licenses?.length)return response(403,{error:"purchase_required"});
   const {data:master}=await db.from("music_master_files").select("bucket,object_path").eq("track_id",track_id).single();
   if(!master)return response(404,{error:"master_unavailable"});
-  const {data,error}=await db.storage.from(master.bucket).createSignedUrl(master.object_path,60);
+  const {data,error}=await db.storage.from(master.bucket).createSignedUrl(master.object_path,60,{download:true});
   if(error||!data)return response(500,{error:"download_unavailable"});
   return response(200,{url:data.signedUrl,expires_in:60});
  }catch{return response(500,{error:"download_failed"});}
