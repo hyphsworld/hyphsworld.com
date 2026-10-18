@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "visibility": "draft_only",
-  "note": "Assets supplied in chat; not uploaded to repository. Never commit paid master WAVs to public GitHub Pages.",
+  "note": "Development release metadata only. Paid masters stay in private Supabase Storage; test purchases and user licenses are already recorded in Supabase. Storefront remains unlaunched.",
   "releases": [
     {
       "title": "Money Counter",
@@ -15,7 +15,10 @@
         "duration_seconds": 233,
         "sample_rate_hz": 44100,
         "channels": 2,
-        "complete_master": "needs_artist_confirmation"
+        "complete_master": true,
+        "storage_status": "linked_private_storage",
+        "storage_bucket": "music-paid-masters",
+        "storage_path": "MONEY COUNTER.wav"
       },
       "artwork": {
         "source_filename": "6EB574F1-BADD-438D-9346-5E5B98673243.jpeg",
@@ -34,16 +37,18 @@
       "suggested_price_cents": 199,
       "currency": "usd",
       "audio": {
-        "source_filename": "MULA ft KILI631 2.wav",
-        "duration_seconds": 219.196,
+        "source_filename": "MULA_Main_Output_Compatible_16bit.wav",
+        "duration_seconds": 128,
         "sample_rate_hz": 48000,
         "channels": 2,
         "format": "WAV PCM 16-bit",
-        "file_size_bytes": 42086410,
+        "file_size_bytes": 24576078,
         "complete_master": true,
-        "storage_status": "not_uploaded_private_storage",
-        "preview_source_filename": "MULA FT KILI.wav",
-        "preview_duration_seconds": 30.07
+        "storage_status": "linked_private_storage",
+        "storage_bucket": "music-paid-masters",
+        "storage_path": "MULA_Main_Output_Compatible_16bit.wav",
+        "superseded_master_filename": "MULA ft KILI631 2.wav",
+        "note": "Replacement approved after successful licensed-download test; older 3:39 master retained as backup."
       },
       "artwork": {
         "source_filename": "96B26CFC-3F31-4966-9D1D-6A62786DA392.png",
@@ -54,9 +59,11 @@
     }
   ],
   "launch_requirements": [
-    "Confirm ownership and sales rights including featured artist/producer clearances",
-    "Store master tracks privately; publicly expose only preview",
-    "Complete verified Stripe webhook and license delivery",
-    "Confirm seller payout terms"
+    "Verify rights, samples, and sales authorizations for both recordings and producer/featured-artist credits",
+    "Upload original artwork to intended public artwork location and verify CDN URLs; never expose paid master files",
+    "Implement separate LIVE Stripe configuration and live-mode-only checkout/webhook functions; sandbox owner-only bypass must not run in live mode",
+    "Complete unauthorized download, refund, dispute, replay/idempotency, and duplicate charge tests",
+    "Approve tax settings, policies, pricing and customer fulfillment language",
+    "Confirm AMS WEST-only first launch; approved Creator World artists follow in phase two"
   ]
 }
