@@ -28,11 +28,16 @@ Deno.serve(async req=>{
    const {data:order,error:lookupError}=await db.from("music_orders").select("id,buyer_id,release_id,stripe_session_id,amount_cents,currency,status").eq("id",id).maybeSingle();
    if(lookupError||!order)return reply(500,{error:"order_lookup_failed"});
    if(order.stripe_session_id!==session.id||order.amount_cents!==session.amount_total||order.currency!==session.currency)return reply(400,{error:"order_mismatch"});
-   if(order.status==="refunded"||order.status==="disputed")return reply(200,{ignored:true});
+   if(order.status!=="pending"&&order.status!=="paid")return reply(200,{ignored:true});
    if(order.status==="pending"){
     const {error:updateError}=await db.from("music_orders").update({status:"paid",stripe_payment_intent_id:typeof session.payment_intent==="string"?session.payment_intent:null,paid_at:new Date().toISOString()}).eq("id",order.id).eq("status","pending");
     if(updateError)return reply(500,{error:"order_update_failed"});
    }
+   // Webhooks can arrive out of order or concurrently. Recheck committed order state
+   // before issuing a license; refunded/disputed orders must never be reactivated.
+   const {data:confirmed,error:confirmError}=await db.from("music_orders").select("status,stripe_session_id").eq("id",order.id).single();
+   if(confirmError||!confirmed)return reply(500,{error:"order_confirmation_failed"});
+   if(confirmed.status!=="paid"||confirmed.stripe_session_id!==session.id)return reply(200,{ignored:true});
    const {error:licenseError}=await db.from("music_licenses").upsert({order_id:order.id,buyer_id:order.buyer_id,release_id:order.release_id,status:"active"},{onConflict:"order_id",ignoreDuplicates:true});
    if(licenseError)return reply(500,{error:"license_creation_failed"});
   } else if(event.type==="charge.refunded"||event.type==="charge.dispute.created"){
