@@ -15,17 +15,22 @@ Deno.serve(async(req)=>{
   const {release_id}=await req.json();
   if(typeof release_id!=="string"||!/^[0-9a-f-]{36}$/i.test(release_id))return json(400,{error:"invalid_release"});
   const db=createClient(url,service);
-  const {data:release,error}=await db.from("music_releases").select("id,title,price_cents,currency,status").eq("id",release_id).single();
-  if(error||!release||release.status!=="published")return json(404,{error:"release_unavailable"});
+  const {data:release,error}=await db.from("music_releases").select("id,title,price_cents,currency,status,creator_id").eq("id",release_id).single();
+  if(error||!release)return json(404,{error:"release_unavailable"});
+  const ownerTest=release.id==="78ada5a7-9c36-44d2-8e3e-6f80616a5042" && release.status==="draft" && (stripe.startsWith("rk_test_")||stripe.startsWith("sk_test_"));
+  if(ownerTest){
+   const {data:creator}=await db.from("creators").select("owner_user_id").eq("id",release.creator_id).single();
+   if(!creator?.owner_user_id||creator.owner_user_id!==user.id)return json(403,{error:"owner_only"});
+  }else if(release.status!=="published")return json(404,{error:"release_unavailable"});
   const {data:existing}=await db.from("music_licenses").select("id").eq("buyer_id",user.id).eq("release_id",release_id).eq("status","active").limit(1);
   if(existing?.length)return json(409,{error:"already_owned"});
   const {data:order,error:orderError}=await db.from("music_orders").insert({buyer_id:user.id,release_id:release.id,amount_cents:release.price_cents,currency:release.currency,status:"pending"}).select("id").single();
   if(orderError||!order)return json(500,{error:"order_failed"});
   const params=new URLSearchParams();
   params.set("mode","payment");
-  params.set("success_url","https://hyphsworld.com/music-library.html?session_id={CHECKOUT_SESSION_ID}");
-  params.set("cancel_url","https://hyphsworld.com/music-store.html");
-  params.set("client_reference_id",order.id);params.set("metadata[order_id]",order.id);
+  params.set("success_url",ownerTest?"https://hyphsworld.com/music-test-money-counter.html?checkout=success":"https://hyphsworld.com/music-library.html?session_id={CHECKOUT_SESSION_ID}");
+  params.set("cancel_url",ownerTest?"https://hyphsworld.com/music-test-money-counter.html?checkout=cancel":"https://hyphsworld.com/music-store.html");
+  params.set("client_reference_id",order.id);params.set("metadata[order_id]",order.id);if(ownerTest)params.set("metadata[owner_sandbox_test]","true");
   params.set("line_items[0][quantity]","1");params.set("line_items[0][price_data][currency]",release.currency);
   params.set("line_items[0][price_data][unit_amount]",String(release.price_cents));
   params.set("line_items[0][price_data][product_data][name]",release.title);
