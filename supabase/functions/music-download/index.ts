@@ -16,8 +16,17 @@ Deno.serve(async(req)=>{
   const db=createClient(url,service);
   const {data:track}=await db.from("music_tracks").select("id,release_id").eq("id",track_id).single();
   if(!track)return response(404,{error:"track_not_found"});
-  const {data:licenses}=await db.from("music_licenses").select("id").eq("buyer_id",user.id).eq("release_id",track.release_id).eq("status","active").limit(1);
-  if(!licenses?.length)return response(403,{error:"purchase_required"});
+  const {data:licenses,error:licenseError}=await db.from("music_licenses").select("id,order_id").eq("buyer_id",user.id).eq("release_id",track.release_id).eq("status","active");
+  if(licenseError||!licenses?.length)return response(403,{error:"purchase_required"});
+  const {data:release,error:releaseError}=await db.from("music_releases").select("status").eq("id",track.release_id).single();
+  if(releaseError||!release)return response(403,{error:"release_unavailable"});
+  if(release.status==="published"){
+   // Live releases must have a PAID live-mode order. Test entitlements never unlock production masters.
+   const orderIds=licenses.map((license)=>license.order_id).filter(Boolean);
+   if(!orderIds.length)return response(403,{error:"live_purchase_required"});
+   const {data:orders,error:orderError}=await db.from("music_orders").select("id").in("id",orderIds).eq("buyer_id",user.id).eq("release_id",track.release_id).eq("status","paid").like("stripe_session_id","cs_live_%").limit(1);
+   if(orderError||!orders?.length)return response(403,{error:"live_purchase_required"});
+  }else if(release.status!=="draft")return response(403,{error:"release_unavailable"});
   const {data:master}=await db.from("music_master_files").select("bucket,object_path").eq("track_id",track_id).single();
   if(!master)return response(404,{error:"master_unavailable"});
   const {data,error}=await db.storage.from(master.bucket).createSignedUrl(master.object_path,60,{download:true});
