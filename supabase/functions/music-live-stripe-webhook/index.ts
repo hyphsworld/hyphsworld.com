@@ -25,34 +25,25 @@ Deno.serve(async req=>{
    if(!session.livemode||session.payment_status!=="paid")return reply(200,{ignored:true});
    const id=session.metadata?.order_id;
    if(!id||session.metadata?.store!=="hyphsworld_music_live"||!session.id.startsWith("cs_live_"))return reply(200,{ignored:true});
-   const {data:order,error:lookupError}=await db.from("music_orders").select("id,buyer_id,release_id,stripe_session_id,amount_cents,currency,status").eq("id",id).maybeSingle();
-   if(lookupError||!order)return reply(500,{error:"order_lookup_failed"});
-   if(order.stripe_session_id!==session.id||order.amount_cents!==session.amount_total||order.currency!==session.currency)return reply(400,{error:"order_mismatch"});
-   if(order.status!=="pending"&&order.status!=="paid")return reply(200,{ignored:true});
-   if(order.status==="pending"){
-    const {error:updateError}=await db.from("music_orders").update({status:"paid",stripe_payment_intent_id:typeof session.payment_intent==="string"?session.payment_intent:null,paid_at:new Date().toISOString()}).eq("id",order.id).eq("status","pending");
-    if(updateError)return reply(500,{error:"order_update_failed"});
-   }
-   // Webhooks can arrive out of order or concurrently. Recheck committed order state
-   // before issuing a license; refunded/disputed orders must never be reactivated.
-   const {data:confirmed,error:confirmError}=await db.from("music_orders").select("status,stripe_session_id").eq("id",order.id).single();
-   if(confirmError||!confirmed)return reply(500,{error:"order_confirmation_failed"});
-   if(confirmed.status!=="paid"||confirmed.stripe_session_id!==session.id)return reply(200,{ignored:true});
-   const {error:licenseError}=await db.from("music_licenses").upsert({order_id:order.id,buyer_id:order.buyer_id,release_id:order.release_id,status:"active"},{onConflict:"order_id",ignoreDuplicates:true});
-   if(licenseError)return reply(500,{error:"license_creation_failed"});
+   const {data:applied,error:applyError}=await db.rpc("music_apply_live_payment_event",{
+    p_action:"paid",p_order_id:id,p_stripe_session_id:session.id,
+    p_payment_intent_id:typeof session.payment_intent==="string"?session.payment_intent:null,
+    p_amount_cents:session.amount_total,p_currency:session.currency
+   });
+   if(applyError)return reply(500,{error:"payment_fulfillment_failed"});
+   return reply(200,{result:applied});
   } else if(event.type==="charge.refunded"||event.type==="charge.dispute.created"){
    const charge=event.data.object as Stripe.Charge;
    if(!charge.livemode)return reply(400,{error:"sandbox_charge_rejected"});
    const intent=typeof charge.payment_intent==="string"?charge.payment_intent:charge.payment_intent?.id;
    if(!intent)return reply(200,{ignored:true});
-   const {data:order,error:orderError}=await db.from("music_orders").select("id,stripe_session_id").eq("stripe_payment_intent_id",intent).maybeSingle();
-   if(orderError)return reply(500,{error:"order_lookup_failed"});
-   if(!order||!order.stripe_session_id?.startsWith("cs_live_"))return reply(200,{ignored:true});
-   const status=event.type==="charge.refunded"?"refunded":"disputed";
-   const {error:statusError}=await db.from("music_orders").update({status}).eq("id",order.id);
-   if(statusError)return reply(500,{error:"status_update_failed"});
-   const {error:revokeError}=await db.from("music_licenses").update({status:"revoked"}).eq("order_id",order.id);
-   if(revokeError)return reply(500,{error:"license_revoke_failed"});
+   const {data:applied,error:applyError}=await db.rpc("music_apply_live_payment_event",{
+    p_action:event.type==="charge.refunded"?"refunded":"disputed",
+    p_order_id:null,p_stripe_session_id:null,p_payment_intent_id:intent,
+    p_amount_cents:null,p_currency:null
+   });
+   if(applyError)return reply(500,{error:"refund_fulfillment_failed"});
+   return reply(200,{result:applied});
   }
   return reply(200,{received:true});
  }catch{return reply(500,{error:"webhook_processing_failed"});}
