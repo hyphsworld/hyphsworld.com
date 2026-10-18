@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Money Counter Sandbox Test | HYPHSWORLD</title><style>:root{color-scheme:dark;font-family:system-ui,sans-serif}body{background:#130f10;color:#fff;margin:0}main{max-width:650px;margin:8vh auto;padding:24px}h1{font-size:clamp(2.3rem,7vw,4rem);line-height:1}p{line-height:1.5;color:#ddd}article{border:1px solid #745632;background:#221b19;border-radius:18px;padding:24px}button{background:#eab868;color:#1a120a;border:0;border-radius:9px;padding:16px 25px;font-weight:800;cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}.tag{font-size:.8rem;letter-spacing:.12em;color:#e6b96f;font-weight:800}a{color:#e6b96f}</style></head><body><main><div class="tag">AMS WEST / PRIVATE SANDBOX TEST</div><h1>Money Counter</h1><article><p>Hyph Life · Produced by K.M.T.</p><h2>$1.99 · TEST PAYMENT ONLY</h2><p>This checkout uses Stripe's sandbox, requires the approved Hyph Life owner's HYPHSWORLD login, and is not a public sale.</p><button id="purchase" disabled>Preparing account check…</button><p id="status" role="status">Checking your login…</p><p><a href="music-library.html">My Music Library</a></p></article></main>
+<script src="supabase-config.js"></script><script src="auth-client.js"></script><script>
+(async function(){
+ 'use strict';
+ const btn=document.getElementById('purchase'),status=document.getElementById('status');
+ function update(s){status.textContent=s}
+ try{
+  if(!window.HWAuth)throw Error('Sign-in client unavailable');
+  const user=await window.HWAuth.getCurrentUser();
+  if(!user?.userId){update('Please sign in to your HYPHSWORLD account first.');return}
+  const client=await window.HWAuth.getClient();
+  const {data:{session}}=await client.auth.getSession();
+  if(!session){update('A verified Supabase login is required.');return}
+  const config=window.HW_SUPABASE_CONFIG;
+  if(!config?.url||!config?.anonKey)throw Error('Checkout configuration unavailable');
+  btn.disabled=false;btn.textContent='OPEN $1.99 SANDBOX CHECKOUT';update('Only the approved creator owner can proceed.');
+  btn.onclick=async()=>{
+   btn.disabled=true;btn.textContent='Opening secure checkout…';
+   try{
+    const refreshed=await client.auth.getSession();
+    if(!refreshed.data.session)throw Error('Session expired; please sign in again');
+    const response=await fetch(config.url+'/functions/v1/music-create-checkout',{method:'POST',headers:{'Content-Type':'application/json','apikey':config.anonKey,'Authorization':'Bearer '+refreshed.data.session.access_token},body:JSON.stringify({release_id:'78ada5a7-9c36-44d2-8e3e-6f80616a5042'})});
+    const data=await response.json();
+    if(!response.ok)throw Error(data.error||'Checkout not available');
+    const url=new URL(data.url);
+    if(url.protocol!=='https:'||url.hostname!=='checkout.stripe.com')throw Error('Untrusted checkout destination');
+    window.location.assign(url.href);
+   }catch(e){update('Checkout unavailable: '+String(e.message||e));btn.disabled=false;btn.textContent='OPEN $1.99 SANDBOX CHECKOUT'}
+  };
+  if(new URLSearchParams(location.search).get('checkout')==='success')update('Stripe checkout returned. Check My Music Library for payment confirmation; it can take a moment for the webhook to process.');
+ }catch(e){update(String(e.message||e));btn.disabled=true}
+})();
+</script></body></html>
