@@ -13,13 +13,19 @@
     const client=await window.HWAuth.getClient();
     const {data:{session},error:sessionError}=await client.auth.getSession();
     if(sessionError||!session||session.user.id!==user.userId)throw Error('Please sign in again using your HYPHSWORLD account.');
-    const {data:licenses,error:licenseError}=await client.from('music_licenses').select('release_id').eq('buyer_id',session.user.id).eq('status','active');
+    const {data:licenses,error:licenseError}=await client.from('music_licenses').select('release_id,order_id').eq('buyer_id',session.user.id).eq('status','active');
     if(licenseError)throw licenseError;
     if(!licenses?.length){setStatus('No completed music purchases in this account yet.');return;}
+    const orderIds=[...new Set(licenses.map(l=>l.order_id).filter(Boolean))];
+    if(!orderIds.length){setStatus('No verified purchases found.');return;}
+    const {data:orders,error:orderError}=await client.from('music_orders').select('id,release_id,status,stripe_session_id').eq('buyer_id',session.user.id).in('id',orderIds).eq('status','paid');
+    if(orderError)throw orderError;
     const ids=[...new Set(licenses.map(l=>l.release_id))];
-    const {data:releases,error:releaseError}=await client.from('music_releases').select('id,title,featured_artist,producer_credit').in('id',ids);
+    const {data:allReleases,error:releaseError}=await client.from('music_releases').select('id,title,status,featured_artist,producer_credit').in('id',ids);
     if(releaseError)throw releaseError;
-    if(!releases?.length)throw Error('Your license exists, but release information is unavailable.');
+    const eligible=new Set((orders||[]).filter(o=>o.stripe_session_id && (o.stripe_session_id.startsWith('cs_live_') || o.stripe_session_id.startsWith('cs_test_'))).map(o=>o.id));
+    const releases=(allReleases||[]).filter(release=>licenses.some(l=>l.release_id===release.id && eligible.has(l.order_id) && (orders||[]).some(o=>o.id===l.order_id && o.release_id===release.id && o.stripe_session_id.startsWith(release.status==='published'?'cs_live_':'cs_test_'))));
+    if(!releases.length){setStatus('No eligible paid music purchases in this account yet.');return;}
     setStatus(releases.length+' purchased release(s) ready.');
     for(const release of releases){
       const card=document.createElement('article');card.className='card';
