@@ -22,7 +22,7 @@ Deno.serve(async(req)=>{
   const {data:order,error:orderError}=await db.from("music_orders").insert({buyer_id:user.id,release_id:release.id,amount_cents:release.price_cents,currency:release.currency,status:"pending"}).select("id").single();
   if(orderError||!order)return json(500,{error:"order_failed"});
   const params=new URLSearchParams();
-  params.set("mode","payment");params.set("payment_method_types[0]","card");
+  params.set("mode","payment");
   params.set("success_url","https://hyphsworld.com/music-library.html?session_id={CHECKOUT_SESSION_ID}");
   params.set("cancel_url","https://hyphsworld.com/music-store.html");
   params.set("client_reference_id",order.id);params.set("metadata[order_id]",order.id);
