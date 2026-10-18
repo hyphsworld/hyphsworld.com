@@ -28,8 +28,10 @@ Deno.serve(async req=>{
   // AMS WEST-only phase 1; never extend automatically to other creator IDs.
   if(release.creator_id!=="2ef701f6-37e0-474d-b17a-1ff973b29f3a")return out(403,{error:"seller_not_enabled"});
   if(release.currency!=="usd"||!Number.isInteger(release.price_cents)||release.price_cents<99)return out(400,{error:"invalid_price"});
-  const {data:licensed}=await db.from("music_licenses").select("id").eq("buyer_id",user.id).eq("release_id",release.id).eq("status","active").limit(1);
-  if(licensed?.length)return out(409,{error:"already_owned"});
+  // Sandbox licenses are not live purchases. Check for a paid LIVE order only.
+  const {data:liveOrders,error:liveOrdersError}=await db.from("music_orders").select("id").eq("buyer_id",user.id).eq("release_id",release.id).eq("status","paid").like("stripe_session_id","cs_live_%").limit(1);
+  if(liveOrdersError)return out(503,{error:"ownership_check_unavailable"});
+  if(liveOrders?.length)return out(409,{error:"already_owned"});
   const {data:order,error:orderError}=await db.from("music_orders").insert({buyer_id:user.id,release_id:release.id,amount_cents:release.price_cents,currency:"usd",status:"pending"}).select("id").single();
   if(orderError||!order)return out(500,{error:"order_unavailable"});
   const form=new URLSearchParams();
