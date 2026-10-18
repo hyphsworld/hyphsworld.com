@@ -34,7 +34,7 @@
             window.location.assign('auth.html?next=music-store.html');
             return;
           }
-          const response = await fetch(PROJECT_URL + '/functions/v1/music-create-checkout', {
+          const response = await fetch(PROJECT_URL + '/functions/v1/music-live-checkout', {
             method: 'POST',
             headers: {
               apikey: PUBLISHABLE_KEY,
