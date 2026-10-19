@@ -21,17 +21,19 @@
     const {data:orders,error:orderError}=await client.from('music_orders').select('id,release_id,status,stripe_session_id').eq('buyer_id',session.user.id).in('id',orderIds).eq('status','paid');
     if(orderError)throw orderError;
     const ids=[...new Set(licenses.map(l=>l.release_id))];
-    const {data:allReleases,error:releaseError}=await client.from('music_releases').select('id,title,status,featured_artist,producer_credit').in('id',ids);
+    const {data:allReleases,error:releaseError}=await client.from('music_releases').select('id,title,status,featured_artist,producer_credit,artwork_url').in('id',ids);
     if(releaseError)throw releaseError;
     const eligible=new Set((orders||[]).filter(o=>o.stripe_session_id && (o.stripe_session_id.startsWith('cs_live_') || o.stripe_session_id.startsWith('cs_test_'))).map(o=>o.id));
     const releases=(allReleases||[]).filter(release=>licenses.some(l=>l.release_id===release.id && eligible.has(l.order_id) && (orders||[]).some(o=>o.id===l.order_id && o.release_id===release.id && o.stripe_session_id.startsWith(release.status==='published'?'cs_live_':'cs_test_'))));
     if(!releases.length){setStatus('No eligible paid music purchases in this account yet.');return;}
     setStatus(releases.length+' purchased release(s) ready.');
     for(const release of releases){
-      const card=document.createElement('article');card.className='card';
-      const title=document.createElement('h2');title.textContent=release.title;card.append(title);
+      const card=document.createElement('article');card.className='hw-release';
+      if(release.artwork_url){try{const artUrl=new URL(release.artwork_url);if(artUrl.protocol==='https:'&&['raw.githubusercontent.com','hyphsworld.com'].includes(artUrl.hostname)){const art=document.createElement('img');art.src=artUrl.href;art.alt=release.title+' cover art';art.className='hw-cover';art.loading='lazy';art.decoding='async';art.addEventListener('error',()=>art.remove());card.append(art)}}catch{}}
+      const content=document.createElement('div');content.className='hw-release-inner';card.append(content);
+      const title=document.createElement('h2');title.textContent=release.title;content.append(title);
       const {data:tracks,error:trackError}=await client.from('music_tracks').select('id,title,track_number').eq('release_id',release.id).order('track_number');
-      if(trackError){const message=document.createElement('p');message.textContent='Track list temporarily unavailable.';card.append(message);list.append(card);continue;}
+      if(trackError){const message=document.createElement('p');message.textContent='Track list temporarily unavailable.';content.append(message);list.append(card);continue;}
       for(const track of tracks||[]){
         const row=document.createElement('p');const name=document.createElement('span');name.textContent=track.title+' ';
         const button=document.createElement('button');button.textContent='Download WAV';
@@ -49,7 +51,7 @@
           }catch(e){setStatus('Download problem: '+errorText(e));}
           finally{button.disabled=false;button.textContent='Download WAV';}
         });
-        row.append(name,button);card.append(row);
+        row.append(name,button);content.append(row);
       }
       list.append(card);
     }
