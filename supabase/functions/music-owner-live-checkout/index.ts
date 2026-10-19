@@ -26,7 +26,7 @@ Deno.serve(async(req)=>{
   const {data:order,error:insertError}=await db.from("music_orders").insert({buyer_id:OWNER,release_id:RELEASE,amount_cents:199,currency:"usd",status:"pending"}).select("id").single();
   if(insertError||!order)return reply(500,{error:"order_unavailable"});
   const form=new URLSearchParams();
-  form.set("mode","payment");form.set("success_url",ORIGIN+"/music-library.html?session_id={CHECKOUT_SESSION_ID}");
+  form.set("mode","payment");form.set("success_url",ORIGIN+"/music-owner-test.html?session_id={CHECKOUT_SESSION_ID}");
   form.set("cancel_url",ORIGIN+"/music-owner-test.html");
   form.set("client_reference_id",order.id);form.set("metadata[order_id]",order.id);form.set("metadata[store]","hyphsworld_owner_live_test");
   form.set("line_items[0][quantity]","1");form.set("line_items[0][price_data][currency]","usd");
