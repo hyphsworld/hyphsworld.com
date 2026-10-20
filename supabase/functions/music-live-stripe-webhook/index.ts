@@ -25,11 +25,12 @@ Deno.serve(async req=>{
    if(!session.livemode||session.payment_status!=="paid")return reply(200,{ignored:true});
    const id=session.metadata?.order_id;
    if(!id||!session.id.startsWith("cs_live_"))return reply(200,{ignored:true});
-   const ownerTest=session.metadata?.store==="hyphsworld_owner_live_test";
+   const ownerTest=session.metadata?.store==="hyphsworld_owner_live_test"||session.metadata?.store==="hyphsworld_owner_live_test_mula";
+   const expectedOwnerRelease=session.metadata?.store==="hyphsworld_owner_live_test_mula"?"634c67a4-da23-422d-85e2-320b0471f831":"78ada5a7-9c36-44d2-8e3e-6f80616a5042";
    if(ownerTest){
      const {data:o,error:e}=await db.from("music_orders").select("buyer_id,release_id,amount_cents,currency,stripe_session_id").eq("id",id).maybeSingle();
      if(e)return reply(500,{error:"order_lookup_failed"});
-     if(!o||o.buyer_id!=="7f269ba1-8b39-4551-8afd-ab7190860b6a"||o.release_id!=="78ada5a7-9c36-44d2-8e3e-6f80616a5042"||o.amount_cents!==199||o.currency!=="usd"||o.stripe_session_id!==session.id||session.amount_total!==199||session.currency!=="usd")return reply(200,{ignored:true});
+     if(!o||o.buyer_id!=="7f269ba1-8b39-4551-8afd-ab7190860b6a"||o.release_id!==expectedOwnerRelease||o.amount_cents!==199||o.currency!=="usd"||o.stripe_session_id!==session.id||session.amount_total!==199||session.currency!=="usd")return reply(200,{ignored:true});
    }else if(!publicSalesOn||session.metadata?.store!=="hyphsworld_music_live")return reply(200,{ignored:true});
    const {data:applied,error:applyError}=await db.rpc("music_apply_live_payment_event",{
     p_action:"paid",p_order_id:id,p_stripe_session_id:session.id,
@@ -46,7 +47,7 @@ Deno.serve(async req=>{
    if(!publicSalesOn){
      const {data:o,error:e}=await db.from("music_orders").select("buyer_id,release_id,amount_cents,currency").eq("stripe_payment_intent_id",intent).like("stripe_session_id","cs_live_%").maybeSingle();
      if(e)return reply(500,{error:"order_lookup_failed"});
-     if(!o||o.buyer_id!=="7f269ba1-8b39-4551-8afd-ab7190860b6a"||o.release_id!=="78ada5a7-9c36-44d2-8e3e-6f80616a5042"||o.amount_cents!==199||o.currency!=="usd")return reply(200,{ignored:true});
+     if(!o||o.buyer_id!=="7f269ba1-8b39-4551-8afd-ab7190860b6a"||!["78ada5a7-9c36-44d2-8e3e-6f80616a5042","634c67a4-da23-422d-85e2-320b0471f831"].includes(o.release_id)||o.amount_cents!==199||o.currency!=="usd")return reply(200,{ignored:true});
    }
    const {data:applied,error:applyError}=await db.rpc("music_apply_live_payment_event",{
     p_action:event.type==="charge.refunded"?"refunded":"disputed",
