@@ -14,7 +14,13 @@
   if(!session){update('A verified Supabase login is required.');return}
   const config=window.HW_SUPABASE_CONFIG;
   if(!config?.url||!config?.anonKey)throw Error('Checkout configuration unavailable');
-  btn.disabled=false;btn.textContent='OPEN $1.99 SANDBOX CHECKOUT';download.disabled=false;update('Only the approved creator owner can proceed.');
+  const {data:owned,error:ownedError}=await client.from('music_licenses').select('id').eq('release_id','634c67a4-da23-422d-85e2-320b0471f831').eq('buyer_id',session.user.id).eq('status','active').limit(1);
+  if(ownedError)throw Error('Unable to verify MULA ownership. Please try again.');
+  const alreadyOwned=Boolean(owned?.length);
+  btn.disabled=alreadyOwned;
+  btn.textContent=alreadyOwned?'MULA ALREADY PURCHASED ✓':'OPEN $1.99 SANDBOX CHECKOUT';
+  download.disabled=false;
+  update(alreadyOwned?'MULA is already purchased on this account. No second payment needed. Tap CHECK PURCHASE / DOWNLOAD WAV below.':'Only the approved creator owner can proceed.');
   download.onclick=async()=>{
    download.disabled=true;
    downloadStatus.textContent='Checking your purchase license…';
@@ -44,7 +50,7 @@
     const url=new URL(data.url);
     if(url.protocol!=='https:'||url.hostname!=='checkout.stripe.com')throw Error('Untrusted checkout destination');
     window.location.assign(url.href);
-   }catch(e){update('Checkout unavailable: '+String(e.message||e));btn.disabled=false;btn.textContent='OPEN $1.99 SANDBOX CHECKOUT'}
+   }catch(e){const message=String(e.message||e);if(message==='already_owned'){update('MULA is already purchased. No second payment is needed; use CHECK PURCHASE / DOWNLOAD WAV below.');btn.disabled=true;btn.textContent='MULA ALREADY PURCHASED ✓'}else{update('Checkout unavailable: '+message);btn.disabled=false;btn.textContent='OPEN $1.99 SANDBOX CHECKOUT'}}
   };
   if(new URLSearchParams(location.search).get('checkout')==='success')update('Stripe checkout returned. Check My Music Library for payment confirmation; it can take a moment for the webhook to process.');
  }catch(e){update(String(e.message||e));btn.disabled=true}
