@@ -1,0 +1,41 @@
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import {createClient} from "https://esm.sh/@supabase/supabase-js@2.57.0";
+const ORIGIN="https://hyphsworld.com";
+const OWNER="7f269ba1-8b39-4551-8afd-ab7190860b6a";
+const RELEASE="634c67a4-da23-422d-85e2-320b0471f831";
+const reply=(status:number,data:unknown)=>new Response(JSON.stringify(data),{status,headers:{"content-type":"application/json","cache-control":"no-store","access-control-allow-origin":ORIGIN,"access-control-allow-headers":"authorization,apikey,content-type","access-control-allow-methods":"OPTIONS,POST"}});
+Deno.serve(async(req)=>{
+ if(req.method==="OPTIONS")return reply(200,{ok:true});
+ if(req.method!=="POST")return reply(405,{error:"method_not_allowed"});
+ if(req.headers.get("origin")!==ORIGIN)return reply(403,{error:"invalid_origin"});
+ const auth=req.headers.get("authorization")||"";
+ if(!auth.startsWith("Bearer "))return reply(401,{error:"login_required"});
+ const url=Deno.env.get("SUPABASE_URL")||"",anon=Deno.env.get("SUPABASE_ANON_KEY")||"",service=Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")||"",key=Deno.env.get("STRIPE_MUSIC_LIVE_SECRET_KEY")||"";
+ if(!url||!anon||!service||!(key.startsWith("rk_live_")||key.startsWith("sk_live_")))return reply(503,{error:"test_not_configured"});
+ try{
+  const client=createClient(url,anon,{global:{headers:{Authorization:auth}}});
+  const {data:{user},error}=await client.auth.getUser();
+  if(error||!user||user.is_anonymous)return reply(401,{error:"login_required"});
+  if(user.id!==OWNER)return reply(403,{error:"owner_only"});
+  const db=createClient(url,service);
+  const {data:release,error:releaseError}=await db.from("music_releases").select("id,title,status,price_cents,currency,creator_id").eq("id",RELEASE).single();
+  if(releaseError||!release||release.status!=="draft"||release.price_cents!==199||release.currency!=="usd"||release.creator_id!=="2ef701f6-37e0-474d-b17a-1ff973b29f3a")return reply(503,{error:"owner_test_unavailable"});
+  const {data:liveOrders,error:orderError}=await db.from("music_orders").select("id").eq("buyer_id",OWNER).eq("release_id",RELEASE).like("stripe_session_id","cs_live_%").in("status",["paid","pending"]).limit(1);
+  if(orderError)return reply(503,{error:"order_check_failed"});
+  if(liveOrders?.length)return reply(409,{error:"owner_test_already_started"});
+  const {data:order,error:insertError}=await db.from("music_orders").insert({buyer_id:OWNER,release_id:RELEASE,amount_cents:199,currency:"usd",status:"pending"}).select("id").single();
+  if(insertError||!order)return reply(500,{error:"order_unavailable"});
+  const form=new URLSearchParams();
+  form.set("mode","payment");form.set("success_url",ORIGIN+"/music-mula-owner-test.html?session_id={CHECKOUT_SESSION_ID}");
+  form.set("cancel_url",ORIGIN+"/music-mula-owner-test.html");
+  form.set("client_reference_id",order.id);form.set("metadata[order_id]",order.id);form.set("metadata[store]","hyphsworld_owner_live_test_mula");
+  form.set("line_items[0][quantity]","1");form.set("line_items[0][price_data][currency]","usd");
+  form.set("line_items[0][price_data][unit_amount]","199");form.set("line_items[0][price_data][product_data][name]","MULA - Owner Purchase Test");
+  const response=await fetch("https://api.stripe.com/v1/checkout/sessions",{method:"POST",headers:{"authorization":"Bearer "+key,"content-type":"application/x-www-form-urlencoded","Idempotency-Key":order.id},body:form});
+  const session=await response.json();
+  if(!response.ok||!session?.id?.startsWith("cs_live_")||!/^https:\/\/checkout\.stripe\.com\//.test(session.url||""))return reply(502,{error:"stripe_checkout_unavailable"});
+  const {data:saved,error:saveError}=await db.from("music_orders").update({stripe_session_id:session.id}).eq("id",order.id).eq("status","pending").select("id").single();
+  if(saveError||!saved)return reply(500,{error:"order_sync_failed"});
+  return reply(200,{url:session.url});
+ }catch{return reply(500,{error:"owner_test_unavailable"});}
+});
