@@ -244,10 +244,10 @@
         .eq('status', 'published').order('display_name');
       if (response.error) throw response.error;
       var creators = response.data || [];
-      if (creators.length) {
-        grid.replaceChildren(...creators.map(creatorCard));
-        renderFilter();
-      }
+      // A successful empty API response means no published creators.
+      // Do not leave editorial fallback cards presenting stale live results.
+      grid.replaceChildren(...creators.map(creatorCard));
+      renderFilter();
       try {
         await loadPublicCreations(client, creators);
       } catch (creationError) {
@@ -255,7 +255,10 @@
         creationGrid.hidden = true;
       }
     } catch (error) {
+      // Preserve curated cards when offline, but be transparent about freshness.
       console.warn('Using static creator directory fallback.');
+      if (result) result.textContent = 'Creator listings are temporarily unavailable. Showing featured profiles.';
+      if (creationResults) creationResults.textContent = 'Latest creations could not be refreshed. Try again later.';
     }
   }
 
