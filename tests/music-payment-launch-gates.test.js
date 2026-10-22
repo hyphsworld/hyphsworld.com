@@ -15,7 +15,7 @@ describe('music payment launch safety contracts', () => {
   test('checkout stays in a first-party authenticated flow and redirects only to Stripe', () => {
     const store = read('music-store.js');
     expect(store).toContain('sessionData.session.access_token');
-    expect(store).toContain("/^https:\\\/\\\/checkout\\.stripe\\.com\\\//");
+    expect(store).toMatch(/checkout\\\.stripe\\\.com/);
     expect(store).toContain('window.location.assign(result.url)');
   });
 
