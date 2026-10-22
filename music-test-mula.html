@@ -55,4 +55,5 @@
   if(new URLSearchParams(location.search).get('checkout')==='success')update('Stripe checkout returned. Check My Music Library for payment confirmation; it can take a moment for the webhook to process.');
  }catch(e){update(String(e.message||e));btn.disabled=true}
 })();
-</script></body></html>
+</script><script src="global-my-id.js?v=2" defer></script>
+</body></html>
