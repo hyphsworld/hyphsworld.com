@@ -30,6 +30,14 @@ describe('music payment launch safety contracts', () => {
     expect(library).toContain("signed.hostname!=='yuhxtdkhsltaqiagrtys.supabase.co'");
   });
 
+  test('owner live-test purchases remain visible in library while published music requires live orders', () => {
+    const library = read('music-library.js');
+    expect(library).toContain("release.status==='published' ? o.stripe_session_id.startsWith('cs_live_')");
+    expect(library).toContain("o.stripe_session_id.startsWith('cs_test_') || o.stripe_session_id.startsWith('cs_live_')");
+    expect(library).toContain(".eq('status','paid')");
+    expect(library).toContain(".eq('status','active')");
+  });
+
   test('store, library and purchase policy remain discoverable', () => {
     const storePage=read('music-store.html');
     const libraryPage=read('music-library.html');
