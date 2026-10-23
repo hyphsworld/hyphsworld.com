@@ -24,7 +24,7 @@
     const {data:allReleases,error:releaseError}=await client.from('music_releases').select('id,title,status,featured_artist,producer_credit,artwork_url').in('id',ids);
     if(releaseError)throw releaseError;
     const eligible=new Set((orders||[]).filter(o=>o.stripe_session_id && (o.stripe_session_id.startsWith('cs_live_') || o.stripe_session_id.startsWith('cs_test_'))).map(o=>o.id));
-    const releases=(allReleases||[]).filter(release=>licenses.some(l=>l.release_id===release.id && eligible.has(l.order_id) && (orders||[]).some(o=>o.id===l.order_id && o.release_id===release.id && o.stripe_session_id.startsWith(release.status==='published'?'cs_live_':'cs_test_'))));
+    const releases=(allReleases||[]).filter(release=>licenses.some(l=>l.release_id===release.id && eligible.has(l.order_id) && (orders||[]).some(o=>o.id===l.order_id && o.release_id===release.id && (release.status==='published' ? o.stripe_session_id.startsWith('cs_live_') : (o.stripe_session_id.startsWith('cs_test_') || o.stripe_session_id.startsWith('cs_live_'))))));
     if(!releases.length){setStatus('No eligible paid music purchases in this account yet.');return;}
     setStatus(releases.length+' purchased release(s) ready.');
     for(const release of releases){
