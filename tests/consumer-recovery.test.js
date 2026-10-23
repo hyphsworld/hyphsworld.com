@@ -11,66 +11,62 @@ function page(html) {
   dom.window.console.warn = jest.fn();
   return dom.window;
 }
-async function casino({ feeError = false, rewardError = false, deferredFee = false, cached = 100, remote = 100 } = {}) {
+async function casino({ reject = false, deferred = false, cached = 100, remote = 100, payout = 0 } = {}) {
   jest.useFakeTimers();
   const w = page('<button id="casinoSpin"></button><button id="freeBonus"></button><p id="casinoResult"></p><b id="casinoPoints"></b><p id="casinoLine"></p>' + [1,2,3].map(n => `<div class="reel"><span id="c${n}"></span></div>`).join(''));
-  let points = remote, resolveFee;
+  let points = remote, release;
   let displayed = cached;
-  w.Math.random = () => 0;
   w.setTimeout = setTimeout; w.setInterval = () => 1;
   w.HWPoints = { get: () => displayed, refresh: async () => { displayed = points; return { points }; } };
   const rpc = jest.fn(async (name, args) => {
-    if (name === 'spend_cool_points') {
-      if (deferredFee) await new Promise(r => { resolveFee = r; });
-      if (feeError) return { error: new Error('fee rejected') };
-      if (points < args.p_amount) return { data: { ok: false, balance: points } };
-      points -= args.p_amount;
-    } else {
-      if (rewardError) return { error: new Error('reward rejected') };
-      points += args.p_amount;
-    }
-    return { data: { ok: true, balance: points }, error: null };
+    if (name !== 'spin_slots') throw Error('Unexpected wallet RPC');
+    if (deferred) await new Promise(r => { release = r; });
+    if (reject || points < 5) return { error: new Error('Spin could not be confirmed'), data: null };
+    const result = { ok: true, cost: 5, payout, net: payout - 5, result: payout > 0 ? 'jackpot' : 'loss', reels: ['🍒','🍒','🍒'], balance: points - 5 + payout };
+    points = result.balance;
+    return { data: result, error: null };
   });
   w.HWAuth = { getClient: async () => ({ rpc }) };
   w.eval(read('hidden-casino.js').replace('document.addEventListener("DOMContentLoaded", bind);', 'window.testReady = bind();'));
   await w.testReady;
   displayed = cached;
-  return { w, rpc, release: () => resolveFee(), balance: () => points };
+  return { w, rpc, release: () => release && release(), balance: () => points };
 }
-test('casino recovers when the fee is rejected without claiming a spin', async () => {
-  const { w, rpc, balance } = await casino({ feeError: true });
+test('rejected server spin leaves points unchanged and restores controls', async () => {
+  const { w, rpc, balance } = await casino({ reject: true });
   w.document.getElementById('casinoSpin').click(); await flush();
   expect(balance()).toBe(100);
   expect(w.document.getElementById('casinoSpin').disabled).toBe(false);
-  expect(w.document.getElementById('casinoResult').textContent).toContain('Spin could not be confirmed');
+  expect(w.document.getElementById('casinoResult').textContent).toContain('Spin not confirmed');
   expect(rpc).toHaveBeenCalledTimes(1);
-  expect(rpc.mock.calls[0][0]).toBe('spend_cool_points');
+  expect(rpc).toHaveBeenCalledWith('spin_slots', {});
 });
-test('casino recovers after rejected payout and accurately reports confirmed fee', async () => {
-  const { w, balance } = await casino({ rewardError: true });
+test('confirmed server loss charges only 5 points and stops reel animation', async () => {
+  const { w, rpc, balance } = await casino();
   w.document.getElementById('casinoSpin').click(); await flush();
   await jest.advanceTimersByTimeAsync(900); await flush();
   expect(balance()).toBe(95);
+  expect(rpc).toHaveBeenCalledTimes(1);
   expect(w.document.getElementById('casinoSpin').disabled).toBe(false);
   expect(w.document.querySelector('.spin')).toBeNull();
-  expect(w.document.getElementById('casinoResult').textContent).toContain('5-point spin fee was confirmed');
-  expect(w.document.getElementById('casinoResult').textContent).not.toContain('JACKPOT');
+  expect(w.document.getElementById('casinoResult').textContent).toContain('confirmed 5 CP');
 });
-test('rapid casino clicks cannot charge a second fee while settlement is pending', async () => {
-  const { w, rpc, release, balance } = await casino({ deferredFee: true });
+test('rapid clicks cannot generate multiple charges while server spin is pending', async () => {
+  const { w, rpc, release, balance } = await casino({ deferred: true, payout: 150 });
   const button = w.document.getElementById('casinoSpin');
-  button.dispatchEvent(new w.Event('click')); button.dispatchEvent(new w.Event('click')); await flush();
+  button.click(); button.click(); await flush();
   expect(rpc).toHaveBeenCalledTimes(1);
   release(); await flush(); await jest.advanceTimersByTimeAsync(900); await flush();
   expect(balance()).toBe(245);
   expect(button.disabled).toBe(false);
-  expect(w.document.getElementById('casinoResult').textContent).toBe('DUCK BACK ROOM JACKPOT +150');
+  expect(w.document.getElementById('casinoResult').textContent).toContain('BACK ROOM JACKPOT');
 });
-test('a rejected Duck bonus never claims credited points and unlocks controls', async () => {
-  const { w } = await casino({ rewardError: true });
+test('Duck bonus remains themed but cannot credit unverified points', async () => {
+  const { w, rpc, balance } = await casino();
   w.document.getElementById('freeBonus').click(); await flush();
-  expect(w.document.getElementById('casinoResult').textContent).toContain('could not be confirmed');
-  expect(w.document.getElementById('freeBonus').disabled).toBe(false);
+  expect(w.document.getElementById('casinoResult').textContent).toContain('server-verified');
+  expect(balance()).toBe(100);
+  expect(rpc).not.toHaveBeenCalled();
 });
 async function arcade({ reject = false, scoreError = false } = {}) {
   const w = page(['casinoStatus','casinoPoints','casinoRecentList','casinoGameTitle','casinoGameKicker','casinoGameDescription','casinoStage','casinoControls','casinoPlayerName','casinoPlayerMode'].map(id => `<div id="${id}"></div>`).join(''));
@@ -154,21 +150,20 @@ test('a second navigation cancels an unfinished restored-session check', async (
   expect(timers.size).toBe(0);
 });
 
-test('stale high displayed cash cannot start a spin without a confirmed server fee', async () => {
+test('stale high displayed cash cannot override insufficient server balance', async () => {
   const { w, rpc, balance } = await casino({ cached: 20, remote: 0 });
   w.document.getElementById('casinoSpin').click(); await flush();
-  await jest.advanceTimersByTimeAsync(900); await flush();
   expect(balance()).toBe(0);
   expect(rpc).toHaveBeenCalledTimes(1);
-  expect(w.document.getElementById('casinoResult').textContent).toContain('Spin could not be confirmed');
+  expect(w.document.getElementById('casinoResult').textContent).toContain('Spin not confirmed');
 });
-test('stale low displayed cash does not reject a successful server fee', async () => {
-  const { w, rpc, balance } = await casino({ cached: 0, remote: 100 });
+test('stale low displayed cash does not prevent confirmed server win', async () => {
+  const { w, rpc, balance } = await casino({ cached: 0, remote: 100, payout: 150 });
   w.document.getElementById('casinoSpin').click(); await flush();
   await jest.advanceTimersByTimeAsync(900); await flush();
   expect(balance()).toBe(245);
-  expect(rpc).toHaveBeenCalledTimes(2);
-  expect(w.document.getElementById('casinoResult').textContent).toBe('DUCK BACK ROOM JACKPOT +150');
+  expect(rpc).toHaveBeenCalledTimes(1);
+  expect(w.document.getElementById('casinoResult').textContent).toContain('BACK ROOM JACKPOT');
 });
 test('arcade unavailable server client never invokes a local award fallback', async () => {
   const { w } = await arcade();
