@@ -2,7 +2,7 @@
   'use strict';
   const PROJECT_URL = 'https://yuhxtdkhsltaqiagrtys.supabase.co';
   const PUBLISHABLE_KEY = 'sb_publishable_oYdN-75W3b7k3m1zLukI-A_BKWVDD5e';
-  // Explicit rollout gate: requires separately reviewed launch commit to activate.
+  // Public checkout launch gate.
   const PUBLIC_CHECKOUT_APPROVED = true;
   const releases = [
     { id: '78ada5a7-9c36-44d2-8e3e-6f80616a5042', button: 'buy-money-counter', amount: 'price-money-counter' },
@@ -27,7 +27,13 @@
       button.disabled = false;
       button.textContent = 'BUY DIGITAL DOWNLOAD';
       activeCount++;
+      const showOwned = function () {
+        button.disabled = false;
+        button.textContent = 'OWNED ✓ — OPEN MY LIBRARY';
+        button.dataset.owned = 'true';
+      };
       button.addEventListener('click', async function () {
+        if (button.dataset.owned === 'true') { window.location.assign('music-library.html'); return; }
         if (button.disabled) return;
         button.disabled = true;
         button.textContent = 'OPENING SECURE CHECKOUT…';
@@ -47,6 +53,11 @@
             body: JSON.stringify({ release_id: release.id })
           });
           const result = await response.json();
+          if (response.status === 409 && result.error === 'already_owned') {
+            showOwned();
+            tell('You already own this release. Open My Music Library to play or download it again.');
+            return;
+          }
           if (!response.ok || !result.url || !/^https:\/\/checkout\.stripe\.com\//.test(result.url)) {
             throw Error(result.error || 'Checkout unavailable');
           }
