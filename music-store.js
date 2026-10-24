@@ -30,9 +30,10 @@
       const showOwned = function () {
         button.disabled = false;
         button.textContent = 'OWNED ✓ — OPEN MY LIBRARY';
-        button.onclick = function () { window.location.assign('music-library.html'); };
+        button.dataset.owned = 'true';
       };
       button.addEventListener('click', async function () {
+        if (button.dataset.owned === 'true') { window.location.assign('music-library.html'); return; }
         if (button.disabled) return;
         button.disabled = true;
         button.textContent = 'OPENING SECURE CHECKOUT…';
