@@ -2,7 +2,7 @@
   'use strict';
   const PROJECT_URL = 'https://yuhxtdkhsltaqiagrtys.supabase.co';
   const PUBLISHABLE_KEY = 'sb_publishable_oYdN-75W3b7k3m1zLukI-A_BKWVDD5e';
-  // Explicit rollout gate: requires separately reviewed launch commit to activate.
+  // Public checkout launch gate.
   const PUBLIC_CHECKOUT_APPROVED = true;
   const releases = [
     { id: '78ada5a7-9c36-44d2-8e3e-6f80616a5042', button: 'buy-money-counter', amount: 'price-money-counter' },
@@ -27,6 +27,11 @@
       button.disabled = false;
       button.textContent = 'BUY DIGITAL DOWNLOAD';
       activeCount++;
+      const showOwned = function () {
+        button.disabled = false;
+        button.textContent = 'OWNED ✓ — OPEN MY LIBRARY';
+        button.onclick = function () { window.location.assign('music-library.html'); };
+      };
       button.addEventListener('click', async function () {
         if (button.disabled) return;
         button.disabled = true;
