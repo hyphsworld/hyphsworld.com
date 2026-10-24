@@ -3,7 +3,7 @@
   const PROJECT_URL = 'https://yuhxtdkhsltaqiagrtys.supabase.co';
   const PUBLISHABLE_KEY = 'sb_publishable_oYdN-75W3b7k3m1zLukI-A_BKWVDD5e';
   // Explicit rollout gate: requires separately reviewed launch commit to activate.
-  const PUBLIC_CHECKOUT_APPROVED = false;
+  const PUBLIC_CHECKOUT_APPROVED = true;
   const releases = [
     { id: '78ada5a7-9c36-44d2-8e3e-6f80616a5042', button: 'buy-money-counter', amount: 'price-money-counter' },
     { id: '634c67a4-da23-422d-85e2-320b0471f831', button: 'buy-mula', amount: 'price-mula' }
