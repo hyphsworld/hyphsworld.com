@@ -52,6 +52,11 @@
             body: JSON.stringify({ release_id: release.id })
           });
           const result = await response.json();
+          if (response.status === 409 && result.error === 'already_owned') {
+            showOwned();
+            tell('You already own this release. Open My Music Library to play or download it again.');
+            return;
+          }
           if (!response.ok || !result.url || !/^https:\/\/checkout\.stripe\.com\//.test(result.url)) {
             throw Error(result.error || 'Checkout unavailable');
           }
