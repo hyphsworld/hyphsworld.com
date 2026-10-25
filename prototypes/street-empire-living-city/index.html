@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Street Empire: Living City — Prototype</title>
+<style>
+:root{font-family:system-ui,-apple-system,sans-serif;color:#f9f9fc;background:#11131d}*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at top right,#332165,#11131d 62%);min-height:100vh}
+main{max-width:850px;margin:auto;padding:20px}h1{font-size:clamp(27px,5vw,42px);margin:8px 0}p{line-height:1.5}
+.panel{background:#1c2030;border:1px solid #4a4e6e;border-radius:16px;padding:18px;margin:14px 0}
+.small{color:#bfc5d8;font-size:14px}h2{margin-top:0}button,select{font:inherit;border-radius:10px;padding:12px 15px}button{border:1px solid #e3dcff;background:#adff4c;color:#101514;font-weight:800;cursor:pointer;margin:4px}button.secondary{background:#2b3048;color:white}button:focus-visible,select:focus-visible{outline:3px solid #ff71c2;outline-offset:3px}button:disabled{opacity:.5;cursor:default}select{background:#252943;color:white;border:1px solid #777}
+.row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}.stat{background:#252a40;padding:12px;border-radius:12px;flex:1;min-width:120px}.stat b{display:block;font-size:23px}
+#log{min-height:70px;border-left:4px solid #ff71c2;padding:12px;background:#26213b}.hidden{display:none}
+.badge{display:inline-block;background:#a1ff56;color:#18230f;padding:5px 10px;border-radius:20px;font-weight:bold;font-size:12px}
+</style></head>
+<body><main>
+<div class="badge">ISOLATED PROTOTYPE · NOT CONNECTED TO LIVE GAME</div>
+<h1>STREET EMPIRE <span style="color:#adff4c">LIVING CITY</span></h1>
+<p class="small">The Block Narrator · Property Defense · Security Payroll · Table Challenge (demo logic only)</p>
+<div class="row"><div class="stat">Cash<b id="cash">$2,000</b></div><div class="stat">Guards<b id="guards">0</b></div><div class="stat">Reputation<b id="rep">0</b></div></div>
+<section class="panel"><h2>🎙️ The Block Narrator</h2><label for="mode">Narration mode </label>
+<select id="mode"><option value="full">Full commentary</option><option value="events">Important events only</option><option value="off">Off</option></select>
+<button id="speak" class="secondary">Read latest line aloud</button><p id="log" aria-live="polite"></p><p class="small">Captions remain on. Audio requires a user gesture and browser speech support.</p></section>
+<section class="panel"><h2>🛡️ Warehouse Security</h2><p>Guards: $350 hiring fee, $75 per simulated payroll cycle. Maximum three.</p><button id="hire">Hire Guard</button><button id="pay" class="secondary">Run Payroll Cycle</button><p id="status" class="small"></p></section>
+<section class="panel"><h2>🚨 Mission 001 — The Warehouse Hit</h2><p>A break-in triggers three defensive choices. Every mission has one settled outcome; replay starts a new demo mission.</p><button id="start">Trigger Attack</button><div id="mission" class="hidden"><p id="missionText"></p><div class="row"><button data-action="defend">Deploy Guards</button><button data-action="lock">Lock Down (-$100)</button><button data-action="risk">Take the Risk</button></div></div><p id="result" role="status"></p></section>
+<section class="panel"><h2>🎲 Dominoes on the Block — Adapter Placeholder</h2><p>Demonstrates a mission result handoff only. This is <strong>not</strong> the existing Dominoes engine. Real game integration requires verified engine APIs and server-side result validation.</p><button id="table">Simulate Table-Game Challenge</button></section>
+<section class="panel"><h2>Testing Controls</h2><button id="reset" class="secondary">Reset Demo</button><p class="small">No purchases, accounts, remote requests, database writes, cash-convertible rewards, or live-game imports. Game state stays in this page only.</p></section>
+</main><script>
+(()=>{'use strict';
+let cash=2000,guards=0,rep=0,mission=0,settled=true,latest='';
+const $=id=>document.getElementById(id);
+const fmt=n=>'$'+n.toLocaleString();
+const note=(line,important=true)=>{latest=line;$('log').textContent=line;if($('mode').value==='full'||(important&&$('mode').value==='events')){}};
+const render=()=>{$('cash').textContent=fmt(cash);$('guards').textContent=guards;$('rep').textContent=rep;$('status').textContent=guards+' assigned · '+fmt(guards*75)+' per payroll cycle'};
+const speak=()=>{if($('mode').value==='off')return;if(!('speechSynthesis'in window)){note('Audio unavailable; captions remain active.');return}speechSynthesis.cancel();let utter=new SpeechSynthesisUtterance(latest);utter.rate=.94;utter.pitch=.82;speechSynthesis.speak(utter)};
+$('speak').onclick=speak;
+$('hire').onclick=()=>{if(guards>=3){note('Unc Buck says: Three guards is enough for this spot!');return}if(cash<350){note('The Block Narrator: You need cash before you hire payroll!');return}cash-=350;guards++;rep++;note('The Block Narrator: OHH, we got security now?! Last week you needed a locksmith!');render()};
+$('pay').onclick=()=>{const cost=guards*75;if(!guards){note('The Block Narrator: You gotta hire somebody before there is payroll!');return}if(cash<cost){rep=Math.max(0,rep-2);note('The Block Narrator: Boss, the security payroll bounced! Reputation down.');render();return}cash-=cost;note('The Block Narrator: Guards got paid. Keep the business moving.');render()};
+$('start').onclick=()=>{mission++;settled=false;$('mission').classList.remove('hidden');$('result').textContent='';$('missionText').textContent='Break-in in progress. Choose your defense.';note('The Block Narrator: AYOO! Somebody trying to clean out your warehouse! What you gonna do?');};
+document.querySelectorAll('[data-action]').forEach(button=>button.onclick=()=>{
+if(settled)return;
+const a=button.dataset.action;
+if(a==='lock'&&cash<100){note('Not enough cash to activate lockdown.');return}
+settled=true;
+let detail='';
+if(a==='defend'){if(guards){rep+=3;detail='Your '+guards+' guard(s) stopped the intrusion. Reputation +3.'}else{cash=Math.max(0,cash-500);detail='No guards assigned: warehouse losses of up to $500.'}}
+if(a==='lock'){cash-=100;rep+=1;detail='Lockdown successful. -$100; reputation +1.'}
+if(a==='risk'){cash=Math.max(0,cash-650);detail='No response: lost up to $650 in inventory.'}
+$('mission').classList.add('hidden');$('result').textContent='Mission #'+mission+' settled: '+detail;note('The Block Narrator: '+(a==='risk'?'I told you not to leave that place wide open!':'That is how you protect your empire!'));render()
+});
+$('table').onclick=()=>{note('The Block Narrator: You want the business bonus? First, show me you can play bones!');$('result').textContent='Table-game adapter event created locally — no win, loss, or reward granted.'};
+$('reset').onclick=()=>{cash=2000;guards=0;rep=0;mission=0;settled=true;$('mission').classList.add('hidden');$('result').textContent='';note('The Block Narrator: Welcome back to Around the Corner!',false);render()};
+note('The Block Narrator: Everybody wants to be a boss until payroll comes around!',false);render();
+})();
+</script></body></html>
