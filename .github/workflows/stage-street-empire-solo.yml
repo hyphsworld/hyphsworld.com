@@ -1,5 +1,5 @@
 name: Stage Street Empire online web
-# publish-trigger: block-narrator-missions-20261025
+# publish-trigger: first-person-cameras-20261025
 # publish-trigger: verified-quick-hustle-20261012
 # publish-trigger: phase-1h-retry
 # publish-trigger: phase-1g-secured
@@ -62,7 +62,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: hyphsworld/STREET-EMPIRE
-          ref: 501eb98e6964063dbcfdd9b11e6b8d664c55bd74
+          ref: 2e2a966bb6e5f0b2bd26d35cb406a6e70131d80a
           token: ${{ secrets.STREET_EMPIRE_READ_TOKEN }}
           path: game
           persist-credentials: false
@@ -155,6 +155,7 @@ jobs:
           /tmp/hustle-browser/node_modules/.bin/playwright install --with-deps chromium --only-shell
           NODE_PATH=/tmp/hustle-browser/node_modules node scripts/check_quick_hustle_browser.js
           NODE_PATH=/tmp/hustle-browser/node_modules node scripts/check_corner_browser.js
+          NODE_PATH=/tmp/hustle-browser/node_modules node scripts/check_pov_browser.js
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -162,6 +163,7 @@ jobs:
           path: |
             /tmp/hustle-*.png
             /tmp/corner-*.png
+            /tmp/pov-*.png
           if-no-files-found: error
       - uses: actions/upload-artifact@v4
         if: always()
@@ -192,13 +194,13 @@ jobs:
           test -s street-empire-export/index.html
           test -s games/street-empire/index.html
           previous_source="$(git show HEAD:games/street-empire/.source-sha)"
-          if test "$previous_source" != '4e45abf1ba79ed3061fc23582cde72a0afa1adb3'; then
+          if test "$previous_source" != '501eb98e6964063dbcfdd9b11e6b8d664c55bd74'; then
             echo "::error::Street Empire route changed since the reviewed export; inspect before replacing."
             exit 1
           fi
           # Overlay the tested export and keep existing files and sound assets.
           cp -a street-empire-export/. games/street-empire/
-          printf '%s\n' '501eb98e6964063dbcfdd9b11e6b8d664c55bd74' > games/street-empire/.source-sha
+          printf '%s\n' '2e2a966bb6e5f0b2bd26d35cb406a6e70131d80a' > games/street-empire/.source-sha
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A games/street-empire
@@ -206,11 +208,11 @@ jobs:
             echo "::error::Publication must not delete existing Street Empire files."
             exit 1
           fi
-          git commit -m 'Release Block Narrator voice for security, delivery and jail missions'
+          git commit -m 'Release Street Empire first-person delivery, jail and security cameras'
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             latest_source="$(git show origin/main:games/street-empire/.source-sha)"
-            if test "$latest_source" != '4e45abf1ba79ed3061fc23582cde72a0afa1adb3'; then
+            if test "$latest_source" != '501eb98e6964063dbcfdd9b11e6b8d664c55bd74'; then
               echo "::error::Street Empire changed during publication; inspect before replacing."
               exit 1
             fi
