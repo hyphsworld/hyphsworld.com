@@ -3,9 +3,9 @@ const path = require('path');
 const read = (file) => fs.readFileSync(path.join(__dirname, '..', file), 'utf8');
 
 describe('music payment launch safety contracts', () => {
-  test('public storefront remains disabled until explicit owner launch', () => {
+  test('owner-approved public storefront retains release and authentication gates', () => {
     const store = read('music-store.js');
-    expect(store).toMatch(/const PUBLIC_CHECKOUT_APPROVED\s*=\s*false\s*;/);
+    expect(store).toMatch(/const PUBLIC_CHECKOUT_APPROVED\s*=\s*true\s*;/);
     expect(store).toContain("if (!PUBLIC_CHECKOUT_APPROVED)");
     expect(store).toContain("release.status !== 'published'");
     expect(store).toContain('/functions/v1/music-live-checkout');
@@ -44,6 +44,7 @@ describe('music payment launch safety contracts', () => {
     expect(storePage).toContain('music-purchase-policy.html');
     expect(libraryPage).toContain('music-store.html');
     expect(libraryPage).toContain('music-library.js');
-    expect(read('music-purchase-policy.html')).toContain('Purchases are not yet open to the public.');
+    expect(read('music-purchase-policy.html')).toContain('Public music purchases require a HYPHSWORLD account.');
+    expect(read('music-purchase-policy.html')).toContain('Verified payments unlock personal-use downloads in My Music Library.');
   });
 });
