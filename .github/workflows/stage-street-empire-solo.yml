@@ -165,12 +165,14 @@ jobs:
             /tmp/corner-*.png
             /tmp/pov-*.png
           if-no-files-found: error
+          retention-days: 7
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: street-empire-online-site
           path: game/frontend/dist/
           if-no-files-found: error
+          retention-days: 7
 
   publish-route:
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
