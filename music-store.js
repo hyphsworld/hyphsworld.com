@@ -5,7 +5,7 @@
   // Public checkout launch gate.
   const PUBLIC_CHECKOUT_APPROVED = true;
   // Separate approval gate for LOST TIME. The server also requires published releases.
-  const LOST_TIME_PUBLIC_CHECKOUT_APPROVED = false;
+  const LOST_TIME_PUBLIC_CHECKOUT_APPROVED = true;
   const releases = [
     { id: '78ada5a7-9c36-44d2-8e3e-6f80616a5042', button: 'buy-money-counter', amount: 'price-money-counter' },
     { id: '634c67a4-da23-422d-85e2-320b0471f831', button: 'buy-mula', amount: 'price-mula' },
@@ -15,6 +15,7 @@
     { id: '35b42527-977d-475b-8552-d50373d6fefc', button: 'buy-shine', amount: 'price-shine', lostTime: true }
   ];
   const message = document.getElementById('music-store-status');
+  const lostTimeReleaseStatus = document.getElementById('lost-time-release-status');
   function tell(value) { if (message) message.textContent = value; }
   async function init() {
     if (!PUBLIC_CHECKOUT_APPROVED) { tell('Official releases are in prelaunch. Secure purchases open after final verification.'); return; }
@@ -24,6 +25,7 @@
       .select('id,status,price_cents,currency').in('id', releases.map(r => r.id));
     if (error) { tell('Purchases are temporarily unavailable.'); return; }
     let activeCount = 0;
+    let activeLostTimeCount = 0;
     for (const candidate of releases) {
       const release = (data || []).find(x => x.id === candidate.id);
       const button = document.getElementById(candidate.button);
@@ -35,6 +37,7 @@
       button.disabled = false;
       button.textContent = 'BUY DIGITAL DOWNLOAD';
       activeCount++;
+      if (candidate.lostTime) activeLostTimeCount++;
       const showOwned = function () {
         button.disabled = false;
         button.textContent = 'OWNED ✓ — OPEN MY LIBRARY';
@@ -78,7 +81,13 @@
         }
       });
     }
-    tell(activeCount ? 'Secure checkout available for published releases.' : 'The first two releases are being prepared. Sales are not open yet.');
+    // Show a launch label only when all four release rows are publicly available.
+    if (lostTimeReleaseStatus) {
+      lostTimeReleaseStatus.textContent = activeLostTimeCount === 4
+        ? '4 TRACKS · $0.99 EACH · AVAILABLE NOW'
+        : '4 TRACKS · $0.99 EACH · COMING SOON';
+    }
+    tell(activeCount ? 'Secure checkout available for published releases.' : 'Releases are being prepared. Sales are not open yet.');
   }
   init().catch(function () { tell('Store temporarily unavailable.'); });
 })();
