@@ -42,6 +42,29 @@ p{font-family:system-ui,-apple-system,Arial,sans-serif;line-height:1.55;color:#e
 .site-footer{padding:28px 20px 40px;border-top:4px solid var(--pink);text-align:center;font-family:system-ui,sans-serif;font-size:.83rem}.site-footer p{font-size:.84rem}.footer-links{display:flex;justify-content:center;flex-wrap:wrap;gap:12px 22px;margin-bottom:18px}.site-footer a:hover{color:var(--lime)}
 @media(max-width:760px){.site-header{padding:17px 18px}.site-nav{width:100%;gap:11px 17px}.site-nav a{font-size:.79rem}.hero{min-height:560px;align-items:start}.hero-image{object-position:61% center;opacity:.53}.hero:before{background:linear-gradient(90deg,rgba(5,5,8,.89),rgba(5,5,8,.48))}.hero-copy{padding:65px 20px 110px}.hero h1{font-size:clamp(3.5rem,12.8vw,5.7rem)}.sticker{bottom:23px;right:24px;font-size:1.04rem;padding:10px;box-shadow:4px 4px 0 #fff}.section{padding:48px 18px}.grid{grid-template-columns:1fr;gap:23px}.release{box-shadow:6px 6px 0 rgba(188,255,37,.16)}.feature-grid{grid-template-columns:1fr}.creator-banner{grid-template-columns:1fr;padding:35px 18px 53px}.creator-banner .scene{order:1}.creator-banner .text{order:2}}
 @media(max-width:380px){.site-nav{gap:9px 13px}.hero h1{font-size:3.5rem}.purchase-row{align-items:stretch;flex-direction:column}.button{width:100%}}
+
+/* LOST TIME showcase: isolated styles; existing release cards are untouched. */
+.lost-time-feature{margin-top:42px;padding:clamp(18px,3vw,32px);border:2px solid rgba(255,255,255,.29);border-radius:18px;background:radial-gradient(circle at 94% 10%,rgba(98,231,234,.14),transparent 40%),radial-gradient(circle at 0 90%,rgba(255,78,170,.16),transparent 45%),#101217;box-shadow:9px 9px 0 rgba(255,218,97,.12)}
+.lost-time-intro{display:grid;grid-template-columns:minmax(190px,310px) minmax(0,1fr);align-items:center;gap:clamp(22px,4vw,48px);padding-bottom:25px;border-bottom:1px solid rgba(255,255,255,.23)}
+.lost-time-cover{border:4px solid #f5f2df;box-shadow:8px 8px 0 var(--pink);overflow:hidden;background:#18131b;max-width:360px}
+.lost-time-cover img{width:100%;aspect-ratio:1;object-fit:cover}
+.lost-time-copy h3{font-size:clamp(3rem,8vw,7rem);line-height:.84;margin:16px 0 17px;letter-spacing:-.035em;text-transform:uppercase}
+.lost-time-copy h3 span{color:var(--pink)}
+.lost-time-copy p{max-width:540px;margin:0 0 14px;font-size:1rem}
+.lost-time-label{display:inline-flex;gap:8px;flex-wrap:wrap;align-items:center;padding:10px 12px;border:1px solid var(--gold);border-radius:5px;color:var(--gold);font:900 .78rem system-ui,sans-serif;letter-spacing:.06em}
+.lost-time-tracks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;margin-top:22px}
+.lost-time-track{padding:20px;min-width:0;border:1px solid rgba(255,255,255,.25);border-radius:12px;background:rgba(7,7,12,.83)}
+.lost-time-track:nth-child(odd){border-left:4px solid var(--cyan)}.lost-time-track:nth-child(even){border-left:4px solid var(--pink)}
+.lost-time-track-name{display:flex;align-items:start;gap:14px;margin-bottom:16px}
+.lost-time-number{font:900 1.2rem system-ui,sans-serif;color:var(--pink);padding-top:4px}
+.lost-time-track h4{font-size:clamp(1.3rem,2.5vw,2rem);line-height:1.05;margin:0 0 7px;text-transform:uppercase;overflow-wrap:anywhere}
+.lost-time-track-name small{font:700 .72rem system-ui,sans-serif;letter-spacing:.08em;color:#c9c6ce}
+.lost-time-track .price{font-size:1.45rem}
+.lost-time-track .button{min-height:44px}
+.lost-time-track .button:not(:disabled){cursor:pointer;background:var(--lime);color:#0b0c09;border-color:var(--lime)}
+.lost-time-track .button:not(:disabled):hover{filter:brightness(1.09)}
+@media(max-width:760px){.lost-time-intro{grid-template-columns:1fr}.lost-time-cover{width:min(100%,340px)}.lost-time-tracks{grid-template-columns:1fr}.lost-time-feature{margin-top:34px}}
+@media(max-width:380px){.lost-time-track .purchase-row{align-items:stretch}.lost-time-track .button{width:100%}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.pill{transition:none}.pill:hover{transform:none}}
 </style>
 </head>
@@ -68,6 +91,25 @@ p{font-family:system-ui,-apple-system,Arial,sans-serif;line-height:1.55;color:#e
 <article class="release"><div class="art"><span>HYPH LIFE</span><b>MONEY<br>COUNTER</b><img class="cover-image" src="music/artwork/money-counter.jpg" alt="Official Money Counter cover art by Hyph Life" loading="lazy" decoding="async"><span class="corner-tag">AMS WEST ORIGINAL</span></div><div class="details"><span class="release-type">Digital single · Full-quality WAV</span><h3>Money Counter</h3><p>Hyph Life · Produced by K.M.T.</p><div class="purchase-row"><div class="price"><span id="price-money-counter">$1.99</span><small>USD · one-time purchase</small></div><button class="button" id="buy-money-counter" type="button" disabled>SIGN IN TO BUY</button></div><p class="note">Official master verified through the HYPHSWORLD Music Library. Log in to purchase and download this release.</p></div></article>
 <article class="release"><div class="art mula"><span>HYPH LIFE × KILI 631</span><b>MULA</b><img class="cover-image" src="music/artwork/mula.png" alt="Official MULA cover art by Hyph Life featuring KILI 631" loading="lazy" decoding="async"><span class="corner-tag">AMS WEST ORIGINAL</span></div><div class="details"><span class="release-type">Digital single · Full-quality WAV</span><h3>MULA</h3><p>Hyph Life ft. KILI 631 · Produced by Cuz Zaid of The Ozakis</p><div class="purchase-row"><div class="price"><span id="price-mula">$1.99</span><small>USD · one-time purchase</small></div><button class="button" id="buy-mula" type="button" disabled>SIGN IN TO BUY</button></div><p class="note">Official replacement WAV verified through the HYPHSWORLD Music Library. Log in to purchase and download this release.</p></div></article>
 </div>
+
+<section class="lost-time-feature" id="lost-time" aria-labelledby="lost-time-heading">
+  <div class="lost-time-intro">
+    <div class="lost-time-cover"><img src="music/artwork/IMG_8931.jpeg" alt="LOST TIME artwork: Hyph Life walking toward a prison intake gate at sunset in AMS WEST clothing" loading="lazy" decoding="async"></div>
+    <div class="lost-time-copy">
+      <span class="kicker">AMS WEST ENTERPRISE PRESENTS · HYPH LIFE</span>
+      <h3 id="lost-time-heading">LOST <span>TIME.</span></h3>
+      <p>Four songs. One chapter. The new HYPH LIFE project from AMS WEST, prepared for direct-to-fan digital sales.</p>
+      <span class="lost-time-label">4 TRACKS · $0.99 EACH · COMING SOON</span>
+      <p class="note">Preview only. Purchases open after final release approval; signed-in fans will receive their individual tracks in My Music Library.</p>
+    </div>
+  </div>
+  <div class="lost-time-tracks" aria-label="LOST TIME tracks">
+    <article class="lost-time-track"><div class="lost-time-track-name"><span class="lost-time-number" aria-hidden="true">01</span><div><h4>MANDO</h4><small>HYPH LIFE / LOST TIME</small></div></div><div class="purchase-row"><div class="price"><span id="price-mando">$0.99</span><small>USD · digital WAV</small></div><button class="button" type="button" id="buy-mando" disabled>COMING SOON</button></div></article>
+<article class="lost-time-track"><div class="lost-time-track-name"><span class="lost-time-number" aria-hidden="true">02</span><div><h4>SAC 2 THE RICH</h4><small>HYPH LIFE / LOST TIME</small></div></div><div class="purchase-row"><div class="price"><span id="price-sac-2-the-rich">$0.99</span><small>USD · digital WAV</small></div><button class="button" type="button" id="buy-sac-2-the-rich" disabled>COMING SOON</button></div></article>
+<article class="lost-time-track"><div class="lost-time-track-name"><span class="lost-time-number" aria-hidden="true">03</span><div><h4>DRIP</h4><small>HYPH LIFE / LOST TIME</small></div></div><div class="purchase-row"><div class="price"><span id="price-drip">$0.99</span><small>USD · digital WAV</small></div><button class="button" type="button" id="buy-drip" disabled>COMING SOON</button></div></article>
+<article class="lost-time-track"><div class="lost-time-track-name"><span class="lost-time-number" aria-hidden="true">04</span><div><h4>SHINE</h4><small>HYPH LIFE / LOST TIME</small></div></div><div class="purchase-row"><div class="price"><span id="price-shine">$0.99</span><small>USD · digital WAV</small></div><button class="button" type="button" id="buy-shine" disabled>COMING SOON</button></div></article>
+  </div>
+</section>
 <div class="notice" role="status"><strong>SECURE DIRECT-TO-FAN MUSIC STORE</strong><p id="music-store-status" role="status">Buy official releases using secure checkout. Sign in to your HYPHSWORLD account first.</p><p class="note">Your previously purchased music is accessible in <a href="music-library.html">My Music Library</a>.</p></div>
 </section>
 <section class="features"><div class="section" aria-labelledby="why-title"><div class="section-heading"><div><span class="kicker">MORE THAN A DOWNLOAD</span><h2 id="why-title">BUILT FOR <span>CREATORS.</span></h2></div></div>
