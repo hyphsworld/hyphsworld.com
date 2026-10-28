@@ -4,9 +4,15 @@
   const PUBLISHABLE_KEY = 'sb_publishable_oYdN-75W3b7k3m1zLukI-A_BKWVDD5e';
   // Public checkout launch gate.
   const PUBLIC_CHECKOUT_APPROVED = true;
+  // Separate approval gate for LOST TIME. The server also requires published releases.
+  const LOST_TIME_PUBLIC_CHECKOUT_APPROVED = false;
   const releases = [
     { id: '78ada5a7-9c36-44d2-8e3e-6f80616a5042', button: 'buy-money-counter', amount: 'price-money-counter' },
-    { id: '634c67a4-da23-422d-85e2-320b0471f831', button: 'buy-mula', amount: 'price-mula' }
+    { id: '634c67a4-da23-422d-85e2-320b0471f831', button: 'buy-mula', amount: 'price-mula' },
+    { id: '6731c662-93ef-4210-9324-d389cc94ddcc', button: 'buy-mando', amount: 'price-mando', lostTime: true },
+    { id: '6daa0299-6560-49da-8613-f6b18d5afc1e', button: 'buy-sac-2-the-rich', amount: 'price-sac-2-the-rich', lostTime: true },
+    { id: '513b8249-c83f-4672-99f8-c519e52107d0', button: 'buy-drip', amount: 'price-drip', lostTime: true },
+    { id: '35b42527-977d-475b-8552-d50373d6fefc', button: 'buy-shine', amount: 'price-shine', lostTime: true }
   ];
   const message = document.getElementById('music-store-status');
   function tell(value) { if (message) message.textContent = value; }
@@ -23,6 +29,8 @@
       const button = document.getElementById(candidate.button);
       const label = document.getElementById(candidate.amount);
       if (!button || !release || release.status !== 'published' || release.currency !== 'usd') continue;
+      // Draft LOST TIME tracks stay disabled, even if DB status changes before founder approval.
+      if (candidate.lostTime && !LOST_TIME_PUBLIC_CHECKOUT_APPROVED) continue;
       if (label) label.textContent = '$' + (release.price_cents / 100).toFixed(2);
       button.disabled = false;
       button.textContent = 'BUY DIGITAL DOWNLOAD';
