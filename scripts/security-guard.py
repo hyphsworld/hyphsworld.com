@@ -117,7 +117,7 @@ def run_selftest():
         "rk_" + "test_" + "Y" * 24,
         "whsec_" + "K" * 24,
         "sb_" + "secret_" + "Z" * 24,
-        "-----BEGIN PRIVATE KEY-----",
+        "-----BEGIN " + "PRIVATE KEY-----",
     ]
     for example in examples:
         if not scan_diff("+++ b/testfile.txt\n@@ -0,0 +1 @@\n+" + example):
