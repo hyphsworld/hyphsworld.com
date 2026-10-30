@@ -1,0 +1,7 @@
+# HYPHSWORLD / AMS WEST responsible vulnerability disclosure
+Contact: mailto:tone@amsenterprisecorp.com
+Contact: https://hyphsworld.com/security.html
+Expires: 2027-10-28T00:00:00Z
+Preferred-Languages: en
+Canonical: https://hyphsworld.com/.well-known/security.txt
+Policy: https://hyphsworld.com/security.html

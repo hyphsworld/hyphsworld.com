@@ -1,0 +1,26 @@
+name: Security Guard
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+# Read-only by default; the scanner never needs secrets or write permissions.
+permissions:
+  contents: read
+
+jobs:
+  secret-guard:
+    name: Prevent new credentials in source
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out full history for diff analysis
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify scanner fixtures
+        run: python3 scripts/security-guard.py --self-test
+      - name: Check new commits and security disclosure policy
+        run: python3 scripts/security-guard.py
