@@ -34,7 +34,7 @@ jobs:
           NODE_PATH=/tmp/hw-social-browser/node_modules node scripts/check-global-social-browser.js
 
       - name: Upload global friends layout previews
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: global-friends-layouts
           path: /tmp/global-social-*.png
@@ -44,7 +44,7 @@ jobs:
         run: NODE_PATH=/tmp/hw-social-browser/node_modules node scripts/check-street-entry-browser.js
 
       - name: Upload Street Empire entry previews
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: street-empire-entry-layouts
           path: /tmp/street-entry-*.png
@@ -54,7 +54,7 @@ jobs:
         run: NODE_PATH=/tmp/hw-social-browser/node_modules node scripts/check-creator-skate-browser.js
 
       - name: Upload Creator World layout previews
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: creator-urban-culture-layouts
           path: /tmp/creator-skate-*.png
