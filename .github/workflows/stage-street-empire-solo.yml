@@ -156,7 +156,7 @@ jobs:
           NODE_PATH=/tmp/hustle-browser/node_modules node scripts/check_quick_hustle_browser.js
           NODE_PATH=/tmp/hustle-browser/node_modules node scripts/check_corner_browser.js
           NODE_PATH=/tmp/hustle-browser/node_modules node scripts/check_pov_browser.js
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: quick-hustle-release-previews
@@ -166,7 +166,7 @@ jobs:
             /tmp/pov-*.png
           if-no-files-found: error
           retention-days: 7
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: street-empire-online-site
