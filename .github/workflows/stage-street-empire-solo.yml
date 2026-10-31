@@ -196,6 +196,11 @@ jobs:
           test -s street-empire-export/index.html
           test -s games/street-empire/index.html
           previous_source="$(git show HEAD:games/street-empire/.source-sha)"
+          # Re-running a successfully published build is a safe no-op.
+          if test "$previous_source" = '2e2a966bb6e5f0b2bd26d35cb406a6e70131d80a'; then
+            echo "Street Empire target source is already published. No update needed."
+            exit 0
+          fi
           if test "$previous_source" != '501eb98e6964063dbcfdd9b11e6b8d664c55bd74'; then
             echo "::error::Street Empire route changed since the reviewed export; inspect before replacing."
             exit 1
@@ -214,6 +219,11 @@ jobs:
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             latest_source="$(git show origin/main:games/street-empire/.source-sha)"
+            # Another approved publication may have finished while this build ran.
+            if test "$latest_source" = '2e2a966bb6e5f0b2bd26d35cb406a6e70131d80a'; then
+              echo "Street Empire target source is already published on origin/main."
+              exit 0
+            fi
             if test "$latest_source" != '501eb98e6964063dbcfdd9b11e6b8d664c55bd74'; then
               echo "::error::Street Empire changed during publication; inspect before replacing."
               exit 1
