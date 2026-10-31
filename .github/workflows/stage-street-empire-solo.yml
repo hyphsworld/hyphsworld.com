@@ -196,9 +196,13 @@ jobs:
           test -s street-empire-export/index.html
           test -s games/street-empire/index.html
           previous_source="$(git show HEAD:games/street-empire/.source-sha)"
-          if test "$previous_source" != '501eb98e6964063dbcfdd9b11e6b8d664c55bd74'; then
+          if test "$previous_source" != '2e2a966bb6e5f0b2bd26d35cb406a6e70131d80a'; then
             echo "::error::Street Empire route changed since the reviewed export; inspect before replacing."
             exit 1
+          fi
+          if test "$previous_source" = '2e2a966bb6e5f0b2bd26d35cb406a6e70131d80a'; then
+            echo 'Street Empire pinned source already published; no deployment required.'
+            exit 0
           fi
           # Overlay the tested export and keep existing files and sound assets.
           cp -a street-empire-export/. games/street-empire/
@@ -214,7 +218,7 @@ jobs:
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             latest_source="$(git show origin/main:games/street-empire/.source-sha)"
-            if test "$latest_source" != '501eb98e6964063dbcfdd9b11e6b8d664c55bd74'; then
+            if test "$latest_source" != '2e2a966bb6e5f0b2bd26d35cb406a6e70131d80a'; then
               echo "::error::Street Empire changed during publication; inspect before replacing."
               exit 1
             fi
