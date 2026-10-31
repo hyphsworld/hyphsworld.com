@@ -4,15 +4,36 @@
   const list=document.getElementById('library-releases');
   const PROJECT='https://yuhxtdkhsltaqiagrtys.supabase.co';
   const KEY='sb_publishable_oYdN-75W3b7k3m1zLukI-A_BKWVDD5e';
+  const checkoutReturn=window.HWMusicCheckoutReturn;
+  const checkoutSession=checkoutReturn?.readSessionId(window.location.search);
+  const checkoutStatus=document.getElementById('checkout-status');
   function setStatus(message){status.textContent=message;}
   function errorText(e){return String(e?.message||e||'Unknown error');}
   try {
     if(!window.HWAuth)throw Error('HYPHSWORLD login is unavailable.');
     const user=await window.HWAuth.getCurrentUser();
-    if(!user?.userId) {setStatus('Sign in to access your purchased music.');const a=document.createElement('a');a.href='auth.html?next=music-library.html';a.textContent=' Sign in';status.append(a);return;}
+    if(!user?.userId) {setStatus('Sign in to access your purchased music.');const a=document.createElement('a');a.href=checkoutSession?'auth.html?next='+encodeURIComponent('music-library.html?session_id='+checkoutSession):'auth.html?next=music-library.html';a.textContent=' Sign in';status.append(a);return;}
     const client=await window.HWAuth.getClient();
     const {data:{session},error:sessionError}=await client.auth.getSession();
     if(sessionError||!session||session.user.id!==user.userId)throw Error('Please sign in again using your HYPHSWORLD account.');
+    if(checkoutSession && checkoutStatus){
+      checkoutStatus.hidden=false;
+      checkoutStatus.textContent='Confirming your payment… Downloads appear after verification.';
+      try{
+        const result=await checkoutReturn.waitForPurchase(client,session.user.id,checkoutSession);
+        checkoutStatus.textContent=result==='confirmed'
+          ? 'Payment confirmed. Your purchased music is ready below.'
+          : result==='inactive'
+            ? 'This purchase is not active. Contact support if you need help.'
+            : 'Payment confirmation is still pending. Please check again shortly; you do not need to buy again.';
+        if(result==='pending'){
+          const retry=document.createElement('button');retry.type='button';retry.textContent='Check payment again';
+          retry.addEventListener('click',()=>window.location.reload());checkoutStatus.append(' ',retry);
+        }
+      }catch(e){
+        checkoutStatus.textContent=errorText(e)+' Please refresh to check again; you do not need to buy again.';
+      }
+    }
     const {data:licenses,error:licenseError}=await client.from('music_licenses').select('release_id,order_id').eq('buyer_id',session.user.id).eq('status','active');
     if(licenseError)throw licenseError;
     if(!licenses?.length){setStatus('No completed music purchases in this account yet.');return;}
@@ -57,3 +78,4 @@
     }
   }catch(e){setStatus('Music Library error: '+errorText(e));}
 })();
+
