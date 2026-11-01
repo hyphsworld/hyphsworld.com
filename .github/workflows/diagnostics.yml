@@ -43,6 +43,9 @@ jobs:
       - name: Check approved Street Empire entry on phones and desktop
         run: NODE_PATH=/tmp/hw-social-browser/node_modules node scripts/check-street-entry-browser.js
 
+      - name: Check Chase the Bag controls stay outside the maze
+        run: NODE_PATH=/tmp/hw-social-browser/node_modules node scripts/check-cash-run-controls-browser.js
+
       - name: Upload Street Empire entry previews
         uses: actions/upload-artifact@v7
         with:
