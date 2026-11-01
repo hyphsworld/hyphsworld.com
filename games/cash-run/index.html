@@ -18,22 +18,31 @@
     #loginCheck{position:fixed;inset:0;z-index:999999;display:grid;place-items:center;background:#050507;color:#fff;font-family:Arial,sans-serif;text-align:center;padding:24px}
     #loginCheck strong{display:block;font-size:clamp(1.8rem,8vw,4rem);text-transform:uppercase;margin-bottom:10px;color:#7ee895}html.hw-id-ready #loginCheck{display:none}
 
-    /* App-store-ready Chase The Bag touch controls. */
+    /* Keep the maze clear: touch controls occupy their own row below it. */
     @media (pointer:coarse),(hover:none){
-      [data-testid="touch-controls"]{position:relative!important;z-index:10020!important;min-height:0!important;margin:0!important;padding:0!important;pointer-events:none!important}
-      [data-testid="touch-joystick"]{position:fixed!important;z-index:10030!important;left:max(16px,env(safe-area-inset-left))!important;bottom:max(164px,calc(env(safe-area-inset-bottom) + 146px))!important;width:108px!important;height:108px!important;opacity:.62!important;pointer-events:auto!important;touch-action:none!important;-webkit-user-select:none!important;user-select:none!important;border:1px solid rgba(255,255,255,.18)!important;background:radial-gradient(circle at 50% 50%,rgba(0,255,170,.08) 0 35%,rgba(0,0,0,.42) 36% 100%)!important;box-shadow:inset 0 0 0 1px rgba(0,255,170,.10),inset 0 0 28px rgba(0,0,0,.72),0 10px 28px rgba(0,0,0,.38)!important;backdrop-filter:blur(12px)!important;-webkit-backdrop-filter:blur(12px)!important;transition:opacity .16s ease,transform .16s ease,box-shadow .16s ease!important}
-      [data-testid="touch-joystick"].hw-stick-active{opacity:.96!important;transform:scale(1.035)!important;box-shadow:inset 0 0 0 1px rgba(0,255,170,.25),inset 0 0 30px rgba(0,0,0,.68),0 0 0 1px rgba(0,255,170,.15),0 0 24px rgba(0,255,170,.20),0 12px 30px rgba(0,0,0,.48)!important}
-      [data-testid="touch-joystick-knob"]{width:48px!important;height:48px!important;margin-left:-24px!important;margin-top:-24px!important;border:1px solid rgba(255,255,255,.42)!important;background:radial-gradient(circle at 35% 28%,#f5f5f0 0 10%,#aaa69c 34%,#69655d 68%,#26231f 100%)!important;box-shadow:0 5px 13px rgba(0,0,0,.62),inset 0 1px 1px rgba(255,255,255,.28),inset 0 -5px 8px rgba(0,0,0,.42)!important}
-      [data-testid="touch-joystick"] span{opacity:.56!important;font-size:9px!important}
-      [data-testid="touch-pause"]{position:fixed!important;z-index:10030!important;right:max(16px,env(safe-area-inset-right))!important;bottom:max(174px,calc(env(safe-area-inset-bottom) + 156px))!important;min-width:68px!important;padding:.55rem .85rem!important;font-size:.9rem!important;opacity:.78!important;pointer-events:auto!important;backdrop-filter:blur(10px)!important;-webkit-backdrop-filter:blur(10px)!important}
-      html.hw-game-over [data-testid="touch-joystick"],html.hw-game-over [data-testid="touch-pause"]{opacity:0!important;pointer-events:none!important;transform:scale(.88)!important}
+      [data-testid="game-page"]{padding-bottom:max(1rem,calc(env(safe-area-inset-bottom) + .75rem))!important}
+      [data-testid="touch-controls"]{position:relative!important;display:flex!important;align-items:center!important;justify-content:space-between!important;flex-wrap:nowrap!important;gap:12px!important;z-index:auto!important;box-sizing:border-box!important;width:min(100%,440px)!important;min-height:176px!important;margin:14px 0 0!important;padding:12px!important;pointer-events:auto!important}
+      [data-testid="touch-joystick"]{position:relative!important;inset:auto!important;flex:0 0 150px!important;width:150px!important;height:150px!important;opacity:1!important;pointer-events:auto!important;touch-action:none!important;-webkit-user-select:none!important;user-select:none!important;border:1px solid rgba(255,255,255,.25)!important;background:radial-gradient(circle at 50% 50%,rgba(0,255,170,.08) 0 35%,rgba(0,0,0,.42) 36% 100%)!important;box-shadow:inset 0 0 0 1px rgba(0,255,170,.10),inset 0 0 28px rgba(0,0,0,.72)!important;transition:box-shadow .16s ease!important}
+      [data-testid="touch-joystick"].hw-stick-active{box-shadow:inset 0 0 0 1px rgba(0,255,170,.25),inset 0 0 30px rgba(0,0,0,.68),0 0 16px rgba(0,255,170,.20)!important}
+      [data-testid="touch-joystick-knob"]{width:60px!important;height:60px!important;margin-left:-30px!important;margin-top:-30px!important;border:1px solid rgba(255,255,255,.42)!important;background:radial-gradient(circle at 35% 28%,#f5f5f0 0 10%,#aaa69c 34%,#69655d 68%,#26231f 100%)!important;box-shadow:0 5px 13px rgba(0,0,0,.62),inset 0 1px 1px rgba(255,255,255,.28),inset 0 -5px 8px rgba(0,0,0,.42)!important}
+      [data-testid="touch-joystick"] span{opacity:.75!important;font-size:10px!important}
+      [data-testid="touch-pause"]{position:relative!important;inset:auto!important;flex:0 0 auto!important;z-index:auto!important;min-width:90px!important;min-height:56px!important;padding:.65rem .9rem!important;font-size:1rem!important;opacity:1!important;pointer-events:auto!important}
+      html.hw-game-over [data-testid="touch-controls"]{display:none!important}
       #root canvas{transform:none!important;transform-origin:center!important}
     }
-    @media (pointer:coarse) and (orientation:portrait),(hover:none) and (orientation:portrait){#root canvas{transform:none!important}}
+    /* Short, wide screens use a side control dock, outside the maze. */
     @media (pointer:coarse) and (orientation:landscape),(hover:none) and (orientation:landscape){
-      [data-testid="touch-joystick"]{left:max(20px,env(safe-area-inset-left))!important;bottom:max(76px,calc(env(safe-area-inset-bottom) + 64px))!important;width:102px!important;height:102px!important}
-      [data-testid="touch-pause"]{right:max(20px,env(safe-area-inset-right))!important;bottom:max(86px,calc(env(safe-area-inset-bottom) + 74px))!important}
-      #root canvas{transform:none!important}
+      [data-testid="game-page"]{display:grid!important;grid-template-columns:minmax(0,min(100%,calc((100svh - 180px)*546/494))) 176px!important;justify-content:center!important;align-content:start!important;align-items:start!important;gap:8px 14px!important;padding:8px max(8px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))!important}
+      [data-testid="game-page"]>div:first-child,[data-testid="game-page"]>div:nth-child(2){grid-column:1/-1!important;margin:0!important}
+      [data-testid="game-hud"]{grid-template-columns:repeat(4,minmax(0,1fr))!important;margin-bottom:0!important;padding:.35rem!important}
+      [data-testid="game-hud"]>div{padding:.35rem!important}
+      [data-testid="game-hud"] .value{font-size:1rem!important;white-space:nowrap!important;overflow-wrap:normal!important}
+      [data-testid="hud-lives-value"]{gap:.1rem!important}
+      [data-testid="hud-lives-value"] span{font-size:.9rem!important;line-height:1.2!important}
+      [data-testid="game-page"] .cr-canvas-wrap{grid-column:1!important;grid-row:3!important;width:100%!important}
+      [data-testid="touch-controls"]{grid-column:2!important;grid-row:3!important;flex-direction:column!important;gap:10px!important;width:176px!important;min-height:0!important;margin:0!important;padding:12px!important}
+      [data-testid="touch-pause"]{width:100%!important}
+      [data-testid="game-page"]>p{display:none!important}
     }
   </style>
   <script>
