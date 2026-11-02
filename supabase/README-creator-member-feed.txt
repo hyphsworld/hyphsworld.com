@@ -19,6 +19,10 @@ see Moderator tools on the feed and can review reported posts and remove them.
 Reports do not automatically hide posts. Moderators must review them.
 Removal hides the post immediately, then the client removes the underlying file.
 Previously issued signed playback URLs can remain valid up to 15 minutes.
+If a media link expires or fails, Reload media requests a fresh signed URL for
+that post without refreshing the feed. Video/audio position is restored when
+supported; playback resumes only when the member presses Play. Background auth
+refresh preserves the feed/player and draft. An account change clears the draft.
 If object cleanup fails, the post remains hidden; the owner/moderator can retry
 member_remove_post and Storage.remove. Never delete storage.objects rows via SQL.
 Upload reservations abandoned by closing the page remain private; operators should
