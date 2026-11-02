@@ -26,10 +26,10 @@ const server=http.createServer((req,res)=>{
    let offset=0,failed=false,patches=0,posts=0;
    const fixture=`window.HW_SUPABASE_CONFIG={url:'https://fixture.supabase.co',anonKey:'public-fixture'};
     const fixtureUser={id:'10000000-0000-4000-8000-000000000001',app_metadata:{}};
-    let fixturePost=null;window.fixturePublished=false;
-    const storage={list:async()=>({data:[]}),createSignedUrl:async()=>({data:{signedUrl:'${origin}/fixture.png'}}),remove:async()=>({data:[],error:null})};
-    window.HWAuth={getClient:async()=>({auth:{getUser:async()=>({data:{user:fixtureUser}}),getSession:async()=>({data:{session:{user:fixtureUser,access_token:'fixture-user-token'}}}),onAuthStateChange:()=>{}},storage:{from:()=>storage},rpc:async(name,args)=>{
-     if(name==='member_feed')return {data:window.fixturePublished?[{id:fixturePost.id,owner_id:fixtureUser.id,author_name:'Test member',caption:'Browser upload check',mime_type:'image/png',storage_path:fixturePost.storage_path,published_at:new Date().toISOString()}]:[]};
+    let fixturePost=null,linkCount=0;window.fixturePublished=false;window.fixtureFeedLoads=0;
+    const storage={list:async()=>({data:[]}),createSignedUrl:async()=>({data:{signedUrl:'${origin}/fixture.png?link='+(++linkCount)}}),remove:async()=>({data:[],error:null})};
+    window.HWAuth={getClient:async()=>({auth:{getUser:async()=>({data:{user:fixtureUser}}),getSession:async()=>({data:{session:{user:fixtureUser,access_token:'fixture-user-token'}}}),onAuthStateChange:callback=>{window.fixtureAuthChanged=callback;}},storage:{from:()=>storage},rpc:async(name,args)=>{
+     if(name==='member_feed'){window.fixtureFeedLoads++;return {data:window.fixturePublished?[{id:fixturePost.id,owner_id:fixtureUser.id,author_name:'Test member',caption:'Browser upload check',mime_type:'image/png',storage_path:fixturePost.storage_path,published_at:new Date().toISOString()}]:[]};}
      if(name==='member_reserve_post'){fixturePost={id:args.p_id,status:'uploading',storage_path:fixtureUser.id+'/'+args.p_id+'/media.png'};return {data:fixturePost};}
      if(name==='member_publish_post'){await fetch('${origin}/fixture-published',{method:'POST'});window.fixturePublished=true;return {data:{status:'published'}};}
      return {data:null};
@@ -76,11 +76,21 @@ const server=http.createServer((req,res)=>{
    catch(error) { throw new Error(error.message+'; status: '+await page.locator('#memberPostStatus').textContent()+'; requests: '+JSON.stringify({offset,patches,posts,errors})); }
    assert.equal(posts,1);assert(patches>=2,'Large upload must retry after the simulated failure');
    await page.locator('#memberFeed article').waitFor();
-   assert.equal(await page.locator('#memberFeed img').evaluate(image=>image.complete&&image.naturalWidth>0),true,'Published photo is visible');
+   await page.waitForFunction(()=>{const image=document.querySelector('#memberFeed img');return image?.complete&&image.naturalWidth>0;});
+   const feedLoads=await page.evaluate(()=>window.fixtureFeedLoads);
+   await page.locator('#memberFeed img').evaluate(image=>{image.dataset.continuity='kept';});
+   await page.evaluate(async()=>{window.fixtureAuthChanged('TOKEN_REFRESHED',{});await new Promise(resolve=>setTimeout(resolve,0));});
+   assert.equal(await page.locator('#memberFeed img').getAttribute('data-continuity'),'kept','Token refresh preserves the current media element');
+   await page.locator('#memberFeed .member-caption').evaluate(caption=>{caption.dataset.continuity='kept';});
+   await page.locator('#memberFeed img').evaluate(image=>image.dispatchEvent(new Event('error')));
+   await page.getByRole('button',{name:'Reload media',exact:true}).click();
+   await page.waitForFunction(()=>{const image=document.querySelector('#memberFeed img');return image?.complete&&image.naturalWidth>0;});
+   assert.equal(await page.locator('#memberFeed .member-caption').getAttribute('data-continuity'),'kept','Media recovery preserves the post');
+   assert.equal(await page.evaluate(()=>window.fixtureFeedLoads),feedLoads,'Token refresh and media recovery do not reload the feed');
    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2),true);
    await page.locator('#community').screenshot({path:'/tmp/creator-member-posted-'+width+'.png'});
    assert.deepEqual(errors,[]);
-   console.log('Creator member browser @'+width+': preview, 7 MB resumable upload, failed-chunk retry, single post, image playback, no overflow.');
+   console.log('Creator member browser @'+width+': resumable upload and retry, single post, playback, token refresh continuity, media recovery, no overflow.');
    await page.close();
   }
  }finally{if(browser)await browser.close();await new Promise(resolve=>server.close(resolve));}

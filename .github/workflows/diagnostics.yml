@@ -10,7 +10,8 @@ on:
 
 jobs:
   diagnostics:
-    runs-on: ubuntu-latest
+    # Playwright 1.56.1 supports this image; do not follow rolling OS upgrades.
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout repository

@@ -7,6 +7,7 @@
   const types = { 'image/jpeg': ['jpg', 'jpeg'], 'image/png': ['png'], 'image/webp': ['webp'], 'video/mp4': ['mp4'], 'video/quicktime': ['mov'], 'audio/mpeg': ['mp3'], 'audio/mp4': ['m4a'], 'audio/wav': ['wav'], 'audio/x-wav': ['wav'] };
   let sb, user = null, admin = false, file = null, previewUrl = null;
   let pending = null, upload = null, busy = false, phase = '', epoch = 0, feedEpoch = 0, cursor = null;
+  let identityEpoch = 0, identityReady = false;
   const status = text => { el('memberPostStatus').textContent = text; };
   const metric = name => { if (typeof window.gtag === 'function') window.gtag('event', name, { event_category: 'creators_world' }); };
   const rpc = async (name, args) => {
@@ -20,7 +21,7 @@
     el('memberCaption').disabled = value || Boolean(pending);
     el('memberPost').disabled = value;
     el('memberCancel').hidden = !pending && !value;
-    el('memberCancel').disabled = phase === 'publishing';
+    el('memberCancel').disabled = phase === 'publishing' || phase === 'canceling';
     el('memberPost').textContent = value ? (phase === 'publishing' ? 'Publishing…' : 'Uploading…') : (pending ? 'Retry post ↗' : 'Post to Creator’s World ↗');
   }
   function clearPreview() {
@@ -65,13 +66,14 @@
   }
   async function ensureOwner(id, version) {
     const { data, error } = await sb.auth.getUser();
-    if (error || data?.user?.id !== id || version !== epoch) throw new Error('Your account changed. Sign in again before posting.');
+    if (error) throw new Error('Could not verify your sign-in. Reconnect and try again.');
+    if (data?.user?.id !== id || version !== epoch) throw new Error('Your account changed. Sign in again before posting.');
   }
   function transfer(record, selected, owner, version) {
     return new Promise((resolve, reject) => {
       const config = window.HW_SUPABASE_CONFIG;
       const storageOrigin = new URL(config.url).origin.replace('.supabase.co', '.storage.supabase.co');
-      upload = new window.tus.Upload(selected.blob, {
+      const task = new window.tus.Upload(selected.blob, {
         endpoint: storageOrigin + '/storage/v1/upload/resumable',
         chunkSize: 6 * 1024 * 1024,
         retryDelays: [0, 3000, 5000, 10000, 20000],
@@ -81,15 +83,16 @@
         fingerprint: async () => 'hw-member-' + owner + '-' + record.id,
         metadata: { bucketName: bucket, objectName: record.storage_path, contentType: selected.mime, cacheControl: '300' },
         onBeforeRequest: async request => {
-          if (version !== epoch || owner !== user?.id) throw new Error('Account changed. Upload stopped.');
+          if (version !== epoch || owner !== user?.id || upload !== task) throw new Error('Account changed. Upload stopped.');
           const { data, error } = await sb.auth.getSession();
+          if (version !== epoch || owner !== user?.id || upload !== task) throw new Error('Account changed. Upload stopped.');
           if (error || data?.session?.user?.id !== owner) throw new Error('Sign in again to continue uploading.');
           request.setHeader('Authorization', 'Bearer ' + data.session.access_token);
           request.setHeader('apikey', config.anonKey);
         },
         onError: reject,
         onProgress: (sent, total) => {
-          if (version !== epoch) return;
+          if (version !== epoch || upload !== task || phase !== 'uploading') return;
           const percent = Math.min(100, Math.round(sent / total * 100));
           el('memberProgress').value = percent;
           status('Uploading ' + percent + '% — keep this page open.');
@@ -97,11 +100,12 @@
         onSuccess: resolve
       });
       // abort() doesn't settle tus callbacks, so cancellation also rejects this promise.
-      upload.cancelPost = () => reject(new Error('Upload canceled.'));
-      upload.findPreviousUploads().then(previous => {
-        if (version !== epoch || phase !== 'uploading') return reject(new Error('Upload canceled.'));
-        if (previous.length) upload.resumeFromPreviousUpload(previous[0]);
-        upload.start();
+      upload = task;
+      task.cancelPost = () => reject(new Error('Upload canceled.'));
+      task.findPreviousUploads().then(previous => {
+        if (version !== epoch || phase !== 'uploading' || upload !== task) return reject(new Error('Upload canceled.'));
+        if (previous.length) task.resumeFromPreviousUpload(previous[0]);
+        task.start();
       }).catch(reject);
     });
   }
@@ -114,21 +118,25 @@
     try {
       await ensureOwner(owner, version);
       if (!pending) pending = { id: crypto.randomUUID(), caption: el('memberCaption').value.trim(), mime: selected.mime, size: selected.blob.size };
-      const record = await rpc('member_reserve_post', { p_id: pending.id, p_caption: pending.caption, p_mime: pending.mime, p_size: pending.size });
-      if (version !== epoch || phase !== 'uploading') return;
-      pending.storage_path = record.storage_path;
-      if (record.status !== 'published' && !pending.uploaded) {
+      const draft = pending;
+      const active = () => version === epoch && pending === draft && owner === user?.id;
+      const record = await rpc('member_reserve_post', { p_id: draft.id, p_caption: draft.caption, p_mime: draft.mime, p_size: draft.size });
+      if (!active() || phase !== 'uploading') return;
+      draft.storage_path = record.storage_path;
+      if (record.status !== 'published' && !draft.uploaded) {
         el('memberProgress').hidden = false;
         // A prior upload may have succeeded even if its final response was lost.
         const { data: found } = await sb.storage.from(bucket).list(record.storage_path.split('/').slice(0, -1).join('/'), { limit: 2 });
+        if (!active() || phase !== 'uploading') return;
         const complete = found?.some(item => item.name === record.storage_path.split('/').pop() && Number(item.metadata?.size) === selected.blob.size);
         if (!complete) await transfer(record, selected, owner, version);
-        pending.uploaded = true;
+        if (!active() || phase !== 'uploading') return;
+        draft.uploaded = true;
       }
       await ensureOwner(owner, version);
       phase = 'publishing'; setBusy(true); status('Upload complete. Publishing your post…');
-      await rpc('member_publish_post', { p_id: pending.id });
-      if (version !== epoch) return;
+      await rpc('member_publish_post', { p_id: draft.id });
+      if (!active()) return;
       reset(); status('Posted! Your creation is now in the community feed.'); metric('creator_member_post_published');
       await loadFeed(false);
     } catch (error) {
@@ -136,11 +144,12 @@
     }
   }
   async function cancel() {
-    if (phase === 'publishing') return;
-    const record = pending;
-    epoch += 1; phase = 'canceling'; setBusy(true);
+    if (phase === 'publishing' || phase === 'canceling') return;
+    const record = pending, task = upload, version = ++epoch;
+    phase = 'canceling'; setBusy(true);
     try {
-      if (upload) { upload.cancelPost(); await upload.abort(); }
+      if (task) { task.cancelPost(); await task.abort(); }
+      if (version !== epoch) return;
       if (record) {
         let path;
         try { path = await rpc('member_remove_post', { p_id: record.id }); }
@@ -148,37 +157,68 @@
           // A rejected reservation has no row or uploaded media to discard.
           if (record.storage_path || error.message !== 'Post is unavailable.') throw error;
         }
+        if (version !== epoch) return;
         if (path) {
           const { error } = await sb.storage.from(bucket).remove([path]);
           if (error) throw new Error('Post hidden. Media cleanup could not finish; retry Cancel upload.');
         }
       }
-      reset(); status('Upload discarded. Nothing was posted.');
-    } catch (error) { phase = ''; setBusy(false); status(error.message); }
+      if (version === epoch) { reset(); status('Upload discarded. Nothing was posted.'); }
+    } catch (error) { if (version === epoch) { phase = ''; setBusy(false); status(error.message); } }
   }
   async function signed(path) {
     const { data, error } = await sb.storage.from(bucket).createSignedUrl(path, 900);
-    if (error || !data?.signedUrl) throw new Error('Media is unavailable. Refresh the feed to try again.');
+    if (error || !data?.signedUrl) throw new Error('Media is unavailable. Try again when you reconnect. The post may have been removed.');
     return data.signedUrl;
+  }
+  function postMedia(card, row, initialUrl) {
+    const container = document.createElement('div'), slot = document.createElement('div');
+    const hint = document.createElement('p'), retry = document.createElement('button');
+    hint.className = 'member-media-error'; hint.setAttribute('role', 'status'); hint.hidden = true;
+    retry.type = 'button'; retry.textContent = 'Reload media'; retry.hidden = true;
+    container.append(slot, hint, retry); card.appendChild(container);
+    let currentMedia = null;
+    function failed(message) { hint.textContent = message; hint.hidden = false; retry.hidden = false; }
+    function show(url, position = 0) {
+      if (currentMedia?.pause) currentMedia.pause();
+      const media = mediaElement(row.mime_type, url, row.caption || 'Photo shared by ' + row.author_name);
+      currentMedia = media;
+      media.addEventListener('play', () => {
+        root.querySelectorAll('#memberFeed video,#memberFeed audio').forEach(other => { if (other !== media) other.pause(); });
+      });
+      media.addEventListener('error', () => {
+        if (currentMedia === media) failed('Media couldn’t load. Try Reload media. If it still won’t play, this browser may not support the format.');
+      });
+      media.addEventListener(row.mime_type.startsWith('image/') ? 'load' : 'loadedmetadata', () => {
+        if (currentMedia !== media) return;
+        if (position > 0 && Number.isFinite(media.duration)) {
+          try { media.currentTime = Math.min(position, Math.max(0, media.duration - 0.1)); } catch (_) {}
+        }
+        hint.hidden = true; retry.hidden = true;
+      }, { once: true });
+      slot.replaceChildren(media);
+    }
+    retry.addEventListener('click', async () => {
+      if (retry.disabled) return;
+      retry.disabled = true; hint.textContent = 'Getting a fresh media link…';
+      const position = currentMedia?.currentTime || 0;
+      try {
+        const url = await signed(row.storage_path);
+        if (!card.isConnected) return;
+        show(url, position); hint.textContent = row.mime_type.startsWith('image/') ? 'Loading photo…' : 'Media link refreshed. Press play to continue.';
+        metric('creator_member_media_link_refreshed');
+      } catch (error) { if (card.isConnected) failed(error.message); }
+      finally { retry.disabled = false; }
+    });
+    if (initialUrl) show(initialUrl);
+    else failed('Media unavailable. Try Reload media to reconnect without refreshing your feed.');
   }
   function postCard(row, url) {
     const card = document.createElement('article'); card.dataset.postId = row.id;
     const header = document.createElement('header'), name = document.createElement('h3'), time = document.createElement('time');
     name.textContent = row.author_name; time.dateTime = row.published_at; time.textContent = new Date(row.published_at).toLocaleString();
     header.append(name, time); card.appendChild(header);
-    if (url) {
-      const media = mediaElement(row.mime_type, url, row.caption || 'Photo shared by ' + row.author_name);
-      media.addEventListener('play', () => {
-        root.querySelectorAll('#memberFeed video,#memberFeed audio').forEach(other => { if (other !== media) other.pause(); });
-      });
-      media.addEventListener('error', () => {
-        if (card.querySelector('.member-media-error')) return;
-        const hint = document.createElement('p'); hint.className = 'member-media-error'; hint.textContent = 'Media couldn’t play. Refresh the feed, or try a browser that supports this format.'; card.appendChild(hint);
-      });
-      card.appendChild(media);
-    } else {
-      const hint = document.createElement('p'); hint.className = 'member-media-error'; hint.textContent = 'Media unavailable. Try Refresh feed.'; card.appendChild(hint);
-    }
+    postMedia(card, row, url);
     const caption = document.createElement('p'); caption.className = 'member-caption'; caption.textContent = row.caption; card.appendChild(caption);
     if (row.report_count) { const count = document.createElement('p'); count.textContent = row.report_count + ' member report(s)'; card.appendChild(count); }
     if (user) {
@@ -233,21 +273,29 @@
     finally { if (version === feedEpoch) { el('memberMore').disabled = false; el('memberRefresh').disabled = false; } }
   }
   async function identity() {
+    const version = ++identityEpoch;
     const { data, error } = await sb.auth.getUser();
+    if (version !== identityEpoch) return;
+    if (error && (error.name === 'AuthRetryableFetchError' || error.status === 0 || error.status >= 500)) throw error;
     const next = !error && data?.user && !data.user.is_anonymous ? data.user : null;
-    if (user?.id !== next?.id) {
+    const nextAdmin = Boolean(next?.app_metadata?.creator_admin === true || next?.app_metadata?.role === 'admin');
+    const changed = user?.id !== next?.id;
+    const reload = !identityReady || changed || admin !== nextAdmin;
+    if (changed) {
       epoch += 1;
-      if (upload) { upload.cancelPost(); await upload.abort(); }
+      const task = upload;
+      if (task) { task.cancelPost(); task.abort().catch(() => {}); }
       reset(); status('');
     }
     user = next;
-    admin = Boolean(user?.app_metadata?.creator_admin === true || user?.app_metadata?.role === 'admin');
+    admin = nextAdmin;
     el('memberPostForm').hidden = !user;
     el('memberLogin').hidden = Boolean(user);
     el('memberIdentity').textContent = user ? 'Your world. Your next post. Share it with the community.' : 'Everyone can explore. Sign in to share your own creations.';
     el('memberModeration').hidden = !admin;
     if (!admin) el('memberReported').checked = false;
-    await loadFeed(false);
+    identityReady = true;
+    if (reload) await loadFeed(false);
   }
   el('memberFile').addEventListener('change', choose);
   el('memberPostForm').addEventListener('submit', post);
@@ -262,7 +310,7 @@
       if (!sb?.auth?.getUser) throw new Error('Connection unavailable');
       if (!window.tus?.Upload) throw new Error('Uploader unavailable');
       await identity();
-      sb.auth.onAuthStateChange(() => { setTimeout(() => { identity().catch(() => status('Connection interrupted. Refresh this page to reconnect.')); }, 0); });
+      sb.auth.onAuthStateChange(() => { setTimeout(() => { identity().catch(() => status('Connection interrupted.' + (file || pending ? ' Your draft is still here.' : '') + ' Try again when you reconnect.')); }, 0); });
     } catch (_) {
       el('memberIdentity').textContent = 'Creator’s World could not connect. Refresh this page to try again.';
       el('memberFeedStatus').textContent = 'The community feed is temporarily unavailable.';

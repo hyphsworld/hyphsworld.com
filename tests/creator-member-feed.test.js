@@ -42,6 +42,12 @@ async function choose(type='image/png', size=12) {
  input.dispatchEvent(new Event('change')); await tick();
 }
 async function submit() { document.getElementById('memberPostForm').dispatchEvent(new Event('submit',{cancelable:true})); await tick(); }
+function deferred() { let resolve; const promise=new Promise(done=>{resolve=done;}); return {promise,resolve}; }
+async function authEvent(event='TOKEN_REFRESHED') {
+ sb.auth.onAuthStateChange.mock.calls[0][0](event, {user:authUser});
+ await new Promise(resolve=>setTimeout(resolve,0)); await tick();
+}
+function mediaPost(mime='video/mp4') { return {id:'post-b',owner_id:'member-b',author_name:'Member B',caption:'A community creation',mime_type:mime,storage_path:'b/file',published_at:'2026-11-02T00:00:00Z'}; }
 test('guests can view the feed but must sign in before posting', async () => {
  setup(null); await tick();
  expect(document.getElementById('memberPostForm').hidden).toBe(true);
@@ -124,4 +130,100 @@ test('feed treats names and captions as text and provides signed media playback'
  expect(document.querySelector('#memberFeed select').getAttribute('aria-label')).toBe('Report reason');
  document.querySelector('#memberFeed details button').click(); await tick();
  expect(attempts.some(a=>a.name==='member_report_post')).toBe(true);
+});
+test('background token refresh keeps the player, caption draft and current feed', async () => {
+ setup(); rows=[mediaPost()]; await tick(); await choose();
+ document.getElementById('memberCaption').value='My unfinished caption';
+ const player=document.querySelector('#memberFeed video'); player.currentTime=18;
+ const count=attempts.filter(a=>a.name==='member_feed').length;
+ await authEvent();
+ expect(document.querySelector('#memberFeed video')).toBe(player);
+ expect(player.currentTime).toBe(18);
+ expect(document.getElementById('memberCaption').value).toBe('My unfinished caption');
+ expect(attempts.filter(a=>a.name==='member_feed')).toHaveLength(count);
+});
+test('an interrupted auth refresh preserves the member draft', async () => {
+ setup(); await tick(); await choose();
+ sb.auth.getUser.mockResolvedValueOnce({data:{user:null},error:{name:'AuthRetryableFetchError',status:0}});
+ await authEvent();
+ expect(document.getElementById('memberPostForm').hidden).toBe(false);
+ expect(document.querySelector('#memberPreview img')).not.toBeNull();
+ expect(document.getElementById('memberPostStatus').textContent).toContain('Your draft is still here');
+});
+test('a late storage lookup from a canceled post cannot start another upload', async () => {
+ const storage=setup(); await tick(); const lookup=deferred();
+ storage.list.mockReturnValueOnce(lookup.promise);
+ await choose(); await submit();
+ document.getElementById('memberCancel').click(); await tick();
+ await choose(); await submit();
+ const nextId=attempts.filter(a=>a.name==='member_reserve_post')[1].args.p_id;
+ expect(tusOptions).toHaveLength(1);
+ lookup.resolve({data:[]}); await tick();
+ expect(tusOptions).toHaveLength(1);
+ tusOptions[0].onSuccess(); await tick();
+ expect(attempts.filter(a=>a.name==='member_publish_post')).toEqual([{name:'member_publish_post',args:{p_id:nextId}}]);
+});
+test('cancel cleanup finishing after an account switch cannot reset the next upload', async () => {
+ const storage=setup(); await tick(); await choose(); await submit();
+ const cleanup=deferred(); storage.remove.mockReturnValueOnce(cleanup.promise);
+ document.getElementById('memberCancel').click(); await tick();
+ expect(document.getElementById('memberCancel').disabled).toBe(true);
+ authUser={id:'member-b',app_metadata:{}}; await authEvent('SIGNED_IN');
+ await choose(); await submit();
+ cleanup.resolve({data:[],error:null}); await tick();
+ expect(document.getElementById('memberPost').disabled).toBe(true);
+ expect(document.querySelector('#memberPreview img')).not.toBeNull();
+ tusOptions[1].onSuccess(); await tick();
+ expect(document.getElementById('memberPostStatus').textContent).toContain('Posted!');
+});
+test('a canceled transfer cannot attach credentials after an asynchronous session lookup', async () => {
+ setup(); await tick(); await choose(); await submit();
+ const session=deferred(),request={setHeader:jest.fn()};
+ sb.auth.getSession.mockReturnValueOnce(session.promise);
+ const authorize=tusOptions[0].onBeforeRequest(request);
+ const rejected=expect(authorize).rejects.toThrow('Account changed');
+ document.getElementById('memberCancel').click(); await tick();
+ session.resolve({data:{session:{user:owner,access_token:'fixture-token'}}});
+ await rejected;
+ expect(request.setHeader).not.toHaveBeenCalled();
+});
+test('an older auth lookup cannot restore a member after sign-out', async () => {
+ setup(); await tick(); const lookup=deferred();
+ sb.auth.getUser.mockReturnValueOnce(lookup.promise);
+ await authEvent('SIGNED_IN');
+ authUser=null; await authEvent('SIGNED_OUT');
+ lookup.resolve({data:{user:owner}}); await tick();
+ expect(document.getElementById('memberPostForm').hidden).toBe(true);
+ expect(document.getElementById('memberLogin').hidden).toBe(false);
+});
+test('a moderator role change refreshes permissions without losing the caption draft', async () => {
+ setup(); rows=[mediaPost()]; await tick(); await choose();
+ document.getElementById('memberCaption').value='Keep this draft';
+ authUser={...owner,app_metadata:{creator_admin:true}}; await authEvent();
+ expect(document.getElementById('memberModeration').hidden).toBe(false);
+ expect(document.querySelector('#memberFeed details button').textContent).toBe('Remove post');
+ expect(document.getElementById('memberCaption').value).toBe('Keep this draft');
+});
+test('missing media can reconnect without refetching the feed or replacing the caption', async () => {
+ const storage=setup(); rows=[mediaPost('image/png')];
+ storage.createSignedUrl.mockResolvedValueOnce({error:{message:'Offline'}}); await tick();
+ const caption=document.querySelector('#memberFeed .member-caption');
+ const retry=Array.from(document.querySelectorAll('#memberFeed button')).find(button=>button.textContent==='Reload media');
+ expect(retry.hidden).toBe(false); retry.click(); await tick();
+ expect(document.querySelector('#memberFeed img')).not.toBeNull();
+ expect(document.querySelector('#memberFeed .member-caption')).toBe(caption);
+ expect(attempts.filter(a=>a.name==='member_feed')).toHaveLength(1);
+});
+test('expired video links can renew and restore position without autoplay', async () => {
+ const storage=setup(); rows=[mediaPost()]; await tick();
+ const old=document.querySelector('#memberFeed video'); old.currentTime=17;
+ old.dispatchEvent(new Event('error'));
+ storage.createSignedUrl.mockResolvedValueOnce({data:{signedUrl:'https://test.invalid/fresh-video'}});
+ const retry=Array.from(document.querySelectorAll('#memberFeed button')).find(button=>button.textContent==='Reload media');
+ retry.click(); await tick();
+ const player=document.querySelector('#memberFeed video');
+ expect(player).not.toBe(old); expect(player.src).toBe('https://test.invalid/fresh-video');
+ Object.defineProperty(player,'duration',{value:60}); player.dispatchEvent(new Event('loadedmetadata'));
+ expect(player.currentTime).toBe(17); expect(player.autoplay).toBe(false); expect(retry.hidden).toBe(true);
+ expect(attempts.filter(a=>a.name==='member_feed')).toHaveLength(1);
 });
