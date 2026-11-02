@@ -1,4 +1,5 @@
 name: Stage Street Empire online web
+# publish-trigger: around-the-trap-3a2e480
 # publish-trigger: first-person-cameras-20261025
 # publish-trigger: verified-quick-hustle-20261012
 # publish-trigger: phase-1h-retry
@@ -62,7 +63,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: hyphsworld/STREET-EMPIRE
-          ref: 2e2a966bb6e5f0b2bd26d35cb406a6e70131d80a
+          ref: 3a2e480dd35919efe2a23d784d34fb15a4e0f8b0
           token: ${{ secrets.STREET_EMPIRE_READ_TOKEN }}
           path: game
           persist-credentials: false
@@ -89,6 +90,8 @@ jobs:
           node scripts/check-game-cues.js
           node scripts/check-street-activities.js
           node scripts/check-first-night.js
+          node scripts/check-trap-shift.js
+          node scripts/check-trap-block.js
           node scripts/check-quick-hustle.js
           node scripts/check-operation-security.js
           node scripts/check-block-narrator.js
@@ -135,7 +138,7 @@ jobs:
           import re
           root = Path('game/frontend/dist')
           for path in ('index.html', 'setup.html', 'game.html', 'online.html', 'login.html',
-                       'online-game.html', 'setup/index.html', 'game/index.html',
+                       'online-game.html', 'trap.html', 'trap/index.html', 'setup/index.html', 'game/index.html',
                        'online/index.html', 'login/index.html', 'online-game/index.html'):
               assert (root / path).is_file(), path
           html_files = list(root.rglob('*.html'))
@@ -156,23 +159,27 @@ jobs:
           NODE_PATH=/tmp/hustle-browser/node_modules node scripts/check_quick_hustle_browser.js
           NODE_PATH=/tmp/hustle-browser/node_modules node scripts/check_corner_browser.js
           NODE_PATH=/tmp/hustle-browser/node_modules node scripts/check_pov_browser.js
+          NODE_PATH=/tmp/hustle-browser/node_modules node scripts/check_trap_block_browser.js
       - uses: actions/upload-artifact@v7
-        if: always()
+        if: success()
+        continue-on-error: true
         with:
           name: quick-hustle-release-previews
           path: |
             /tmp/hustle-*.png
             /tmp/corner-*.png
             /tmp/pov-*.png
+            /tmp/trap-block-*.png
+            /tmp/trap-board-*.png
           if-no-files-found: error
-          retention-days: 7
+          retention-days: 1
       - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: street-empire-online-site
           path: game/frontend/dist/
           if-no-files-found: error
-          retention-days: 7
+          retention-days: 1
 
   publish-route:
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
@@ -197,17 +204,17 @@ jobs:
           test -s games/street-empire/index.html
           previous_source="$(git show HEAD:games/street-empire/.source-sha)"
           # Re-running a successfully published build is a safe no-op.
-          if test "$previous_source" = '2e2a966bb6e5f0b2bd26d35cb406a6e70131d80a'; then
+          if test "$previous_source" = '3a2e480dd35919efe2a23d784d34fb15a4e0f8b0'; then
             echo "Street Empire target source is already published. No update needed."
             exit 0
           fi
-          if test "$previous_source" != '501eb98e6964063dbcfdd9b11e6b8d664c55bd74'; then
+          if test "$previous_source" != '2e2a966bb6e5f0b2bd26d35cb406a6e70131d80a'; then
             echo "::error::Street Empire route changed since the reviewed export; inspect before replacing."
             exit 1
           fi
           # Overlay the tested export and keep existing files and sound assets.
           cp -a street-empire-export/. games/street-empire/
-          printf '%s\n' '2e2a966bb6e5f0b2bd26d35cb406a6e70131d80a' > games/street-empire/.source-sha
+          printf '%s\n' '3a2e480dd35919efe2a23d784d34fb15a4e0f8b0' > games/street-empire/.source-sha
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A games/street-empire
@@ -215,16 +222,16 @@ jobs:
             echo "::error::Publication must not delete existing Street Empire files."
             exit 1
           fi
-          git commit -m 'Release Street Empire first-person delivery, jail and security cameras'
+          git commit -m 'Release Street Empire Around the Trap and after-dark board'
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             latest_source="$(git show origin/main:games/street-empire/.source-sha)"
             # Another approved publication may have finished while this build ran.
-            if test "$latest_source" = '2e2a966bb6e5f0b2bd26d35cb406a6e70131d80a'; then
+            if test "$latest_source" = '3a2e480dd35919efe2a23d784d34fb15a4e0f8b0'; then
               echo "Street Empire target source is already published on origin/main."
               exit 0
             fi
-            if test "$latest_source" != '501eb98e6964063dbcfdd9b11e6b8d664c55bd74'; then
+            if test "$latest_source" != '2e2a966bb6e5f0b2bd26d35cb406a6e70131d80a'; then
               echo "::error::Street Empire changed during publication; inspect before replacing."
               exit 1
             fi
