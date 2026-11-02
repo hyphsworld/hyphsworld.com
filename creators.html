@@ -32,6 +32,7 @@
     <link rel="stylesheet" href="creator-urban.css?v=urban-culture-1">
   <link rel="stylesheet" href="creator-card-art.css?v=card-pics-1">
   <link rel="stylesheet" href="creator-world-language.css?v=world-language-1">
+  <link rel="stylesheet" href="creator-member-feed.css?v=member-posts-1">
 </head>
   <body class="skate-hub creator-universe">
     <a class="skip-link" href="#directory">Skip to creators</a>
@@ -44,6 +45,7 @@
         ><a class="active" href="creators.html">Creators</a
         ><a href="music-store.html">Music Store</a
         ><a href="music-store.html" style="color:#bcff25;font-weight:900">🎵 Music Store</a
+        ><a href="#community">Community feed</a
         ><a href="creator-access.html">Access</a
         ><a href="creator-apply.html">Apply</a
         ><a href="creator-login.html">Creator Login</a
@@ -67,9 +69,32 @@
       </section>
       <section class="world-pulse" aria-label="Creators World pulse">
         <div><strong>11</strong><span>CREATOR WORLDS</span></div>
-        <div><strong>CREATE</strong><span>SAVE • REVIEW • PUBLISH</span></div>
+        <div><strong>POST</strong><span>CHOOSE • PREVIEW • SHARE</span></div>
         <div><strong>CURATED</strong><span>APPLICATION ONLY</span></div>
         <div><strong>EARNED</strong><span>BADGES</span></div>
+      </section>
+      <section id="community" class="member-world" aria-labelledby="member-world-title">
+        <div class="member-world-head"><div><small>THE COMMUNITY / EVERY MEMBER HAS A VOICE</small><h2 id="member-world-title">DROP IT IN YOUR WORLD.</h2><p>Photos. Videos. Music. Share what you’re creating.</p></div><button id="memberRefresh" type="button">Refresh feed</button></div>
+        <div class="member-composer">
+          <p id="memberIdentity">Connecting to Creator’s World…</p>
+          <p id="memberLogin" hidden><a href="auth.html?next=creators.html%23community">Sign in or join to post →</a></p>
+          <form id="memberPostForm" hidden>
+            <label class="member-pick" for="memberFile">＋ Choose a photo, video, or song<input id="memberFile" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime,audio/mpeg,audio/mp4,audio/wav,audio/x-wav,.jpg,.jpeg,.png,.webp,.mp4,.mov,.mp3,.m4a,.wav" required aria-describedby="memberFileHelp"></label>
+            <p id="memberFileHelp">One file per post · up to 50 MB · JPG, PNG, WebP, MP4, MOV, MP3, M4A, WAV. Some phone video formats may not play on every device.</p>
+            <div id="memberPreview" class="member-preview" hidden></div>
+            <label for="memberCaption">Say something <span>(optional)</span></label>
+            <textarea id="memberCaption" maxlength="1500" rows="3" placeholder="What’s happening in your world?"></textarea>
+            <p class="member-post-note">Posts appear publicly as soon as your upload finishes. Share only media you have permission to post. Your profile display name appears with your post.</p>
+            <progress id="memberProgress" max="100" value="0" aria-label="Upload progress" hidden></progress>
+            <div class="member-post-actions"><button id="memberPost" type="submit">Post to Creator’s World ↗</button><button id="memberCancel" type="button" hidden>Cancel upload</button></div>
+          </form>
+          <p id="memberPostStatus" role="status" aria-live="polite"></p>
+        </div>
+        <details id="memberModeration" hidden><summary>Moderator tools</summary><label><input id="memberReported" type="checkbox"> Show reported posts only</label><p>Review reports and use Remove post to hide a post from the community.</p></details>
+        <p id="memberFeedStatus" role="status" aria-live="polite">Loading community posts…</p>
+        <div id="memberFeed" class="member-feed"></div>
+        <button id="memberMore" type="button" hidden>Load more posts</button>
+        <noscript><p>Enable JavaScript to view and post to the community feed.</p></noscript>
       </section>
       <nav class="world-tabs" aria-label="Creators World sections" role="tablist">
         <button class="active" type="button" role="tab" aria-selected="true" data-world-tab="discover">The block</button>
@@ -253,7 +278,7 @@
         <h2>Build your Creator World.</h2>
         <div>
           <p>
-            Creator World isn’t open enrollment. Apply to build your World.
+            Every signed-in member can post to the community feed above. Apply for your own featured Creator World and professional tools.
           </p>
           <a href="creator-apply.html">Apply now →</a>
         </div>
@@ -268,6 +293,8 @@
     <script src="auth-client.js?v=20261005-member-menu"></script>
     <script src="global-points-engine.js?v=20261005-member-menu"></script>
     <script src="creators-directory.js?v=skate-house-1"></script>
+    <script src="vendor/tus-4.3.1.min.js" defer></script>
+    <script src="creator-member-feed.js?v=member-posts-1" defer></script>
   <script src="global-my-id.js?v=restore-317-20261007" defer></script>
   <script src="creator-card-art.js?v=card-pics-1" defer></script>
   <script src="creator-language.js?v=world-language-2" defer></script>
