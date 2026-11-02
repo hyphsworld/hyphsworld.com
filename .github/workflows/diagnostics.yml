@@ -46,6 +46,9 @@ jobs:
       - name: Check Chase the Bag controls stay outside the maze
         run: NODE_PATH=/tmp/hw-social-browser/node_modules node scripts/check-cash-run-controls-browser.js
 
+      - name: Check Chase the Bag artist soundtrack and real MP3 playback
+        run: NODE_PATH=/tmp/hw-social-browser/node_modules node scripts/check-cash-run-soundtrack-browser.js
+
       - name: Upload Street Empire entry previews
         uses: actions/upload-artifact@v7
         with:
