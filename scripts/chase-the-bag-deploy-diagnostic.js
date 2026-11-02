@@ -10,6 +10,8 @@ const cssPath = path.join(root, manifest.files['main.css'].replace(/^\/games\/ca
 const js = fs.readFileSync(jsPath, 'utf8');
 const audioBridgePath = path.join(root, 'audio-session-bridge.js');
 const audioBridge = fs.readFileSync(audioBridgePath, 'utf8');
+const soundtrack = fs.readFileSync(path.join(root, 'soundtrack.js'), 'utf8');
+const tracks = JSON.parse(fs.readFileSync(path.join(root, 'assets/soundtrack/manifest.json'), 'utf8'));
 const backend = fs.readFileSync('backend/server.py', 'utf8');
 
 assert(fs.existsSync(jsPath), 'Current Chase the Bag JavaScript bundle must exist');
@@ -18,6 +20,15 @@ assert(fs.existsSync(audioBridgePath), 'Chase the Bag mobile audio-session bridg
 assert(fs.existsSync(path.join(root, 'assets/tonio.webp')), 'TONIO artwork must be bundled locally');
 assert(fs.existsSync(path.join(root, 'assets/nikki.webp')), 'NIKKI artwork must be bundled locally');
 assert(html.includes(manifest.files['main.js']), 'Entry page must load the current JavaScript bundle');
+assert(html.includes('/games/cash-run/soundtrack.js') && html.indexOf('/games/cash-run/soundtrack.js') < html.indexOf(manifest.files['main.js']), 'Artist soundtrack must load before the engine');
+assert(tracks.length === 5, 'Chase the Bag must contain exactly five artist tracks');
+for (const track of tracks) {
+  const data = fs.readFileSync(path.join(root, 'assets/soundtrack', track.file));
+  assert(data.length === track.bytes && require('node:crypto').createHash('sha256').update(data).digest('hex') === track.sha256, 'Artist upload must remain unchanged: ' + track.file);
+  assert(soundtrack.includes(track.file), 'Every uploaded track must be in the playlist');
+}
+assert(js.includes('window.HWCashRunSoundtrack.start()') && js.includes('window.HWCashRunSoundtrack.setPaused(this.paused)'), 'Game lifecycle must control the artist soundtrack');
+assert(!js.includes('_startWebMusic') && !js.includes('_startFallbackMusic') && !js.includes('_scheduleMusicTone'), 'All generated default background music must be removed');
 assert(html.includes(manifest.files['main.css']), 'Entry page must load the current stylesheet');
 assert(html.includes('/require-login.js'), 'Chase the Bag must preserve the shared login gate');
 assert(html.includes('/cash-run-points-bridge.js'), 'Chase the Bag must preserve the Cool Points bridge');

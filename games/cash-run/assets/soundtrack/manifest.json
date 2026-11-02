@@ -1,0 +1,32 @@
+[
+  {
+    "file": "01-certified-ft-young-tez.mp3",
+    "sha256": "a89aa499dd31ab7d134aef6ded499fd9489b52e4df81e9ad6aedecf3e1f283e3",
+    "bytes": 3203207,
+    "durationSeconds": 194.847
+  },
+  {
+    "file": "02-do-you-love-me-ft-young-tez.mp3",
+    "sha256": "c9fdcf7efee8f11bd686ea97bed3743193013151a5eb924c6be3578044ddd5cd",
+    "bytes": 3478652,
+    "durationSeconds": 212.062
+  },
+  {
+    "file": "03-late-nights.mp3",
+    "sha256": "7ee09e30afa4f8a2180ee0ad3c982cca1622e4f2decddac7ba78b0e6ab56be43",
+    "bytes": 2241043,
+    "durationSeconds": 134.713
+  },
+  {
+    "file": "04-issa-cap-ft-young-tez.mp3",
+    "sha256": "df018c4068e06005a3d94c96d5950bfb790e796d1a24c31b308c19e34713f771",
+    "bytes": 3506643,
+    "durationSeconds": 213.812
+  },
+  {
+    "file": "05-its-good-ft-sixx-figgaz.mp3",
+    "sha256": "fc56b279d1c09e94b752f1ecc8aa5a425282e72bef8d1d5ba91268d23ce143da",
+    "bytes": 4276946,
+    "durationSeconds": 174.629
+  }
+]
