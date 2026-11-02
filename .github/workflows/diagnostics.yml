@@ -27,6 +27,9 @@ jobs:
       - name: Run Jest tests
         run: npm test -- --runInBand
 
+      - name: Check Creator community database permissions and publishing
+        run: node scripts/check-creator-member-db.js
+
       - name: Check global friends phone and desktop layouts
         run: |
           npm install --prefix /tmp/hw-social-browser --no-save playwright@1.56.1
@@ -58,6 +61,16 @@ jobs:
 
       - name: Check Creator World urban culture layouts
         run: NODE_PATH=/tmp/hw-social-browser/node_modules node scripts/check-creator-skate-browser.js
+
+      - name: Check Creator community uploads on phones and desktop
+        run: NODE_PATH=/tmp/hw-social-browser/node_modules node scripts/check-creator-member-browser.js
+
+      - name: Upload Creator community previews
+        uses: actions/upload-artifact@v7
+        with:
+          name: creator-community-layouts
+          path: /tmp/creator-member-*.png
+          if-no-files-found: error
 
       - name: Upload Creator World layout previews
         uses: actions/upload-artifact@v7
