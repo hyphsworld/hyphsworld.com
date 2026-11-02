@@ -60,7 +60,7 @@ jobs:
             exit 1
           fi
       - name: Checkout pinned Street Empire source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: hyphsworld/STREET-EMPIRE
           ref: 3a2e480dd35919efe2a23d784d34fb15a4e0f8b0
@@ -189,7 +189,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout HYPHSWORLD main
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: main
           path: site
