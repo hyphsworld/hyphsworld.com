@@ -1,0 +1,96 @@
+/* AMS WEST / HYPHSWORLD - motion-only casino enhancement.
+   Presentation only. No RNG, wallet, game events, scores or input interception. */
+:root{--hw-motion-cyan:#1ffcff;--hw-motion-gold:#ffda61;--hw-motion-pink:#ff4fd8}
+@keyframes hw-motion-card-deal{
+  0%{opacity:.35;transform:translate3d(0,-32px,0) rotate(-8deg) scale(.87)}
+  65%{opacity:1;transform:translate3d(0,3px,0) rotate(2deg) scale(1.03)}
+  100%{opacity:1;transform:translate3d(0,0,0) rotate(0) scale(1)}
+}
+@keyframes hw-motion-dice-land{
+  0%{opacity:.55;transform:translate3d(-22px,-34px,0) rotate(-95deg) scale(.8)}
+  65%{opacity:1;transform:translate3d(6px,-4px,0) rotate(15deg) scale(1.12)}
+  100%{opacity:1;transform:translate3d(0,0,0) rotate(0) scale(1)}
+}
+@keyframes hw-motion-domino-place{
+  0%{opacity:.55;transform:translate3d(0,-18px,0) rotate(-8deg) scale(.9)}
+  75%{opacity:1;transform:translate3d(0,2px,0) rotate(1deg) scale(1.02)}
+  100%{opacity:1;transform:translate3d(0,0,0) rotate(0) scale(1)}
+}
+@keyframes hw-motion-reel-stop{
+  0%{opacity:.65;transform:translate3d(0,-16px,0) scale(.93)}
+  65%{opacity:1;transform:translate3d(0,4px,0) scale(1.05)}
+  100%{opacity:1;transform:translate3d(0,0,0) scale(1)}
+}
+@keyframes hw-motion-status-flash{
+  0%{box-shadow:0 0 0 rgba(31,252,255,0)}
+  45%{box-shadow:0 0 25px rgba(31,252,255,.24)}
+  100%{box-shadow:0 0 0 rgba(31,252,255,0)}
+}
+/* Network table cards are created by existing renderState(), after actual state updates. */
+.table-game-page #tableStage .hw-card{
+  transform-origin:50% 95%;
+  animation:hw-motion-card-deal .4s cubic-bezier(.2,.8,.2,1) both;
+  will-change:auto
+}
+.table-game-page #tableStage .hw-card-row .hw-card:nth-child(2){animation-delay:.055s}
+.table-game-page #tableStage .hw-card-row .hw-card:nth-child(3){animation-delay:.11s}
+.table-game-page #tableStage .hw-card-row .hw-card:nth-child(4){animation-delay:.165s}
+.table-game-page #tableStage .hw-card-row .hw-card:nth-child(n+5){animation-delay:.21s}
+.table-game-page #tableStage .craps-dice>span{
+  display:inline-block;
+  animation:hw-motion-dice-land .48s cubic-bezier(.15,.78,.25,1) both
+}
+.table-game-page #tableStage .craps-dice>span:nth-child(2){animation-delay:.09s}
+.table-game-page #tableStage .craps-result,.table-game-page #tableStage .card-table-score{
+  animation:hw-motion-status-flash .6s ease-out
+}
+/* Existing casino has visual slot timing and game logic; only enhance the final reel landing. */
+.casino-shell #slotReels .slot-reel.consumer-pop{
+  animation:hw-motion-reel-stop .38s cubic-bezier(.18,.82,.25,1) both
+}
+.casino-shell #slotReels .slot-reel:nth-child(2){animation-delay:.06s}
+.casino-shell #slotReels .slot-reel:nth-child(3){animation-delay:.12s}
+.casino-shell #slotReels .slot-reel:nth-child(4){animation-delay:.18s}
+.casino-shell #slotReels .slot-reel:nth-child(5){animation-delay:.24s}
+.casino-shell #dealerCards .card.deal-pop,.casino-shell #playerCards .card.deal-pop{
+  animation:hw-motion-card-deal .36s cubic-bezier(.2,.8,.2,1) both
+}
+.casino-shell #dealerCards .card:nth-child(2),.casino-shell #playerCards .card:nth-child(2){animation-delay:.08s}
+.casino-shell #dealerCards .card:nth-child(n+3),.casino-shell #playerCards .card:nth-child(n+3){animation-delay:.14s}
+/* Arcade CPU tables: visual bone/card entry only, never consume clicks. */
+.hidden-arcade-page .hw-card-row .hw-card-face{
+  animation:hw-motion-card-deal .38s cubic-bezier(.2,.8,.2,1) both
+}
+.hidden-arcade-page .hw-bone-board .hw-bone{
+  animation:hw-motion-domino-place .35s ease-out both
+}
+.hidden-arcade-page .casino-game-tile,
+.table-game-page #tableControls .games-btn,
+.dominos-page .pov-action-dock button{
+  transition:transform .15s ease,filter .15s ease
+}
+@media(hover:hover) and (pointer:fine){
+ .hidden-arcade-page .casino-game-tile:hover,
+ .table-game-page #tableControls .games-btn:hover,
+ .dominos-page .pov-action-dock button:hover{filter:brightness(1.09);transform:translateY(-2px)}
+}
+.hidden-arcade-page .casino-game-tile:active,
+.table-game-page #tableControls .games-btn:active,
+.dominos-page .pov-action-dock button:active{transform:translateY(1px) scale(.985)}
+/* The existing domino game already animates newly placed tiles. Avoid double-animating those. */
+@media(prefers-reduced-motion:reduce){
+ .table-game-page #tableStage .hw-card,
+ .table-game-page #tableStage .craps-dice>span,
+ .table-game-page #tableStage .craps-result,
+ .table-game-page #tableStage .card-table-score,
+ .casino-shell #slotReels .slot-reel.consumer-pop,
+ .casino-shell #dealerCards .card.deal-pop,
+ .casino-shell #playerCards .card.deal-pop,
+ .hidden-arcade-page .hw-card-row .hw-card-face,
+ .hidden-arcade-page .hw-bone-board .hw-bone{
+  animation:none!important;transform:none!important;opacity:1!important
+ }
+ .hidden-arcade-page .casino-game-tile,
+ .table-game-page #tableControls .games-btn,
+ .dominos-page .pov-action-dock button{transition:none!important}
+}
