@@ -23,13 +23,13 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Checkout HYPHSWORLD site
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: main
           path: site
 
       - name: Checkout Super Strike
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: hyphsworld/SS-BOWLING
           ref: main
