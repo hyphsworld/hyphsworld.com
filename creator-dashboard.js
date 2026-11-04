@@ -395,7 +395,33 @@
     status(nextStatus === 'ready_for_review' ? 'Creation sent for review.' : 'Creation moved back to private.');
     await loadUploads();
   }
-  async function previewUpload(path, cachedUrl) { if (cachedUrl) { window.open(cachedUrl, '_blank', 'noopener'); return; } var result = await client.storage.from(uploadBucket).createSignedUrl(path, 600); if (result.error) return status('Private preview unavailable: ' + result.error.message); window.open(result.data.signedUrl, '_blank', 'noopener'); }
+  async function previewUpload(path, cachedUrl) {
+    // Open synchronously from the tap: Safari / Instagram block windows opened after await.
+    var preview = window.open('about:blank', '_blank');
+    if (preview) {
+      try { preview.opener = null; preview.document.title = 'Opening private preview'; } catch (error) {}
+    }
+    try {
+      var url = cachedUrl;
+      if (!url) {
+        var result = await client.storage.from(uploadBucket).createSignedUrl(path, 600);
+        if (result.error || !result.data || !result.data.signedUrl)
+          throw new Error(result.error ? result.error.message : 'Signed preview unavailable');
+        url = result.data.signedUrl;
+      }
+      var target = new URL(url, location.href);
+      if (target.protocol !== 'https:' || target.hostname !== 'yuhxtdkhsltaqiagrtys.supabase.co')
+        throw new Error('Unexpected preview destination');
+      if (preview && !preview.closed) preview.location.replace(target.href);
+      else {
+        status('Opening private preview in this tab (pop-ups are blocked).');
+        location.assign(target.href);
+      }
+    } catch (error) {
+      if (preview && !preview.closed) preview.close();
+      status('Private preview unavailable: ' + (error.message || error));
+    }
+  }
   function detectedCreationKind(file) {
     var mime = String(file.type || '').toLowerCase();
     var extension = String(file.name || '').split('.').pop().toLowerCase();

@@ -131,19 +131,34 @@
     insertSection(section);
   }
 
+  function renderUnavailable() {
+    var previous = document.getElementById('world-releases');
+    if (previous) previous.remove();
+    var section = node('section', 'world-section world-publications');
+    section.id = 'world-releases';
+    section.setAttribute('aria-label', 'Creator releases status');
+    var empty = node('article', 'world-publication-empty');
+    empty.append(
+      node('h2', '', 'Creations temporarily unavailable'),
+      node('p', '', 'We could not refresh this World. Please try again later.')
+    );
+    section.appendChild(empty);
+    insertSection(section);
+  }
+
   async function load() {
     try {
-      if (!window.HWAuth) return;
+      if (!window.HWAuth) { renderUnavailable(); return; }
       var client = await window.HWAuth.getClient();
-      if (!client) return;
+      if (!client) { renderUnavailable(); return; }
       var result = await client.from('creator_world_publications')
         .select('id,title,creation_kind,media_type,mime_type,file_size,public_path,published_at')
         .eq('creator_slug', slug)
         .order('published_at', { ascending: false })
         .limit(24);
-      if (result.error) return;
+      if (result.error) throw result.error;
       render(client, result.data || []);
-    } catch (error) {}
+    } catch (error) { renderUnavailable(); }
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', load, { once: true });
