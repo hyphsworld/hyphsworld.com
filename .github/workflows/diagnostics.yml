@@ -83,6 +83,9 @@ jobs:
       - name: Check page loading and native navigation
         run: node --test scripts/check-page-loading.js
 
+      - name: Verify casino table animations are visual-only
+        run: node scripts/check-casino-motion.js
+
       - name: Run diagnostics
         run: npm run diagnostics:full
 
