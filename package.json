@@ -39,7 +39,7 @@
     "diagnostics:music-checkout-return": "node scripts/check-music-checkout-return.js"
   },
   "devDependencies": {
-    "@electric-sql/pglite": "0.3.14",
+    "@electric-sql/pglite": "0.5.15",
     "jest": "30.5.2",
     "jest-environment-jsdom": "30.5.2",
     "postcss": "8.5.32"
