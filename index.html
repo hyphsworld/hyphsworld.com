@@ -76,6 +76,15 @@
       display: none !important;
       pointer-events: none !important;
     }
+
+    .nfl-ticker-window{overflow:hidden}
+    #nfl-ticker-track{display:flex;width:max-content;animation:nflTickerMove 180s linear infinite}
+    .nfl-team-records{display:flex;gap:24px;list-style:none;margin:0;padding:6px 24px 6px 0;white-space:nowrap;flex-shrink:0}
+    .nfl-team-records li{color:#d9ffe2}.nfl-team-records strong{color:#ffe45c}
+    #nfl-records.is-paused #nfl-ticker-track,.nfl-ticker-window:hover #nfl-ticker-track,.nfl-ticker-window:focus-within #nfl-ticker-track{animation-play-state:paused}
+    #nfl-records-readable ul{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px;white-space:normal;list-style:none;padding:12px 0}
+    @keyframes nflTickerMove{to{transform:translateX(-50%)}}
+    @media(prefers-reduced-motion:reduce){#nfl-ticker-track{animation:none}.nfl-ticker-window{overflow-x:auto}#nfl-ticker-toggle{display:none}}
   </style>
 </head>
 <body class="home-page" data-homepage-video="yDezFWqPbck-money-counter-20260730">
@@ -148,6 +157,18 @@
     <section class="ticker" aria-label="HYPHSWORLD ticker">
       <div class="ticker-track"><span>WELCOME 2 HYPHSWORLD</span><b>✦</b><span>HYPH LIFE AKA SLIDE DREXLER</span><b>✦</b><span>MONEY COUNTER NOW PLAYING</span><b>✦</b><span>ARTIST SPOTLIGHT LIVE</span><b>✦</b><span>CASINO FLOOR OPEN</span><b>✦</b><span>NEW VIDEO ON THE TOP SCREEN</span><b>✦</b><span>REWARDS HUB OPEN</span><b>✦</b><span>PODCAST RESTORED</span><b>✦</b></div>
     </section>
+    <!-- NFL-TICKER: daily automation updates records and verified date only. -->
+    <section id="nfl-records" aria-label="NFL team records" style="background:#050505;color:#fff;border-block:1px solid #285c39;padding:10px 0;">
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;padding:0 16px 8px;font-size:.8rem;"><strong>NFL 2026 · REGULAR SEASON · W–L–T</strong><span>Checked <time datetime="2026-11-08">Nov 8, 2026</time></span><a href="https://www.nfl.com/standings/league/2026/REG" target="_blank" rel="noopener" style="color:#83ff70;">NFL standings</a><button id="nfl-ticker-toggle" type="button" aria-controls="nfl-ticker-track" aria-pressed="false">Pause records</button></div>
+      <div class="nfl-ticker-window" tabindex="0" aria-label="Scrolling NFL records; focus to pause">
+        <div id="nfl-ticker-track">
+          <ul class="nfl-team-records"><li>Arizona Cardinals <strong>3-5-0</strong></li><li>Atlanta Falcons <strong>3-5-0</strong></li><li>Baltimore Ravens <strong>4-5-0</strong></li><li>Buffalo Bills <strong>6-1-0</strong></li><li>Carolina Panthers <strong>3-4-0</strong></li><li>Chicago Bears <strong>6-2-0</strong></li><li>Cincinnati Bengals <strong>5-2-0</strong></li><li>Cleveland Browns <strong>5-3-0</strong></li><li>Dallas Cowboys <strong>3-5-0</strong></li><li>Denver Broncos <strong>6-2-0</strong></li><li>Detroit Lions <strong>5-2-0</strong></li><li>Green Bay Packers <strong>5-3-0</strong></li><li>Houston Texans <strong>2-5-0</strong></li><li>Indianapolis Colts <strong>2-6-0</strong></li><li>Jacksonville Jaguars <strong>6-2-0</strong></li><li>Kansas City Chiefs <strong>5-2-0</strong></li><li>Las Vegas Raiders <strong>4-4-0</strong></li><li>Los Angeles Chargers <strong>0-7-0</strong></li><li>Los Angeles Rams <strong>4-4-0</strong></li><li>Miami Dolphins <strong>1-6-0</strong></li><li>Minnesota Vikings <strong>6-1-0</strong></li><li>New England Patriots <strong>5-3-0</strong></li><li>New Orleans Saints <strong>2-5-0</strong></li><li>New York Giants <strong>4-2-1</strong></li><li>New York Jets <strong>2-6-0</strong></li><li>Philadelphia Eagles <strong>2-6-0</strong></li><li>Pittsburgh Steelers <strong>6-2-0</strong></li><li>San Francisco 49ers <strong>6-1-0</strong></li><li>Seattle Seahawks <strong>4-4-0</strong></li><li>Tampa Bay Buccaneers <strong>3-5-0</strong></li><li>Tennessee Titans <strong>1-7-0</strong></li><li>Washington Commanders <strong>2-4-1</strong></li></ul>
+          <ul class="nfl-team-records" aria-hidden="true"><li>Arizona Cardinals <strong>3-5-0</strong></li><li>Atlanta Falcons <strong>3-5-0</strong></li><li>Baltimore Ravens <strong>4-5-0</strong></li><li>Buffalo Bills <strong>6-1-0</strong></li><li>Carolina Panthers <strong>3-4-0</strong></li><li>Chicago Bears <strong>6-2-0</strong></li><li>Cincinnati Bengals <strong>5-2-0</strong></li><li>Cleveland Browns <strong>5-3-0</strong></li><li>Dallas Cowboys <strong>3-5-0</strong></li><li>Denver Broncos <strong>6-2-0</strong></li><li>Detroit Lions <strong>5-2-0</strong></li><li>Green Bay Packers <strong>5-3-0</strong></li><li>Houston Texans <strong>2-5-0</strong></li><li>Indianapolis Colts <strong>2-6-0</strong></li><li>Jacksonville Jaguars <strong>6-2-0</strong></li><li>Kansas City Chiefs <strong>5-2-0</strong></li><li>Las Vegas Raiders <strong>4-4-0</strong></li><li>Los Angeles Chargers <strong>0-7-0</strong></li><li>Los Angeles Rams <strong>4-4-0</strong></li><li>Miami Dolphins <strong>1-6-0</strong></li><li>Minnesota Vikings <strong>6-1-0</strong></li><li>New England Patriots <strong>5-3-0</strong></li><li>New Orleans Saints <strong>2-5-0</strong></li><li>New York Giants <strong>4-2-1</strong></li><li>New York Jets <strong>2-6-0</strong></li><li>Philadelphia Eagles <strong>2-6-0</strong></li><li>Pittsburgh Steelers <strong>6-2-0</strong></li><li>San Francisco 49ers <strong>6-1-0</strong></li><li>Seattle Seahawks <strong>4-4-0</strong></li><li>Tampa Bay Buccaneers <strong>3-5-0</strong></li><li>Tennessee Titans <strong>1-7-0</strong></li><li>Washington Commanders <strong>2-4-1</strong></li></ul>
+        </div>
+      </div>
+      <details style="padding:8px 16px 0;"><summary>View all 32 team records</summary><div id="nfl-records-readable"></div></details>
+    </section>
+    <!-- /NFL-TICKER -->
 
     <section class="hero-shell" id="top">
       <div class="homepage-full-episode-frame" data-featured-video="yDezFWqPbck-money-counter">
@@ -308,5 +329,20 @@
   <script src="homepage-menu-tap-fix.js?v=restore-317-20261007"></script>
   <script src="mobile-app.js?v=20260822-1"></script>
   <script src="global-my-id.js?v=restore-317-20261007" defer></script>
+
+  <script>
+    (function () {
+      var section = document.getElementById('nfl-records');
+      var button = document.getElementById('nfl-ticker-toggle');
+      var list = section.querySelector('.nfl-team-records').cloneNode(true);
+      list.removeAttribute('class');
+      document.getElementById('nfl-records-readable').appendChild(list);
+      button.addEventListener('click', function () {
+        var paused = section.classList.toggle('is-paused');
+        button.setAttribute('aria-pressed', String(paused));
+        button.textContent = paused ? 'Resume records' : 'Pause records';
+      });
+    })();
+  </script>
 </body>
 </html>
