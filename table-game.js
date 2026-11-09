@@ -19,6 +19,10 @@
   let roomViewToken = 0;
   let roomListTimer = null;
   let pageHidden = false;
+  let actionPending = false;
+  let selectedSpadesCard = null;
+  let spadesBidValue = 3;
+  const rules = window.HWTableRules;
 
   function $(id) { return document.getElementById(id); }
   function setText(id, value) { const el = $(id); if (el) el.textContent = value; }
@@ -144,6 +148,7 @@
 
   async function createRoom(event) {
     event.preventDefault();
+    if (actionPending) return setStatus("Wait for the current move to finish saving.");
     const requestToken = roomViewToken;
     try {
       await requireUser(); const sb = await getClient(); const code = roomCode();
@@ -166,6 +171,7 @@
   }
   async function joinRoomByCode(event) {
     event.preventDefault();
+    if (actionPending) return setStatus("Wait for the current move to finish saving.");
     const input = $("tableRoomCodeInput"); const code = safeText(input?.value, "").replace(/\s+/g, "").toUpperCase();
     if (!code) return setStatus("Enter a room code first.");
     try {
@@ -175,6 +181,7 @@
     } catch (error) { setStatus(safeText(error?.message,"Room code not found.")); }
   }
   async function joinRoomById(roomId) {
+    if (actionPending) return setStatus("Wait for the current move to finish saving.");
     const requestToken = roomViewToken;
     try {
       const user = await requireUser(); const sb = await getClient(); setStatus("Joining table...");
@@ -202,13 +209,13 @@
     await sb.from("game_rooms").update({ status: nextState.status || "playing", current_turn_user_id: currentUser.userId, updated_at: new Date().toISOString() }).eq("id", room.id);
   }
   async function refreshActiveRoom() {
-    if (!activeRoom) return;
+    if (!activeRoom || actionPending) return;
     const roomId = activeRoom.id;
     const requestToken = roomViewToken;
     try {
       const sb = await getClient();
       const { data } = await sb.from("game_state").select("state").eq("room_id", roomId).maybeSingle();
-      if (requestToken !== roomViewToken || !activeRoom || activeRoom.id !== roomId) return;
+      if (actionPending || requestToken !== roomViewToken || !activeRoom || activeRoom.id !== roomId) return;
       if (data?.state) { activeState = data.state; renderState(); }
     } catch (_) {}
   }
@@ -253,8 +260,11 @@
   }
   async function blackjackDeal() {
     if (!activeRoom || !activeState) return setStatus("Create or join a Blackjack table first.");
+    if (activeState.blackjack?.result === "playing") return setStatus("Finish this hand with Hit or Stand first.");
     const deck = makeCardDeck(), player=[deck.shift(),deck.shift()], dealer=[deck.shift(),deck.shift()]; localScore=handTotal(player);
-    activeState={...activeState,blackjack:{deck,player,dealer,stood:false,result:"playing"},lastScore:localScore,updatedAt:new Date().toISOString()}; await saveState(activeRoom,activeState);renderState();
+    const p = handTotal(player), d = handTotal(dealer);
+    const result = p === 21 || d === 21 ? (p === d ? "push" : p === 21 ? "win" : "loss") : "playing";
+    activeState={...activeState,blackjack:{deck,player,dealer,stood:false,result,ownerUserId:currentUser.userId},lastScore:result === "win" ? 210 : result === "playing" ? 0 : p,updatedAt:new Date().toISOString()}; await saveState(activeRoom,activeState);renderState();
   }
   async function blackjackHit() {
     const bj=activeState?.blackjack;if(!bj||bj.result!=="playing")return setStatus("Deal a blackjack hand first.");
@@ -269,18 +279,80 @@
   }
   async function pokerRound() {
     if (!activeRoom || !activeState) return setStatus("Create or join a Poker table first.");
-    const deck=makeCardDeck(),hand=[deck.shift(),deck.shift()],community=[deck.shift(),deck.shift(),deck.shift(),deck.shift(),deck.shift()];
-    localScore=hand.reduce((sum,c)=>sum+cardValue(c),0)*10+community.reduce((sum,c)=>sum+cardValue(c),0);
-    activeState={...activeState,poker:{hand,community},lastScore:localScore,updatedAt:new Date().toISOString()};await saveState(activeRoom,activeState);renderState();
+    if (!rules.pokerActions(activeState.poker).deal) return setStatus("Finish the current hand before dealing again.");
+    localScore = 0;
+    activeState={...activeState,poker:{...rules.pokerStart(),ownerUserId:currentUser.userId},lastScore:0,updatedAt:new Date().toISOString()};await saveState(activeRoom,activeState);renderState();
   }
   async function spadesRound() {
     if (!activeRoom || !activeState) return setStatus("Create or join a Spades table first.");
-    const deck=makeCardDeck(); const hand=deck.splice(0,13).sort((a,b)=>a.suit.localeCompare(b.suit)||a.rank-b.rank); const lead=deck.shift();
-    const spades=hand.filter((c)=>c.suit==="♠").length; const high=hand.filter((c)=>c.rank>=11).length; localScore=spades*20+high*10;
-    activeState={...activeState,spades:{hand,lead},lastScore:localScore,updatedAt:new Date().toISOString()};await saveState(activeRoom,activeState);renderState();
+    if (activeState.spades?.version === 2 && activeState.spades.phase !== "done") return setStatus("Finish bidding and playing this hand first.");
+    selectedSpadesCard = null; localScore = 0;
+    activeState={...activeState,spades:{...rules.spadesStart(),ownerUserId:currentUser.userId},lastScore:0,updatedAt:new Date().toISOString()};await saveState(activeRoom,activeState);renderState();
+  }
+
+  function controlsOwned(state) { return !state?.ownerUserId || state.ownerUserId === currentUser?.userId; }
+  function actionButton(action, label, enabled, primary) {
+    return `<button class="games-btn${primary ? " primary" : ""}" type="button" data-action="${action}"${enabled && !actionPending ? "" : " disabled"}>${label}</button>`;
+  }
+  function actionBar() {
+    const ready = Boolean(activeRoom && currentUser && activeState);
+    if (gameType === "poker") {
+      const poker = activeState?.poker, legal = rules.pokerActions(poker), own = controlsOwned(poker);
+      return actionButton("poker-round", "Deal / New Hand", ready && legal.deal, true) +
+        actionButton("poker-check", "Check / Hold", ready && own && legal.check) +
+        actionButton("poker-call", `Call${poker?.toCall ? " " + poker.toCall : ""}`, ready && own && legal.call, true) +
+        actionButton("poker-bet", "Bet 20", ready && own && legal.bet) +
+        actionButton("poker-raise", "Raise +20", ready && own && legal.raise) +
+        actionButton("poker-fold", "Fold", ready && own && legal.fold);
+    }
+    if (gameType === "spades") {
+      const state = activeState?.spades, live = state?.version === 2 && state.phase !== "done", own = controlsOwned(state);
+      const bidding = ready && own && state?.phase === "bid" && !actionPending;
+      return actionButton("spades-round", "Deal / New Hand", ready && !live, true) +
+        `<label class="table-bid-label" for="tableSpadesBid">Bid (0 = Nil)<select id="tableSpadesBid"${bidding ? "" : " disabled"}>${Array.from({length:14},(_,i)=>`<option value="${i}"${i===spadesBidValue ? " selected" : ""}>${i === 0 ? "0 - Nil" : i}</option>`).join("")}</select></label>` +
+        actionButton("spades-bid", "Confirm Bid", bidding) +
+        actionButton("spades-play", "Play Card", ready && own && state?.phase === "play" && rules.legalCards(state,0).includes(selectedSpadesCard), true);
+    }
+    if (gameType === "blackjack") {
+      const bj = activeState?.blackjack, live = bj?.result === "playing", own = controlsOwned(bj);
+      return actionButton("blackjack-deal", "Deal / New Hand", ready && !live, true) + actionButton("blackjack-hit", "Hit", ready && own && live) + actionButton("blackjack-stand", "Stand / Hold", ready && own && live);
+    }
+    return actionButton("dice-roll", "Roll Dice", ready, true);
+  }
+  async function dispatchAction(action) {
+    if (actionPending || !activeRoom || !activeState || !currentUser) return;
+    const hand = activeState[gameType];
+    if (!/^(poker-round|spades-round|blackjack-deal|dice-roll)$/.test(action) && !controlsOwned(hand)) return setStatus("The seat that dealt this shared practice hand controls its moves.");
+    const snapshot = JSON.parse(JSON.stringify(activeState)), room = activeRoom, token = roomViewToken;
+    const card = selectedSpadesCard, bid = Number($("tableSpadesBid")?.value);
+    actionPending = true;
+    $("tableControls")?.querySelectorAll("button, select").forEach(button => { button.disabled = true; });
+    try {
+      if(action === "dice-roll") await diceRound();
+      else if(action === "blackjack-deal") await blackjackDeal();
+      else if(action === "blackjack-hit") await blackjackHit();
+      else if(action === "blackjack-stand") await blackjackStand();
+      else if(action === "poker-round") await pokerRound();
+      else if(action === "spades-round") await spadesRound();
+      else if(action.startsWith("poker-")) {
+        const poker = rules.pokerMove(activeState.poker, action.slice(6));
+        localScore = poker.phase === "done" ? poker.stack : 0;
+        await saveState(room,{...activeState,poker,lastScore:localScore});
+      } else if(action === "spades-bid" || action === "spades-play") {
+        const spades = action === "spades-bid" ? rules.spadesBid(activeState.spades,bid) : rules.spadesPlay(activeState.spades,card);
+        selectedSpadesCard = null; localScore = spades.phase === "done" ? Math.max(0,spades.scores[0]) : 0;
+        await saveState(room,{...activeState,spades,lastScore:localScore});
+      }
+    } catch(error) {
+      if (token === roomViewToken && activeRoom?.id === room.id) { activeState = snapshot; setStatus(`Move not saved: ${safeText(error?.message,"Please retry.")}`); }
+    } finally {
+      actionPending = false;
+      if(token === roomViewToken && activeRoom?.id === room.id) renderState();
+    }
   }
 
   async function submitScore() {
+    if (actionPending) return setStatus("Wait for the current move to finish saving.");
     if (!activeRoom || !activeState || !currentUser) return setStatus("Create or join a table first.");
     const score = Math.max(1, Number(activeState.lastScore || localScore || 1));
     const cfg = GAME_CONFIG[gameType];
@@ -327,16 +399,35 @@
       controls.innerHTML=`<button class="games-btn primary craps-roll-btn" type="button" data-action="dice-roll">Roll Dice</button>`;
     }else if(gameType==="blackjack"){
       setText("tableTurnBanner","BLACKJACK • MAKE YOUR MOVE");
-      const bj=activeState.blackjack||{player:[],dealer:[],result:"waiting"};stage.innerHTML=`<div class="card-zone blackjack-zone"><div class="table-center-zone"><strong>Dealer • ${handTotal(bj.dealer||[])}</strong>${cardRow(bj.dealer||[])}</div><div class="player-rail-zone"><strong>Your Hand • ${handTotal(bj.player||[])}</strong>${cardRow(bj.player||[])}</div><div class="card-table-score">${safeText(bj.result,"waiting").toUpperCase()} • ${activeState.lastScore||0}</div></div>`;
+      const bj=activeState.blackjack||{player:[],dealer:[],result:"waiting"};
+      const hidden = bj.result === "playing";
+      const dealerCards = hidden ? `<div class="hw-card-row">${cardHtml(bj.dealer[0])}<span class="hw-card card-back" aria-label="Dealer hole card hidden">?</span></div>` : cardRow(bj.dealer);
+      stage.innerHTML=`<div class="card-zone blackjack-zone"><div class="table-center-zone"><strong>Dealer • ${hidden ? "Hole card hidden" : handTotal(bj.dealer||[])}</strong>${dealerCards}</div><div class="player-rail-zone"><strong>Your Hand • ${handTotal(bj.player||[])}</strong>${cardRow(bj.player||[])}</div><div class="card-table-score">${safeText(bj.result,"waiting").toUpperCase()} • ${activeState.lastScore||0}</div></div>`;
       controls.innerHTML=`<button class="games-btn primary" type="button" data-action="blackjack-deal">Deal</button><button class="games-btn" type="button" data-action="blackjack-hit">Hit</button><button class="games-btn ghost" type="button" data-action="blackjack-stand">Stand</button>`;
     }else if(gameType==="poker"){
-      setText("tableTurnBanner","POKER • CARDS IN THE CENTER");
-      const poker=activeState.poker||{hand:[],community:[]};stage.innerHTML=`<div class="card-zone poker-zone"><div class="table-center-zone"><strong>Community Cards</strong>${cardRow(poker.community||[])}</div><div class="player-rail-zone"><strong>Your Hole Cards</strong>${cardRow(poker.hand||[])}</div><div class="card-table-score">Table Score ${activeState.lastScore||0}</div></div>`;controls.innerHTML=`<button class="games-btn primary" type="button" data-action="poker-round">Deal Poker Hand</button>`;
+      const poker=activeState.poker?.version === 2 ? activeState.poker : null;
+      setText("tableTurnBanner", `POKER • ${poker?.phase?.toUpperCase() || "READY TO DEAL"}`);
+      stage.innerHTML=`<div class="card-zone poker-zone"><div class="table-center-zone"><strong>Community Cards</strong>${cardRow(poker?.community||[])}<span>CPU ${poker?.phase === "done" ? cardRow(poker.cpu) : "• cards hidden"}</span></div><div class="player-rail-zone"><strong>Practice Hand</strong>${cardRow(poker?.hand||[])}</div><div class="card-table-score">${safeText(poker?.message,"Deal to start Hold'em practice against CPU.")}<br>Practice chips: ${poker?.stack ?? 1000} • CPU: ${poker?.cpuStack ?? 1000} • Pot: ${poker?.pot ?? 0}<br>Shared room practice: the dealing seat controls this hand. No real money or Cool Points wagered.</div></div>`;
     }else{
-      setText("tableTurnBanner","SPADES • FOLLOW SUIT");
-      const spades=activeState.spades||{hand:[],lead:null};stage.innerHTML=`<div class="card-zone spades-zone"><div class="table-center-zone"><strong>Center Trick</strong>${cardRow(spades.lead?[spades.lead]:[])}</div><div class="player-rail-zone"><strong>Your Hand</strong>${cardRow(spades.hand||[])}</div><div class="card-table-score">Round Score ${activeState.lastScore||0}</div></div>`;controls.innerHTML=`<button class="games-btn primary" type="button" data-action="spades-round">Deal Spades Hand</button>`;
+      const spades=activeState.spades?.version === 2 ? activeState.spades : null;
+      setText("tableTurnBanner",`SPADES • ${spades?.phase === "bid" ? "CHOOSE YOUR BID" : spades?.phase === "play" ? "SELECT A CARD" : "READY TO DEAL"}`);
+      const legal = spades?.phase === "play" && controlsOwned(spades) ? rules.legalCards(spades,0) : [];
+      const hand = (spades?.hands[0]||[]).map((card,i)=>`<button type="button" class="table-card-choice${selectedSpadesCard===i ? " is-selected" : ""}" data-spades-card="${i}" aria-label="${rankLabel(card.rank)} ${card.suit}" aria-pressed="${selectedSpadesCard===i}"${legal.includes(i) && !actionPending ? "" : " disabled"}>${cardHtml(card)}</button>`).join("");
+      const trick = spades?.trick.length ? spades.trick : spades?.lastTrick || [];
+      stage.innerHTML=`<div class="card-zone spades-zone"><div class="table-center-zone"><strong>${spades?.trick.length ? "Current Trick" : "Last Trick"}</strong>${cardRow(trick.map(p=>p.card))}</div><div class="player-rail-zone"><strong>Practice Hand • tap a legal card, then Play Card</strong><div class="hw-card-row">${hand}</div></div><div class="card-table-score">${safeText(spades?.message,"Deal, confirm a bid, then follow suit. You + CPU 2 versus CPU 1 + CPU 3.")}<br>Bids: ${(spades?.bids||[]).map(b=>b===null ? "?" : b).join(" / ")} • Tricks: ${(spades?.tricks||[]).join(" / ")}<br>Shared room CPU practice: the dealing seat controls the hand.</div></div>`;
+      stage.querySelectorAll("[data-spades-card]").forEach(button=>button.addEventListener("click",()=>{
+        if (actionPending) return;
+        selectedSpadesCard=Number(button.dataset.spadesCard);renderState();
+        stage.querySelector(`[data-spades-card="${selectedSpadesCard}"]`)?.focus({preventScroll:true});
+      }));
     }
-    controls.querySelectorAll("[data-action]").forEach((button)=>button.addEventListener("click",async()=>{button.disabled=true;try{const action=button.getAttribute("data-action");if(action==="dice-roll")await diceRound();if(action==="blackjack-deal")await blackjackDeal();if(action==="blackjack-hit")await blackjackHit();if(action==="blackjack-stand")await blackjackStand();if(action==="poker-round")await pokerRound();if(action==="spades-round")await spadesRound();}finally{button.disabled=false;}}));
+    controls.innerHTML = actionBar();
+    $("tableSpadesBid")?.addEventListener("change",event=>{ spadesBidValue=Number(event.target.value); });
+    const liveHand = gameType === "blackjack" ? activeState.blackjack?.result === "playing" : ["poker","spades"].includes(gameType) && activeState[gameType]?.version === 2 && activeState[gameType].phase !== "done";
+    $("tableResetRoundBtn").disabled = actionPending || liveHand;
+    $("tableSubmitScoreBtn").disabled = actionPending || liveHand || !activeState.lastScore || !controlsOwned(activeState[gameType]);
+    $("tableLeaveBtn").disabled = actionPending;
+    controls.querySelectorAll("[data-action]").forEach(button=>button.addEventListener("click",()=>dispatchAction(button.dataset.action)));
     log.innerHTML=(activeState.log||[]).slice().reverse().map((line)=>`<p>${safeText(line,"Table updated.")}</p>`).join("")||`<p>Duck Sauce: “Quiet table. Suspicious.”</p>`;
   }
   function resetTableHud() {
@@ -351,7 +442,7 @@
       stage.dataset.game = gameType;
       stage.innerHTML = '<div class="table-empty-state"><b>TAKE YOUR SEAT</b><span>Start a table or enter a room code.</span></div>';
     }
-    if (controls) controls.innerHTML = "";
+    if (controls) controls.innerHTML = actionBar();
     if (log) log.innerHTML = '<p>Duck Sauce: “Pick a table. I’m watching the points.”</p>';
     document.querySelectorAll(".card-seat").forEach((seat) => seat.classList.remove("is-active", "is-playing", "is-ready"));
     applySeatCapacity(requestedPlayerCount());
@@ -385,18 +476,14 @@
       setGuestControls(false);
       setStatus("Login required to create, join, and save scores.");
     }
+    resetTableHud();
     $("tableCreateForm")?.addEventListener("submit", createRoom);
     $("tablePlayerCount")?.addEventListener("change", () => applySeatCapacity(requestedPlayerCount()));
     $("tableJoinForm")?.addEventListener("submit", joinRoomByCode);
     $("tableRefreshRooms")?.addEventListener("click", listRooms);
     $("tableSubmitScoreBtn")?.addEventListener("click", submitScore);
     $("tableLeaveBtn")?.addEventListener("click", () => leaveView());
-    $("tableResetRoundBtn")?.addEventListener("click", async () => {
-      if (gameType === "dice") await diceRound();
-      else if (gameType === "blackjack") await blackjackDeal();
-      else if (gameType === "poker") await pokerRound();
-      else await spadesRound();
-    });
+    $("tableResetRoundBtn")?.addEventListener("click", () => dispatchAction(({dice:"dice-roll",blackjack:"blackjack-deal",poker:"poker-round",spades:"spades-round"})[gameType]));
 
     document.addEventListener("hyph:auth-state-changed", async (event) => {
       if (event?.detail?.event === "SIGNED_OUT") {
