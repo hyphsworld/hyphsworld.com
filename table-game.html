@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="game-responsive.css?v=20260911-breakpoints-1" />
   <link rel="stylesheet" href="table-lounge.css?v=reference-lounge-1">
   <link rel="stylesheet" href="casino-motion.css?v=20261103-motion-1" />
+  <link rel="stylesheet" href="table-controls.css?v=20261108-actions-1" />
 </head>
 <body class="neon-table-lounge dominos-page table-game-page">
   <header class="site-header">
@@ -114,7 +115,7 @@
               <div class="hw-leaderboard-empty">Create or join a table to start.</div>
             </div>
             <div class="card-control-dock">
-              <div class="player-hand" id="tableControls"></div>
+              <div class="player-hand" id="tableControls" role="group" aria-label="Game actions"></div>
               <button class="games-btn primary" type="button" id="tableSubmitScoreBtn">Submit Score</button>
             </div>
           </div>
@@ -154,7 +155,8 @@
 
   <script src="auth-client.js?v=20261005-member-menu"></script>
   <script src="leaderboard-widgets.js"></script>
-  <script src="table-game.js?v=consumer-repair-20261011"></script>
+  <script src="table-rules.js?v=20261108-actions-1"></script>
+  <script src="table-game.js?v=20261108-actions-1"></script>
   <script src="cool-points.js"></script>
   <script src="site-analytics.js?v=game-code-hints-20260911" defer></script>
   <script src="global-my-id.js?v=restore-317-20261007" defer></script>

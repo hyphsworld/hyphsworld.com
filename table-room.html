@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="transport-system.css" />
   <link rel="stylesheet" href="table-room.css" />
   <link rel="stylesheet" href="table-lounge.css?v=reference-lounge-1">
+  <link rel="stylesheet" href="table-controls.css?v=20261108-actions-1" />
 </head>
 <body class="neon-table-lounge table-room-page">
   <header class="site-header">
@@ -39,7 +40,7 @@
         </article>
 
         <div class="center-pot">
-          <span>Preview Pot</span>
+          <span>Practice Pot</span>
           <strong id="previewPot">0 CP</strong>
           <small>No Cool Points charged in preview mode.</small>
         </div>
@@ -60,6 +61,8 @@
       <button class="table-btn secondary" type="button" id="previewDealBtn">New Hand</button>
       <button class="table-btn secondary" type="button" id="holdBtn">Fold</button>
       <button class="table-btn" type="button" id="hitBtn">Check</button>
+      <button class="table-btn" type="button" id="callBtn">Call</button>
+      <button class="table-btn" type="button" id="betBtn">Bet 20</button>
       <button class="table-btn" type="button" id="stayBtn">Raise</button>
       <button class="table-btn secondary" type="button" id="resetTableBtn">Reset</button>
       <a class="table-btn secondary" href="games.html">Back To Casino</a>
@@ -76,7 +79,8 @@
   <script src="supabase-config.js?v=table-room-v3"></script>
   <script src="auth-client.js?v=20261005-member-menu"></script>
   <script src="cool-points.js?v=table-room-v3"></script>
-  <script src="table-room.js?v=table-room-v3"></script>
+  <script src="table-rules.js?v=20261108-actions-1"></script>
+  <script src="table-room-actions.js?v=20261108-actions-1"></script>
   <script src="site-analytics.js"></script>
   <script src="global-my-id.js?v=restore-317-20261007" defer></script>
 </body>
