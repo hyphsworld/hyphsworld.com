@@ -1,0 +1,30 @@
+/* Action docks stay below the cards, including on narrow and landscape phones. */
+.dominos-page.domino-game-active .dominos-app,.dominos-page.table-game-active .dominos-app {grid-template-columns:minmax(0,1fr)!important;}
+.domino-pov-room>.pov-action-dock .games-btn {min-width:44px;min-height:48px;}
+.table-game-page #tableControls,.table-room-page .table-actions {
+  display:flex;flex-wrap:wrap;gap:8px;min-width:0;align-items:stretch;
+}
+.table-game-page .card-control-dock #tableControls {flex-wrap:wrap!important;gap:8px!important;}
+.table-game-page #tableControls .games-btn,.table-room-page .table-actions .table-btn {
+  flex:1 1 110px;min-width:88px;min-height:48px;padding:12px 10px!important;
+  font-size:14px!important;line-height:1.25;white-space:normal;touch-action:manipulation;
+}
+.table-game-page button:disabled,.table-room-page button:disabled {
+  opacity:.55;cursor:not-allowed;filter:none;box-shadow:none;
+}
+.table-bid-label {display:flex;flex:1 1 120px;flex-direction:column;gap:4px;color:#f2fff7;font-size:13px;}
+.table-bid-label select {min-height:44px;max-width:100%;background:#102b21;color:#fff;border:1px solid #76c899;border-radius:8px;padding:8px;}
+.table-game-page .table-card-choice {flex:0 0 auto;min-width:44px;min-height:72px;padding:4px;border:2px solid transparent;border-radius:10px;background:transparent;touch-action:manipulation;}
+.table-game-page .table-card-choice .hw-card {display:flex;flex-direction:column;margin:0;}
+.table-game-page .table-card-choice.is-selected {border-color:#ffe18b;background:#ffe18b35;}
+.table-game-page .table-card-choice:focus-visible {outline:3px solid #ffe18b;outline-offset:2px;}
+.table-game-page .card-table-score {color:#f2fff7;background:#031e15;padding:10px;border-radius:10px;line-height:1.5;overflow-wrap:anywhere;}
+.table-game-page .card-back {display:grid;place-items:center;background:#153844!important;color:#fff!important;}
+.table-game-page .card-control-dock {display:grid!important;grid-template-columns:minmax(0,1fr)!important;box-sizing:border-box;scroll-margin-bottom:100px;}
+.table-game-page .card-control-dock #tableControls {width:100%;box-sizing:border-box;}
+.table-game-page #tableSubmitScoreBtn {width:100%;min-height:48px;}
+.table-room-page .table-actions {position:relative;z-index:5;box-sizing:border-box;padding:10px;border:1px solid #57967b;border-radius:16px;background:#04110f;}
+.table-room-page .table-btn:focus-visible {outline:3px solid #ffe18b;outline-offset:3px;}
+@media(max-width:480px) {
+  .table-game-page #tableControls .games-btn,.table-room-page .table-actions .table-btn {flex-basis:calc(50% - 8px);}
+}
