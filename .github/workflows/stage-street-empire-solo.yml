@@ -1,5 +1,5 @@
 name: Stage Street Empire online web
-# publish-trigger: trap-thumbstick-0a6b2e7
+# publish-trigger: trap-city-crew-edde3de
 # publish-trigger: first-person-cameras-20261025
 # publish-trigger: verified-quick-hustle-20261012
 # publish-trigger: phase-1h-retry
@@ -28,7 +28,7 @@ concurrency:
 
 jobs:
   verify-export:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     services:
       postgres:
@@ -63,7 +63,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           repository: hyphsworld/STREET-EMPIRE
-          ref: 0a6b2e7d4055b8334d46b5b7e2ff48b115282ddf
+          ref: edde3de850b7682b849493dd4aec59c14048187b
           token: ${{ secrets.STREET_EMPIRE_READ_TOKEN }}
           path: game
           persist-credentials: false
@@ -92,6 +92,7 @@ jobs:
           node scripts/check-first-night.js
           node scripts/check-trap-shift.js
           node scripts/check-trap-block.js
+          node scripts/check-trap-city-crew.js
           node scripts/check-quick-hustle.js
           node scripts/check-operation-security.js
           node scripts/check-block-narrator.js
@@ -161,6 +162,7 @@ jobs:
           NODE_PATH=/tmp/hustle-browser/node_modules node scripts/check_pov_browser.js
           NODE_PATH=/tmp/hustle-browser/node_modules node scripts/check_trap_block_browser.js
           NODE_PATH=/tmp/hustle-browser/node_modules node scripts/check_trap_3d_browser.js
+          NODE_PATH=/tmp/hustle-browser/node_modules node scripts/check_trap_crew_browser.js
       - uses: actions/upload-artifact@v7
         if: success()
         continue-on-error: true
@@ -187,7 +189,7 @@ jobs:
   publish-route:
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     needs: verify-export
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
     steps:
@@ -207,17 +209,17 @@ jobs:
           test -s games/street-empire/index.html
           previous_source="$(git show HEAD:games/street-empire/.source-sha)"
           # Re-running a successfully published build is a safe no-op.
-          if test "$previous_source" = '0a6b2e7d4055b8334d46b5b7e2ff48b115282ddf'; then
+          if test "$previous_source" = 'edde3de850b7682b849493dd4aec59c14048187b'; then
             echo "Street Empire target source is already published. No update needed."
             exit 0
           fi
-          if test "$previous_source" != '211b4535c0047fa81a83e38b74992c1d64ce9fd3'; then
+          if test "$previous_source" != '0a6b2e7d4055b8334d46b5b7e2ff48b115282ddf'; then
             echo "::error::Street Empire route changed since the reviewed export; inspect before replacing."
             exit 1
           fi
           # Overlay the tested export and keep existing files and sound assets.
           cp -a street-empire-export/. games/street-empire/
-          printf '%s\n' '0a6b2e7d4055b8334d46b5b7e2ff48b115282ddf' > games/street-empire/.source-sha
+          printf '%s\n' 'edde3de850b7682b849493dd4aec59c14048187b' > games/street-empire/.source-sha
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A games/street-empire
@@ -225,16 +227,16 @@ jobs:
             echo "::error::Publication must not delete existing Street Empire files."
             exit 1
           fi
-          git commit -m 'Publish Trap Shift analog thumbstick'
+          git commit -m 'Publish Trap Shift city activities and crew multiplayer'
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             latest_source="$(git show origin/main:games/street-empire/.source-sha)"
             # Another approved publication may have finished while this build ran.
-            if test "$latest_source" = '0a6b2e7d4055b8334d46b5b7e2ff48b115282ddf'; then
+            if test "$latest_source" = 'edde3de850b7682b849493dd4aec59c14048187b'; then
               echo "Street Empire target source is already published on origin/main."
               exit 0
             fi
-            if test "$latest_source" != '211b4535c0047fa81a83e38b74992c1d64ce9fd3'; then
+            if test "$latest_source" != '0a6b2e7d4055b8334d46b5b7e2ff48b115282ddf'; then
               echo "::error::Street Empire changed during publication; inspect before replacing."
               exit 1
             fi
