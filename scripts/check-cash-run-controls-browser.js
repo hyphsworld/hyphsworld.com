@@ -7,7 +7,7 @@ const overlap = (a, b) => a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.
 (async () => {
   const browser = await chromium.launch({ headless: true });
   try {
-    for (const viewport of [{width:320,height:568},{width:390,height:664},{width:430,height:740},{width:844,height:390},{width:1280,height:800}]) {
+    for (const viewport of [{width:320,height:568},{width:390,height:664},{width:430,height:740},{width:568,height:320},{width:844,height:390},{width:1280,height:800}]) {
       const mobile = viewport.width < 1000;
       const context = await browser.newContext({viewport,hasTouch:mobile,isMobile:mobile,reducedMotion:'reduce'});
       const page = await context.newPage(), errors=[];
@@ -30,7 +30,8 @@ const overlap = (a, b) => a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.
       await page.getByTestId('mode-easy').click();await page.getByTestId('menu-play-btn').click();
       const canvas=page.getByTestId('game-canvas'),dock=page.getByTestId('touch-controls');
       const stick=page.getByTestId('touch-joystick'),pause=page.getByTestId('touch-pause');
-      await canvas.waitFor();await dock.scrollIntoViewIfNeeded();
+      await canvas.waitFor();
+      await page.waitForFunction(()=>document.documentElement.classList.contains('hw-game-active')&&document.querySelector('[data-testid="game-page"]').style.getPropertyValue('--hw-board-width'));
       const board=await canvas.boundingBox(),controls=await dock.boundingBox(),analog=await stick.boundingBox(),pauseBox=await pause.boundingBox();
       assert.ok(!overlap(board,analog),'Joystick must not cover the maze');
       assert.ok(!overlap(board,pauseBox),'Pause must not cover the maze');
@@ -41,6 +42,23 @@ const overlap = (a, b) => a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.
         assert.ok(analog.y>=-1&&analog.y+analog.height<=viewport.height+1,'Joystick must remain visible with the board');
       }
       assert.ok(pauseBox.width>=44&&pauseBox.height>=44);
+      const screenBefore=await canvas.boundingBox();
+      await page.mouse.move(viewport.width/2,viewport.height/2);
+      await page.mouse.wheel(0,500);
+      if(mobile){
+        const session=await context.newCDPSession(page);
+        await session.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:viewport.width/2,y:viewport.height/2}]});
+        await session.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:viewport.width/2,y:50}]});
+        await session.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+        await session.detach();
+      }
+      await page.waitForTimeout(100);
+      assert.deepEqual(await canvas.boundingBox(),screenBefore,'Wheel and touch swipes must not shift the board');
+      assert.equal(await page.evaluate(()=>scrollY),0,'Active gameplay must not scroll the document');
+      for(const id of ['game-back-btn','game-hud','touch-pause']){
+        const box=await page.getByTestId(id).boundingBox();
+        assert.ok(box.x>=-1&&box.y>=-1&&box.x+box.width<=viewport.width+1&&box.y+box.height<=viewport.height+1,id+' must stay inside the viewport');
+      }
       const cx=analog.x+analog.width/2,cy=analog.y+analog.height/2;
       await page.mouse.move(cx,cy);await page.mouse.down();await page.mouse.move(cx+40,cy,{steps:5});
       await page.waitForFunction(()=>document.querySelector('[data-testid="touch-joystick-knob"]').style.transform!=='translate(0px, 0px)');
@@ -53,6 +71,17 @@ const overlap = (a, b) => a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.
       assert.deepEqual(errors,[]);
       await page.screenshot({path:`/tmp/cash-run-controls-${viewport.width}x${viewport.height}.png`});
       console.log('PASS Chase the Bag unobstructed maze, visible dock, drag/release and pause/resume',viewport.width,viewport.height);
+      if(viewport.width===390){
+        await page.setViewportSize({width:844,height:390});
+        await page.waitForTimeout(100);
+        const rotatedBoard=await canvas.boundingBox(),rotatedStick=await stick.boundingBox();
+        assert.ok(rotatedBoard.y>=0&&rotatedBoard.y+rotatedBoard.height<=390,'Board must fit after rotation');
+        assert.ok(rotatedStick.y>=0&&rotatedStick.y+rotatedStick.height<=390,'Controls must fit after rotation');
+        assert.ok(!overlap(rotatedBoard,rotatedStick),'Rotated controls must not cover the board');
+      }
+      await page.getByTestId('game-back-btn').click();
+      await page.waitForFunction(()=>!document.documentElement.classList.contains('hw-game-active'));
+      assert.notEqual(await page.evaluate(()=>getComputedStyle(document.body).position),'fixed','Returning to the menu must release the screen lock');
       await context.close();
     }
   } finally { await browser.close(); }
