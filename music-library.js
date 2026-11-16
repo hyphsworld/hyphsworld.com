@@ -50,14 +50,14 @@
     setStatus(releases.length+' purchased release(s) ready.');
     for(const release of releases){
       const card=document.createElement('article');card.className='hw-release';
-      if(release.artwork_url){try{const artUrl=new URL(release.artwork_url);if(artUrl.protocol==='https:'&&['raw.githubusercontent.com','hyphsworld.com'].includes(artUrl.hostname)){const art=document.createElement('img');art.src=artUrl.href;art.alt=release.title+' cover art';art.className='hw-cover';art.loading='lazy';art.decoding='async';art.addEventListener('error',()=>art.remove());card.append(art)}}catch{}}
+      if(release.artwork_url){try{const artUrl=new URL(release.artwork_url);if(artUrl.protocol==='https:'&&(['raw.githubusercontent.com','hyphsworld.com'].includes(artUrl.hostname)||(artUrl.hostname==='yuhxtdkhsltaqiagrtys.supabase.co'&&artUrl.pathname.startsWith('/storage/v1/object/public/creator-world-public/music/')))){const art=document.createElement('img');art.src=artUrl.href;art.alt=release.title+' cover art';art.className='hw-cover';art.loading='lazy';art.decoding='async';art.addEventListener('error',()=>art.remove());card.append(art)}}catch{}}
       const content=document.createElement('div');content.className='hw-release-inner';card.append(content);
       const title=document.createElement('h2');title.textContent=release.title;content.append(title);
       const {data:tracks,error:trackError}=await client.from('music_tracks').select('id,title,track_number').eq('release_id',release.id).order('track_number');
       if(trackError){const message=document.createElement('p');message.textContent='Track list temporarily unavailable.';content.append(message);list.append(card);continue;}
       for(const track of tracks||[]){
         const row=document.createElement('p');const name=document.createElement('span');name.textContent=track.title+' ';
-        const button=document.createElement('button');button.textContent='Download WAV';
+        const button=document.createElement('button');button.textContent='Download audio';
         button.addEventListener('click',async()=>{
           button.disabled=true;button.textContent='Preparing download…';
           try{
@@ -70,7 +70,7 @@
             if(signed.protocol!=='https:'||signed.hostname!=='yuhxtdkhsltaqiagrtys.supabase.co')throw Error('Unexpected download destination.');
             window.location.assign(signed.href);
           }catch(e){setStatus('Download problem: '+errorText(e));}
-          finally{button.disabled=false;button.textContent='Download WAV';}
+          finally{button.disabled=false;button.textContent='Download audio';}
         });
         row.append(name,button);content.append(row);
       }

@@ -12,10 +12,16 @@
     { id: '6731c662-93ef-4210-9324-d389cc94ddcc', button: 'buy-mando', amount: 'price-mando', lostTime: true },
     { id: '6daa0299-6560-49da-8613-f6b18d5afc1e', button: 'buy-sac-2-the-rich', amount: 'price-sac-2-the-rich', lostTime: true },
     { id: '513b8249-c83f-4672-99f8-c519e52107d0', button: 'buy-drip', amount: 'price-drip', lostTime: true },
-    { id: '35b42527-977d-475b-8552-d50373d6fefc', button: 'buy-shine', amount: 'price-shine', lostTime: true }
+    { id: '35b42527-977d-475b-8552-d50373d6fefc', button: 'buy-shine', amount: 'price-shine', lostTime: true },
+    { id: '9f4c39e9-448c-49b0-8254-e718acccece1', button: 'buy-certified', amount: 'price-certified', bounceBack: true },
+    { id: '301d9c77-e1f6-4a33-900d-d34a69251e36', button: 'buy-do-you-love-me', amount: 'price-do-you-love-me', bounceBack: true },
+    { id: '452ea9ff-b254-41b1-aea1-eb548d9be65e', button: 'buy-late-nights', amount: 'price-late-nights', bounceBack: true },
+    { id: '3864fa6f-857d-41d1-9651-50a54b5ca425', button: 'buy-issa-cap', amount: 'price-issa-cap', bounceBack: true },
+    { id: '9881d11e-2005-47c0-a3b8-4fa4261198d2', button: 'buy-its-good', amount: 'price-its-good', bounceBack: true }
   ];
   const message = document.getElementById('music-store-status');
   const lostTimeReleaseStatus = document.getElementById('lost-time-release-status');
+  const bounceBackReleaseStatus = document.getElementById('bounce-back-release-status');
   function tell(value) { if (message) message.textContent = value; }
   async function init() {
     if (!PUBLIC_CHECKOUT_APPROVED) { tell('Official releases are in prelaunch. Secure purchases open after final verification.'); return; }
@@ -26,6 +32,7 @@
     if (error) { tell('Purchases are temporarily unavailable.'); return; }
     let activeCount = 0;
     let activeLostTimeCount = 0;
+    let activeBounceBackCount = 0;
     for (const candidate of releases) {
       const release = (data || []).find(x => x.id === candidate.id);
       const button = document.getElementById(candidate.button);
@@ -38,6 +45,7 @@
       button.textContent = 'BUY DIGITAL DOWNLOAD';
       activeCount++;
       if (candidate.lostTime) activeLostTimeCount++;
+      if (candidate.bounceBack) activeBounceBackCount++;
       const showOwned = function () {
         button.disabled = false;
         button.textContent = 'OWNED ✓ — OPEN MY LIBRARY';
@@ -86,6 +94,11 @@
       lostTimeReleaseStatus.textContent = activeLostTimeCount === 4
         ? '4 TRACKS · $0.99 EACH · AVAILABLE NOW'
         : '4 TRACKS · $0.99 EACH · COMING SOON';
+    }
+    if (bounceBackReleaseStatus) {
+      bounceBackReleaseStatus.textContent = activeBounceBackCount === 5
+        ? '5 TRACKS · $0.99 EACH · AVAILABLE NOW'
+        : '5 TRACKS · $0.99 EACH · CHECKING AVAILABILITY';
     }
     tell(activeCount ? 'Secure checkout available for published releases.' : 'Releases are being prepared. Sales are not open yet.');
   }
