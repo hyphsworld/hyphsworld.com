@@ -63,6 +63,43 @@
   <script defer src="/games/cash-run/soundtrack.js?v=artist-five-1"></script>
   <script defer src="/games/cash-run/static/js/main.5eafd317.js"></script>
   <link href="/games/cash-run/static/css/main.bf100263.css" rel="stylesheet" />
+
+  <style>
+    /* Lock only the active game; menus and leaderboards keep normal scrolling. */
+    html.hw-game-active,html.hw-game-active body{overflow:hidden;overscroll-behavior:none}
+    html.hw-game-active body{position:fixed;inset:0;width:100%;height:100%}
+    html.hw-game-active #root{height:100%;min-height:0}
+    html.hw-game-active [data-testid="game-page"]{
+      box-sizing:border-box;position:absolute;inset:0;width:100%;height:var(--hw-game-height,100%);
+      min-height:0!important;overflow:hidden;touch-action:none;justify-content:flex-start;
+      gap:8px!important;
+      padding:max(8px,env(safe-area-inset-top)) max(8px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))!important
+    }
+    html.hw-game-active [data-testid="game-page"]>div:first-child,
+    html.hw-game-active [data-testid="game-page"]>div:nth-child(2){flex-shrink:0;margin:0!important}
+    html.hw-game-active [data-testid="game-page"] .cr-canvas-wrap{
+      flex-shrink:0;box-sizing:border-box;width:var(--hw-board-width,100%)!important;
+      max-width:100%;margin:0;align-self:center;justify-self:center
+    }
+    html.hw-game-active [data-testid="touch-controls"]{flex-shrink:0;margin:0!important}
+    html.hw-game-active [data-testid="game-page"]>p{flex-shrink:0;margin:0}
+    html.hw-game-active.hw-game-over [data-testid="game-page"]{touch-action:auto}
+    @media (pointer:coarse),(hover:none){
+      html.hw-game-active [data-testid="game-hud"]{grid-template-columns:repeat(4,minmax(0,1fr))!important;margin:0!important;padding:.35rem!important;gap:.25rem!important}
+      html.hw-game-active [data-testid="game-hud"]>div{padding:.35rem!important}
+      html.hw-game-active [data-testid="game-hud"] .value{font-size:1rem!important;white-space:nowrap!important;overflow-wrap:normal!important}
+      html.hw-game-active [data-testid="hud-lives-value"]{gap:.1rem!important}
+      html.hw-game-active [data-testid="hud-lives-value"] svg{width:14px;height:14px}
+      html.hw-game-active [data-testid="game-theme-label"]{font-size:.75rem}
+    }
+    @media (pointer:coarse) and (orientation:landscape),(hover:none) and (orientation:landscape){
+      html.hw-game-active [data-testid="game-page"]{grid-template-columns:minmax(0,1fr) 176px!important;justify-content:center!important}
+      html.hw-game-active [data-testid="game-page"]>div:first-child{flex-wrap:nowrap!important;max-width:none}
+      html.hw-game-active [data-testid="game-theme-label"]{order:0;width:auto;flex:1;min-width:0;padding:0}
+      html.hw-game-active [data-testid="touch-controls"]{padding:8px!important;gap:8px!important}
+      html.hw-game-active [data-testid="touch-joystick"]{width:clamp(90px,calc(100svh - 250px),150px)!important;height:clamp(90px,calc(100svh - 250px),150px)!important;flex:0 0 clamp(90px,calc(100svh - 250px),150px)!important}
+    }
+  </style>
 </head>
 <body>
   <div id="loginCheck"><div><strong>Checking HYPHSWORLD ID…</strong><span>Login once. Then play and earn everywhere.</span></div></div>
@@ -72,6 +109,61 @@
     (function(){
       var root=document.getElementById('root');
       if(!root)return;
+
+      var frame=0;
+      var observedPage=null;
+      var layoutObserver=window.ResizeObserver?new ResizeObserver(scheduleLayout):null;
+      function scheduleLayout(){
+        if(!frame)frame=requestAnimationFrame(fitGame);
+      }
+      function fitGame(){
+        frame=0;
+        var page=root.querySelector('[data-testid="game-page"]');
+        document.documentElement.classList.toggle('hw-game-active',!!page);
+        if(page!==observedPage){
+          if(layoutObserver)layoutObserver.disconnect();
+          observedPage=page;
+          if(page&&layoutObserver){
+            layoutObserver.observe(page);
+            Array.prototype.forEach.call(page.children,function(child){
+              if(!child.classList.contains('cr-canvas-wrap'))layoutObserver.observe(child);
+            });
+          }
+        }
+        if(!page)return;
+        var viewportHeight=Math.min(window.innerHeight,window.visualViewport?window.visualViewport.height:window.innerHeight)+'px';
+        if(page.style.getPropertyValue('--hw-game-height')!==viewportHeight)page.style.setProperty('--hw-game-height',viewportHeight);
+        var wrap=page.querySelector('.cr-canvas-wrap');
+        var canvas=page.querySelector('canvas');
+        var dock=page.querySelector('[data-testid="touch-controls"]');
+        if(!wrap||!canvas||!dock)return;
+        var style=getComputedStyle(page);
+        var number=function(value){return parseFloat(value)||0};
+        var innerHeight=page.clientHeight-number(style.paddingTop)-number(style.paddingBottom);
+        var innerWidth=page.clientWidth-number(style.paddingLeft)-number(style.paddingRight);
+        var landscape=style.display==='grid';
+        var otherHeight=0;
+        var rows=0;
+        Array.prototype.forEach.call(page.children,function(child){
+          if(child===wrap||(landscape&&child===dock))return;
+          var childStyle=getComputedStyle(child);
+          if(childStyle.display==='none'||childStyle.position==='fixed'||childStyle.position==='absolute')return;
+          otherHeight+=child.getBoundingClientRect().height+number(childStyle.marginTop)+number(childStyle.marginBottom);
+          rows++;
+        });
+        var availableHeight=Math.max(0,innerHeight-otherHeight-number(style.rowGap)*rows);
+        var availableWidth=Math.max(0,innerWidth-(landscape?dock.getBoundingClientRect().width+number(style.columnGap):0));
+        var borderX=number(getComputedStyle(wrap).borderLeftWidth)+number(getComputedStyle(wrap).borderRightWidth);
+        var borderY=number(getComputedStyle(wrap).borderTopWidth)+number(getComputedStyle(wrap).borderBottomWidth);
+        var ratio=canvas.width/canvas.height;
+        var width=Math.max(0,Math.min(720,availableWidth,Math.max(0,availableHeight-borderY)*ratio+borderX));
+        var value=Math.floor(width)+'px';
+        if(page.style.getPropertyValue('--hw-board-width')!==value)page.style.setProperty('--hw-board-width',value);
+      }
+      window.addEventListener('resize',scheduleLayout,{passive:true});
+      window.addEventListener('orientationchange',scheduleLayout,{passive:true});
+      if(window.visualViewport)window.visualViewport.addEventListener('resize',scheduleLayout,{passive:true});
+
       var boundStick=null;
       var lastPulse=0;
       function bindStick(){
@@ -86,6 +178,7 @@
         stick.addEventListener('lostpointercapture',release,{passive:true});
       }
       function syncGameState(){
+        scheduleLayout();
         bindStick();
         var text=(root.textContent||'').toUpperCase();
         var gameOver=text.indexOf('GAME OVER')!==-1||text.indexOf('SUBMIT SCORE')!==-1;
