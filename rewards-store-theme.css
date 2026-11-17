@@ -48,3 +48,41 @@ body[data-page="point-store"] .support-portal-card{border-color:rgba(255,228,92,
  body[data-page="point-store"] .reward-card{border-radius:22px}
 }
 @media(prefers-reduced-motion:reduce){body[data-page="point-store"] .reward-card{transition:none}body[data-page="point-store"] .reward-card:hover{transform:none}}
+
+/* Creators World brand alignment — visual-only overrides */
+body[data-page="point-store"]{
+ --hw-lime:#bcff25;--hw-pink:#ff3fb4;--hw-cyan:#34eaff;--hw-ink:#07060b;
+ background:radial-gradient(circle at 85% 5%,rgba(255,63,180,.13),transparent 35%),
+ radial-gradient(circle at 5% 45%,rgba(188,255,37,.075),transparent 36%),var(--hw-ink);
+}
+body[data-page="point-store"] .site-header{background:linear-gradient(120deg,rgba(7,6,11,.98),rgba(20,15,24,.98));border-bottom-color:rgba(188,255,37,.5)}
+body[data-page="point-store"] .brand-top{color:var(--hw-lime)}
+body[data-page="point-store"] .brand-main{font-family:Impact,"Arial Narrow",Arial,sans-serif;letter-spacing:.015em;text-transform:uppercase}
+body[data-page="point-store"] .nav-links a:hover,body[data-page="point-store"] .nav-links a:focus-visible{border-color:var(--hw-lime);color:var(--hw-lime)}
+body[data-page="point-store"] .ticker-wrap{border-bottom:4px solid var(--hw-lime)}
+body[data-page="point-store"] .ticker{color:var(--hw-lime)}
+body[data-page="point-store"] .hero{background:linear-gradient(90deg,rgba(7,6,11,.93),rgba(7,6,11,.55)),radial-gradient(circle at 87% 10%,rgba(255,63,180,.22),transparent 48%)}
+body[data-page="point-store"] .eyebrow{color:var(--hw-lime)!important}
+body[data-page="point-store"] .hero h1{font-family:Impact,"Arial Narrow",Arial,sans-serif;letter-spacing:.005em}
+body[data-page="point-store"] .headline-bottom{color:var(--hw-lime);text-shadow:0 4px 30px rgba(188,255,37,.18)}
+body[data-page="point-store"] .hero-art-card{background:linear-gradient(135deg,var(--hw-lime),var(--hw-pink));border-color:var(--hw-lime);border-radius:5px;padding:6px;box-shadow:11px 11px 0 rgba(255,63,180,.75),0 25px 65px rgba(0,0,0,.5);margin-bottom:12px}
+body[data-page="point-store"] .hero-art{border-radius:2px}
+body[data-page="point-store"] .store-balance{border-color:var(--hw-lime);background:#100e16;box-shadow:0 0 0 4px rgba(188,255,37,.06),0 15px 36px rgba(0,0,0,.3)}
+body[data-page="point-store"] .store-balance span{color:var(--hw-lime)}
+body[data-page="point-store"] .section-head h2{font-family:Impact,"Arial Narrow",Arial,sans-serif;letter-spacing:.012em}
+body[data-page="point-store"] .reward-card{border:1px solid rgba(188,255,37,.28);background:radial-gradient(circle at 100% 0%,rgba(255,63,180,.12),transparent 42%),linear-gradient(145deg,#18141e,#09080d);box-shadow:inset 0 4px 0 rgba(188,255,37,.8),0 18px 50px rgba(0,0,0,.4)}
+body[data-page="point-store"] .reward-card:before{background:radial-gradient(circle at 20% 0%,rgba(188,255,37,.09),transparent 36%)}
+body[data-page="point-store"] .reward-card:hover{border-color:var(--hw-lime)}
+body[data-page="point-store"] .reward-card h3{font-family:Impact,"Arial Narrow",Arial,sans-serif;letter-spacing:.02em;font-weight:900}
+body[data-page="point-store"] .reward-price{border-color:rgba(188,255,37,.5);background:rgba(188,255,37,.1);color:var(--hw-lime)}
+body[data-page="point-store"] .buy-reward:not(:disabled){background:linear-gradient(95deg,var(--hw-lime),var(--hw-cyan));color:#08090c;border:0;box-shadow:0 9px 23px rgba(188,255,37,.13)}
+body[data-page="point-store"] .buy-reward:focus-visible{outline-color:var(--hw-pink)}
+body[data-page="point-store"] .exclusive-reward{border:2px solid var(--hw-pink);box-shadow:inset 0 4px 0 var(--hw-pink),0 18px 50px rgba(0,0,0,.45)}
+body[data-page="point-store"] .exclusive-reward:before{background:linear-gradient(115deg,transparent 0 42%,rgba(255,255,255,.09) 50%,transparent 58% 100%)}
+body[data-page="point-store"] .exclusive-reward .reward-price{color:var(--hw-lime);border-color:var(--hw-lime)}
+body[data-page="point-store"] .exclusive-flags span{background:var(--hw-pink);color:#08090c}
+body[data-page="point-store"] .support-portal-card{border-color:rgba(188,255,37,.48);background:radial-gradient(circle at 8% 10%,rgba(188,255,37,.16),transparent 36%),linear-gradient(145deg,#131219,#08070d)}
+body[data-page="point-store"] .support-portal-card h3{color:var(--hw-lime)}
+body[data-page="point-store"] .support-paypal-btn{background:linear-gradient(90deg,var(--hw-lime),var(--hw-cyan));color:#08090c!important}
+body[data-page="point-store"] .store-message{background:linear-gradient(90deg,var(--hw-lime),var(--hw-cyan));color:#08090c}
+@media(max-width:760px){body[data-page="point-store"] .hero-art-card{box-shadow:6px 6px 0 rgba(255,63,180,.8),0 18px 44px rgba(0,0,0,.45)}}
