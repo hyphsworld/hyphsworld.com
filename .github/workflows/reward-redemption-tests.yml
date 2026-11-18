@@ -1,0 +1,21 @@
+name: Reward redemption isolation
+on:
+  pull_request:
+    paths:
+      - 'supabase/migrations/20261101185519_atomic_reward_redemption_security.sql'
+      - 'supabase/tests/atomic_rewards_security.sql'
+      - 'supabase/tests/fixtures/atomic_rewards_schema.sql'
+      - 'scripts/test-atomic-rewards.py'
+      - '.github/workflows/reward-redemption-tests.yml'
+permissions:
+  contents: read
+jobs:
+  synthetic-postgres:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Test isolated wallet contracts and concurrent requests
+        run: python3 scripts/test-atomic-rewards.py
