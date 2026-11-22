@@ -9,7 +9,7 @@
   var LUCKY_SCRIPT_ID = 'hw-lucky-code-ticker-loader';
   var LUCKY_SRC = '/lucky-code-ticker.js?v=game-code-hints-20260911';
   var POINTS_SCRIPT_ID = 'hw-points-core-loader';
-  var POINTS_SRC = '/points-core.js?v=hyphs-points-core-v4-20260613';
+  var POINTS_SRC = '/points-core.js?v=hyphs-points-core-v4-20261121';
   var AUTH_POINTS_BRIDGE_SCRIPT_ID = 'hw-auth-points-bridge-loader';
   var AUTH_POINTS_BRIDGE_SRC = '/auth-points-bridge.js?v=central-wallet-20260706';
   var EXPERIENCE_STYLE_ID = 'hw-site-experience-style';
@@ -83,7 +83,10 @@
   }
 
   function loadPointsCore() {
-    if (window.HWPoints && window.HWPoints.__hyphsPointsCoreV4) return;
+    if (window.HWPoints || window.HWAccountWidgetReady) return;
+    if (Array.from(document.scripts).some(function (script) {
+      return String(script.src || '').split('?')[0].endsWith('/cool-points.js');
+    })) return;
     if (document.getElementById(POINTS_SCRIPT_ID)) return;
 
     var script = document.createElement('script');

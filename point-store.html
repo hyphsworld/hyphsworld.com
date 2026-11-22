@@ -347,13 +347,11 @@ gtag('config','G-CT7CWHCHYC');
   const msg = document.getElementById("storeMessage");
 
   function getPurchases(){
-    try{return JSON.parse(localStorage.getItem(PURCHASES_KEY) || "[]");}
+    try{
+      const purchases = JSON.parse(localStorage.getItem(PURCHASES_KEY) || "[]");
+      return Array.isArray(purchases) ? purchases : [];
+    }
     catch(e){return [];}
-  }
-
-  function setPurchases(list){
-    try{localStorage.setItem(PURCHASES_KEY, JSON.stringify(list));}
-    catch(e){}
   }
 
   function toast(text,bad){
@@ -364,91 +362,108 @@ gtag('config','G-CT7CWHCHYC');
     setTimeout(()=>msg.style.display="none",2600);
   }
 
-  async function refreshPoints(){
-    if(window.HWPoints && typeof window.HWPoints.refresh === "function"){
-      await window.HWPoints.refresh();
-      const pts = window.HWPoints.get();
-      if(balance) balance.textContent = pts;
-      return pts;
-    }
-    if(balance) balance.textContent = "0";
-    return 0;
+  const cards = Array.from(document.querySelectorAll(".reward-card:not([data-exclusive='true'])"));
+  let accountClaims = new Set();
+  let ownerId = null;
+  let historyRequest = 0;
+
+  async function getSession() {
+    if(window.HWAccountWidgetReady) await window.HWAccountWidgetReady;
+    const client = await window.HWAuth?.getClient?.();
+    const { data, error } = await client.auth.getSession();
+    if(error) throw error;
+    return { client, userId: data.session?.user?.id || null };
   }
 
-  function renderOwned(){
-    const bought = getPurchases();
-    document.querySelectorAll(".reward-card").forEach(card=>{
-      const id = card.dataset.id;
+  function renderOwned() {
+    const legacy = getPurchases();
+    cards.forEach(card => {
+      const owned = accountClaims.has(card.dataset.id) || legacy.includes(card.dataset.id);
       const button = card.querySelector(".buy-reward");
-      let owned = card.querySelector(".reward-owned");
-
-      if(bought.includes(id)){
-        if(button) button.disabled = true;
-        if(button) button.textContent = "OWNED";
-        if(!owned){
-          owned = document.createElement("div");
-          owned.className = "reward-owned";
-          owned.textContent = "CLAIMED";
-          card.appendChild(owned);
-        }
+      button.disabled = owned || button.dataset.pending === "true";
+      button.textContent = owned ? "OWNED" : "REDEEM";
+      const marker = card.querySelector(".reward-owned");
+      if(owned && !marker){
+        const label = document.createElement("div");
+        label.className = "reward-owned";
+        label.textContent = "CLAIMED";
+        card.appendChild(label);
+      } else if(!owned && marker) {
+        marker.remove();
       }
     });
   }
 
-  async function render(){
-    await refreshPoints();
-    renderOwned();
+  async function loadOwned() {
+    const request = ++historyRequest;
+    try {
+      const { client, userId } = await getSession();
+      if(request !== historyRequest) return;
+      if(userId !== ownerId) accountClaims = new Set();
+      ownerId = userId;
+      renderOwned();
+      if(!userId) return;
+
+      const { data, error } = await client.from("user_rewards")
+        .select("reward_key").eq("user_id", userId).in("reward_key", cards.map(card => card.dataset.id));
+      if(error) throw error;
+      if(request !== historyRequest) return;
+      data.forEach(row => accountClaims.add(row.reward_key));
+      renderOwned();
+    } catch(error) {
+      console.warn("Could not load Point Store claims:", error.message);
+    }
   }
 
-  document.querySelectorAll(".buy-reward").forEach(button=>{
-    button.addEventListener("click",async()=>{
-      const card = button.closest(".reward-card");
-      if(!card) return;
-      if(card.dataset.exclusive === "true") return;
+  cards.forEach(card => {
+    const button = card.querySelector(".buy-reward");
+    button.addEventListener("click", async () => {
+      if(button.disabled) return;
       const id = card.dataset.id;
-      const cost = parseInt(card.dataset.cost,10) || 0;
-      const bought = getPurchases();
+      button.dataset.pending = "true";
+      renderOwned();
 
-      if(bought.includes(id)){
-        toast("Already claimed.", false);
-        return;
+      try {
+        const { client, userId } = await getSession();
+        if(!userId){
+          toast("Log in to redeem Cool Points.", true);
+          return;
+        }
+        const { data, error } = await client.rpc("claim_reward", { p_reward_key: id });
+        if(error) throw error;
+        const result = data?.[0];
+        if(!result) throw new Error("Missing reward confirmation.");
+        if(ownerId === userId && balance) balance.textContent = result.points;
+        if(!result.claimed){
+          toast("Not enough Cool Points.", true);
+          return;
+        }
+        if(ownerId === userId) accountClaims.add(id);
+        toast("Reward claimed. Points saved to your ID.", false);
+        if(window.gtag) window.gtag("event", "point_store_purchase", { reward: id, cost: Number(card.dataset.cost) });
+        loadOwned();
+        window.HWPoints?.refresh?.();
+      } catch(error) {
+        console.warn("Point Store claim failed:", error.message);
+        toast("Could not confirm the claim. Try again.", true);
+      } finally {
+        delete button.dataset.pending;
+        renderOwned();
       }
-
-      const pts = await refreshPoints();
-
-      if(pts < cost){
-        toast("Not enough points, blood.", true);
-        return;
-      }
-
-      if(!window.HWPoints || typeof window.HWPoints.spend !== "function"){
-        toast("Point system not loaded. Refresh and try again.", true);
-        return;
-      }
-
-      const before = window.HWPoints.get();
-      const after = await window.HWPoints.spend(cost, "point_store_" + id);
-
-      if(after >= before){
-        toast("Point spend did not save. Login again and retry.", true);
-        await render();
-        return;
-      }
-
-      bought.push(id);
-      setPurchases(bought);
-      toast("Reward claimed. Points saved to your ID.", false);
-
-      if(window.gtag){
-        gtag("event","point_store_purchase",{reward:id,cost:cost});
-      }
-
-      await render();
     });
   });
 
-  document.addEventListener("hyph:points-updated", render);
-  render();
+  document.addEventListener("hyph:points-updated", event => {
+    if(balance) balance.textContent = event.detail.points;
+  });
+  document.addEventListener("hyph:auth-state-changed", () => {
+    ownerId = null;
+    accountClaims = new Set();
+    renderOwned();
+    loadOwned();
+  });
+  renderOwned();
+  loadOwned();
 })();
 </script>
 <script src="point-store-exclusive-reward.js"></script>

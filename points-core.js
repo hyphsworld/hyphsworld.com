@@ -5,15 +5,14 @@
   Truth table:
   - Logged in: Supabase profile is the real wallet.
   - Logged out: no real earning or spending.
-  - Browser storage: display/recovery cache only, never allowed to lower an account.
-  - First login after old local points: higher cached balance can recover upward once.
+  - Browser storage is a display cache. The account balance comes from the server.
 */
 (function () {
   'use strict';
 
-  if (window.HWPoints && window.HWPoints.__hyphsPointsCoreV4) return;
+  if (window.HWPoints?.__hyphsPointsCoreV4 || window.HWPoints?.__accountOnlyEngineV2) return;
 
-  const VERSION = 'hyphs-points-core-v4-20260613';
+  const VERSION = 'hyphs-points-core-v4-20261121';
   const CACHE_KEY = 'hyphsworld.coolPoints.total';
   const PROFILE_CACHE_KEY = 'hyphsworld.coolPoints.profile';
   const LEGACY_KEYS = [
@@ -264,29 +263,24 @@
     return window.HWAuth.getCurrentUser();
   }
 
+  function isActive() {
+    return window.HWPoints?.refresh === refresh;
+  }
+
   async function refresh(reason) {
+    if (!isActive()) return window.HWPoints.getState();
     if (state.busy && reason !== 'force') return snapshot();
     state.busy = true;
     const requestEpoch = authEpoch;
 
     try {
       const user = await getAccountUser();
-      if (requestEpoch !== authEpoch) { state.busy = false; return snapshot(); }
+      if (!isActive() || requestEpoch !== authEpoch) { state.busy = false; return snapshot(); }
       if (!user) return applyLoggedOut(reason || 'login_required');
 
-      const cached = readCachedBalance();
       const accountPoints = toNumber(user.coolPoints ?? user.points ?? 0);
       const lifetimePoints = toNumber(user.lifetimePoints ?? user.lifetime_points ?? accountPoints);
       const safeUser = Object.assign({}, user);
-
-      if (cached > accountPoints && window.HWAuth && typeof window.HWAuth.setPoints === 'function') {
-        const recovered = cached;
-        await window.HWAuth.setPoints(recovered, 'recover_higher_cached_balance', { source: VERSION, previousAccountPoints: accountPoints });
-        if (requestEpoch !== authEpoch) { state.busy = false; return snapshot(); }
-        safeUser.coolPoints = recovered;
-        safeUser.lifetimePoints = Math.max(lifetimePoints, recovered);
-        return applyAccount(safeUser, 'recovered_cached_to_account');
-      }
 
       safeUser.coolPoints = accountPoints;
       safeUser.lifetimePoints = Math.max(lifetimePoints, accountPoints);
@@ -320,7 +314,7 @@
 
     return serialize(async () => {
       const current = await requireLogin();
-      if (!current) return snapshot();
+      if (!current || !isActive()) return snapshot();
 
       if (!window.HWAuth || typeof window.HWAuth.addPoints !== 'function') {
         toast('Cool Points service is warming up. Try again.');
@@ -340,7 +334,7 @@
 
     return serialize(async () => {
       const current = await requireLogin();
-      if (!current) return snapshot();
+      if (!current || !isActive()) return snapshot();
 
       if (current.points < cost) {
         toast('Need ' + cost + ' Cool Points. Current: ' + current.points);
@@ -365,7 +359,7 @@
 
     return serialize(async () => {
       const current = await requireLogin();
-      if (!current) return snapshot();
+      if (!current || !isActive()) return snapshot();
 
       if (!window.HWAuth || typeof window.HWAuth.setPoints !== 'function') {
         toast('Cool Points service is warming up. Try again.');
@@ -388,6 +382,7 @@
 
   function wireEvents() {
     document.addEventListener('click', (event) => {
+      if (!isActive()) return;
       const target = event.target instanceof Element ? event.target : event.target?.parentElement;
       if (!target || typeof target.closest !== 'function') return;
       const addButton = target.closest('[data-point-add]');
@@ -412,16 +407,19 @@
     });
 
     document.addEventListener('hyph:points:add', (event) => {
+      if (!isActive()) return;
       const detail = event.detail || {};
       add(detail.amount || detail.points || 0, detail.reason || 'site_event', detail.metadata || {});
     });
 
     document.addEventListener('hw:points:add', (event) => {
+      if (!isActive()) return;
       const detail = event.detail || {};
       add(detail.amount || detail.points || 0, detail.reason || 'site_event', detail.metadata || {});
     });
 
     document.addEventListener('hyph:auth-state-changed', (event) => {
+      if (!isActive()) return;
       authEpoch += 1;
       if (event?.detail?.event === 'SIGNED_OUT') {
         writeCachedBalance(0);
@@ -435,6 +433,10 @@
   function bootTimers() {
     if (refreshTimer) return;
     refreshTimer = window.setInterval(() => {
+      if (!isActive()) {
+        window.clearInterval(refreshTimer);
+        return;
+      }
       if (!document.hidden) refresh('poll');
     }, 15000);
     window.addEventListener('focus', () => refresh('focus'));
