@@ -139,6 +139,7 @@ jobs:
                   raise SystemExit(f'{page} is missing its Expo entry script')
               page.write_text(html[:marker] + script + html[marker:], encoding='utf-8')
           PY
+          python3 site/scripts/install-nfl-ticker.py site/games/ss-bowling
           printf '%s\n' '${{ steps.source.outputs.source_sha }}' > site/games/ss-bowling/.source-sha
           if test -f /tmp/super-strike-previous-entry.js; then
             mkdir -p site/games/ss-bowling/_expo/static/js/web

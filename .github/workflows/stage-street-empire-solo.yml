@@ -219,6 +219,7 @@ jobs:
           fi
           # Overlay the tested export and keep existing files and sound assets.
           cp -a street-empire-export/. games/street-empire/
+          python3 scripts/install-nfl-ticker.py games/street-empire
           printf '%s\n' 'edde3de850b7682b849493dd4aec59c14048187b' > games/street-empire/.source-sha
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
