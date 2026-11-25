@@ -42,7 +42,7 @@
     "@electric-sql/pglite": "0.5.15",
     "jest": "30.5.2",
     "jest-environment-jsdom": "30.5.2",
-    "postcss": "8.5.32"
+    "postcss": "8.5.33"
   },
   "dependencies": {
     "tus-js-client": "4.3.1"
