@@ -9,6 +9,7 @@ on:
       - main
     paths:
       - '.github/workflows/publish-super-strike.yml'
+      - 'scripts/super-strike-overrides/alley-gator.patch'
 
 permissions:
   contents: write
@@ -44,14 +45,29 @@ jobs:
           if test -f site/games/ss-bowling/.source-sha; then
             deployed_sha="$(cat site/games/ss-bowling/.source-sha)"
           fi
+          tuning_file='site/scripts/super-strike-overrides/alley-gator.patch'
+          tuning_sha="$(sha256sum "$tuning_file" | cut -d' ' -f1)"
+          deployed_tuning_sha=""
+          if test -f site/games/ss-bowling/.gator-tuning-sha; then
+            deployed_tuning_sha="$(cat site/games/ss-bowling/.gator-tuning-sha)"
+          fi
+          echo "tuning_sha=$tuning_sha" >> "$GITHUB_OUTPUT"
           echo "source_sha=$source_sha" >> "$GITHUB_OUTPUT"
-          if test "$source_sha" = "$deployed_sha"; then
+          if test "$source_sha" = "$deployed_sha" && test "$tuning_sha" = "$deployed_tuning_sha"; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             echo "Super Strike $source_sha is already published."
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
             echo "Publishing Super Strike $source_sha (currently ${deployed_sha:-untracked})."
           fi
+
+      - name: Apply site-owned Alley Gator difficulty
+        if: steps.source.outputs.changed == 'true'
+        run: |
+          tuning_file="$GITHUB_WORKSPACE/site/scripts/super-strike-overrides/alley-gator.patch"
+          # Fail closed if an upstream gameplay change needs the tuning reviewed.
+          git -C game apply --check "$tuning_file"
+          git -C game apply "$tuning_file"
 
       - name: Setup Node
         if: steps.source.outputs.changed == 'true'
@@ -65,6 +81,11 @@ jobs:
         if: steps.source.outputs.changed == 'true'
         working-directory: game/frontend
         run: npm ci --legacy-peer-deps --no-audit --no-fund
+
+      - name: Verify Super Strike gameplay before publishing
+        if: steps.source.outputs.changed == 'true'
+        working-directory: game/frontend
+        run: npm run diagnostics:mobile-gameplay
 
       - name: Export Super Strike web build
         if: steps.source.outputs.changed == 'true'
@@ -141,6 +162,7 @@ jobs:
           PY
           python3 site/scripts/install-nfl-ticker.py site/games/ss-bowling
           printf '%s\n' '${{ steps.source.outputs.source_sha }}' > site/games/ss-bowling/.source-sha
+          printf '%s\n' '${{ steps.source.outputs.tuning_sha }}' > site/games/ss-bowling/.gator-tuning-sha
           if test -f /tmp/super-strike-previous-entry.js; then
             mkdir -p site/games/ss-bowling/_expo/static/js/web
             cp -n /tmp/super-strike-previous-entry.js "site/games/ss-bowling/_expo/static/js/web/$previous_name"
@@ -157,6 +179,7 @@ jobs:
             grep -q 'bowling-effects.js?v=ss-hud-clear-3' "$page"
           done
           test "$(cat site/games/ss-bowling/.source-sha)" = '${{ steps.source.outputs.source_sha }}'
+          test "$(cat site/games/ss-bowling/.gator-tuning-sha)" = '${{ steps.source.outputs.tuning_sha }}'
           for route in game results multiplayer profile leaderboard skins coach; do
             test -f "site/games/ss-bowling/${route}.html"
           done

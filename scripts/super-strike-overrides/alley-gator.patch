@@ -1,0 +1,323 @@
+diff --git a/frontend/app/_layout.web.tsx b/frontend/app/_layout.web.tsx
+index fc63700..7781311 100644
+--- a/frontend/app/_layout.web.tsx
++++ b/frontend/app/_layout.web.tsx
+@@ -1,6 +1,5 @@
+ import { Stack, usePathname } from "expo-router";
+ import PopWall3D from "@/src/components/PopWall3D.web";
+-import LaneHazardOverlay from "@/src/components/LaneHazardOverlay.web";
+ 
+ export default function WebRootLayout() {
+   const pathname = usePathname();
+@@ -12,7 +11,6 @@ export default function WebRootLayout() {
+       {isGameRoute ? (
+         <>
+           <PopWall3D />
+-          <LaneHazardOverlay />
+         </>
+       ) : null}
+     </>
+diff --git a/frontend/app/game.tsx b/frontend/app/game.tsx
+index 3760807..83ff0a3 100644
+--- a/frontend/app/game.tsx
++++ b/frontend/app/game.tsx
+@@ -7,6 +7,7 @@ import * as Haptics from "expo-haptics";
+ import Animated, { FadeIn } from "react-native-reanimated";
+ 
+ import BowlingLane, { ThrowState } from "@/src/components/BowlingLane";
++import LaneHazardOverlay from "@/src/components/LaneHazardOverlay";
+ import Scorecard from "@/src/components/Scorecard";
+ import PowerUpTray from "@/src/components/PowerUpTray";
+ import TimingMeters from "@/src/components/TimingMeters";
+@@ -339,6 +340,7 @@ export default function Game() {
+         {isMyTurn ? <TimingMeters phase={phase as "aim" | "power"} onLockAim={onLockAim} onLockPower={onLockPower} /> : <Glass style={styles.waitBox}><Text style={styles.waitText}>{phase === "cpu" ? `${rivalName} BOWLING…` : phase === "intermission" ? "RESETTING LANE…" : phase === "over" && mode === "multiplayer" ? "WAITING FOR FINAL SCORE…" : "BALL IN MOTION…"}</Text></Glass>}
+       </View>
+       {banner && <Animated.View entering={FadeIn.duration(100)} style={styles.banner}><Text style={styles.bannerText}>{banner}</Text></Animated.View>}
++      <LaneHazardOverlay frame={Math.min(meRef.current.currentFrame + 1, 10)} enabled={phase !== "over"} />
+       <Celebration event={banner === "STRIKE!" ? "strike" : banner === "SPARE!" ? "spare" : null} />
+     </View>
+   );
+diff --git a/frontend/scripts/gator-difficulty-diagnostic.js b/frontend/scripts/gator-difficulty-diagnostic.js
+new file mode 100644
+index 0000000..e4d367f
+--- /dev/null
++++ b/frontend/scripts/gator-difficulty-diagnostic.js
+@@ -0,0 +1,100 @@
++const fs = require('fs');
++const vm = require('vm');
++const ts = require('typescript');
++const assert = require('node:assert/strict');
++
++function load(file, dependencies, globals = {}) {
++  const code = ts.transpileModule(fs.readFileSync(file, 'utf8'), {
++    compilerOptions: { module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX, target: ts.ScriptTarget.ES2020 },
++  }).outputText;
++  const exports = {};
++  vm.runInNewContext(code, { exports, require: name => {
++    if (!(name in dependencies)) throw new Error(`Unexpected dependency: ${name}`);
++    return dependencies[name];
++  }, ...globals }, { filename: file });
++  return exports;
++}
++const difficultyModule = load('src/game/gatorDifficulty.ts', {});
++const { gatorDifficulty } = difficultyModule;
++for (const frame of [1, 2, 3, 0, -1, 11, NaN, Infinity, 4.5]) assert.equal(gatorDifficulty(frame), null);
++assert.equal(gatorDifficulty(4), gatorDifficulty(6), 'Same tier must preserve its timer across frames');
++assert.equal(gatorDifficulty(7), gatorDifficulty(9));
++for (const [frame, cooldown, warning, active] of [[4, 14000, 1800, 800], [7, 10000, 1500, 1100], [10, 8000, 1200, 1400]]) {
++  const tier = gatorDifficulty(frame);
++  assert.equal(tier.cooldownMs, cooldown);
++  assert.equal(tier.warningMs, warning);
++  assert.equal(tier.activeMs, active);
++}
++
++// Run the real overlay's effects and timeout callbacks with a deterministic clock.
++function harness(random = 0) {
++  let now = 0, nextId = 0, cursor = 0, active = false, attacks = 0;
++  const timers = new Map(), hooks = [], effects = [], listeners = new Map();
++  const react = {
++    useState(initial) { const i = cursor++; if (!(i in hooks)) hooks[i] = initial; return [hooks[i], v => { hooks[i] = v; }]; },
++    useRef(initial) { const i = cursor++; if (!(i in hooks)) hooks[i] = { current: initial }; return hooks[i]; },
++    useEffect(fn, deps) { const i = cursor++, old = hooks[i]; if (!old || deps.some((v, n) => !Object.is(v, old.deps[n]))) { effects.push(() => { old?.cleanup?.(); hooks[i] = { deps, cleanup: fn() }; }); } },
++  };
++  const animate = { default: { View: 'AnimatedView' }, useSharedValue: v => react.useRef(v === undefined ? { value: 0 } : { value: v }).current,
++    useAnimatedStyle: fn => fn(), withSequence: (...v) => v.at(-1), withTiming: v => v,
++    Easing: { in: v => v, out: v => v, back: () => 0, quad: 0 } };
++  const Overlay = load('src/components/LaneHazardOverlay.web.tsx', {
++    react, 'react/jsx-runtime': { jsx: () => null, jsxs: () => null },
++    'react-native': { StyleSheet: { create: v => v, absoluteFill: {} } },
++    'react-native-reanimated': animate,
++    '@/src/game/gatorDifficulty': difficultyModule,
++    '@/src/game/hazards': { setWebHazardActive: (_id, value) => { active = value; if (value) attacks++; } },
++  }, {
++    Math: { random: () => random, floor: Math.floor },
++    setTimeout: (fn, ms) => { const id = ++nextId; timers.set(id, { fn, time: now + ms }); return id; },
++    clearTimeout: id => timers.delete(id),
++    window: { addEventListener: (name, fn) => listeners.set(name, fn), removeEventListener: name => listeners.delete(name) },
++  }).default;
++  return {
++    render(frame, enabled = true) { cursor = 0; Overlay({ frame, enabled }); effects.splice(0).forEach(fn => fn()); },
++    advance(ms) { const end = now + ms; let steps = 0; while (true) {
++      const next = [...timers].filter(([, t]) => t.time <= end).sort((a, b) => a[1].time - b[1].time)[0];
++      if (!next) break;
++      assert(++steps < 10000, 'Timer loop must remain bounded');
++      now = next[1].time; timers.delete(next[0]); next[1].fn();
++    } now = end; },
++    impact(powerup = null, hazard = 'alley-gator') { listeners.get('super-strike-hazard')?.({ detail: { type: 'pop-wall-impact', hazard, powerup, ballX: 0 } }); },
++    unmount() { hooks.forEach(h => h?.cleanup?.()); },
++    get active() { return active; }, get attacks() { return attacks; }, get pending() { return timers.size; },
++  };
++}
++for (const random of [0, 0.999999]) {
++  const h = harness(random);
++  for (const frame of [1, 2, 3]) { h.render(frame); h.advance(120000); assert.equal(h.attacks, 0); assert.equal(h.pending, 0); }
++  h.unmount();
++}
++for (const frame of [4, 7, 10]) {
++  for (const random of [0, 0.999999]) {
++    const h = harness(random), d = gatorDifficulty(frame);
++    const wait = d.cooldownMs + Math.floor(random * d.cooldownJitterMs);
++    h.render(frame); h.advance(wait + d.warningMs - 1); assert.equal(h.active, false);
++    h.advance(1); assert.equal(h.active, true); assert.equal(h.attacks, 1);
++    h.advance(d.activeMs); assert.equal(h.active, false);
++    h.unmount(); h.advance(120000); assert.equal(h.attacks, 1); assert.equal(h.pending, 0);
++  }
++}
++{
++  const h = harness(); h.render(4); h.advance(7000); h.render(5); h.advance(8800);
++  assert.equal(h.active, true, 'Advancing within a tier must not restart the cooldown');
++  h.render(7); assert.equal(h.active, false, 'Tier changes clear the previous attack');
++  h.advance(11500); assert.equal(h.active, true);
++  h.render(7, false); assert.equal(h.active, false); h.advance(120000); assert.equal(h.pending, 0);
++  h.render(1); assert.equal(h.active, false); assert.equal(h.pending, 0); h.unmount();
++}
++for (const powerup of [null, 'bomb', 'lightning']) {
++  const h = harness(); h.render(4); h.advance(15800);
++  h.impact(null, 'pop-wall'); assert.equal(h.active, true, 'Other hazards cannot consume the Gator');
++  h.impact(powerup); assert.equal(h.active, false);
++  h.impact(powerup); h.advance(860 + 14000 + 1800); assert.equal(h.attacks, 2, 'An impact must schedule exactly one next attack');
++  h.unmount(); h.advance(120000); assert.equal(h.pending, 0);
++}
++for (const elapsed of [1, 14500, 15800, 15900]) {
++  const h = harness(); h.render(4); h.advance(elapsed); h.unmount(); h.advance(120000);
++  assert.equal(h.active, false); assert.equal(h.pending, 0, 'Exit must clear cooldown, warning and attack timers');
++}
++console.log('Gator difficulty passed: three safe frames, gradual tiers, full warnings, preserved cooldowns, power-ups, and exit/reset cleanup.');
+diff --git a/frontend/scripts/mobile-gameplay-diagnostic.js b/frontend/scripts/mobile-gameplay-diagnostic.js
+index 15fd8c9..2a8878c 100644
+--- a/frontend/scripts/mobile-gameplay-diagnostic.js
++++ b/frontend/scripts/mobile-gameplay-diagnostic.js
+@@ -26,3 +26,5 @@ assert(powerups.includes("width: 66") && powerups.includes("height: 66"), "Power
+ assert(powerups.includes('testID={`powerup-${p.id}`}'), "Every power-up needs a stable mobile test ID");
+ 
+ console.log("Mobile gameplay diagnostic passed: Gator timing, unobstructed controls, safe touch targets, and fallback impact behavior are locked.");
++
++require('./gator-difficulty-diagnostic');
+diff --git a/frontend/src/components/LaneHazardOverlay.tsx b/frontend/src/components/LaneHazardOverlay.tsx
+new file mode 100644
+index 0000000..631e9ee
+--- /dev/null
++++ b/frontend/src/components/LaneHazardOverlay.tsx
+@@ -0,0 +1,9 @@
++// Alley Gator is a web lane hazard; native bowling keeps its existing behavior.
++export interface LaneHazardOverlayProps {
++  frame: number;
++  enabled: boolean;
++}
++
++export default function LaneHazardOverlay(_props: LaneHazardOverlayProps) {
++  return null;
++}
+diff --git a/frontend/src/components/LaneHazardOverlay.web.tsx b/frontend/src/components/LaneHazardOverlay.web.tsx
+index c6a741d..046ec67 100644
+--- a/frontend/src/components/LaneHazardOverlay.web.tsx
++++ b/frontend/src/components/LaneHazardOverlay.web.tsx
+@@ -8,6 +8,8 @@ import Animated, {
+   withTiming,
+ } from "react-native-reanimated";
+ import { setWebHazardActive, type HazardId } from "@/src/game/hazards";
++import { gatorDifficulty } from "@/src/game/gatorDifficulty";
++import type { LaneHazardOverlayProps } from "./LaneHazardOverlay";
+ import type { PowerUpId } from "@/src/game/powerups";
+ 
+ type HazardBridgePayload = {
+@@ -22,7 +24,8 @@ type WarningZone = "wallHigh" | "wallLow" | "lane";
+ 
+ const WARNING_SPOTS: WarningZone[] = ["wallHigh", "wallLow", "lane"];
+ 
+-export default function LaneHazardOverlay() {
++export default function LaneHazardOverlay({ frame, enabled }: LaneHazardOverlayProps) {
++  const difficulty = enabled ? gatorDifficulty(frame) : null;
+   const [visible, setVisible] = useState(false);
+   const [warning, setWarning] = useState(false);
+   const [impactText, setImpactText] = useState("GATOR GOT IT!");
+@@ -33,7 +36,6 @@ export default function LaneHazardOverlay() {
+   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+   const cleanupRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+   const activeRef = useRef(false);
+-  const cycleRef = useRef(0);
+   const gatorSideRef = useRef<GatorSide>("right");
+   const gatorX = useSharedValue(150);
+   const gatorY = useSharedValue(12);
+@@ -103,12 +105,12 @@ export default function LaneHazardOverlay() {
+     );
+   };
+ 
+-  const schedule = (first = false) => {
+-    const wait = first ? 1600 : 6500 + Math.floor(Math.random() * 3500);
++  const schedule = () => {
++    if (!difficulty) return;
++    const wait = difficulty.cooldownMs + Math.floor(Math.random() * difficulty.cooldownJitterMs);
+     timerRef.current = setTimeout(() => {
+       const nextSide: GatorSide = Math.random() < 0.5 ? "left" : "right";
+       const firstSpotIndex = Math.floor(Math.random() * WARNING_SPOTS.length);
+-      cycleRef.current += 1;
+       gatorSideRef.current = nextSide;
+       setGatorSide(nextSide);
+       setWarningZone(WARNING_SPOTS[firstSpotIndex]);
+@@ -131,10 +133,10 @@ export default function LaneHazardOverlay() {
+ 
+       cleanupRef.current.push(setTimeout(() => {
+         setWarningZone(WARNING_SPOTS[(firstSpotIndex + 1) % WARNING_SPOTS.length]);
+-      }, 330));
++      }, Math.floor(difficulty.warningMs / 3)));
+       cleanupRef.current.push(setTimeout(() => {
+         setWarningZone(WARNING_SPOTS[(firstSpotIndex + 2) % WARNING_SPOTS.length]);
+-      }, 680));
++      }, Math.floor(difficulty.warningMs * 2 / 3)));
+ 
+       cleanupRef.current.push(setTimeout(() => {
+         activeRef.current = true;
+@@ -145,13 +147,20 @@ export default function LaneHazardOverlay() {
+           setWarning(false);
+           setShowGator(false);
+           setVisible(false);
+-          schedule(false);
+-        }, 2300));
+-      }, 950));
++          schedule();
++        }, difficulty.activeMs));
++      }, difficulty.warningMs));
+     }, wait);
+   };
+ 
+   useEffect(() => {
++    setVisible(false);
++    setWarning(false);
++    setShowGator(false);
++    activeRef.current = false;
++    setWebHazardActive("alley-gator", false);
++    if (!difficulty) return;
++
+     const onImpact = (event: Event) => {
+       const detail = (event as CustomEvent<HazardBridgePayload>).detail;
+       if (!detail || detail.type !== "pop-wall-impact" || detail.hazard !== "alley-gator" || !activeRef.current) return;
+@@ -201,12 +210,12 @@ export default function LaneHazardOverlay() {
+       cleanupRef.current.push(setTimeout(() => {
+         setShowGator(false);
+         setVisible(false);
+-        schedule(false);
++        schedule();
+       }, 860));
+     };
+ 
+     window.addEventListener("super-strike-hazard", onImpact as EventListener);
+-    schedule(true);
++    schedule();
+     return () => {
+       window.removeEventListener("super-strike-hazard", onImpact as EventListener);
+       if (timerRef.current) clearTimeout(timerRef.current);
+@@ -214,7 +223,7 @@ export default function LaneHazardOverlay() {
+       activeRef.current = false;
+       setWebHazardActive("alley-gator", false);
+     };
+-  }, []);
++  }, [difficulty]);
+ 
+   const gatorStyle = useAnimatedStyle(() => ({
+     opacity: gatorOpacity.value,
+diff --git a/frontend/src/components/NativeRoot.web.tsx b/frontend/src/components/NativeRoot.web.tsx
+index 92f30ec..3d583be 100644
+--- a/frontend/src/components/NativeRoot.web.tsx
++++ b/frontend/src/components/NativeRoot.web.tsx
+@@ -1,7 +1,6 @@
+ import { Stack } from "expo-router";
+ import { useEffect } from "react";
+ import { initAudio } from "@/src/audio/sounds";
+-import LaneHazardOverlay from "@/src/components/LaneHazardOverlay.web";
+ 
+ export default function NativeRootWeb() {
+   useEffect(() => {
+@@ -11,7 +10,6 @@ export default function NativeRootWeb() {
+   return (
+     <>
+       <Stack screenOptions={{ headerShown: false }} />
+-      <LaneHazardOverlay />
+     </>
+   );
+ }
+diff --git a/frontend/src/game/gatorDifficulty.ts b/frontend/src/game/gatorDifficulty.ts
+new file mode 100644
+index 0000000..67af90a
+--- /dev/null
++++ b/frontend/src/game/gatorDifficulty.ts
+@@ -0,0 +1,19 @@
++export interface GatorDifficulty {
++  cooldownMs: number;
++  cooldownJitterMs: number;
++  warningMs: number;
++  activeMs: number;
++}
++
++const INTRO: GatorDifficulty = { cooldownMs: 14000, cooldownJitterMs: 4000, warningMs: 1800, activeMs: 800 };
++const LATER: GatorDifficulty = { cooldownMs: 10000, cooldownJitterMs: 4000, warningMs: 1500, activeMs: 1100 };
++const FINAL: GatorDifficulty = { cooldownMs: 8000, cooldownJitterMs: 4000, warningMs: 1200, activeMs: 1400 };
++
++// Stable tier objects keep the clock running across frames within a tier.
++// A new game always starts with three frames free of Gator attacks.
++export function gatorDifficulty(frame: number): GatorDifficulty | null {
++  if (!Number.isInteger(frame) || frame < 4 || frame > 10) return null;
++  if (frame <= 6) return INTRO;
++  if (frame <= 9) return LATER;
++  return FINAL;
++}
